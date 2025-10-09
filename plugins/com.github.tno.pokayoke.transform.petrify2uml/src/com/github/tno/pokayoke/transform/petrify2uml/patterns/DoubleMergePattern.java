@@ -32,19 +32,29 @@ public class DoubleMergePattern {
      * @return {@code true} if the input activity has been rewritten, {@code false} otherwise.
      */
     public static boolean findAndRewriteAll(Activity activity) {
-        List<DoubleMergePattern> patterns = findAll(activity);
-        patterns.forEach(DoubleMergePattern::rewrite);
-        return patterns.size() > 0;
+        boolean hasFoundPatterns = false;
+
+        // Only rewrite one pattern at a time, to prevent issues when patterns overlap.
+        while (true) {
+            Optional<DoubleMergePattern> patterns = findAny(activity);
+            if (patterns.isEmpty()) {
+                break;
+            } else {
+                patterns.get().rewrite();
+                hasFoundPatterns = true;
+            }
+        }
+        return hasFoundPatterns;
     }
 
     /**
-     * Finds all <i>double merge</i> patterns in the given activity.
+     * Finds a <i>double merge</i> pattern in the given activity, if present.
      *
      * @param activity The input activity.
-     * @return All <i>double merge</i> patterns in the given activity.
+     * @return A <i>double merge</i> pattern in the given activity, if present.
      */
-    public static List<DoubleMergePattern> findAll(Activity activity) {
-        return activity.getEdges().stream().flatMap(edge -> findAny(edge).stream()).toList();
+    public static Optional<DoubleMergePattern> findAny(Activity activity) {
+        return activity.getEdges().stream().flatMap(edge -> findAny(edge).stream()).findFirst();
     }
 
     /**

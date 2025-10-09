@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:SynthML="https://github.com/TNO/SynthML/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="_2wVeAGe8EfCyf_rr0y4a7g" name="Model">
+    <packagedElement xmi:type="uml:Class" xmi:id="_6C2-sGe8EfCyf_rr0y4a7g" name="System" visibility="public" classifierBehavior="_F6iXUGe9EfCyf_rr0y4a7g" isActive="true">
+      <ownedAttribute xmi:id="_-69WEGe8EfCyf_rr0y4a7g" name="position" visibility="public" type="_7CeooGe8EfCyf_rr0y4a7g">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_-699IGe8EfCyf_rr0y4a7g" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_-699IWe8EfCyf_rr0y4a7g" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_A45pcGe9EfCyf_rr0y4a7g">
+          <language>CIF</language>
+          <body>First</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_CDnwIGe9EfCyf_rr0y4a7g" name="done" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_CDoXMGe9EfCyf_rr0y4a7g" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_CDoXMWe9EfCyf_rr0y4a7g" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_EHV7YGe9EfCyf_rr0y4a7g">
+          <language>CIF</language>
+          <body>false</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_F6iXUGe9EfCyf_rr0y4a7g" name="Main" node="_ITRJQGe9EfCyf_rr0y4a7g _JlLdEGe9EfCyf_rr0y4a7g _KZ1NIGe9EfCyf_rr0y4a7g _L4RhEGe9EfCyf_rr0y4a7g _QbChoGe9EfCyf_rr0y4a7g _SdQ4EGe9EfCyf_rr0y4a7g">
+        <edge xmi:type="uml:ControlFlow" xmi:id="_TcPBwGe9EfCyf_rr0y4a7g" target="_JlLdEGe9EfCyf_rr0y4a7g" source="_ITRJQGe9EfCyf_rr0y4a7g"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_T4NzIGe9EfCyf_rr0y4a7g" target="_KZ1NIGe9EfCyf_rr0y4a7g" source="_JlLdEGe9EfCyf_rr0y4a7g">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="_XQjA4Ge9EfCyf_rr0y4a7g">
+            <language>CIF</language>
+            <body>position = Second</body>
+          </guard>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_UOflIGe9EfCyf_rr0y4a7g" target="_L4RhEGe9EfCyf_rr0y4a7g" source="_JlLdEGe9EfCyf_rr0y4a7g">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="_YNkCwGe9EfCyf_rr0y4a7g">
+            <language>CIF</language>
+            <body>position = Third</body>
+          </guard>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_UqlEMGe9EfCyf_rr0y4a7g" target="_QbChoGe9EfCyf_rr0y4a7g" source="_KZ1NIGe9EfCyf_rr0y4a7g"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_VKc3EGe9EfCyf_rr0y4a7g" target="_QbChoGe9EfCyf_rr0y4a7g" source="_L4RhEGe9EfCyf_rr0y4a7g"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_VkQeMGe9EfCyf_rr0y4a7g" target="_SdQ4EGe9EfCyf_rr0y4a7g" source="_QbChoGe9EfCyf_rr0y4a7g"/>
+        <node xmi:type="uml:InitialNode" xmi:id="_ITRJQGe9EfCyf_rr0y4a7g" name="" outgoing="_TcPBwGe9EfCyf_rr0y4a7g"/>
+        <node xmi:type="uml:DecisionNode" xmi:id="_JlLdEGe9EfCyf_rr0y4a7g" name="" incoming="_TcPBwGe9EfCyf_rr0y4a7g" outgoing="_T4NzIGe9EfCyf_rr0y4a7g _UOflIGe9EfCyf_rr0y4a7g"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="_KZ1NIGe9EfCyf_rr0y4a7g" name="DoneSecond" incoming="_T4NzIGe9EfCyf_rr0y4a7g" outgoing="_UqlEMGe9EfCyf_rr0y4a7g">
+          <body>// TODO body of OpaqueAction1</body>
+        </node>
+        <node xmi:type="uml:OpaqueAction" xmi:id="_L4RhEGe9EfCyf_rr0y4a7g" name="DoneThird" incoming="_UOflIGe9EfCyf_rr0y4a7g" outgoing="_VKc3EGe9EfCyf_rr0y4a7g">
+          <body>// TODO body of OpaqueAction2</body>
+        </node>
+        <node xmi:type="uml:MergeNode" xmi:id="_QbChoGe9EfCyf_rr0y4a7g" name="" incoming="_UqlEMGe9EfCyf_rr0y4a7g _VKc3EGe9EfCyf_rr0y4a7g" outgoing="_VkQeMGe9EfCyf_rr0y4a7g"/>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="_SdQ4EGe9EfCyf_rr0y4a7g" name="" incoming="_VkQeMGe9EfCyf_rr0y4a7g"/>
+      </ownedBehavior>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Enumeration" xmi:id="_7CeooGe8EfCyf_rr0y4a7g" name="Position" visibility="public">
+      <ownedLiteral xmi:id="_8SCzEGe8EfCyf_rr0y4a7g" name="First">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_8SDaIGe8EfCyf_rr0y4a7g"/>
+      </ownedLiteral>
+      <ownedLiteral xmi:id="_9JpwgGe8EfCyf_rr0y4a7g" name="Second">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_9JqXkGe8EfCyf_rr0y4a7g" value="1"/>
+      </ownedLiteral>
+      <ownedLiteral xmi:id="_-J5FgGe8EfCyf_rr0y4a7g" name="Third">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_-J5skGe8EfCyf_rr0y4a7g" value="2"/>
+      </ownedLiteral>
+    </packagedElement>
+    <profileApplication xmi:id="__-DKwGe8EfCyf_rr0y4a7g">
+      <eAnnotations xmi:id="__-G1IGe8EfCyf_rr0y4a7g" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/SynthML/#/"/>
+      </eAnnotations>
+      <appliedProfile href="platform:/plugin/com.github.tno.synthml.uml.profile.plugin/model/synthml.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+    </profileApplication>
+  </uml:Model>
+  <SynthML:FormalElement xmi:id="_NIsAEGe9EfCyf_rr0y4a7g" base_RedefinableElement="_KZ1NIGe9EfCyf_rr0y4a7g" atomic="true">
+    <effects>done := true</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="_OdBVwGe9EfCyf_rr0y4a7g" base_RedefinableElement="_L4RhEGe9EfCyf_rr0y4a7g" atomic="true">
+    <effects>done := true</effects>
+  </SynthML:FormalElement>
+</xmi:XMI>

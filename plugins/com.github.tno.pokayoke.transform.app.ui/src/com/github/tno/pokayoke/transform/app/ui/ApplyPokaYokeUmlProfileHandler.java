@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import javax.inject.Named;
-
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
@@ -17,6 +15,8 @@ import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.viewers.IStructuredSelection;
 
 import com.github.tno.synthml.uml.profile.transform.ApplyPokaYokeUmlProfile;
+
+import jakarta.inject.Named;
 
 /** Menu action handler for applying the Poka Yoke UML profile to an existing UML file. */
 public class ApplyPokaYokeUmlProfileHandler {

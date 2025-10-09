@@ -1,0 +1,17 @@
+enum Position = First, Second, Third;
+controllable Action;
+plant automaton Context:
+  disc Position position in any;
+  disc bool done in any;
+  alg bool Pre = not done;
+  alg bool __precondition = Pre;
+  alg bool Post = done;
+  alg bool __postcondition = Post;
+  initial __precondition;
+  marked __postcondition;
+  location:
+    initial;
+    marked;
+    edge Action when position = Second do done := true;
+end
+requirement invariant Context.__postcondition disables Action;

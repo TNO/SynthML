@@ -3,7 +3,7 @@ package com.github.tno.pokayoke.transform.activitysynthesis;
 
 import static org.eclipse.escet.common.java.Lists.list;
 
-import java.util.EnumSet;
+import java.nio.file.Path;
 import java.util.List;
 
 import org.eclipse.escet.cif.bdd.conversion.CifToBddConverter;
@@ -12,12 +12,13 @@ import org.eclipse.escet.cif.datasynth.CifDataSynthesis;
 import org.eclipse.escet.cif.datasynth.CifDataSynthesisResult;
 import org.eclipse.escet.cif.datasynth.CifDataSynthesisTiming;
 import org.eclipse.escet.cif.datasynth.conversion.SynthesisToCifConverter;
-import org.eclipse.escet.cif.datasynth.settings.BddSimplify;
 import org.eclipse.escet.cif.datasynth.settings.CifDataSynthesisSettings;
 import org.eclipse.escet.cif.datasynth.settings.FixedPointComputationsOrder;
 import org.eclipse.escet.cif.io.CifWriter;
 import org.eclipse.escet.cif.metamodel.cif.Specification;
 import org.eclipse.escet.common.app.framework.AppEnv;
+import org.eclipse.escet.common.java.PathPair;
+import org.eclipse.escet.common.java.Termination;
 
 import com.github.javabdd.BDDFactory;
 
@@ -30,22 +31,21 @@ public class CIFDataSynthesisHelper {
         CifDataSynthesisSettings settings = new CifDataSynthesisSettings();
         settings.setDoForwardReach(true);
         settings.setFixedPointComputationsOrder(FixedPointComputationsOrder.REACH_NONBLOCK_CTRL);
-        settings.setBddSimplifications(EnumSet.noneOf(BddSimplify.class));
         return settings;
     }
 
-    public static CifBddSpec getCifBddSpec(Specification spec, CifDataSynthesisSettings settings) {
+    public static CifBddSpec getCifBddSpec(Specification spec, String specAbsPath, CifDataSynthesisSettings settings) {
         // Perform preprocessing.
-        CifToBddConverter.preprocess(spec, settings.getWarnOutput(), settings.getDoPlantsRefReqsWarn());
+        CifToBddConverter converter = new CifToBddConverter("Data-based supervisory controller synthesis");
+        converter.preprocess(spec, specAbsPath, settings.getWarnOutput(), settings.getDoPlantsRefReqsWarn(),
+                Termination.NEVER);
 
         // Create BDD factory.
         List<Long> continuousOpMisses = list();
         List<Integer> continuousUsedBddNodes = list();
         BDDFactory factory = CifToBddConverter.createFactory(settings, continuousOpMisses, continuousUsedBddNodes);
 
-        // Convert CIF specification to a CIF/BDD representation, checking for precondition violations along the
-        // way.
-        CifToBddConverter converter = new CifToBddConverter("Data-based supervisory controller synthesis");
+        // Convert CIF specification to a CIF/BDD representation, checking for precondition violations along the way.
         CifBddSpec cifBddSpec = converter.convert(spec, settings, factory);
 
         return cifBddSpec;
@@ -58,7 +58,7 @@ public class CIFDataSynthesisHelper {
     }
 
     public static Specification convertSynthesisResultToCif(Specification spec, CifDataSynthesisResult synthResult,
-            String outPutFilePath, String outFolderPath)
+            Path outputFilePath, String outFolderPath)
     {
         Specification result;
 
@@ -69,7 +69,8 @@ public class CIFDataSynthesisHelper {
         // Write output CIF specification.
         try {
             AppEnv.registerSimple();
-            CifWriter.writeCifSpec(result, outPutFilePath, outFolderPath);
+            CifWriter.writeCifSpec(result,
+                    new PathPair(outputFilePath.toString(), outputFilePath.toAbsolutePath().toString()), outFolderPath);
         } finally {
             AppEnv.unregisterApplication();
         }

@@ -14,9 +14,9 @@ plant automaton Machine:
   alg bool Postcondition = a_executed = true and b_executed = true;
   alg bool __postcondition__nonAtomicActive__NonAtomicA = not __nonAtomicActive__NonAtomicA;
   alg bool __postcondition__nonAtomicActive__NonAtomicB = not __nonAtomicActive__NonAtomicB;
-  alg bool __postcondition__IntervalConstraintA__17__NonAtomicA__21 = IntervalConstraintA__17__NonAtomicA__21.__occurrences >= 0;
-  alg bool __postcondition__IntervalConstraintB__19__NonAtomicB__22 = IntervalConstraintB__19__NonAtomicB__22.__occurrences >= 0;
-  alg bool __postcondition = Postcondition and __postcondition__nonAtomicActive__NonAtomicA and (__postcondition__nonAtomicActive__NonAtomicB and (__postcondition__IntervalConstraintA__17__NonAtomicA__21 and __postcondition__IntervalConstraintB__19__NonAtomicB__22));
+  alg bool __postcondition__IntervalConstraintA__32__NonAtomicA__40 = IntervalConstraintA__32__NonAtomicA__40.__occurrences >= 0;
+  alg bool __postcondition__IntervalConstraintB__36__NonAtomicB__42 = IntervalConstraintB__36__NonAtomicB__42.__occurrences >= 0;
+  alg bool __postcondition = Postcondition and __postcondition__nonAtomicActive__NonAtomicA and (__postcondition__nonAtomicActive__NonAtomicB and (__postcondition__IntervalConstraintA__32__NonAtomicA__40 and __postcondition__IntervalConstraintB__36__NonAtomicB__42));
   initial __precondition;
   marked __postcondition;
   location:
@@ -29,7 +29,7 @@ plant automaton Machine:
     edge NonAtomicB__na_result_1 when __nonAtomicActive__NonAtomicB do b_executed := true, __nonAtomicActive__NonAtomicB := false;
     edge NonAtomicB__na_result_2 when __nonAtomicActive__NonAtomicB do b_executed := true, __nonAtomicActive__NonAtomicB := false;
 end
-supervisor automaton IntervalConstraintA__17__NonAtomicA__21:
+supervisor automaton IntervalConstraintA__32__NonAtomicA__40:
   disc int[0..1] __occurrences;
   marked __occurrences >= 0;
   location:
@@ -37,7 +37,7 @@ supervisor automaton IntervalConstraintA__17__NonAtomicA__21:
     marked;
     edge NonAtomicA when __occurrences < 1 do __occurrences := __occurrences + 1;
 end
-supervisor automaton IntervalConstraintB__19__NonAtomicB__22:
+supervisor automaton IntervalConstraintB__36__NonAtomicB__42:
   disc int[0..1] __occurrences;
   marked __occurrences >= 0;
   location:
@@ -50,6 +50,12 @@ supervisor automaton sup:
   location:
     initial;
     marked;
-    edge NonAtomicA when IntervalConstraintA__17__NonAtomicA__21.__occurrences = 0 and (not Machine.__nonAtomicActive__NonAtomicA and not Machine.b_executed) and (not Machine.a_executed and (not Machine.__nonAtomicActive__NonAtomicB and IntervalConstraintB__19__NonAtomicB__22.__occurrences = 0)) or (IntervalConstraintA__17__NonAtomicA__21.__occurrences = 0 and (not Machine.__nonAtomicActive__NonAtomicA and not Machine.b_executed) and (not Machine.a_executed and (Machine.__nonAtomicActive__NonAtomicB and IntervalConstraintB__19__NonAtomicB__22.__occurrences = 1)) or IntervalConstraintA__17__NonAtomicA__21.__occurrences = 0 and (not Machine.__nonAtomicActive__NonAtomicA and Machine.b_executed) and (not Machine.a_executed and (not Machine.__nonAtomicActive__NonAtomicB and IntervalConstraintB__19__NonAtomicB__22.__occurrences = 1)));
-    edge NonAtomicB when IntervalConstraintA__17__NonAtomicA__21.__occurrences = 0 and (not Machine.__nonAtomicActive__NonAtomicA and not Machine.b_executed) and (not Machine.a_executed and (not Machine.__nonAtomicActive__NonAtomicB and IntervalConstraintB__19__NonAtomicB__22.__occurrences = 0)) or (IntervalConstraintA__17__NonAtomicA__21.__occurrences = 1 and (not Machine.__nonAtomicActive__NonAtomicA and not Machine.b_executed) and (Machine.a_executed and (not Machine.__nonAtomicActive__NonAtomicB and IntervalConstraintB__19__NonAtomicB__22.__occurrences = 0)) or IntervalConstraintA__17__NonAtomicA__21.__occurrences = 1 and (Machine.__nonAtomicActive__NonAtomicA and not Machine.b_executed) and (not Machine.a_executed and (not Machine.__nonAtomicActive__NonAtomicB and IntervalConstraintB__19__NonAtomicB__22.__occurrences = 0)));
+    edge NonAtomicA when true;
+    edge NonAtomicB when true;
 end
+supervisor invariant Machine.__postcondition disables NonAtomicA;
+supervisor invariant Machine.__postcondition disables NonAtomicA__na_result_1;
+supervisor invariant Machine.__postcondition disables NonAtomicA__na_result_2;
+supervisor invariant Machine.__postcondition disables NonAtomicB;
+supervisor invariant Machine.__postcondition disables NonAtomicB__na_result_1;
+supervisor invariant Machine.__postcondition disables NonAtomicB__na_result_2;

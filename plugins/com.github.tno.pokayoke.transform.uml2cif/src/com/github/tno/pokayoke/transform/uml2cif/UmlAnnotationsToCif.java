@@ -39,8 +39,11 @@ import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.Type;
 
+import com.github.tno.pokayoke.transform.track.SynthesisChainTracking;
+import com.github.tno.pokayoke.transform.track.UmlToCifTranslationPurpose;
 import com.github.tno.synthml.uml.profile.cif.ACifObjectWalker;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
+import com.github.tno.synthml.uml.profile.cif.NamedTemplateParameter;
 import com.github.tno.synthml.uml.profile.util.PokaYokeTypeUtil;
 import com.google.common.base.Verify;
 
@@ -58,18 +61,25 @@ public class UmlAnnotationsToCif extends ACifObjectWalker<Object> {
     /** The mapping from UML properties to corresponding translated CIF discrete variables. */
     private final Map<Property, DiscVariable> variableMap;
 
-    /** The mapping from translated CIF start events to their corresponding UML elements for which they were created. */
-    private final Map<Event, RedefinableElement> startEventMap;
+    /**
+     * The tracker that indicates how results from intermediate steps of the activity synthesis chain relate to the
+     * input UML.
+     */
+    private final SynthesisChainTracking synthesisTracker;
+
+    /** The translation purpose of the current UML to CIF translation. */
+    private final UmlToCifTranslationPurpose translationPurpose;
 
     public UmlAnnotationsToCif(CifContext context, Map<Enumeration, EnumDecl> enumMap,
             Map<EnumerationLiteral, EnumLiteral> enumLiteralMap, Map<Property, DiscVariable> variableMap,
-            Map<Event, RedefinableElement> startEventMap)
+            SynthesisChainTracking tracker, UmlToCifTranslationPurpose purpose)
     {
         this.context = context;
         this.enumMap = enumMap;
         this.enumLiteralMap = enumLiteralMap;
         this.variableMap = variableMap;
-        this.startEventMap = startEventMap;
+        this.synthesisTracker = tracker;
+        this.translationPurpose = purpose;
     }
 
     /**
@@ -216,6 +226,11 @@ public class UmlAnnotationsToCif extends ACifObjectWalker<Object> {
     }
 
     @Override
+    protected Expression visit(NamedTemplateParameter parameter, TextPosition parameterReferencePos, CifContext ctx) {
+        throw new RuntimeException("Translating template parameters to CIF is not supported.");
+    }
+
+    @Override
     protected Expression visit(UnaryOperator operator, TextPosition operatorPos, Object child, CifContext ctx) {
         Expression childExpr = (Expression)child;
 
@@ -255,10 +270,11 @@ public class UmlAnnotationsToCif extends ACifObjectWalker<Object> {
             InvKind cifInvKind = translateInvKind(invKind.get());
 
             for (String event: events) {
-                for (var entry: startEventMap.entrySet()) {
+                boolean found = false;
+                for (var entry: synthesisTracker.getStartEventMap(translationPurpose).entrySet()) {
                     RedefinableElement umlElement = entry.getValue();
 
-                    if (umlElement.getName().equals(event)) {
+                    if (umlElement.getName() != null && umlElement.getName().equals(event)) {
                         Event cifEvent = entry.getKey();
 
                         Invariant cifInvariant = CifConstructors.newInvariant();
@@ -271,9 +287,11 @@ public class UmlAnnotationsToCif extends ACifObjectWalker<Object> {
                                 CifConstructors.newBoolType());
                         cifInvariant.setEvent(cifEventExpr);
 
+                        found = true;
                         break;
                     }
                 }
+                Verify.verify(found, "Could not find a UML element that matches the event: " + event);
             }
         }
 

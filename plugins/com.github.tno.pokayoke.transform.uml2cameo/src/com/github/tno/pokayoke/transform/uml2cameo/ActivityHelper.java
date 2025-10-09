@@ -8,27 +8,34 @@ import java.util.Map;
 import org.apache.commons.lang3.Range;
 import org.eclipse.uml2.uml.AcceptEventAction;
 import org.eclipse.uml2.uml.Activity;
+import org.eclipse.uml2.uml.ActivityEdge;
+import org.eclipse.uml2.uml.ActivityFinalNode;
+import org.eclipse.uml2.uml.ActivityParameterNode;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.DecisionNode;
-import org.eclipse.uml2.uml.FinalNode;
+import org.eclipse.uml2.uml.ForkNode;
 import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.InputPin;
-import org.eclipse.uml2.uml.LiteralString;
 import org.eclipse.uml2.uml.MergeNode;
 import org.eclipse.uml2.uml.ObjectFlow;
 import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.OutputPin;
+import org.eclipse.uml2.uml.Parameter;
+import org.eclipse.uml2.uml.ParameterDirectionKind;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.ReadStructuralFeatureAction;
 import org.eclipse.uml2.uml.SendSignalAction;
 import org.eclipse.uml2.uml.Signal;
 import org.eclipse.uml2.uml.SignalEvent;
 import org.eclipse.uml2.uml.Trigger;
-import org.eclipse.uml2.uml.ValueSpecificationAction;
+import org.eclipse.uml2.uml.UMLFactory;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
+import com.github.tno.synthml.uml.profile.cif.CifContext;
+import com.github.tno.synthml.uml.profile.cif.CifContextManager;
+import com.github.tno.synthml.uml.profile.cif.CifParserHelper;
 import com.github.tno.synthml.uml.profile.util.UmlPrimitiveType;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -48,17 +55,18 @@ public class ActivityHelper {
      * @param effects The list of effects. Every effect must be a list of single-line Python programs.
      * @param propertyBounds The integer properties in the model with their bounds.
      * @param acquire The signal for acquiring the lock.
-     * @param callerId The unique identifier of the caller. This identifier should not contain a quote character (').
      * @param isAtomic Whether the activity to create should be atomic.
+     * @param forwardedParameters The names of the parameters forwarded to the activity.
      * @return The created activity.
      */
     public static Activity createActivity(String name, String guard, List<List<String>> effects,
-            Map<String, Range<Integer>> propertyBounds, Signal acquire, String callerId, boolean isAtomic)
+            Map<String, Range<Integer>> propertyBounds, Signal acquire, boolean isAtomic,
+            List<String> forwardedParameters)
     {
         if (isAtomic) {
-            return createAtomicActivity(name, guard, effects, propertyBounds, acquire, callerId);
+            return createAtomicActivity(name, guard, effects, propertyBounds, acquire, forwardedParameters);
         } else {
-            return createNonAtomicActivity(name, guard, effects, propertyBounds, acquire, callerId);
+            return createNonAtomicActivity(name, guard, effects, propertyBounds, acquire, forwardedParameters);
         }
     }
 
@@ -71,20 +79,19 @@ public class ActivityHelper {
      * @param effects The list of effects. Every effect must be a list of single-line Python programs.
      * @param propertyBounds The integer properties in the model with their bounds.
      * @param acquire The signal for acquiring the lock.
-     * @param callerId The unique identifier of the caller. This identifier should not contain a quote character (').
+     * @param forwardedParameters The names of the parameters forwarded to the activity.
      *
      * @return The created activity that executes atomically.
      */
     public static Activity createAtomicActivity(String name, String guard, List<List<String>> effects,
-            Map<String, Range<Integer>> propertyBounds, Signal acquire, String callerId)
+            Map<String, Range<Integer>> propertyBounds, Signal acquire, List<String> forwardedParameters)
     {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(guard),
                 "Argument guard cannot be null nor an empty string.");
 
-        // The Python code generator uses patterns such as "active == '" + callerId + "'".
-        // To avoid syntax errors in the generated Python code, we disallow the use of single quotes in 'callerId'.
-        Preconditions.checkArgument(!callerId.contains("'"),
-                "Argument callerId contains quote character ('): " + callerId);
+        // The Python code generator does not escape quotes when translating 'name'.
+        // To avoid syntax errors in the generated Python code, we disallow the use of single quotes in 'name'.
+        Preconditions.checkArgument(!name.contains("'"), "Argument name contains quote character ('): " + name);
 
         // Translate the given effects as a single Python program.
         String effectBody = translateEffects(effects);
@@ -97,6 +104,11 @@ public class ActivityHelper {
         // Define a new activity that encodes the guard and effect.
         Activity activity = FileHelper.FACTORY.createActivity();
         activity.setName(name);
+
+        // Add template parameters to the newly created activity for forwarded parameters.
+        for (String parameterName: forwardedParameters) {
+            addParameterToActivity(activity, parameterName);
+        }
 
         // Define the initial node.
         InitialNode initNode = FileHelper.FACTORY.createInitialNode();
@@ -162,15 +174,12 @@ public class ActivityHelper {
         sendAcquireNode.getArguments().add(sendAcquireInput);
 
         // Define the requester value specification node.
-        ValueSpecificationAction requesterValueNode = FileHelper.FACTORY.createValueSpecificationAction();
+        OpaqueAction requesterValueNode = FileHelper.FACTORY.createOpaqueAction();
         requesterValueNode.setActivity(activity);
-        OutputPin requesterValueOutput = FileHelper.FACTORY.createOutputPin();
-        requesterValueOutput.setName("requester");
-        requesterValueOutput.setType(UmlPrimitiveType.STRING.load(acquire));
-        requesterValueNode.setResult(requesterValueOutput);
-        LiteralString requesterValueLiteral = FileHelper.FACTORY.createLiteralString();
-        requesterValueLiteral.setValue(callerId);
-        requesterValueNode.setValue(requesterValueLiteral);
+        requesterValueNode.getBodies().add("import uuid\r\n" + "requester = \'" + name + "_\' + str(uuid.uuid4())");
+        requesterValueNode.getLanguages().add("Python");
+        OutputPin requesterValueOutput = requesterValueNode.createOutputValue("requester",
+                UmlPrimitiveType.STRING.load(acquire));
 
         // Define the control flow from the decision node that checks the guard to the requester value node.
         ControlFlow checkGuardDecisionToRequesterValueFlow = FileHelper.FACTORY.createControlFlow();
@@ -182,51 +191,56 @@ public class ActivityHelper {
         decisionToFinalGuard.getLanguages().add("Python");
         checkGuardDecisionToRequesterValueFlow.setGuard(decisionToFinalGuard);
 
+        // Define the fork node for duplicating the 'requester' output.
+        ForkNode requestDuplicatorForkNode = FileHelper.FACTORY.createForkNode();
+        requestDuplicatorForkNode.setActivity(activity);
+
+        // Define the object flow from the requester value node to the duplicator fork node.
+        ObjectFlow requesterToDuplicatorObjectFlow = FileHelper.FACTORY.createObjectFlow();
+        requesterToDuplicatorObjectFlow.setActivity(activity);
+        requesterToDuplicatorObjectFlow.setSource(requesterValueOutput);
+        requesterToDuplicatorObjectFlow.setTarget(requestDuplicatorForkNode);
+
         // Define the object flow from the requester value node to the node that sends the acquire signal.
-        ObjectFlow requesterObjectFlow = FileHelper.FACTORY.createObjectFlow();
-        requesterObjectFlow.setActivity(activity);
-        requesterObjectFlow.setSource(requesterValueOutput);
-        requesterObjectFlow.setTarget(sendAcquireInput);
+        ObjectFlow requestDuplicatorToSignalObjectFlow = FileHelper.FACTORY.createObjectFlow();
+        requestDuplicatorToSignalObjectFlow.setActivity(activity);
+        requestDuplicatorToSignalObjectFlow.setSource(requestDuplicatorForkNode);
+        requestDuplicatorToSignalObjectFlow.setTarget(sendAcquireInput);
 
         // Define the inner merge node.
         MergeNode innerMergeNode = FileHelper.FACTORY.createMergeNode();
         innerMergeNode.setActivity(activity);
 
-        // Define the control flow from the node that sends the acquire signal to the inner merge node.
-        ControlFlow acquireToInnerMergeFlow = FileHelper.FACTORY.createControlFlow();
-        acquireToInnerMergeFlow.setActivity(activity);
-        acquireToInnerMergeFlow.setSource(sendAcquireNode);
-        acquireToInnerMergeFlow.setTarget(innerMergeNode);
+        // Define the object flow from the request signal duplicator node to the inner merge node.
+        ObjectFlow requestDuplicatorToInnerMergeObjectFlow = FileHelper.FACTORY.createObjectFlow();
+        requestDuplicatorToInnerMergeObjectFlow.setActivity(activity);
+        requestDuplicatorToInnerMergeObjectFlow.setSource(requestDuplicatorForkNode);
+        requestDuplicatorToInnerMergeObjectFlow.setTarget(innerMergeNode);
 
-        // Define the node that checks whether the lock is granted.
-        OpaqueAction checkActiveNode = FileHelper.FACTORY.createOpaqueAction();
-        checkActiveNode.setActivity(activity);
-        checkActiveNode.getBodies().add("active == '" + callerId + "'");
-        checkActiveNode.getLanguages().add("Python");
-        OutputPin checkActiveOutput = checkActiveNode.createOutputValue("isActive",
-                UmlPrimitiveType.BOOLEAN.load(acquire));
+        // Define the node that unmarshals the request for the decision node.
+        OpaqueAction unmarshalRequestNode = FileHelper.FACTORY.createOpaqueAction();
+        unmarshalRequestNode.setActivity(activity);
+        InputPin unmarshalRequestInput = unmarshalRequestNode.createInputValue("requester",
+                UmlPrimitiveType.STRING.load(acquire));
+        OutputPin unmarshalRequestOutput = unmarshalRequestNode.createOutputValue("requester",
+                UmlPrimitiveType.STRING.load(acquire));
 
-        // Define the control flow from the inner merge node to the node that checks the active variable.
-        ControlFlow innerMergeToCheckActiveFlow = FileHelper.FACTORY.createControlFlow();
-        innerMergeToCheckActiveFlow.setActivity(activity);
-        innerMergeToCheckActiveFlow.setSource(innerMergeNode);
-        innerMergeToCheckActiveFlow.setTarget(checkActiveNode);
+        // Define the object flow from the inner merge node to the node that unmarshals the request.
+        ObjectFlow innerMergeToUnmarshalRequestObjectFlow = FileHelper.FACTORY.createObjectFlow();
+        innerMergeToUnmarshalRequestObjectFlow.setActivity(activity);
+        innerMergeToUnmarshalRequestObjectFlow.setSource(innerMergeNode);
+        innerMergeToUnmarshalRequestObjectFlow.setTarget(unmarshalRequestInput);
 
         // Define the inner decision node.
         DecisionNode innerDecisionNode = FileHelper.FACTORY.createDecisionNode();
         innerDecisionNode.setActivity(activity);
 
-        // Define the control flow from the node that checks the active variable to the inner decision node.
-        ControlFlow checkActiveToInnerDecisionFlow = FileHelper.FACTORY.createControlFlow();
-        checkActiveToInnerDecisionFlow.setActivity(activity);
-        checkActiveToInnerDecisionFlow.setSource(checkActiveNode);
-        checkActiveToInnerDecisionFlow.setTarget(innerDecisionNode);
-
-        // Define the object flow from the node that checks the active variable to the inner decision node.
-        ObjectFlow checkActiveToInnerDecisionObjFlow = FileHelper.FACTORY.createObjectFlow();
-        checkActiveToInnerDecisionObjFlow.setActivity(activity);
-        checkActiveToInnerDecisionObjFlow.setSource(checkActiveOutput);
-        checkActiveToInnerDecisionObjFlow.setTarget(innerDecisionNode);
+        // Define the object flow from the node that unmarshals the request to the inner decision node that checks the
+        // active variable. This is needed to add requester to the context of 'innerDecisionToGuardAndEffectGuard'.
+        ObjectFlow unmarshalRequestToInnerObjectFlow = FileHelper.FACTORY.createObjectFlow();
+        unmarshalRequestToInnerObjectFlow.setActivity(activity);
+        unmarshalRequestToInnerObjectFlow.setSource(unmarshalRequestOutput);
+        unmarshalRequestToInnerObjectFlow.setTarget(innerDecisionNode);
 
         // Define the opaque action of the activity that encodes the guard and effect.
         OpaqueAction guardAndEffectNode = FileHelper.FACTORY.createOpaqueAction();
@@ -245,19 +259,19 @@ public class ActivityHelper {
         innerDecisionToGuardAndEffectFlow.setSource(innerDecisionNode);
         innerDecisionToGuardAndEffectFlow.setTarget(guardAndEffectNode);
         OpaqueExpression innerDecisionToGuardAndEffectGuard = FileHelper.FACTORY.createOpaqueExpression();
-        innerDecisionToGuardAndEffectGuard.getBodies().add("isActive");
+        innerDecisionToGuardAndEffectGuard.getBodies().add("active == requester");
         innerDecisionToGuardAndEffectGuard.getLanguages().add("Python");
         innerDecisionToGuardAndEffectFlow.setGuard(innerDecisionToGuardAndEffectGuard);
 
-        // Define the control flow from the inner decision node to the node that executes the guard and effect.
-        ControlFlow innerDecisionToInnerMergeFlow = FileHelper.FACTORY.createControlFlow();
-        innerDecisionToInnerMergeFlow.setActivity(activity);
-        innerDecisionToInnerMergeFlow.setSource(innerDecisionNode);
-        innerDecisionToInnerMergeFlow.setTarget(innerMergeNode);
+        // Define the object flow from the inner decision node to the inner merge node.
+        ObjectFlow innerDecisionToInnerObjectFlow = FileHelper.FACTORY.createObjectFlow();
+        innerDecisionToInnerObjectFlow.setActivity(activity);
+        innerDecisionToInnerObjectFlow.setSource(innerDecisionNode);
+        innerDecisionToInnerObjectFlow.setTarget(innerMergeNode);
         OpaqueExpression innerDecisionToInnerMergeGuard = FileHelper.FACTORY.createOpaqueExpression();
         innerDecisionToInnerMergeGuard.getBodies().add("else");
         innerDecisionToInnerMergeGuard.getLanguages().add("Python");
-        innerDecisionToInnerMergeFlow.setGuard(innerDecisionToInnerMergeGuard);
+        innerDecisionToInnerObjectFlow.setGuard(innerDecisionToInnerMergeGuard);
 
         // Define the outer decision node.
         DecisionNode outerDecisionNode = FileHelper.FACTORY.createDecisionNode();
@@ -276,7 +290,7 @@ public class ActivityHelper {
         guardAndEffectToOuterDecisionObjFlow.setTarget(outerDecisionNode);
 
         // Define the final node.
-        FinalNode finalNode = FileHelper.FACTORY.createActivityFinalNode();
+        ActivityFinalNode finalNode = FileHelper.FACTORY.createActivityFinalNode();
         finalNode.setActivity(activity);
 
         // Define the control flow from the outer decision node to the final node.
@@ -303,6 +317,23 @@ public class ActivityHelper {
     }
 
     /**
+     * Adds a parameter to an activity.
+     *
+     * @param activity The activity to which the parameter is added.
+     * @param parameterName The name of the parameter to create.
+     */
+    public static void addParameterToActivity(Activity activity, String parameterName) {
+        Parameter inputParameter = UMLFactory.eINSTANCE.createParameter();
+        inputParameter.setName(parameterName);
+        activity.getOwnedParameters().add(inputParameter);
+
+        ActivityParameterNode parameterNode = UMLFactory.eINSTANCE.createActivityParameterNode();
+        parameterNode.setName(parameterName + "Node");
+        parameterNode.setParameter(inputParameter);
+        parameterNode.setActivity(activity);
+    }
+
+    /**
      * Creates an activity that waits until the specified guard becomes {@code true} and then executes one of the
      * specified effects. The evaluation of the guard and possible execution of the effect happen non-atomically, as two
      * separate steps (which themselves are atomic).
@@ -312,22 +343,28 @@ public class ActivityHelper {
      * @param effects The list of effects. Every effect must be a list of single-line Python programs.
      * @param propertyBounds The integer properties in the model with their bounds.
      * @param acquire The signal for acquiring the lock.
-     * @param callerId The unique identifier of the caller. This identifier should not contain a quote character (').
-     *
+     * @param forwardedParameters The names of the parameters forwarded to the activity.
      * @return The created activity that executes non-atomically.
      */
     public static Activity createNonAtomicActivity(String name, String guard, List<List<String>> effects,
-            Map<String, Range<Integer>> propertyBounds, Signal acquire, String callerId)
+            Map<String, Range<Integer>> propertyBounds, Signal acquire, List<String> forwardedParameters)
     {
         // Split the non-atomic activity into two atomic parts: one to check the guard and one to perform the effects.
-        Activity start = createAtomicActivity(name + "__start", guard, List.of(), propertyBounds, acquire, callerId);
-        Activity end = createAtomicActivity(name + "__end", "True", effects, propertyBounds, acquire, callerId);
+        Activity start = createAtomicActivity(name + "__start", guard, List.of(), propertyBounds, acquire,
+                forwardedParameters);
+        Activity end = createAtomicActivity(name + "__end", "True", effects, propertyBounds, acquire,
+                forwardedParameters);
 
         // Create the activity that calls the start and end activities in sequence.
         Activity activity = FileHelper.FACTORY.createActivity();
         activity.getOwnedBehaviors().add(start);
         activity.getOwnedBehaviors().add(end);
         activity.setName(name);
+
+        // Add template parameters to the newly created activity for forwarded parameters.
+        for (String parameterName: forwardedParameters) {
+            addParameterToActivity(activity, parameterName);
+        }
 
         // Define the initial node.
         InitialNode initNode = FileHelper.FACTORY.createInitialNode();
@@ -358,7 +395,7 @@ public class ActivityHelper {
         startToEndFlow.setTarget(callEndNode);
 
         // Define the final node.
-        FinalNode finalNode = FileHelper.FACTORY.createActivityFinalNode();
+        ActivityFinalNode finalNode = FileHelper.FACTORY.createActivityFinalNode();
         finalNode.setActivity(activity);
 
         // Define the control flow from the node that calls the end activity to the final node.
@@ -366,6 +403,10 @@ public class ActivityHelper {
         endToFinalFlow.setActivity(activity);
         endToFinalFlow.setSource(callEndNode);
         endToFinalFlow.setTarget(finalNode);
+
+        // Pass arguments to the newly created inner activities.
+        passArgumentsToCallBehaviorAction(callStartNode, forwardedParameters, null);
+        passArgumentsToCallBehaviorAction(callEndNode, forwardedParameters, null);
 
         return activity;
     }
@@ -508,6 +549,115 @@ public class ActivityHelper {
     }
 
     /**
+     * Creates an activity that evaluates the incoming guards of the outgoing control flows of the given decision node,
+     * and randomly picks one of the branches whose guard holds.
+     *
+     * @param decisionNode The decision node.
+     * @param translator The translator for translating incoming guards to Python expressions.
+     * @param ctxManager The context manager for creating and retrieving instances of {@link CifContext}.
+     * @return The created activity.
+     */
+    public static Activity createDecisionEvaluationActivity(DecisionNode decisionNode, CifToPythonTranslator translator,
+            CifContextManager ctxManager)
+    {
+        // Create the activity.
+        Activity activity = FileHelper.FACTORY.createActivity();
+
+        // Define the initial node.
+        InitialNode initNode = FileHelper.FACTORY.createInitialNode();
+        initNode.setActivity(activity);
+
+        // Define the merge node.
+        MergeNode mergeNode = FileHelper.FACTORY.createMergeNode();
+        mergeNode.setActivity(activity);
+
+        // Define the control flow between the initial node and the merge node.
+        ControlFlow initToMergeFlow = FileHelper.FACTORY.createControlFlow();
+        initToMergeFlow.setActivity(activity);
+        initToMergeFlow.setSource(initNode);
+        initToMergeFlow.setTarget(mergeNode);
+
+        // Define an action that evaluates the guards of all outgoing edges, and non-deterministically chooses one edge
+        // whose guard holds.
+        OpaqueAction evalNode = FileHelper.FACTORY.createOpaqueAction();
+        evalNode.setActivity(activity);
+        evalNode.getLanguages().add("Python");
+
+        // Define the Python body program of the decision evaluation node. This program will evaluate the incoming
+        // guards of every outgoing control flow of the given decision node, and randomly selects one of these branches
+        // whose guard holds. If none of the branches can be taken, then the branch -1 is returned instead. In that
+        // case, the new activity will re-evaluate the branches in a loop until it finds some branch that can be taken.
+        StringBuilder evalProgram = new StringBuilder();
+        evalProgram.append("import random\n");
+        evalProgram.append("branches = []\n");
+
+        // Get the incoming guard of the outgoing edges.
+        for (int i = 0; i < decisionNode.getOutgoings().size(); i++) {
+            ControlFlow edge = (ControlFlow)decisionNode.getOutgoings().get(i);
+            String translatedGuard = translator.translateExpression(CifParserHelper.parseIncomingGuard(edge),
+                    ctxManager.getScopedContext(decisionNode));
+            evalProgram.append("if " + translatedGuard + ": branches.append(" + i + ")\n");
+        }
+
+        evalProgram.append("branch = random.choice(branches) if len(branches) > 0 else -1\n");
+        evalNode.getBodies().add(evalProgram.toString());
+
+        // Define the control flow between the merge node and the decision evaluation node.
+        ControlFlow mergeToEvalFlow = FileHelper.FACTORY.createControlFlow();
+        mergeToEvalFlow.setActivity(activity);
+        mergeToEvalFlow.setSource(mergeNode);
+        mergeToEvalFlow.setTarget(evalNode);
+
+        // Define the inner decision node, which will loop back to the merge node if another evaluation round is needed.
+        DecisionNode checkNode = FileHelper.FACTORY.createDecisionNode();
+        checkNode.setActivity(activity);
+
+        // Define the object flow from the decision evaluation node to the inner decision node.
+        OutputPin evalOutput = evalNode.createOutputValue("branch", UmlPrimitiveType.INTEGER.load(decisionNode));
+        ObjectFlow evalToCheckFlow = FileHelper.FACTORY.createObjectFlow();
+        evalToCheckFlow.setActivity(activity);
+        evalToCheckFlow.setSource(evalOutput);
+        evalToCheckFlow.setTarget(checkNode);
+
+        // Define the control flow from the inner decision node to the merge node.
+        ControlFlow checkToMergeFlow = FileHelper.FACTORY.createControlFlow();
+        checkToMergeFlow.setActivity(activity);
+        checkToMergeFlow.setSource(checkNode);
+        checkToMergeFlow.setTarget(mergeNode);
+
+        OpaqueExpression checkToMergeGuard = FileHelper.FACTORY.createOpaqueExpression();
+        checkToMergeGuard.getLanguages().add("Python");
+        checkToMergeGuard.getBodies().add("branch == -1");
+        checkToMergeFlow.setGuard(checkToMergeGuard);
+
+        // Define the output parameter of the activity.
+        Parameter outputParam = FileHelper.FACTORY.createParameter();
+        outputParam.setDirection(ParameterDirectionKind.RETURN_LITERAL);
+        outputParam.setName("branch");
+        outputParam.setType(UmlPrimitiveType.INTEGER.load(decisionNode));
+        activity.getOwnedParameters().add(outputParam);
+
+        // Define the output parameter node of the activity.
+        ActivityParameterNode outputParamNode = FileHelper.FACTORY.createActivityParameterNode();
+        outputParamNode.setActivity(activity);
+        outputParamNode.setParameter(outputParam);
+        outputParamNode.setType(UmlPrimitiveType.INTEGER.load(decisionNode));
+
+        // Define the object flow from the inner decision node to the output parameter node.
+        ObjectFlow checkToOutputFlow = FileHelper.FACTORY.createObjectFlow();
+        checkToOutputFlow.setActivity(activity);
+        checkToOutputFlow.setSource(checkNode);
+        checkToOutputFlow.setTarget(outputParamNode);
+
+        OpaqueExpression checkToOutputGuard = FileHelper.FACTORY.createOpaqueExpression();
+        checkToOutputGuard.getLanguages().add("Python");
+        checkToOutputGuard.getBodies().add("else");
+        checkToOutputFlow.setGuard(checkToOutputGuard);
+
+        return activity;
+    }
+
+    /**
      * Translates the given given list of effects (which are themselves represented as lists of single-line Python
      * programs) to a Python program that performs these effects.
      * <p>
@@ -550,6 +700,77 @@ public class ActivityHelper {
             return String.format("if guard:\n%s", CifToPythonTranslator
                     .mergeAll(CifToPythonTranslator.increaseIndentation(extendedEffects), "\n").get());
         }
+    }
+
+    /**
+     * Inserts an {@link OpaqueAction} before a {@link CallBehaviorAction} to compute argument values and deliver them
+     * via an {@link ObjectFlow} to the call's input pins.
+     * <p>
+     * Creates one {@link OpaqueAction} in the same {@link Activity} as {@code callAction}. It populates that opaque
+     * action with Python assignments for each argument. For each argument it adds an {@link OutputPin} on the
+     * {@link OpaqueAction}, an {@link InputPin} on the call, and connects them with an {@link ObjectFlow}.
+     * </p>
+     *
+     * @param callAction The call behavior action.
+     * @param argumentNames The names of the arguments.
+     * @param optionalAssignments An optional assignment of the arguments. If {@code null}, the arguments are assumed to
+     *     be variables in the calling activity.
+     */
+    public static void passArgumentsToCallBehaviorAction(CallBehaviorAction callAction, List<String> argumentNames,
+            String optionalAssignments)
+    {
+        if (argumentNames.isEmpty()) {
+            return;
+        }
+
+        if (optionalAssignments == null) {
+            List<String> translatedAssignments = new ArrayList<>();
+            for (String argument: argumentNames) {
+                translatedAssignments.add(UMLToCameoTransformer.ARGUMENT_PREFIX + argument + "=" + argument);
+            }
+
+            optionalAssignments = CifToPythonTranslator.mergeAll(translatedAssignments, "\n").get();
+        }
+
+        Activity parentActivity = callAction.getActivity();
+
+        // Create an opaque action that computes argument values and provides them to the call behavior action.
+        OpaqueAction assignmentAction = FileHelper.FACTORY.createOpaqueAction();
+        assignmentAction.setActivity(parentActivity);
+        assignmentAction.getBodies().add(optionalAssignments);
+        assignmentAction.getLanguages().add("Python");
+
+        for (ActivityEdge incoming: List.copyOf(callAction.getIncomings())) {
+            incoming.setTarget(assignmentAction);
+        }
+
+        // For each assignment, create a data flow from the new action to the original call action.
+        for (String argumentName: argumentNames) {
+            linkArgumentAssignmentToCallBehaviorAction(callAction, assignmentAction, argumentName);
+        }
+    }
+
+    /**
+     * Constructs an object flow within the parent {@link Activity} of the call behavior action that transfers a value
+     * generated by the {@code assignmentAction} to the call behavior action as an argument for an activity parameter.
+     *
+     * @param callBehaviorAction The {@link CallBehaviorAction} receiving the argument.
+     * @param assignmentAction The {@link OpaqueAction} computing the argument value.
+     * @param argumentName The name of the {@link Parameter} to bind the value to.
+     */
+    private static void linkArgumentAssignmentToCallBehaviorAction(CallBehaviorAction callBehaviorAction,
+            OpaqueAction assignmentAction, String argumentName)
+    {
+        // Create an output pin on the assignment action and an input pin on the call action.
+        OutputPin outputPin = assignmentAction.createOutputValue(UMLToCameoTransformer.ARGUMENT_PREFIX + argumentName,
+                null);
+        InputPin inputPin = callBehaviorAction.createArgument(argumentName, null);
+
+        // Connect the output and input pins with an object flow.
+        ObjectFlow dataFlow = UMLFactory.eINSTANCE.createObjectFlow();
+        dataFlow.setSource(outputPin);
+        dataFlow.setTarget(inputPin);
+        callBehaviorAction.getActivity().getEdges().add(dataFlow);
     }
 
     /**

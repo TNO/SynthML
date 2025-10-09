@@ -1,9 +1,9 @@
 plant automaton Context:
   disc bool field in any;
-  disc bool __controlflow__7 = true;
-  alg bool __token_on_first_controlflow = __controlflow__7;
+  disc bool __controlflow__12 = true;
+  alg bool __token_on_first_controlflow = __controlflow__12;
   alg bool __precondition = __token_on_first_controlflow;
-  alg bool __token_on_last_controlflow = __controlflow__7;
+  alg bool __token_on_last_controlflow = __controlflow__12;
   alg bool __postcondition = __token_on_last_controlflow;
   initial __precondition;
   marked __postcondition;

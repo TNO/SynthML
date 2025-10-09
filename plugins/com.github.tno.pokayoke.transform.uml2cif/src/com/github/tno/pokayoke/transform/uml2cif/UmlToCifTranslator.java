@@ -3,7 +3,6 @@ package com.github.tno.pokayoke.transform.uml2cif;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -68,8 +67,12 @@ import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.ValueSpecification;
 
+import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.transform.common.IDHelper;
 import com.github.tno.pokayoke.transform.common.ValidationHelper;
+import com.github.tno.pokayoke.transform.flatten.FlattenUMLActivity;
+import com.github.tno.pokayoke.transform.track.SynthesisChainTracking;
+import com.github.tno.pokayoke.transform.track.UmlToCifTranslationPurpose;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
 import com.github.tno.synthml.uml.profile.cif.CifParserHelper;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
@@ -78,6 +81,7 @@ import com.google.common.base.Strings;
 import com.google.common.base.Verify;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.ImmutableBiMap;
 
 /** Translates UML synthesis specifications to CIF specifications. */
 public class UmlToCifTranslator extends ModelToCifTranslator {
@@ -95,9 +99,6 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
     /** The prefix of a CIF variable that encodes (part of) the activity precondition. */
     public static final String PRECONDITION_PREFIX = "__precondition";
-
-    /** The prefix of a CIF variable that encodes (part of) the activity postcondition. */
-    public static final String POSTCONDITION_PREFIX = "__postcondition";
 
     /** The prefix of a CIF event that has been created for a concrete activity node. */
     public static final String NODE_PREFIX = "__node";
@@ -117,20 +118,14 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     /** The translated precondition CIF variable. */
     private AlgVariable preconditionVariable;
 
-    /** The translated postcondition CIF variable. */
-    private AlgVariable postconditionVariable;
-
-    /** The purpose for which UML is translated to CIF. */
-    private final TranslationPurpose translationPurpose;
+    /**
+     * The translated postcondition CIF variable, for each postcondition purpose for which a postcondition CIF variable
+     * has been created so far.
+     */
+    private Map<PostConditionKind, AlgVariable> postconditionVariables = new LinkedHashMap<>();
 
     /** The one-to-one mapping from UML activity edges to their corresponding translated CIF discrete variables. */
     private final BiMap<ActivityEdge, DiscVariable> controlFlowMap = HashBiMap.create();
-
-    /** The mapping from CIF start events of non-atomic actions, to their corresponding CIF end events. */
-    private final Map<Event, List<Event>> nonAtomicEventMap = new LinkedHashMap<>();
-
-    /** The mapping from CIF start events of non-deterministic actions, to their corresponding CIF end events. */
-    private final Map<Event, List<Event>> nonDeterministicEventMap = new LinkedHashMap<>();
 
     /** The one-to-one mapping from CIF events to CIF edges. */
     private final BiMap<Event, Edge> eventEdgeMap = HashBiMap.create();
@@ -150,14 +145,14 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
      */
     private final Set<Event> internalEvents = new LinkedHashSet<>();
 
-    public static enum TranslationPurpose {
-        SYNTHESIS, LANGUAGE_EQUIVALENCE;
-    }
+    /** The mapping between pairs of incoming/outgoing edges of 'or'-type nodes and their corresponding start events. */
+    private final BiMap<Pair<ActivityEdge, ActivityEdge>, Event> activityOrNodeMapping = HashBiMap.create();
 
-    public UmlToCifTranslator(Activity activity, TranslationPurpose purpose) {
-        super(new CifContext(activity.getModel()));
+    public UmlToCifTranslator(CifContext context, Activity activity, UmlToCifTranslationPurpose purpose,
+            SynthesisChainTracking tracker)
+    {
+        super(context, tracker, purpose);
         this.activity = activity;
-        this.translationPurpose = purpose;
     }
 
     /**
@@ -209,33 +204,15 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     }
 
     /**
-     * Gives the CIF postcondition of the translated activity.
+     * Gives the CIF postcondition of the translated activity, for the given postcondition kind.
      *
-     * @return The CIF postcondition of the translated activity.
+     * @param kind The postcondition kind for which to return the postcondition expression.
+     * @return The CIF postcondition of the translated activity, for the given postcondition kind.
      */
-    public Expression getTranslatedPostcondition() {
-        Verify.verifyNotNull(postconditionVariable, "Expected a translated postcondition CIF variable.");
-        return CifConstructors.newAlgVariableExpression(null, CifConstructors.newBoolType(), postconditionVariable);
-    }
-
-    /**
-     * Gives all CIF events related to non-atomic actions, as a mapping from non-atomic CIF start events to their
-     * corresponding CIF end events.
-     *
-     * @return A mapping from all non-atomic start events to their corresponding end events.
-     */
-    public Map<Event, List<Event>> getNonAtomicEvents() {
-        return Collections.unmodifiableMap(nonAtomicEventMap);
-    }
-
-    /**
-     * Gives all CIF events related to non-deterministic actions, as a mapping from their CIF start events to their
-     * corresponding CIF end events.
-     *
-     * @return A mapping from all non-deterministic start events to their corresponding end events.
-     */
-    public Map<Event, List<Event>> getNonDeterministicEvents() {
-        return Collections.unmodifiableMap(nonDeterministicEventMap);
+    public Expression getTranslatedPostcondition(PostConditionKind kind) {
+        AlgVariable algVar = postconditionVariables.get(kind);
+        Verify.verifyNotNull(algVar, "Expected a translated postcondition CIF variable for kind " + kind + ".");
+        return CifConstructors.newAlgVariableExpression(null, CifConstructors.newBoolType(), algVar);
     }
 
     /**
@@ -246,8 +223,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
      */
     public Map<Event, List<Event>> getAtomicNonDeterministicEvents() {
         Map<Event, List<Event>> result = new LinkedHashMap<>();
+        Map<Event, List<Event>> nonAtomicEventMap = synthesisTracker.getNonAtomicStartEndEventMap(translationPurpose);
 
-        for (var entry: nonDeterministicEventMap.entrySet()) {
+        for (var entry: synthesisTracker.getNonDeterministicStartEndEventMap(translationPurpose).entrySet()) {
             Event startEvent = entry.getKey();
             List<Event> endEvents = entry.getValue();
 
@@ -260,53 +238,31 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     }
 
     /**
-     * Gives a mapping from non-atomic/non-deterministic CIF end events to their corresponding UML elements for which
-     * they were created, as well as the index of the corresponding effect of the end event.
+     * Gives the one-to-one mapping from UML activity edges to their corresponding translated CIF discrete variables.
      *
-     * @return The mapping from non-atomic/non-deterministic CIF end events to their corresponding UML elements and the
-     *     index of the corresponding effect of the end event.
+     * @return The one-to-one mapping from UML activity edges to their corresponding translated CIF discrete variables.
      */
-    public Map<Event, Pair<RedefinableElement, Integer>> getEndEventMap() {
-        Map<Event, Pair<RedefinableElement, Integer>> result = new LinkedHashMap<>();
-
-        for (var entry: startEventMap.entrySet()) {
-            Event startEvent = entry.getKey();
-            RedefinableElement action = entry.getValue();
-
-            // Find all CIF end events for the current action.
-            List<Event> endEvents = List.of();
-            if (nonAtomicEventMap.containsKey(startEvent)) {
-                endEvents = nonAtomicEventMap.get(startEvent);
-            } else if (nonDeterministicEventMap.containsKey(startEvent)) {
-                endEvents = nonDeterministicEventMap.get(startEvent);
-            }
-
-            // Add a map entry for every found end event.
-            for (int i = 0; i < endEvents.size(); i++) {
-                result.put(endEvents.get(i), Pair.pair(action, i));
-            }
-        }
-
-        return result;
+    public BiMap<ActivityEdge, DiscVariable> getControlFlowMap() {
+        return ImmutableBiMap.copyOf(controlFlowMap);
     }
 
     /**
-     * Gives a mapping from non-atomic/non-deterministic CIF end event names to their corresponding UML elements for
-     * which they were created, as well as the index of the corresponding effect of the end event.
+     * Returns the mapping between pairs of incoming/outgoing edges of 'or'-type nodes and their corresponding start
+     * events.
      *
-     * @return The mapping from non-atomic/non-deterministic CIF end event names to their corresponding UML elements and
-     *     the index of the corresponding effect of the end event.
+     * @return The mapping.
      */
-    public Map<String, Pair<RedefinableElement, Integer>> getEndEventNameMap() {
-        Map<Event, Pair<RedefinableElement, Integer>> endEventMap = getEndEventMap();
+    public BiMap<Pair<ActivityEdge, ActivityEdge>, Event> getActivityOrNodeMapping() {
+        return ImmutableBiMap.copyOf(activityOrNodeMapping);
+    }
 
-        Map<String, Pair<RedefinableElement, Integer>> result = new LinkedHashMap<>();
-
-        for (var entry: endEventMap.entrySet()) {
-            result.put(entry.getKey().getName(), entry.getValue());
-        }
-
-        return result;
+    /**
+     * Returns the name of the created CIF plant automaton.
+     *
+     * @return The plant automaton name.
+     */
+    public String getPlantName() {
+        return activity.getContext().getName();
     }
 
     /**
@@ -317,7 +273,24 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
      */
     public Specification translate() throws CoreException {
         // Validate the UML input model.
-        ValidationHelper.validateModel(activity.getModel());
+        //
+        // Ideally, we check this always, as the UML models resulting from synthesis should also be valid. Currently, we
+        // do it only for the input to synthesis, as we generate some names during synthesis that are invalid. This is
+        // to be improved in the future.
+        if (translationPurpose == UmlToCifTranslationPurpose.SYNTHESIS) {
+            ValidationHelper.validateModel(activity.getModel());
+        }
+
+        if (context.hasParameterizedActivities()) {
+            throw new RuntimeException("Translating parameterized activities to CIF is unsupported.");
+        }
+
+        // Flatten UML activities and normalize IDs.
+        if (translationPurpose == UmlToCifTranslationPurpose.SYNTHESIS) {
+            FlattenUMLActivity flattener = new FlattenUMLActivity(activity.getModel());
+            flattener.transform();
+            FileHelper.normalizeIds(activity.getModel());
+        }
 
         // Create the CIF specification to which the input UML model will be translated.
         Specification cifSpec = CifConstructors.newSpecification();
@@ -330,7 +303,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         // Create the CIF plant for the UML activity to translate.
         Automaton cifPlant = CifConstructors.newAutomaton();
         cifPlant.setKind(SupKind.PLANT);
-        cifPlant.setName(activity.getContext().getName());
+        cifPlant.setName(getPlantName());
         cifSpec.getComponents().add(cifPlant);
 
         // Translate all UML properties.
@@ -343,8 +316,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         cifLocation.getMarkeds().add(CifValueUtils.makeTrue());
         cifPlant.getLocations().add(cifLocation);
 
-        // Translate all UML opaque behaviors.
-        if (translationPurpose == TranslationPurpose.SYNTHESIS) {
+        // Translate all UML opaque behaviors. These are only translated for synthesis. For other purposes, the
+        // already-synthesized activity is used, and call behaviors to opaque behaviors are inlined.
+        if (translationPurpose == UmlToCifTranslationPurpose.SYNTHESIS) {
             BiMap<Event, Edge> cifEventEdges = translateOpaqueBehaviors();
             for (var entry: cifEventEdges.entrySet()) {
                 cifSpec.getDeclarations().add(entry.getKey());
@@ -352,11 +326,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             }
         }
 
-        // Translate all UML concrete activities.
+        // Translate all UML concrete activities, or only some of them, depending on the translation purpose.
         Pair<Set<DiscVariable>, BiMap<Event, Edge>> translatedActivities = translateActivities();
-
         cifPlant.getDeclarations().addAll(translatedActivities.left);
-
         for (var entry: translatedActivities.right.entrySet()) {
             cifSpec.getDeclarations().add(entry.getKey());
             cifLocation.getEdges().add(entry.getValue());
@@ -372,60 +344,74 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         List<DiscVariable> cifNonAtomicVars = encodeNonAtomicActionConstraints();
         cifPlant.getDeclarations().addAll(cifNonAtomicVars);
 
-        // Translate all occurrence constraints of the input UML activity.
-        if (translationPurpose == TranslationPurpose.SYNTHESIS) {
+        // Translate all occurrence constraints of the input UML activity. For the language equivalence check, the
+        // constraints have already been included in the structure and guards, and we want to check that it was done
+        // correctly, so we don't translate them.
+        if (translationPurpose != UmlToCifTranslationPurpose.LANGUAGE_EQUIVALENCE) {
             List<Automaton> cifRequirementAutomata = translateOccurrenceConstraints();
             cifSpec.getComponents().addAll(cifRequirementAutomata);
         }
 
-        // Translate all preconditions of the input UML activity as an initial predicate in CIF.
+        // Translate all preconditions of the input UML activity as an initialization predicate in CIF, and also add
+        // any additional required preconditions as needed.
         Pair<List<AlgVariable>, AlgVariable> preconditions = translatePreconditions();
         cifPlant.getDeclarations().addAll(preconditions.left);
         preconditionVariable = preconditions.right;
         cifPlant.getDeclarations().add(preconditionVariable);
         cifPlant.getInitials().add(getTranslatedPrecondition());
 
-        // Translate all postconditions of the input UML activity as a marked predicate in CIF.
-        if (translationPurpose == TranslationPurpose.SYNTHESIS) {
-            Pair<List<AlgVariable>, AlgVariable> postconditions = translatePostconditions(cifNonAtomicVars,
-                    cifAtomicityVar);
-            cifPlant.getDeclarations().addAll(postconditions.left);
-            postconditionVariable = postconditions.right;
-            cifPlant.getDeclarations().add(postconditionVariable);
-            cifPlant.getMarkeds().add(getTranslatedPostcondition());
+        // Translate all postconditions of the input UML activity.
+        switch (translationPurpose) {
+            case LANGUAGE_EQUIVALENCE:
+            case SYNTHESIS: {
+                // Translate postconditions once, to get a single algebraic variable that represents the postcondition.
+                // It is used as marking predicate, and later also to disable events when the postcondition holds.
+                Pair<List<AlgVariable>, AlgVariable> postconditions = translatePostconditions(cifNonAtomicVars,
+                        cifAtomicityVar, PostConditionKind.SINGLE);
+                cifPlant.getDeclarations().addAll(postconditions.left);
+                postconditionVariables.put(PostConditionKind.SINGLE, postconditions.right);
+                cifPlant.getDeclarations().add(postconditions.right);
+
+                cifPlant.getMarkeds().add(getTranslatedPostcondition(PostConditionKind.SINGLE));
+                break;
+            }
+
+            case GUARD_COMPUTATION: {
+                // Translate postconditions twice, once to determine the postcondition without structure, and once to
+                // determine the postcondition with structure. Both are later used for disable different events when
+                // different postconditions hold. The postcondition with structure is used as marking predicate.
+                Pair<List<AlgVariable>, AlgVariable> postconditionsWithoutStructure = translatePostconditions(
+                        cifNonAtomicVars, cifAtomicityVar, PostConditionKind.WITHOUT_STRUCTURE);
+                cifPlant.getDeclarations().addAll(postconditionsWithoutStructure.left);
+                postconditionVariables.put(PostConditionKind.WITHOUT_STRUCTURE, postconditionsWithoutStructure.right);
+                cifPlant.getDeclarations().add(postconditionsWithoutStructure.right);
+
+                Pair<List<AlgVariable>, AlgVariable> postconditionsWithStructure = translatePostconditions(
+                        cifNonAtomicVars, cifAtomicityVar, PostConditionKind.WITH_STRUCTURE);
+                cifPlant.getDeclarations().addAll(postconditionsWithStructure.left);
+                postconditionVariables.put(PostConditionKind.WITH_STRUCTURE, postconditionsWithStructure.right);
+                cifPlant.getDeclarations().add(postconditionsWithStructure.right);
+
+                cifPlant.getMarkeds().add(getTranslatedPostcondition(PostConditionKind.WITH_STRUCTURE));
+                break;
+            }
+
+            default:
+                throw new AssertionError("Unknown translation purpose: " + translationPurpose);
         }
 
-        // Create extra requirements to ensure that, whenever the postcondition holds, no further steps can be
-        // taken.
-        if (translationPurpose == TranslationPurpose.SYNTHESIS) {
-            List<Invariant> cifDisableConstraints = createDisableEventsWhenDoneRequirements(postconditionVariable);
+        // Create extra requirements to ensure that, whenever the postcondition holds, no further steps can be taken.
+        if (translationPurpose != UmlToCifTranslationPurpose.LANGUAGE_EQUIVALENCE) {
+            List<Invariant> cifDisableConstraints = createDisableEventsWhenDoneRequirements();
             cifSpec.getInvariants().addAll(cifDisableConstraints);
         }
 
-        // Translate all UML class constraints as CIF invariants.
-        if (translationPurpose == TranslationPurpose.SYNTHESIS) {
+        // Translate all UML class constraints as CIF invariants. For the language equivalence check, the constraints
+        // have already been included in the structure and guards, and we want to check that it was done correctly, so
+        // we don't translate them again.
+        if (translationPurpose != UmlToCifTranslationPurpose.LANGUAGE_EQUIVALENCE) {
             List<Invariant> cifRequirementInvariants = translateRequirements();
             cifPlant.getInvariants().addAll(cifRequirementInvariants);
-        }
-
-        // Add a postcondition that represents the placement of a token on the final node's incoming control flow.
-        if (translationPurpose == TranslationPurpose.LANGUAGE_EQUIVALENCE) {
-            List<AlgVariable> postconditionVars = null;
-            for (ActivityNode node: activity.getNodes()) {
-                if (node instanceof FinalNode finalNode) {
-                    postconditionVars = createFinalNodeConfiguration(finalNode);
-                }
-            }
-
-            // Combine all defined postcondition variables to a single algebraic postcondition variable, whose value is
-            // the conjunction of all these defined postcondition variables (which are all Boolean typed).
-            AlgVariable postconditionVar = combinePrePostconditionVariables(postconditionVars, POSTCONDITION_PREFIX);
-
-            // Add postcondition variables and marking predicate to the model.
-            cifPlant.getDeclarations().addAll(postconditionVars);
-            postconditionVariable = postconditionVar;
-            cifPlant.getDeclarations().add(postconditionVariable);
-            cifPlant.getMarkeds().add(getTranslatedPostcondition());
         }
 
         // Return the final CIF specification.
@@ -481,6 +467,13 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     private ActionTranslationResult translateAsAction(RedefinableElement umlElement, String name, boolean isAtomic,
             boolean controllableStartEvent)
     {
+        // For guard computation, force all start events to be controllable, as the structure of the synthesized UML
+        // activity is already fixed, and we just want to re-compute the guards as locally as possible.
+        if (translationPurpose == UmlToCifTranslationPurpose.GUARD_COMPUTATION) {
+            controllableStartEvent = true;
+        }
+
+        // Initialize mapping of new events to their edges.
         BiMap<Event, Edge> newEventEdges = HashBiMap.create();
 
         // Find the action to translate. If the UML element is a call behavior action that is not shadowed (i.e., has no
@@ -488,10 +481,13 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         RedefinableElement umlAction;
 
         if (PokaYokeUmlProfileUtil.isFormalElement(umlElement)) {
+            // Opaque behavior, opaque action, or shadowed call behavior, with our stereotype.
             umlAction = umlElement;
         } else if (umlElement instanceof CallBehaviorAction cbAction) {
+            // Non-shadowed call behavior action. Translate the called behavior, inlining it.
             umlAction = cbAction.getBehavior();
         } else {
+            // Other nodes.
             umlAction = umlElement;
         }
 
@@ -531,9 +527,18 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         if (umlElement instanceof CallBehaviorAction || umlElement instanceof OpaqueAction
                 || umlElement instanceof OpaqueBehavior)
         {
-            // Add the event to the corresponding normalized name. More events may correspond to the same name.
-            normalizedNameToEvents.computeIfAbsent(normalizeName(umlAction, ""), k -> new ArrayList<>())
-                    .add(cifStartEvent);
+            // We normalize for synthesis and language equivalence check purposes, as the models generated for those
+            // purposes these need to be compared by the language equivalence check. We don't do it for guard
+            // computation, as there we then lose 'start' and 'end' post-fixes in names, which we need to detect
+            // opaque actions that originated from split non-deterministic actions that haven't been merged back.
+            // Later, we want to get rid of the name-based approach and have earlier steps produce the relevant
+            // information, so that we know which actions represent starts/ends, but until then we keep basing this
+            // on the names.
+            if (translationPurpose != UmlToCifTranslationPurpose.GUARD_COMPUTATION) {
+                // Add the event to the corresponding normalized name. More events may correspond to the same name.
+                normalizedNameToEvents.computeIfAbsent(normalizeName(umlAction, ""), k -> new ArrayList<>())
+                        .add(cifStartEvent);
+            }
         } else {
             internalEvents.add(cifStartEvent);
         }
@@ -558,7 +563,15 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             // In case the action is both deterministic and atomic, then the start event also ends the action.
             // Add its effect as an edge update.
             cifStartEdge.getUpdates().addAll(effects.get(0));
+
+            // Store the CIF event into the synthesis tracker as a start and end event with all its effects, hence set
+            // the effect index to 'null'.
+            synthesisTracker.addCifEvent(cifStartEvent, translationPurpose, umlElement, null, true, true);
         } else {
+            // Store the CIF event into the synthesis tracker as a start event without effects, hence set the effect
+            // index to 'null'.
+            synthesisTracker.addCifEvent(cifStartEvent, translationPurpose, umlElement, null, true, false);
+
             // In all other cases, add uncontrollable events and edges to end the action. Make an uncontrollable event
             // and corresponding edge for every effect (there is at least one).
             for (int i = 0; i < effects.size(); i++) {
@@ -574,10 +587,19 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 if (umlElement instanceof CallBehaviorAction || umlElement instanceof OpaqueAction
                         || umlElement instanceof OpaqueBehavior)
                 {
-                    normalizedNameToEvents
-                            .computeIfAbsent(normalizeName(umlAction, outcomeSuffix + String.valueOf(i + 1)),
-                                    k -> new ArrayList<>())
-                            .add(cifEndEvent);
+                    // We normalize for synthesis and language equivalence check purposes, as the models generated for
+                    // those purposes these need to be compared by the language equivalence check. We don't do it for
+                    // guard computation, as there we then lose 'start' and 'end' post-fixes in names, which we need to
+                    // detect opaque actions that originated from split non-deterministic actions that haven't been
+                    // merged back. Later, we want to get rid of the name-based approach and have earlier steps produce
+                    // the relevant information, so that we know which actions represent starts/ends, but until then we
+                    // keep basing this on the names.
+                    if (translationPurpose != UmlToCifTranslationPurpose.GUARD_COMPUTATION) {
+                        normalizedNameToEvents
+                                .computeIfAbsent(normalizeName(umlAction, outcomeSuffix + String.valueOf(i + 1)),
+                                        k -> new ArrayList<>())
+                                .add(cifEndEvent);
+                    }
                 } else {
                     internalEvents.add(cifEndEvent);
                 }
@@ -592,14 +614,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 cifEndEdge.getEvents().add(cifEdgeEndEvent);
                 cifEndEdge.getUpdates().addAll(effects.get(i));
                 newEventEdges.put(cifEndEvent, cifEndEdge);
-            }
 
-            // Remember which start and end events belong together.
-            if (!isAtomic) {
-                nonAtomicEventMap.put(cifStartEvent, cifEndEvents);
-            }
-            if (!isDeterministic) {
-                nonDeterministicEventMap.put(cifStartEvent, cifEndEvents);
+                // Store the CIF event into the synthesis tracker.
+                synthesisTracker.addCifEvent(cifEndEvent, translationPurpose, umlElement, i, false, true);
             }
         }
 
@@ -621,7 +638,8 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
     /**
      * Translates all concrete UML activities that are in context to CIF variables, and CIF events with their
-     * corresponding CIF edges.
+     * corresponding CIF edges. Depending on the translation purpose, only some of the concrete activities may be
+     * translated.
      *
      * @return The translated CIF variables, and CIF events with their corresponding CIF edges.
      */
@@ -641,50 +659,62 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
     /**
      * Translates a given concrete UML activity to CIF variables, and CIF events with their corresponding CIF edges.
+     * Depending on the translation purpose, the activity may or may not be translated.
      *
      * @param activity The concrete UML activity to translate.
      * @return The translated CIF variables, and CIF events with their corresponding CIF edges.
      */
     private Pair<Set<DiscVariable>, BiMap<Event, Edge>> translateConcreteActivity(Activity activity) {
+        // Sanity check.
         Preconditions.checkArgument(!activity.isAbstract(), "Expected a concrete activity.");
 
-        // For the language equivalence check, we do not translate other activities than the one that is synthesised by
-        // the synthesis chain. The translation of other concrete activities implies the translation of all its nodes,
-        // e.g. call behavior actions to some opaque behavior. These nodes are mixed with the current activity nodes,
-        // resulting in a wrong translation. So, if the translation purpose is language equivalence and the activity is
-        // not the synthesised one, return a pair of an empty set and an empty bimap. With vertical scaling, this needs
-        // to be carefully evaluated again.
-        if (translationPurpose == TranslationPurpose.LANGUAGE_EQUIVALENCE && activity != this.activity) {
+        // For the guard computation and language equivalence check, we are only concerned with the single activity
+        // currently being synthesized. Therefore, we do not translate other activities than the one that is currently
+        // being synthesized. The translation of other concrete activities would imply the translation of all its nodes,
+        // e.g., call behavior actions to some opaque behavior, as well as opaque actions. These nodes would interleave
+        // and interfere with the current activity nodes. For vertical scaling, this is still valid: once the
+        // activity has been synthesized, it contains the flattened called activities. Only the synthesized activity
+        // should be translated for guard computation and language equivalence check.
+        if (translationPurpose != UmlToCifTranslationPurpose.SYNTHESIS && activity != this.activity) {
             return Pair.pair(new LinkedHashSet<>(), HashBiMap.create());
         }
 
         // Translate all activity control flows.
         Set<DiscVariable> newVariables = new LinkedHashSet<>(activity.getEdges().size());
         for (ActivityEdge controlFlow: activity.getEdges()) {
+            // Translate the control flow.
             DiscVariable cifControlFlowVar = translateActivityControlFlow(controlFlow);
-            if (controlFlow.getSource() instanceof InitialNode
-                    && translationPurpose == TranslationPurpose.LANGUAGE_EQUIVALENCE)
+            newVariables.add(cifControlFlowVar);
+
+            // For the activity being synthesized, place a token in the control flow that leaves the initial node.
+            if (translationPurpose != UmlToCifTranslationPurpose.SYNTHESIS
+                    && controlFlow.getSource() instanceof InitialNode)
             {
-                // For the language equivalence, we place a token in the control flow that leaves the initial node.
                 cifControlFlowVar.setValue(CifConstructors.newVariableValue(null, List.of(CifValueUtils.makeTrue())));
             }
-            newVariables.add(cifControlFlowVar);
         }
 
-        // Translate all activity nodes. If the translation is for the language equivalence check, do not translate the
-        // initial and final node; the configurations for the initial and final nodes are considered during the pre- and
-        // postcondition computation.
+        // Translate all activity nodes.
         BiMap<Event, Edge> newEventEdges = HashBiMap.create(activity.getNodes().size());
         for (ActivityNode node: activity.getNodes()) {
-            if (translationPurpose == TranslationPurpose.LANGUAGE_EQUIVALENCE
+            // For synthesis, we include the initial and final nodes of activities that may be called by the abstract
+            // activity for which we're synthesizing the body. For other purposes, we've already excluded other
+            // activities than the one being synthesized (see above), and now also exclude the initial and final nodes,
+            // as the token configurations for these are considered while translating pre- and postconditions. That is,
+            // for the other purposes, we start with a token on the control flow coming from the initial node, and thus
+            // never 'execute' the initial node. Similarly, we end with a token on the control flow going into the final
+            // node, and thus never 'execute' the final node.
+            if (translationPurpose != UmlToCifTranslationPurpose.SYNTHESIS
                     && (node instanceof InitialNode || node instanceof FinalNode))
             {
                 continue;
-            } else {
-                newEventEdges.putAll(translateActivityNode(node));
             }
+
+            // Translate the activity node.
+            newEventEdges.putAll(translateActivityNode(node));
         }
 
+        // Return the new control flow token variables, and new events with their edges.
         return Pair.pair(newVariables, newEventEdges);
     }
 
@@ -723,9 +753,23 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             newEventEdges = translateActivityAndNode(node, true, false);
         } else if (node instanceof CallBehaviorAction callNode) {
             if (PokaYokeUmlProfileUtil.isFormalElement(callNode)) {
+                // Sanity check. Translating a shadowed call behavior should occur only if translating for synthesis.
+                Verify.verify(translationPurpose == UmlToCifTranslationPurpose.SYNTHESIS,
+                        "Translating a shadowed call behavior is allowed only for synthesis translation purpose.");
+
+                // The call behavior shadows the called behavior. We use the guards/effects of the call behavior node
+                // and ignore the called behavior.
                 newEventEdges = translateActivityAndNode(callNode, PokaYokeUmlProfileUtil.isAtomic(callNode), false);
             } else {
+                // We translate the called behavior, inlining it. We do transform on the call node, to ensure that
+                // each call gets a unique action.
                 Behavior behavior = callNode.getBehavior();
+
+                if (behavior instanceof Activity) {
+                    // Sanity check. After the flattening there shouldn't be any call behaviors to activities.
+                    throw new RuntimeException("Found a call behavior to an activity.");
+                }
+
                 newEventEdges = translateActivityAndNode(callNode, PokaYokeUmlProfileUtil.isAtomic(behavior), false);
             }
         } else if (node instanceof OpaqueAction) {
@@ -742,7 +786,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 Edge cifEdge = entry.getValue();
 
                 // If the current CIF event is a start event, then add all preconditions to its edge as extra guards.
-                if (startEventMap.containsKey(cifEvent)) {
+                if (synthesisTracker.getEventTraceInfo(cifEvent).isStartEvent()) {
                     for (Constraint precondition: node.getActivity().getPreconditions()) {
                         cifEdge.getGuards().add(getStateInvariant(precondition));
                     }
@@ -758,7 +802,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 Edge cifEdge = entry.getValue();
 
                 // If the current CIF event is a start event, then add all postconditions to its edge as extra guards.
-                if (startEventMap.containsKey(cifEvent)) {
+                if (synthesisTracker.getEventTraceInfo(cifEvent).isStartEvent()) {
                     for (Constraint postcondition: node.getActivity().getPostconditions()) {
                         cifEdge.getGuards().add(getStateInvariant(postcondition));
                     }
@@ -801,7 +845,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     }
 
     /**
-     * Translates the given UML activity node as an OR-type node.
+     * Translates the given UML activity node as an 'or'-type node.
      *
      * @param node The UML activity node to translate.
      * @param isAtomic Whether the UML activity node should be translated as an atomic action.
@@ -832,13 +876,6 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             }
         }
 
-        // If there is at most one control flow pair, then we can translate the node as an AND-type node (which is
-        // slightly simpler and gives slightly nicer event names), since that's semantically equivalent to translating
-        // it as an OR-type node.
-        if (controlFlowPairs.size() <= 1) {
-            return translateActivityAndNode(node, isAtomic, controllableStartEvents);
-        }
-
         // For every collected pair of control flows, translate the UML activity node.
         BiMap<Event, Edge> result = HashBiMap.create();
         int count = 0;
@@ -856,6 +893,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             // Collect the CIF start and end events of the translated UML activity node.
             Event startEvent = translationResult.startEvent;
             List<Event> endEvents = translationResult.endEvents;
+
+            // Add control flow and start event to the mapping.
+            activityOrNodeMapping.put(pair, startEvent);
 
             // Collect the newly created CIF edges of the translated UML activity node.
             BiMap<Event, Edge> newEventEdges = translationResult.eventEdges;
@@ -1020,6 +1060,8 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             // first such action get index 1, all events related to the second such action get index 2, etc.
             Map<Event, Integer> eventIndex = new LinkedHashMap<>();
             int index = 1;
+            Map<Event, List<Event>> nonDeterministicEventMap = synthesisTracker
+                    .getNonDeterministicStartEndEventMap(translationPurpose);
 
             for (Event cifStartEvent: atomicNonDeterministicStartEvents) {
                 eventIndex.put(cifStartEvent, index);
@@ -1091,6 +1133,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
      * @return The created active variables.
      */
     private List<DiscVariable> encodeNonAtomicActionConstraints() {
+        // Get tracker's non-atomic events map.
+        Map<Event, List<Event>> nonAtomicEventMap = synthesisTracker.getNonAtomicStartEndEventMap(translationPurpose);
+
         // Add guards and updates to the edges of non-atomic actions to keep track of which such actions are active, and
         // to constrain their start and end events accordingly.
         List<DiscVariable> cifNonAtomicVars = new ArrayList<>(nonAtomicEventMap.size());
@@ -1178,12 +1223,15 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             for (Element umlElement: umlConstraint.getConstrainedElements()) {
                 if (umlElement instanceof Activity umlActivity) {
                     if (!umlActivity.isAbstract()) {
+                        // The constraints are considered at a local level: this activity *directly* calls the
+                        // constrained activity. We do not include the initial nodes of the activities recursively, i.e.
+                        // this activity can call an activity that calls a constrained activity, and will *not* add to
+                        // the occurrence constraint count.
                         Set<InitialNode> initialNodes = umlActivity.getNodes().stream()
                                 .filter(InitialNode.class::isInstance).map(InitialNode.class::cast)
                                 .collect(Collectors.toCollection(LinkedHashSet::new));
 
-                        List<Event> cifStartEvents = startEventMap.entrySet().stream()
-                                .filter(entry -> initialNodes.contains(entry.getValue())).map(Entry::getKey).toList();
+                        List<Event> cifStartEvents = synthesisTracker.getEventsOf(initialNodes, translationPurpose);
 
                         String name = String.format("%s__%s__%s__%s", umlConstraint.getName(),
                                 IDHelper.getID(umlConstraint), umlActivity.getName(), IDHelper.getID(umlActivity));
@@ -1191,9 +1239,49 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                         cifAutomata.add(createIntervalAutomaton(name, cifStartEvents, min, max));
                     }
                 } else if (umlElement instanceof OpaqueBehavior umlOpaqueBehavior) {
-                    List<Event> cifStartEvents = startEventMap.entrySet().stream()
-                            .filter(entry -> entry.getValue().equals(umlOpaqueBehavior)).map(Entry::getKey).toList();
+                    // The constraints are considered at a local level: this activity *directly* calls the
+                    // constrained behavior. We do not include the call nodes of the opaque behavior recursively, i.e.
+                    // this activity can call an activity that calls the constrained behavior, and will *not* add to the
+                    // occurrence constraint count.
+                    List<Event> cifStartEvents;
+                    if (translationPurpose == UmlToCifTranslationPurpose.SYNTHESIS) {
+                        // For synthesis, we directly translate the opaque behaviors, so we simply look up their
+                        // associated start events.
+                        cifStartEvents = synthesisTracker.getStartEventsOf(umlOpaqueBehavior, translationPurpose);
 
+                        // Sanity check: we must have found at least one start event.
+                        Verify.verify(!cifStartEvents.isEmpty(), "Found no CIF start events for: " + umlOpaqueBehavior);
+                    } else if (translationPurpose == UmlToCifTranslationPurpose.GUARD_COMPUTATION) {
+                        // For guard computation, we don't directly translate the opaque behaviors. Instead, we inline
+                        // call behaviors to such opaque behaviors. Furthermore, some non-atomic opaque behaviors may
+                        // have separate start and end opaque actions that could not be merged back into call behaviors
+                        // to the original opaque behaviors. The occurrence constraints still refer to the original
+                        // opaque behaviors, and for both cases we have to find the relevant CIF events.
+                        cifStartEvents = startEventMap.entrySet().stream().filter(entry ->
+                        // Include all CIF events for call behavior actions that call the constrained opaque behavior.
+                        // This includes all atomic opaque behaviors, as well as merged-back non-atomic ones.
+                        (entry.getValue() instanceof CallBehaviorAction cbAction
+                                && cbAction.getBehavior().equals(umlOpaqueBehavior))
+                                // Include all CIF events for opaque actions that represent start actions of
+                                // non-deterministic opaque behaviors. These are the ones that couldn't be merged back
+                                // to call behavior actions that call the constrained opaque behavior.
+                                || (entry.getValue() instanceof OpaqueAction oAction
+                                        && oAction.getName().equals(umlOpaqueBehavior.getName() + START_ACTION_SUFFIX)))
+                                .map(Entry::getKey).toList();
+
+                        // We don't check whether we found at least one start event. In case of unused actions, these
+                        // won't have been translated, and we thus don't get any start events. That is OK, if we don't
+                        // have to do the action. If we must do the action, we have to have at least one event, to track
+                        // the occurrences and enforce the constraint.
+                        if (min > 0) {
+                            Verify.verify(!cifStartEvents.isEmpty(),
+                                    "Found no CIF start events for mandatory opaque behavior: " + umlOpaqueBehavior);
+                        }
+                    } else {
+                        throw new AssertionError("Unexpected translation purpose: " + translationPurpose);
+                    }
+
+                    // Create interval automaton for the occurrence constraint.
                     String name = String.format("%s__%s__%s__%s", umlConstraint.getName(),
                             IDHelper.getID(umlConstraint), umlOpaqueBehavior.getName(),
                             IDHelper.getID(umlOpaqueBehavior));
@@ -1292,17 +1380,18 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     }
 
     /**
-     * Translates the UML activity preconditions to a CIF algebraic variable. Adds the extra initial configuration
-     * conditions if present.
+     * Translates the user-specified UML activity preconditions and any other required preconditions to CIF algebraic
+     * variables, combining them into a single algebraic precondition variable.
      *
      * @return A pair consisting of auxiliary CIF algebraic variables that encode parts of the precondition, together
      *     with the CIF algebraic variable that encodes the entire precondition.
      */
     private Pair<List<AlgVariable>, AlgVariable> translatePreconditions() {
-        List<AlgVariable> preconditionVars = translatePrePostconditions(activity.getPreconditions());
+        // Translate the user-specified activity preconditions.
+        List<AlgVariable> preconditionVars = translateUserSpecifiedPrePostconditions(activity.getPreconditions());
 
-        // Compute the synthesized activity's initial node configuration and add it to the preconditions.
-        if (translationPurpose == TranslationPurpose.LANGUAGE_EQUIVALENCE) {
+        // Add the synthesized activity's initial node configuration.
+        if (translationPurpose != UmlToCifTranslationPurpose.SYNTHESIS) {
             for (ActivityNode node: activity.getNodes()) {
                 if (node instanceof InitialNode initialNode) {
                     preconditionVars.addAll(createInitialNodeConfiguration(initialNode));
@@ -1310,19 +1399,20 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             }
         }
 
-        // Combine the activity preconditions with initial node preconditions.
+        // Combine the user-specified and additional preconditions.
         AlgVariable preconditionVar = combinePrePostconditionVariables(preconditionVars, PRECONDITION_PREFIX);
         return Pair.pair(preconditionVars, preconditionVar);
     }
 
     /**
-     * Translates a given collection of preconditions or postconditions to a set of CIF algebraic variables, one for
-     * every pre/postcondition, whose values are the state invariant predicates of the corresponding pre/postcondition.
+     * Translates a given collection of user-specified preconditions or postconditions to a set of CIF algebraic
+     * variables, one for each user-specified pre/postcondition, whose values are the state invariant predicates of the
+     * corresponding user-specified pre/postcondition.
      *
-     * @param umlConstraints The collection of UML pre/postconditions to translate.
+     * @param umlConstraints The collection of user-specified UML pre/postconditions to translate.
      * @return The translated Boolean-typed CIF algebraic variables.
      */
-    private List<AlgVariable> translatePrePostconditions(Collection<Constraint> umlConstraints) {
+    private List<AlgVariable> translateUserSpecifiedPrePostconditions(Collection<Constraint> umlConstraints) {
         // Define an algebraic CIF variable for every UML constraint, whose value is the state invariant predicate.
         List<AlgVariable> cifConstraintVars = new ArrayList<>(umlConstraints.size());
 
@@ -1359,41 +1449,71 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     }
 
     /**
-     * Translates the UML activity postconditions to a CIF algebraic variable. Extra postconditions are added expressing
-     * that no non-atomic and atomic non-deterministic actions may be active, that all occurrence constraints must be
-     * satisfied, and that no control flow of any translated concrete activity holds a token.
+     * Translates the user-specified UML activity postconditions and/or any other required postconditions to CIF
+     * algebraic variables, combining them into a single algebraic postcondition variable.
      *
      * @param cifNonAtomicVars The internal CIF variables created for non-atomic actions.
      * @param cifAtomicityVar The internal CIF variable created for atomic non-deterministic actions. Is {@code null} if
      *     no atomic non-deterministic actions are present.
+     * @param kind The kind of postcondition to translate.
      * @return A pair consisting of auxiliary CIF algebraic variables that encode parts of the postcondition, together
      *     with the CIF algebraic variable that encodes the entire postcondition.
      */
     private Pair<List<AlgVariable>, AlgVariable> translatePostconditions(List<DiscVariable> cifNonAtomicVars,
-            DiscVariable cifAtomicityVar)
+            DiscVariable cifAtomicityVar, PostConditionKind kind)
     {
-        List<AlgVariable> postconditionVars = translatePrePostconditions(activity.getPostconditions());
+        // Initialize the list of postcondition variables for the partial conditions.
+        List<AlgVariable> postconditionVars = new ArrayList<>();
 
-        // For every translated non-atomic action, define an extra postcondition that expresses that the non-atomic
-        // action must not be active.
-        for (DiscVariable cifNonAtomicVar: cifNonAtomicVars) {
-            // First define the postcondition expression.
-            UnaryExpression cifExtraPostcondition = CifConstructors.newUnaryExpression();
-            cifExtraPostcondition.setChild(
-                    CifConstructors.newDiscVariableExpression(null, CifConstructors.newBoolType(), cifNonAtomicVar));
-            cifExtraPostcondition.setOperator(UnaryOperator.INVERSE);
-            cifExtraPostcondition.setType(CifConstructors.newBoolType());
-
-            // Then define an extra CIF algebraic variable for the extra postcondition.
-            AlgVariable cifAlgVar = CifConstructors.newAlgVariable(null,
-                    POSTCONDITION_PREFIX + cifNonAtomicVar.getName(), null, CifConstructors.newBoolType(),
-                    cifExtraPostcondition);
+        // For guard computation, we have two postconditions. For the 'with structure' postcondition, include the
+        // 'without structure' postcondition.
+        if (translationPurpose == UmlToCifTranslationPurpose.GUARD_COMPUTATION
+                && kind == PostConditionKind.WITH_STRUCTURE)
+        {
+            Expression condition = getTranslatedPostcondition(PostConditionKind.WITHOUT_STRUCTURE);
+            AlgVariable cifAlgVar = CifConstructors.newAlgVariable(null, kind.prefix + "__without_structure", null,
+                    CifConstructors.newBoolType(), condition);
             postconditionVars.add(cifAlgVar);
         }
 
+        // Translate the user-specified activity postconditions. For the language equivalence check, these conditions
+        // have already been included in the structure and guards, and we want to check that it was done correctly, so
+        // we don't translate them again. For guard computation, these are not part of the structure postconditions.
+        if (translationPurpose != UmlToCifTranslationPurpose.LANGUAGE_EQUIVALENCE
+                && kind != PostConditionKind.WITH_STRUCTURE)
+        {
+            postconditionVars.addAll(translateUserSpecifiedPrePostconditions(activity.getPostconditions()));
+        }
+
+        // For every translated non-atomic action, define an extra postcondition that expresses that the non-atomic
+        // action must not be active. For the language equivalence check, these conditions have already been included in
+        // the structure and guards, and we want to check that it was done correctly, so we don't translate them again.
+        // For guard computation, these are not part of the structure postconditions.
+        if (translationPurpose != UmlToCifTranslationPurpose.LANGUAGE_EQUIVALENCE
+                && kind != PostConditionKind.WITH_STRUCTURE)
+        {
+            for (DiscVariable cifNonAtomicVar: cifNonAtomicVars) {
+                // First define the postcondition expression.
+                UnaryExpression cifExtraPostcondition = CifConstructors.newUnaryExpression();
+                cifExtraPostcondition.setChild(CifConstructors.newDiscVariableExpression(null,
+                        CifConstructors.newBoolType(), cifNonAtomicVar));
+                cifExtraPostcondition.setOperator(UnaryOperator.INVERSE);
+                cifExtraPostcondition.setType(CifConstructors.newBoolType());
+
+                // Then define an extra CIF algebraic variable for the extra postcondition.
+                AlgVariable cifAlgVar = CifConstructors.newAlgVariable(null, kind.prefix + cifNonAtomicVar.getName(),
+                        null, CifConstructors.newBoolType(), cifExtraPostcondition);
+                postconditionVars.add(cifAlgVar);
+            }
+        }
+
         // If the atomicity variable has been added, then define an extra postcondition that expresses that no
-        // atomic non-deterministic action must be active.
-        if (cifAtomicityVar != null) {
+        // atomic non-deterministic action must be active. For the language equivalence check, these conditions have
+        // already been included in the structure and guards, and we want to check that it was done correctly, so we
+        // don't translate them again. For guard computation, these are not part of the structure postconditions.
+        if (translationPurpose != UmlToCifTranslationPurpose.LANGUAGE_EQUIVALENCE
+                && kind != PostConditionKind.WITH_STRUCTURE && cifAtomicityVar != null)
+        {
             // First define the postcondition expression.
             BinaryExpression cifExtraPostcondition = CifConstructors.newBinaryExpression();
             cifExtraPostcondition.setLeft(CifConstructors.newDiscVariableExpression(null,
@@ -1403,67 +1523,142 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             cifExtraPostcondition.setType(CifConstructors.newBoolType());
 
             // Then define an extra CIF algebraic variable for this extra postcondition.
-            AlgVariable cifAlgVar = CifConstructors.newAlgVariable(null,
-                    POSTCONDITION_PREFIX + cifAtomicityVar.getName(), null, CifConstructors.newBoolType(),
-                    cifExtraPostcondition);
+            AlgVariable cifAlgVar = CifConstructors.newAlgVariable(null, kind.prefix + cifAtomicityVar.getName(), null,
+                    CifConstructors.newBoolType(), cifExtraPostcondition);
             postconditionVars.add(cifAlgVar);
         }
 
         // For every translated occurrence constraint, define an extra postcondition that expresses that the marked
-        // predicate of the corresponding CIF requirement automata must hold.
-        for (Entry<IntervalConstraint, List<Automaton>> entry: occurrenceConstraintMap.entrySet()) {
-            for (Automaton cifRequirement: entry.getValue()) {
-                // First define the postcondition expression.
-                Expression cifExtraPostcondition = CifValueUtils
-                        .createConjunction(List.copyOf(EcoreUtil.copyAll(cifRequirement.getMarkeds())));
+        // predicate of the corresponding CIF requirement automata must hold. For the language equivalence check, these
+        // conditions have already been included in the structure and guards, and we want to check that it was done
+        // correctly, so we don't translate them again. For guard computation, these are not part of the structure
+        // postconditions.
+        if (translationPurpose == UmlToCifTranslationPurpose.LANGUAGE_EQUIVALENCE) {
+            Verify.verify(occurrenceConstraintMap.isEmpty());
+        } else if (kind != PostConditionKind.WITH_STRUCTURE) {
+            for (Entry<IntervalConstraint, List<Automaton>> entry: occurrenceConstraintMap.entrySet()) {
+                for (Automaton cifRequirement: entry.getValue()) {
+                    // First define the postcondition expression.
+                    Expression cifExtraPostcondition = CifValueUtils
+                            .createConjunction(List.copyOf(EcoreUtil.copyAll(cifRequirement.getMarkeds())));
 
-                // Then define an extra CIF algebraic variable for this extra postcondition.
-                AlgVariable cifAlgVar = CifConstructors.newAlgVariable(null,
-                        POSTCONDITION_PREFIX + "__" + cifRequirement.getName(), null, CifConstructors.newBoolType(),
-                        cifExtraPostcondition);
+                    // Then define an extra CIF algebraic variable for this extra postcondition.
+                    AlgVariable cifAlgVar = CifConstructors.newAlgVariable(null,
+                            kind.prefix + "__" + cifRequirement.getName(), null, CifConstructors.newBoolType(),
+                            cifExtraPostcondition);
+                    postconditionVars.add(cifAlgVar);
+                }
+            }
+        }
+
+        // Define extra postconditions for control flows of translated concrete activities that must not hold a token.
+        // For the language equivalence check, these conditions have already been included in the structure and guards,
+        // and we want to check that it was done correctly, so we don't translate them again. For guard computation,
+        // these are part of the structure postconditions.
+        if (translationPurpose != UmlToCifTranslationPurpose.LANGUAGE_EQUIVALENCE
+                && kind != PostConditionKind.WITHOUT_STRUCTURE)
+        {
+            for (var entry: controlFlowMap.entrySet()) {
+                // For synthesis, we don't want any tokens on control flows of called activities. For guard computation,
+                // we also want no tokens on control flows, except for the incoming control flow into the final node.
+                // That last case is handled later in this method, so that particular control flow is excluded here.
+                boolean isIncomingToFinalNode = entry.getKey().getTarget() instanceof FinalNode;
+                if (translationPurpose == UmlToCifTranslationPurpose.GUARD_COMPUTATION && isIncomingToFinalNode) {
+                    continue;
+                }
+
+                // Get the control flow variable for the control flow that must not have a token.
+                DiscVariable cifControlFlowVar = entry.getValue();
+
+                // Define the postcondition expression.
+                UnaryExpression cifExtraPostcondition = CifConstructors.newUnaryExpression();
+                cifExtraPostcondition.setChild(CifConstructors.newDiscVariableExpression(null,
+                        CifConstructors.newBoolType(), cifControlFlowVar));
+                cifExtraPostcondition.setOperator(UnaryOperator.INVERSE);
+                cifExtraPostcondition.setType(CifConstructors.newBoolType());
+
+                // Define a CIF algebraic variable for the postcondition.
+                AlgVariable cifAlgVar = CifConstructors.newAlgVariable(null, kind.prefix + cifControlFlowVar.getName(),
+                        null, CifConstructors.newBoolType(), cifExtraPostcondition);
                 postconditionVars.add(cifAlgVar);
             }
         }
 
-        // For every control flow of a translated concrete activity, define an extra postcondition that expresses that
-        // the control flow must not hold a token.
-        for (var entry: controlFlowMap.entrySet()) {
-            DiscVariable cifControlFlowVar = entry.getValue();
-
-            // First define the postcondition expression.
-            UnaryExpression cifExtraPostcondition = CifConstructors.newUnaryExpression();
-            cifExtraPostcondition.setChild(
-                    CifConstructors.newDiscVariableExpression(null, CifConstructors.newBoolType(), cifControlFlowVar));
-            cifExtraPostcondition.setOperator(UnaryOperator.INVERSE);
-            cifExtraPostcondition.setType(CifConstructors.newBoolType());
-
-            // Then define an extra CIF algebraic variable for the extra postcondition.
-            AlgVariable cifAlgVar = CifConstructors.newAlgVariable(null,
-                    POSTCONDITION_PREFIX + cifControlFlowVar.getName(), null, CifConstructors.newBoolType(),
-                    cifExtraPostcondition);
-            postconditionVars.add(cifAlgVar);
+        // If we already have a synthesized activity, add the postcondition that a token must be placed at the 'final'
+        // control flow leading to the final node. For guard computation, this is part of the structure postcondition.
+        if (translationPurpose != UmlToCifTranslationPurpose.SYNTHESIS && kind != PostConditionKind.WITHOUT_STRUCTURE) {
+            for (ActivityNode node: activity.getNodes()) {
+                if (node instanceof FinalNode finalNode) {
+                    postconditionVars.addAll(createFinalNodeConfiguration(finalNode));
+                }
+            }
         }
 
-        // Combine all defined postcondition variables to a single algebraic postcondition variable, whose value is the
-        // conjunction of all these defined postcondition variables (which are all Boolean typed).
-        AlgVariable postconditionVar = combinePrePostconditionVariables(postconditionVars, POSTCONDITION_PREFIX);
-
+        // Combine the user-specified and/or additional postconditions.
+        AlgVariable postconditionVar = combinePrePostconditionVariables(postconditionVars, kind.prefix);
         return Pair.pair(postconditionVars, postconditionVar);
     }
 
     /**
-     * Creates CIF state/event exclusion invariant requirements to disable all events whenever the activity
+     * Creates CIF state/event exclusion invariant requirements to disable all events whenever the relevant activity
      * postcondition holds.
      *
-     * @param cifPostconditionVar The CIF postcondition variable, which must be non-{@code null}.
      * @return The created CIF requirement invariants.
      */
-    private List<Invariant> createDisableEventsWhenDoneRequirements(AlgVariable cifPostconditionVar) {
-        Preconditions.checkNotNull(cifPostconditionVar, "Expected a non-null postcondition variable.");
-
+    private List<Invariant> createDisableEventsWhenDoneRequirements() {
         List<Invariant> cifInvariants = new ArrayList<>(eventEdgeMap.size());
 
         for (Event cifEvent: eventEdgeMap.keySet()) {
+            // Determine which postcondition to use.
+            PostConditionKind kind = switch (translationPurpose) {
+                case GUARD_COMPUTATION -> {
+                    if (internalEvents.contains(cifEvent)) {
+                        // We must allow internal actions after the user-defined postconditions etc hold, to ensure
+                        // that the token can still pass through merge/join/etc nodes and the token can still reach
+                        // the incoming control flow to the final place.
+                        yield PostConditionKind.WITH_STRUCTURE;
+                    } else if (startEventMap.containsKey(cifEvent)
+                            && startEventMap.get(cifEvent) instanceof CallBehaviorAction)
+                    {
+                        // As soon as the user-defined postconditions etc hold, we should no longer allow starting any
+                        // of the actions that the user defined. This case handles events that start such actions
+                        // through a call behavior action.
+                        yield PostConditionKind.WITHOUT_STRUCTURE;
+                    } else if (startEventMap.containsKey(cifEvent)
+                            && startEventMap.get(cifEvent) instanceof OpaqueAction oAction
+                            && oAction.getName().endsWith(START_ACTION_SUFFIX))
+                    {
+                        // As soon as the user-defined postconditions etc hold, we should no longer allow starting any
+                        // of the actions that the user defined. This case handles events that start such actions
+                        // through an opaque action, which only applies to non-atomic actions that couldn't be merged
+                        // back to a call behavior to the original opaque behavior.
+                        yield PostConditionKind.WITHOUT_STRUCTURE;
+                    } else {
+                        // We must allow finishing non-atomic/non-deterministic actions.
+                        if (startEventMap.containsKey(cifEvent)) {
+                            // End of a non-deterministic opaque behavior that couldn't be merged back to a call
+                            // behavior to the original opaque behavior, but instead is left as an opaque action.
+                            RedefinableElement umlElem = startEventMap.get(cifEvent);
+                            Verify.verify(umlElem instanceof OpaqueAction, cifEvent.getName());
+                            Verify.verify(umlElem.getName().contains(END_ACTION_SUFFIX), cifEvent.getName());
+                        } else {
+                            // End event of a call behavior to a non-atomic/non-deterministic opaque behavior.
+                            Verify.verify(synthesisTracker.getEventTraceInfo(cifEvent).isEndOnlyEvent(),
+                                    "Event '" + cifEvent.getName() + "' is not an end-only event.");
+                        }
+                        yield PostConditionKind.WITH_STRUCTURE;
+                    }
+                }
+
+                // If there is only one postcondition, there is nothing to choose.
+                case LANGUAGE_EQUIVALENCE, SYNTHESIS -> PostConditionKind.SINGLE;
+            };
+
+            // Get the associated postcondition algebraic variable.
+            AlgVariable cifPostconditionVar = postconditionVariables.get(kind);
+            Preconditions.checkNotNull(cifPostconditionVar, "Expected a non-null postcondition variable.");
+
+            // Add the requirement.
             Invariant cifInvariant = CifConstructors.newInvariant();
             cifInvariant.setEvent(CifConstructors.newEventExpression(cifEvent, null, CifConstructors.newBoolType()));
             cifInvariant.setInvKind(InvKind.EVENT_DISABLES);
@@ -1613,5 +1808,33 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         }
 
         return finalNodeConfig;
+    }
+
+    /** Postcondition kind. */
+    public static enum PostConditionKind {
+        /**
+         * For {@link UmlToCifTranslationPurpose#SYNTHESIS} and {@link UmlToCifTranslationPurpose#LANGUAGE_EQUIVALENCE},
+         * there is only one single kind of postcondition.
+         */
+        SINGLE("__postcondition"),
+
+        /**
+         * For {@link UmlToCifTranslationPurpose#GUARD_COMPUTATION}, the postcondition without activity structure token
+         * constraints.
+         */
+        WITHOUT_STRUCTURE("__postcondition_without_structure"),
+
+        /**
+         * For {@link UmlToCifTranslationPurpose#GUARD_COMPUTATION}, the postcondition with activity structure token
+         * constraints.
+         */
+        WITH_STRUCTURE("__postcondition_with_structure");
+
+        /** The prefix of the CIF variable that encodes (part of) the postcondition. */
+        protected final String prefix; // POSTCONDITION_PREFIX = "";
+
+        private PostConditionKind(String prefix) {
+            this.prefix = prefix;
+        }
     }
 }

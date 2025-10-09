@@ -110,20 +110,20 @@ A high-level overview is presented below.
 	Finite automata are finite directed graphs consisting of \emph{locations}, and \emph{edges} that are labeled with an \emph{event}.
 	Locations can be \emph{initial} when they are `starting' locations.
 	Locations can also be \emph{marked} when they are accepting locations, with the standard meaning of acceptance from automata theory.
-	
+
 	A deterministic finite automaton (DFA) is a finite automaton that is deterministic.
 	Any finite automaton that is nondeterministic is a nondeterministic finite automaton (NFA).
-	
+
 	Rather than a single DFA or NFA, we typically consider multiple automata that interact, e.g., by means of synchronizing events.
 	We will not give a full introduction of all these concepts here.
-	
+
 	\item[Extended finite automata (EFA).]
 	EFAs are finite automata that are used in the presence of \emph{data (properties)}, i.e., variables that have a value.
 	The \emph{(execution) state} of an EFA typically refers to the current valuation of all data properties, plus the locations that are currently active.
-	
+
 	The edges of EFAs have \emph{guards} which are state predicates, as well as \emph{updates} which are state transformers.
 	Semantically, an edge can be taken when its guard holds with respect to the state of the EFA are the current execution point, and this state is then updated (transformed) according to the edge update.
-	
+
 	\item[UML models and activities.]
 	For our purposes we use a subset of the UML2 metamodel\footnote{See \url{https://www.omg.org/spec/UML/2.5.1} (Accessed 2024-08-28) for the full UML2 specification.}.
 	In our restricted scope, UML models consist of any number of UML enum declarations, and exactly one UML class.
@@ -172,13 +172,13 @@ A high-level overview is presented below.
 	If an abstract activity is allowed to call a concrete activity by its occurrence constraints, then the preconditions and postconditions of that concrete activity are used by the synthesis algorithm to determine when the concrete activity can be called by the to-be-synthesized activity, and once called, when the concrete activity has finished its execution.
 	(Moreover, in principle it would also be possible to later use the preconditions and postconditions of concrete activities for verification, e.g., property checking.)
 	Note that occurrence constraints are temporary constructs and are intended to be removed later, which is also future work.
-	
+
 	The activity synthesis algorithm takes UML models as input, containing any number of abstract UML activities.
 	The goal of activity synthesis is then to synthesize a concrete UML activity for every abstract UML activity, and update the UML model by replacing all abstract UML activities by the concrete synthesized ones.
-	
+
 	We will only consider UML models that are \emph{valid} with respect to the Poka Yoke validator.
 	For example, UML models should not contain abstract UML activities that have nodes or control flows, and should not use double underscores `\_\_' in any names of UML elements.
-	
+
 	\item[Petri Nets.]
 	A Petri Net is a finite directed graph consisting of \emph{places}, \emph{transitions}, and \emph{arcs}.
 	We consider \emph{elementary Petri Nets}, where (by definition) any place holds at most one \emph{token}.
@@ -187,7 +187,7 @@ A high-level overview is presented below.
 	Any arc in a Petri Net must be connected to a place with a transition.
 	That is, there cannot be an arc from a place to some other place, or from a transition to some other transition.
 	Further details on Petri Nets and their semantics can be found in the standard literature.
-	
+
 	The activity synthesis algorithm may use a particular category of Petri Nets, namely \emph{free-choice Petri Nets}.
 	This is because we have observed that free-choice Petri Nets can be translated to concrete UML activities that are more intuitive for users to understand than general Petri Nets.
 	Intuitively, free-choice means that all choices (i.e., places with multiple outgoing arcs) can be made without additional constraints (i.e., the target transitions of these outgoing arcs do not have additional token requirements).
@@ -228,7 +228,7 @@ A brief overview is given below.
 
 The activity synthesis procedure internally uses two types of synthesis algorithms, namely supervisory controller synthesis (currently using CIF), and Petri Net synthesis (currently using Petrify).
 
-Supervisory controller synthesis is used to compute a minimally restrictive supervisor, which is essentially a state machine that describes all safe system behavior. 
+Supervisory controller synthesis is used to compute a minimally restrictive supervisor, which is essentially a state machine that describes all safe system behavior.
 After that, Petri Net synthesis is used to synthesize a (possibly free-choice) Petri Net from this state machine, which is then transformed to a concrete UML activity.
 The intermediate step of synthesizing a Petri Net is performed since Petri Nets are structurally much closer to UML activities compared to state machines, and thus easier to translate.
 
@@ -237,7 +237,7 @@ Intuitively, the idea is to find groups of locations in the input state machine 
 These groups are then called regions.
 Depending on the type of Petri Net you aim to synthesize (e.g., general or free-choice ones), there are slightly different requirements of what exactly constitutes a region.
 Petrify is essentially an implementation of the theory of regions, and is able to synthesize both general and free-choice Petri Nets (among other kinds of Petri Nets).
-	
+
 We will not explain data-based synthesis and Petri Net synthesis here.
 More information on these types of syntheses can be found on the webpages of Eclipse ESCET and Petrify linked above.
 
@@ -262,10 +262,10 @@ In case any cycles are detected in these dependencies, then the synthesis algori
 			\KwReplace \var{umlActivity_{abstr}} \KwBy \var{umlActivity_{concr}} \KwIn \var{umlModel}\;
 		}
 	}
-	
+
 	\BlankLine
 	\BlankLine
-	
+
 	\tcp{Synthesizes a concrete activity for the given abstract activity.}
 	\procedure{\synthSingle{\var{umlActivity_{abstr}}}}{
 		\tcp{Synthesize a CIF supervisor using data-based synthesis.}
@@ -286,7 +286,7 @@ In case any cycles are detected in these dependencies, then the synthesis algori
 		\tcp{Post-process the synthesized UML activity.}
 		\var{umlActivity_{post}} := \postprocessActivity{\var{umlActivity_{guards}}}\;
 		\Return \var{umlActivity_{post}}\;
-	} 
+	}
 
 	\caption{Synthesis of Poka Yoke activity diagrams}
 	\label{alg:activity-synthesis}
@@ -297,13 +297,13 @@ The remainder of this section explains all operations in \synthSingle.
 A short explanation is given for every operation, followed by the motivation for having that operation, followed by its preconditions and postconditions.
 
 \begin{example*}[Running Example]
-Let us consider a simple UML model, named \texttt{BitFlipper}, where we aim at synthesizing an activity that flips a single nondeterministically initialized boolean value.  
-The UML model is composed of a single class \texttt{ActiveClass}, which contains two properties: a boolean named \texttt{init}, initialized as \texttt{false}, denoting whether the system is initialized, and a boolean named \texttt{bit}, not initialized.  
+Let us consider a simple UML model, named \texttt{BitFlipper}, where we aim at synthesizing an activity that flips a single nondeterministically initialized boolean value.
+The UML model is composed of a single class \texttt{ActiveClass}, which contains two properties: a boolean named \texttt{init}, initialized as \texttt{false}, denoting whether the system is initialized, and a boolean named \texttt{bit}, not initialized.
 The class also contains an abstract activity called \texttt{ActivityMain}, and two atomic opaque behaviors named \texttt{flip} and \texttt{initialize}.
-The activity has precondition \texttt{not init}, and postcondition \texttt{bit and init}. 
-The \texttt{flip} opaque behavior's effect is to flip the boolean \texttt{bit} after it is initialized: its guard is \texttt{init}, whilst its effects consist of a single assignment \texttt{bit := not bit}. 
-The opaque behavior \texttt{initialize} turns \texttt{init} from \texttt{false} to \texttt{true}, and sets \texttt{bit} either to \texttt{true} or \texttt{false} in a nondeterministic fashion. 
-The model outline in the PokaYoke UML Designer environment is depicted in Fig.~\ref{fig:bitflipper-uml-designer}. 
+The activity has precondition \texttt{not init}, and postcondition \texttt{bit and init}.
+The \texttt{flip} opaque behavior's effect is to flip the boolean \texttt{bit} after it is initialized: its guard is \texttt{init}, whilst its effects consist of a single assignment \texttt{bit := not bit}.
+The opaque behavior \texttt{initialize} turns \texttt{init} from \texttt{false} to \texttt{true}, and sets \texttt{bit} either to \texttt{true} or \texttt{false} in a nondeterministic fashion.
+The model outline in the PokaYoke UML Designer environment is depicted in Fig.~\ref{fig:bitflipper-uml-designer}.
 \end{example*}
 
 \begin{figure}
@@ -375,11 +375,11 @@ This operation produces a CIF specification that:
 		Action nodes (i.e., opaque actions, call behavior nodes that call an opaque behavior, and shadowed call behavior nodes that call an activity) are translated likewise to opaque behaviors: as actions with user-specified guards and effects, that can be atomic or nonatomic, and deterministic or nondeterministic.
 		During this translation, we define extra guards and effects to ensure proper token handling: an activity node can only be executed (as an action) if its incoming control flows have the required tokens for that, and after executing the node, the outgoing control flows receive the proper tokens.
 		In case an outgoing control flow has a guard, then this guard is translated as an extra condition for putting a token on that control flow, i.e., for making the corresponding CIF variable \texttt{true}.
-		
+
 		Unlike the translation of opaque behaviors, every CIF event that is created for an activity node is uncontrollable, with the exception of initial nodes.
 		This is because calling an activity intuitively amounts to `executing its initial node', and this is a controllable event (that is, the synthesis algorithm has control over when some concrete activity is being called).
 		However, once a concrete activity has been called, its execution proceeds uncontrollably, which is why all other CIF events are made uncontrollable.
-		
+
 		A concrete activity can only be called in a state where its precondition is satisfied.
 		Hence, we translate their preconditions as extra guards for executing the initial nodes.
 		Likewise, we translate their postconditions as extra guards for executing the final nodes.
@@ -408,7 +408,7 @@ This operation produces a CIF specification that:
 	The action guards are then translated to guards that are put on the edges of the corresponding `start' events of the action, and action effects are translated to edge updates for the `end' events (thereby taking into account that the `start' events of atomic deterministic actions also `end' the action).
 	Thus, we do not put user-written action guards on any edges corresponding to `end' events, since we don't want conditions on any `end' events, and by making them uncontrollable, any synthesized constraints are pushed back to the controllable events.
 	However, we do put guards and effects on the (un)controllable events to correctly handle and maintain the atomicity variable and the active variables.
-	
+
 	Furthermore, edges are guaranteed not to contain conditional `if'-updates, since these are not supported by data-based synthesis.
 	Any conditional updates have been eliminated from the CIF specification.
 	They are turned into conditional expressions, which are supported by data-based synthesis.
@@ -421,21 +421,21 @@ This operation produces a CIF specification that:
 \end{itemize}
 
 \begin{example*}[Running Example]
-The translation of the UML \texttt{BitFlipper} model to CIF is shown in Listing~\ref{lst:bitflipper-cif}. 
-In the CIF model, first the events are defined, either controllable (denoting the start of an action) or uncontrollable (usually describing a nondeterministic or external event).  
-The \texttt{BitFlipper} CIF model provides two controllable events, \texttt{flip} and \texttt{initialize} that relate to starting the opaque behaviors defined in the UML model. 
-Two uncontrollable events denote the two nondeterministic results of the \texttt{bit} initialization. 
-The boolean property \texttt{bit} is transformed into a discrete boolean (\texttt{disc bool}) variable, which is nondeterministically initialized (denoted \texttt{in any}), whereas \texttt{init} is initialized as \texttt{false}. 
-The activity precondition and postcondition are translated into algebraic boolean variables. 
-Then we define the initial state predicate \texttt{not init} to be the algebraic \texttt{precondition} variable, to indicate the initial states for performing synthesis. 
+The translation of the UML \texttt{BitFlipper} model to CIF is shown in Listing~\ref{lst:bitflipper-cif}.
+In the CIF model, first the events are defined, either controllable (denoting the start of an action) or uncontrollable (usually describing a nondeterministic or external event).
+The \texttt{BitFlipper} CIF model provides two controllable events, \texttt{flip} and \texttt{initialize} that relate to starting the opaque behaviors defined in the UML model.
+Two uncontrollable events denote the two nondeterministic results of the \texttt{bit} initialization.
+The boolean property \texttt{bit} is transformed into a discrete boolean (\texttt{disc bool}) variable, which is nondeterministically initialized (denoted \texttt{in any}), whereas \texttt{init} is initialized as \texttt{false}.
+The activity precondition and postcondition are translated into algebraic boolean variables.
+Then we define the initial state predicate \texttt{not init} to be the algebraic \texttt{precondition} variable, to indicate the initial states for performing synthesis.
 Moreover, we define the marked state predicate \texttt{marked} to be the algebraic \texttt{postcondition} variable, to indicate that a postcondition state must always be reachable in the controlled system.
 The auxiliary variable \texttt{\_\_activeAction} is used to connect the start and end events of atomic nondeterministic actions, in this case \texttt{initialize}.
 The atomic deterministic opaque behavior \texttt{flip} is translated into an edge with guards \texttt{init} and \texttt{\_\_activeAction = 0}, and a single update \texttt{bit := not bit}.
-The atomic non-deterministic opaque behavior \texttt{initialize} is translated into a series of edges. 
+The atomic non-deterministic opaque behavior \texttt{initialize} is translated into a series of edges.
 First, an edge \texttt{initialize} is defined, with guard \texttt{not init and \_\_activeAction = 0}, whose effect is \texttt{\_\_activeAction := 1} (representing the atomic nondeterministic action starting).
-Next, two edges denote the two possible results of the nondeterministic action: \texttt{initialize\_\_result\_1} and \texttt{initialize\_\_result\_2} assign \texttt{true} and \texttt{false} to \texttt{bit}, respectively. 
-At the same time, both edges assign \texttt{true} to \texttt{init} and \texttt{0} to \texttt{\_\_activeAction}, representing respectively the initialization of the system, and the end of the atomic nondeterministic action. 
-Finally, four requirement invariants state that the postcondition disables all CIF events. 
+Next, two edges denote the two possible results of the nondeterministic action: \texttt{initialize\_\_result\_1} and \texttt{initialize\_\_result\_2} assign \texttt{true} and \texttt{false} to \texttt{bit}, respectively.
+At the same time, both edges assign \texttt{true} to \texttt{init} and \texttt{0} to \texttt{\_\_activeAction}, representing respectively the initialization of the system, and the end of the atomic nondeterministic action.
+Finally, four requirement invariants state that the postcondition disables all CIF events.
 In practice, these four requirements ensure that once the system reaches a state where the postcondition holds, no additional actions can be taken.
 \end{example*}
 
@@ -459,7 +459,7 @@ This computation make use of the extra restrictions that are synthesized by data
 Moreover, this computation requires that these extra restriction predicates are \emph{not} simplified, which CIF does by default, hence the extra configuration.
 
 Forward reachability is configured simply for performance reasons, and might make synthesized conditions smaller.
-We should later evaluate if, and how much, forward reachability actually contributes to that. 
+We should later evaluate if, and how much, forward reachability actually contributes to that.
 
 \paragraph{Preconditions.}
 All preconditions of the data-based synthesis tool apply.
@@ -588,7 +588,7 @@ The input CIF specification must contain a single automaton, which in our case i
 \paragraph{Postconditions.}
 All guarantees of the automaton projection tool from CIF apply.
 Notably, event-based projection guarantees that the resulting automaton after projection is a DFA that contains only the projected events, and that is trace-equivalent to the input specification with respect to those events.
-In our case, this means that the resulting CIF specification no longer contains the uncontrollable events of atomic nondeterministic actions, and is trace-equivalent to the input modulo those events. 
+In our case, this means that the resulting CIF specification no longer contains the uncontrollable events of atomic nondeterministic actions, and is trace-equivalent to the input modulo those events.
 The resulting DFA is not guaranteed to be minimal.
 We will minimize it in the next step.
 
@@ -627,17 +627,17 @@ Hence they must be the same location.
 
 
 \begin{example*}[Running Example]
-The minimized CIF model is shown in Listing~\ref{lst:bitflipper-minimized-cif}. 
-The CIF model has a \texttt{\_\_start} and an \texttt{\_\_end} event, denoting the start and end of the activity to be synthesized. 
-The CIF automaton is composed of five locations: 
+The minimized CIF model is shown in Listing~\ref{lst:bitflipper-minimized-cif}.
+The CIF model has a \texttt{\_\_start} and an \texttt{\_\_end} event, denoting the start and end of the activity to be synthesized.
+The CIF automaton is composed of five locations:
 \begin{itemize}
     \item location $s1$ is the initial location, with one outgoing edge towards $s2$ after event \texttt{\_\_start};
-    \item location $s2$ has one outgoing edge towards $s4$, after event \texttt{initialize}; 
-    \item location $s3$ is marked, namely is a final location, hence without outgoing edges; 
-    \item location $s4$ has two outgoing edges towards $s3$, after event \texttt{\_\_end} (in case \texttt{bit} is initialized as \texttt{true}), and towards $s5$ after event \texttt{flip} (otherwise); 
+    \item location $s2$ has one outgoing edge towards $s4$, after event \texttt{initialize};
+    \item location $s3$ is marked, namely is a final location, hence without outgoing edges;
+    \item location $s4$ has two outgoing edges towards $s3$, after event \texttt{\_\_end} (in case \texttt{bit} is initialized as \texttt{true}), and towards $s5$ after event \texttt{flip} (otherwise);
     \item location $s5$ has one outgoing edge towards $s3$, after event \texttt{\_\_end}.
 \end{itemize}
-This state space is the input to Petrify, that synthesizes a Petri Net from it. 
+This state space is the input to Petrify, that synthesizes a Petri Net from it.
 \end{example*}
 
 \ciffile{images/bitflipper_synthesized_minimized.cif}{Minimized CIF model.}{lst:bitflipper-minimized-cif}
@@ -734,9 +734,9 @@ Furthermore, a region mapping is computed that indicates how Petri Net places co
 This region mapping is thus a mapping from Petri Net places to sets of automaton locations.
 
 \begin{example*}[Running example]
-The Petrify output is depicted in Fig.~\ref{fig:petrify-out}. 
-Notice that the end event \texttt{\_\_end} has been split into two separate transitions that will be merged together (in fact, as a UML merge node) in a following step. 
-Further, the final place \texttt{p5} is equipped with a self loop, which will also be removed in one of the post-processing steps. 
+The Petrify output is depicted in Fig.~\ref{fig:petrify-out}.
+Notice that the end event \texttt{\_\_end} has been split into two separate transitions that will be merged together (in fact, as a UML merge node) in a following step.
+Further, the final place \texttt{p5} is equipped with a self loop, which will also be removed in one of the post-processing steps.
 \end{example*}
 
 \begin{figure}
@@ -824,7 +824,7 @@ We aim to (eventually) merge this pattern back into a single call behavior node 
 
 However, we cannot directly merge this pattern here since that would complicate choice guard computation later on.
 If we would merge the pattern here, then we would have to push down the decision node to below the merged `call $\textsf{A}$' action.
-By doing so, it would become (more) difficult to compute the control flow guards, as there may be all kinds of forking/joining/branching/merging constructions in the `$\dots$' parts below the decision node that we then would have pushed down\footnote{This is also the main reason why we actually do the guard computation on the Petri Net level rather than on UML activity level. 
+By doing so, it would become (more) difficult to compute the control flow guards, as there may be all kinds of forking/joining/branching/merging constructions in the `$\dots$' parts below the decision node that we then would have pushed down\footnote{This is also the main reason why we actually do the guard computation on the Petri Net level rather than on UML activity level.
 On Petri Net level, there are only places and transitions, in contrast to the various different types of nodes that UML has for forking, joining, branching, merging, etc., which might also be composed in arbitrary ways.
 Nevertheless, the high-level synthesis algorithm is easier to explain on UML activity level, since then the explanation doesn't have to rely on details such as the connection/relation between the Petri Net and the translated UML activity.}.
 These constructions make it more difficult (though not impossible) to gather all necessary state information for the guard computation.
@@ -1011,10 +1011,10 @@ This operation ensures that the synthesized UML activity no longer contains inte
 Moreover, all names of control nodes (initial/final/fork/join/decision/merge nodes) and control flow have been removed for better readability.
 
 \begin{example*}[Running Example]
-Finally, the synthesized activity is shown in Fig.~\ref{fig:synthesized-bitflipper}. 
-The initial node is marked in blue, the place \texttt{p3} has been turned into a decision node, and the two outgoing control flows represent the nondeterministic initialization of \texttt{bit}.  
-If \texttt{bit} is \texttt{true}, the flow can go directly to the final node (shown with a blue border); otherwise, the flow goes through the \texttt{flip} action. 
-The two \texttt{\_\_end} transitions have been translated into a merge node, and finally place \texttt{p5} is transformed into the final node. 
+Finally, the synthesized activity is shown in Fig.~\ref{fig:synthesized-bitflipper}.
+The initial node is marked in blue, the place \texttt{p3} has been turned into a decision node, and the two outgoing control flows represent the nondeterministic initialization of \texttt{bit}.
+If \texttt{bit} is \texttt{true}, the flow can go directly to the final node (shown with a blue border); otherwise, the flow goes through the \texttt{flip} action.
+The two \texttt{\_\_end} transitions have been translated into a merge node, and finally place \texttt{p5} is transformed into the final node.
 \end{example*}
 
 \begin{figure}

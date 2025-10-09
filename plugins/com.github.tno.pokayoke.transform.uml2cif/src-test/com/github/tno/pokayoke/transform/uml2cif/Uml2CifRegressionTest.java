@@ -10,6 +10,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.eclipse.escet.cif.io.CifWriter;
 import org.eclipse.escet.cif.metamodel.cif.Specification;
 import org.eclipse.escet.common.app.framework.AppEnv;
+import org.eclipse.escet.common.java.PathPair;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Model;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -18,8 +19,10 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.transform.tests.common.RegressionTest;
-import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator.TranslationPurpose;
+import com.github.tno.pokayoke.transform.track.SynthesisChainTracking;
+import com.github.tno.pokayoke.transform.track.UmlToCifTranslationPurpose;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
+import com.github.tno.synthml.uml.profile.cif.CifContextManager;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 
@@ -50,9 +53,10 @@ public class Uml2CifRegressionTest extends RegressionTest {
         // Load UML synthesis specification.
         Model umlModel = FileHelper.loadModel(inputPath.toString());
         FileHelper.normalizeIds(umlModel);
+        CifContext context = new CifContextManager(umlModel).getGlobalContext();
 
         // Find and translate every abstract UML activity in the loaded UML model to a separate CIF specification.
-        List<Activity> activities = new CifContext(umlModel).getAllAbstractActivities();
+        List<Activity> activities = context.getAllAbstractActivities();
 
         for (int i = 0; i < activities.size(); i++) {
             Activity activity = activities.get(i);
@@ -64,12 +68,14 @@ public class Uml2CifRegressionTest extends RegressionTest {
             Path outputFilePath = localOutputPath.resolve(filePrefix + "." + OUTPUT_FILE_EXTENSION);
 
             // Translate the current UML activity to a CIF specification.
-            Specification cifSpecification = new UmlToCifTranslator(activity, TranslationPurpose.SYNTHESIS).translate();
+            Specification cifSpecification = new UmlToCifTranslator(context, activity,
+                    UmlToCifTranslationPurpose.SYNTHESIS, new SynthesisChainTracking()).translate();
 
             // Store the translated CIF specification.
             try {
                 AppEnv.registerSimple();
-                CifWriter.writeCifSpec(cifSpecification, outputFilePath.toAbsolutePath().toString(),
+                CifWriter.writeCifSpec(cifSpecification,
+                        new PathPair(outputFilePath.toString(), outputFilePath.toAbsolutePath().toString()),
                         outputFilePath.toString());
             } finally {
                 AppEnv.unregisterApplication();

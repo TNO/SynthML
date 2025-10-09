@@ -9,9 +9,9 @@ import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.ABoolExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AIntExpression;
+import org.eclipse.escet.cif.parser.ast.expressions.ANameExpression;
 import org.eclipse.escet.common.java.TextPosition;
 import org.eclipse.escet.setext.runtime.exceptions.CustomSyntaxException;
-import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.EnumerationLiteral;
 import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Property;
@@ -33,12 +33,12 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
     /**
      * Constructs a new type CIF checker.
      *
-     * @param elem The context for evaluating the expression.
+     * @param ctx The context for evaluating the expression.
      */
-    public CifTypeChecker(Element elem) {
-        this.ctx = new CifContext(elem);
-        this.booleanType = UmlPrimitiveType.BOOLEAN.load(elem);
-        this.integerType = UmlPrimitiveType.INTEGER.load(elem);
+    public CifTypeChecker(CifContext ctx) {
+        this.ctx = ctx;
+        this.booleanType = UmlPrimitiveType.BOOLEAN.load(ctx.getModel());
+        this.integerType = UmlPrimitiveType.INTEGER.load(ctx.getModel());
     }
 
     /**
@@ -62,6 +62,23 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
      */
     public void checkAssignment(Type addressable, AExpression value) throws TypeException {
         visit(addressable, null, visit(value, ctx), ctx);
+    }
+
+    /**
+     * Checks if the evaluated {@code value} type can be assigned to the {@code addressable} type.
+     *
+     * @param addressable The addressable to assign to.
+     * @param addressableContext The context of the addressable.
+     * @param expression The expression that evaluates to the value to assign.
+     * @param expressionContext The context of the expression.
+     * @param assignmentPos The position at which the assignment happens.
+     * @throws TypeException If the {@code expression} cannot be evaluated or its value type cannot be assigned to the
+     *     {@code addressable} type.
+     */
+    public void checkArgumentAssignment(ANameExpression addressable, CifContext addressableContext,
+            AExpression expression, CifContext expressionContext, TextPosition assignmentPos) throws TypeException
+    {
+        visit(visit(addressable, addressableContext), assignmentPos, visit(expression, expressionContext), ctx);
     }
 
     /**
@@ -102,6 +119,11 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
     @Override
     protected Type visit(Property property, TextPosition propertyPos, CifContext ctx) {
         return property.getType();
+    }
+
+    @Override
+    protected Type visit(NamedTemplateParameter parameter, TextPosition parameterReferencePos, CifContext ctx) {
+        return parameter.getType();
     }
 
     @Override

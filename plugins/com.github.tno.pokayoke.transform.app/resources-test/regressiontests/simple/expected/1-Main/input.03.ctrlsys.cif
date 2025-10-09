@@ -20,13 +20,16 @@ plant automaton Context:
   alg bool __precondition = true;
   alg bool postcondition = not robotHasProduct and robotLocation = Location1 and location2HasProduct and productCorrectlyPlaced = True;
   alg bool __postcondition__activeAction = __activeAction = 0;
-  alg bool __postcondition__happen_at_most_once__39__prepare_robot__41 = happen_at_most_once__39__prepare_robot__41.__occurrences >= 0;
-  alg bool __postcondition__happen_at_most_once__39__robot_move_to_location2__43 = happen_at_most_once__39__robot_move_to_location2__43.__occurrences >= 0;
-  alg bool __postcondition__happen_at_most_once__39__robot_release_product_at_location2__45 = happen_at_most_once__39__robot_release_product_at_location2__45.__occurrences >= 0;
-  alg bool __postcondition__happen_at_most_once__39__prepare_location2__46 = happen_at_most_once__39__prepare_location2__46.__occurrences >= 0;
-  alg bool __postcondition = postcondition and (__postcondition__activeAction and __postcondition__happen_at_most_once__39__prepare_robot__41) and (__postcondition__happen_at_most_once__39__robot_move_to_location2__43 and (__postcondition__happen_at_most_once__39__robot_release_product_at_location2__45 and __postcondition__happen_at_most_once__39__prepare_location2__46));
+  alg bool __postcondition__happen_at_most_once__76__prepare_robot__80 = happen_at_most_once__76__prepare_robot__80.__occurrences >= 0;
+  alg bool __postcondition__happen_at_most_once__76__robot_move_to_location2__84 = happen_at_most_once__76__robot_move_to_location2__84.__occurrences >= 0;
+  alg bool __postcondition__happen_at_most_once__76__robot_release_product_at_location2__88 = happen_at_most_once__76__robot_release_product_at_location2__88.__occurrences >= 0;
+  alg bool __postcondition__happen_at_most_once__76__prepare_location2__90 = happen_at_most_once__76__prepare_location2__90.__occurrences >= 0;
+  alg bool __postcondition = postcondition and (__postcondition__activeAction and __postcondition__happen_at_most_once__76__prepare_robot__80) and (__postcondition__happen_at_most_once__76__robot_move_to_location2__84 and (__postcondition__happen_at_most_once__76__robot_release_product_at_location2__88 and __postcondition__happen_at_most_once__76__prepare_location2__90));
   initial __precondition;
   marked __postcondition;
+  supervisor invariant Req1: robot_move_to_location2 needs robotLocation = Location1 and location2Prepared;
+  supervisor invariant Req2: robot_move_to_location1 needs robotLocation = Location2;
+  supervisor invariant Req3: robot_adjust_product needs robotLocation = Location2;
   location:
     initial;
     marked;
@@ -40,7 +43,7 @@ plant automaton Context:
     edge measure_product_position__result_1 when __activeAction = 1 do productCorrectlyPlaced := True, __activeAction := 0;
     edge measure_product_position__result_2 when __activeAction = 1 do productCorrectlyPlaced := False, __activeAction := 0;
 end
-supervisor automaton happen_at_most_once__39__prepare_robot__41:
+supervisor automaton happen_at_most_once__76__prepare_robot__80:
   disc int[0..1] __occurrences;
   marked __occurrences >= 0;
   location:
@@ -48,7 +51,7 @@ supervisor automaton happen_at_most_once__39__prepare_robot__41:
     marked;
     edge prepare_robot when __occurrences < 1 do __occurrences := __occurrences + 1;
 end
-supervisor automaton happen_at_most_once__39__robot_move_to_location2__43:
+supervisor automaton happen_at_most_once__76__robot_move_to_location2__84:
   disc int[0..1] __occurrences;
   marked __occurrences >= 0;
   location:
@@ -56,7 +59,7 @@ supervisor automaton happen_at_most_once__39__robot_move_to_location2__43:
     marked;
     edge robot_move_to_location2 when __occurrences < 1 do __occurrences := __occurrences + 1;
 end
-supervisor automaton happen_at_most_once__39__robot_release_product_at_location2__45:
+supervisor automaton happen_at_most_once__76__robot_release_product_at_location2__88:
   disc int[0..1] __occurrences;
   marked __occurrences >= 0;
   location:
@@ -64,7 +67,7 @@ supervisor automaton happen_at_most_once__39__robot_release_product_at_location2
     marked;
     edge robot_release_product_at_location2 when __occurrences < 1 do __occurrences := __occurrences + 1;
 end
-supervisor automaton happen_at_most_once__39__prepare_location2__46:
+supervisor automaton happen_at_most_once__76__prepare_location2__90:
   disc int[0..1] __occurrences;
   marked __occurrences >= 0;
   location:
@@ -77,11 +80,20 @@ supervisor automaton sup:
   location:
     initial;
     marked;
-    edge measure_product_position when Context.robotPrepared and Context.__activeAction = 0 and (Context.location2HasProduct and (Context.productCorrectlyPlaced = Unknown and not Context.robotHasProduct)) and (happen_at_most_once__39__prepare_robot__41.__occurrences = 1 and (happen_at_most_once__39__robot_move_to_location2__43.__occurrences = 1 and happen_at_most_once__39__robot_release_product_at_location2__45.__occurrences = 1) and (Context.robotLocation = Location2 and (happen_at_most_once__39__prepare_location2__46.__occurrences = 1 and Context.location2Prepared)));
-    edge prepare_location2 when not Context.robotPrepared and Context.__activeAction = 0 and (not Context.location2HasProduct and (Context.productCorrectlyPlaced = Unknown and Context.robotHasProduct)) and (happen_at_most_once__39__prepare_robot__41.__occurrences = 0 and (happen_at_most_once__39__robot_move_to_location2__43.__occurrences = 0 and happen_at_most_once__39__robot_release_product_at_location2__45.__occurrences = 0) and (Context.robotLocation = Location1 and (happen_at_most_once__39__prepare_location2__46.__occurrences = 0 and not Context.location2Prepared))) or Context.robotPrepared and Context.__activeAction = 0 and (not Context.location2HasProduct and (Context.productCorrectlyPlaced = Unknown and Context.robotHasProduct)) and (happen_at_most_once__39__prepare_robot__41.__occurrences = 1 and (happen_at_most_once__39__robot_move_to_location2__43.__occurrences = 0 and happen_at_most_once__39__robot_release_product_at_location2__45.__occurrences = 0) and (Context.robotLocation = Location1 and (happen_at_most_once__39__prepare_location2__46.__occurrences = 0 and not Context.location2Prepared))) or (Context.robotPrepared and Context.__activeAction = 0 and (not Context.location2HasProduct and (Context.productCorrectlyPlaced = Unknown and Context.robotHasProduct)) and (happen_at_most_once__39__prepare_robot__41.__occurrences = 1 and (happen_at_most_once__39__robot_move_to_location2__43.__occurrences = 1 and happen_at_most_once__39__robot_release_product_at_location2__45.__occurrences = 0) and (Context.robotLocation = Location2 and (happen_at_most_once__39__prepare_location2__46.__occurrences = 0 and not Context.location2Prepared))) or (Context.robotPrepared and Context.__activeAction = 0 and (Context.location2HasProduct and (Context.productCorrectlyPlaced != False and not Context.robotHasProduct)) and (happen_at_most_once__39__prepare_robot__41.__occurrences = 1 and (happen_at_most_once__39__robot_move_to_location2__43.__occurrences = 1 and happen_at_most_once__39__robot_release_product_at_location2__45.__occurrences = 1) and (Context.robotLocation = Location2 and (happen_at_most_once__39__prepare_location2__46.__occurrences = 0 and not Context.location2Prepared))) or Context.robotPrepared and Context.__activeAction = 0 and (Context.location2HasProduct and (Context.productCorrectlyPlaced = False and not Context.robotHasProduct)) and (happen_at_most_once__39__prepare_robot__41.__occurrences = 1 and (happen_at_most_once__39__robot_move_to_location2__43.__occurrences = 1 and happen_at_most_once__39__robot_release_product_at_location2__45.__occurrences = 1) and (Context.robotLocation = Location2 and (happen_at_most_once__39__prepare_location2__46.__occurrences = 0 and not Context.location2Prepared)))));
-    edge prepare_robot when not Context.robotPrepared and Context.__activeAction = 0 and (not Context.location2HasProduct and (Context.productCorrectlyPlaced = Unknown and Context.robotHasProduct)) and (happen_at_most_once__39__prepare_robot__41.__occurrences = 0 and (happen_at_most_once__39__robot_move_to_location2__43.__occurrences = 0 and happen_at_most_once__39__robot_release_product_at_location2__45.__occurrences = 0) and (Context.robotLocation = Location1 and (happen_at_most_once__39__prepare_location2__46.__occurrences = 0 and not Context.location2Prepared))) or not Context.robotPrepared and Context.__activeAction = 0 and (not Context.location2HasProduct and (Context.productCorrectlyPlaced = Unknown and Context.robotHasProduct)) and (happen_at_most_once__39__prepare_robot__41.__occurrences = 0 and (happen_at_most_once__39__robot_move_to_location2__43.__occurrences = 0 and happen_at_most_once__39__robot_release_product_at_location2__45.__occurrences = 0) and (Context.robotLocation = Location1 and (happen_at_most_once__39__prepare_location2__46.__occurrences = 1 and Context.location2Prepared))) or (not Context.robotPrepared and Context.__activeAction = 0 and (not Context.location2HasProduct and (Context.productCorrectlyPlaced = Unknown and Context.robotHasProduct)) and (happen_at_most_once__39__prepare_robot__41.__occurrences = 0 and (happen_at_most_once__39__robot_move_to_location2__43.__occurrences = 1 and happen_at_most_once__39__robot_release_product_at_location2__45.__occurrences = 0) and (Context.robotLocation = Location2 and (happen_at_most_once__39__prepare_location2__46.__occurrences = 1 and Context.location2Prepared))) or (not Context.robotPrepared and Context.__activeAction = 0 and (Context.location2HasProduct and (Context.productCorrectlyPlaced != False and not Context.robotHasProduct)) and (happen_at_most_once__39__prepare_robot__41.__occurrences = 0 and (happen_at_most_once__39__robot_move_to_location2__43.__occurrences = 1 and happen_at_most_once__39__robot_release_product_at_location2__45.__occurrences = 1) and (Context.robotLocation = Location2 and (happen_at_most_once__39__prepare_location2__46.__occurrences = 1 and Context.location2Prepared))) or not Context.robotPrepared and Context.__activeAction = 0 and (Context.location2HasProduct and (Context.productCorrectlyPlaced = False and not Context.robotHasProduct)) and (happen_at_most_once__39__prepare_robot__41.__occurrences = 0 and (happen_at_most_once__39__robot_move_to_location2__43.__occurrences = 1 and happen_at_most_once__39__robot_release_product_at_location2__45.__occurrences = 1) and (Context.robotLocation = Location2 and (happen_at_most_once__39__prepare_location2__46.__occurrences = 1 and Context.location2Prepared)))));
-    edge robot_adjust_product when Context.robotPrepared and Context.__activeAction = 0 and (not Context.location2HasProduct and (Context.productCorrectlyPlaced = False and Context.robotHasProduct)) and (happen_at_most_once__39__prepare_robot__41.__occurrences = 1 and (happen_at_most_once__39__robot_move_to_location2__43.__occurrences = 1 and happen_at_most_once__39__robot_release_product_at_location2__45.__occurrences = 0) and (Context.robotLocation = Location2 and (happen_at_most_once__39__prepare_location2__46.__occurrences = 1 and Context.location2Prepared))) or Context.robotPrepared and Context.__activeAction = 0 and (Context.location2HasProduct and (Context.productCorrectlyPlaced = False and not Context.robotHasProduct)) and (happen_at_most_once__39__prepare_robot__41.__occurrences = 1 and (happen_at_most_once__39__robot_move_to_location2__43.__occurrences = 1 and happen_at_most_once__39__robot_release_product_at_location2__45.__occurrences = 1) and (Context.robotLocation = Location2 and (happen_at_most_once__39__prepare_location2__46.__occurrences = 1 and Context.location2Prepared)));
-    edge robot_move_to_location1 when Context.robotPrepared and Context.__activeAction = 0 and (not Context.location2HasProduct and (Context.productCorrectlyPlaced = Unknown and Context.robotHasProduct)) and (happen_at_most_once__39__prepare_robot__41.__occurrences = 1 and (happen_at_most_once__39__robot_move_to_location2__43.__occurrences = 0 and happen_at_most_once__39__robot_release_product_at_location2__45.__occurrences = 0) and (Context.robotLocation = Location2 and (happen_at_most_once__39__prepare_location2__46.__occurrences = 0 and not Context.location2Prepared))) or (Context.robotPrepared and Context.__activeAction = 0 and (not Context.location2HasProduct and (Context.productCorrectlyPlaced = Unknown and Context.robotHasProduct)) and (happen_at_most_once__39__prepare_robot__41.__occurrences = 1 and (happen_at_most_once__39__robot_move_to_location2__43.__occurrences = 0 and happen_at_most_once__39__robot_release_product_at_location2__45.__occurrences = 0) and (Context.robotLocation = Location2 and (happen_at_most_once__39__prepare_location2__46.__occurrences = 1 and Context.location2Prepared))) or Context.robotPrepared and Context.__activeAction = 0 and (Context.location2HasProduct and (Context.productCorrectlyPlaced = True and not Context.robotHasProduct)) and (happen_at_most_once__39__prepare_robot__41.__occurrences = 1 and (happen_at_most_once__39__robot_move_to_location2__43.__occurrences = 1 and happen_at_most_once__39__robot_release_product_at_location2__45.__occurrences = 1) and (Context.robotLocation = Location2 and (happen_at_most_once__39__prepare_location2__46.__occurrences = 1 and Context.location2Prepared))));
-    edge robot_move_to_location2 when Context.robotPrepared and Context.__activeAction = 0 and (not Context.location2HasProduct and (Context.productCorrectlyPlaced = Unknown and Context.robotHasProduct)) and (happen_at_most_once__39__prepare_robot__41.__occurrences = 1 and (happen_at_most_once__39__robot_move_to_location2__43.__occurrences = 0 and happen_at_most_once__39__robot_release_product_at_location2__45.__occurrences = 0) and (Context.robotLocation = Location1 and (happen_at_most_once__39__prepare_location2__46.__occurrences = 1 and Context.location2Prepared))) or (Context.robotPrepared and Context.__activeAction = 0 and (Context.location2HasProduct and (Context.productCorrectlyPlaced = Unknown and not Context.robotHasProduct)) and (happen_at_most_once__39__prepare_robot__41.__occurrences = 1 and (happen_at_most_once__39__robot_move_to_location2__43.__occurrences = 0 and happen_at_most_once__39__robot_release_product_at_location2__45.__occurrences = 1) and (Context.robotLocation = Location1 and (happen_at_most_once__39__prepare_location2__46.__occurrences = 1 and Context.location2Prepared))) or Context.robotPrepared and Context.__activeAction = 0 and (Context.location2HasProduct and (Context.productCorrectlyPlaced = False and not Context.robotHasProduct)) and (happen_at_most_once__39__prepare_robot__41.__occurrences = 1 and (happen_at_most_once__39__robot_move_to_location2__43.__occurrences = 0 and happen_at_most_once__39__robot_release_product_at_location2__45.__occurrences = 1) and (Context.robotLocation = Location1 and (happen_at_most_once__39__prepare_location2__46.__occurrences = 1 and Context.location2Prepared))));
-    edge robot_release_product_at_location2 when Context.robotPrepared and Context.__activeAction = 0 and (Context.productCorrectlyPlaced != False and happen_at_most_once__39__prepare_robot__41.__occurrences = 1) and (happen_at_most_once__39__robot_move_to_location2__43.__occurrences = 1 and happen_at_most_once__39__robot_release_product_at_location2__45.__occurrences = 0 and (Context.robotLocation = Location2 and (happen_at_most_once__39__prepare_location2__46.__occurrences = 1 and Context.location2Prepared))) or Context.robotPrepared and Context.__activeAction = 0 and (Context.productCorrectlyPlaced = False and happen_at_most_once__39__prepare_robot__41.__occurrences = 1) and (happen_at_most_once__39__robot_move_to_location2__43.__occurrences = 1 and happen_at_most_once__39__robot_release_product_at_location2__45.__occurrences = 0 and (Context.robotLocation = Location2 and (happen_at_most_once__39__prepare_location2__46.__occurrences = 1 and Context.location2Prepared)));
+    edge measure_product_position when true;
+    edge prepare_location2 when true;
+    edge prepare_robot when true;
+    edge robot_adjust_product when true;
+    edge robot_move_to_location1 when Context.location2HasProduct and Context.productCorrectlyPlaced = True;
+    edge robot_move_to_location2 when true;
+    edge robot_release_product_at_location2 when true;
 end
+supervisor invariant Context.__postcondition disables prepare_robot;
+supervisor invariant Context.__postcondition disables robot_move_to_location1;
+supervisor invariant Context.__postcondition disables robot_move_to_location2;
+supervisor invariant Context.__postcondition disables robot_adjust_product;
+supervisor invariant Context.__postcondition disables robot_release_product_at_location2;
+supervisor invariant Context.__postcondition disables prepare_location2;
+supervisor invariant Context.__postcondition disables measure_product_position;
+supervisor invariant Context.__postcondition disables measure_product_position__result_1;
+supervisor invariant Context.__postcondition disables measure_product_position__result_2;

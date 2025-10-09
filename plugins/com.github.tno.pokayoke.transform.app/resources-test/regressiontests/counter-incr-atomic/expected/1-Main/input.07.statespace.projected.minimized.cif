@@ -1,0 +1,26 @@
+controllable initialize;
+controllable incr1;
+controllable incr2;
+controllable __start;
+controllable __end;
+automaton minimal:
+  alphabet initialize, incr1, incr2, __start, __end;
+  @state(projected: "s1")
+  location s1:
+    initial;
+    edge __start goto s2;
+  @state(projected: "s2")
+  location s2:
+    edge initialize goto s4;
+  @state(projected: "s6")
+  location s3:
+    marked;
+  @state(projected: "s3")
+  location s4:
+    edge incr2 goto s5;
+    edge incr1 goto s5;
+  @state(projected: "s5")
+  @state(projected: "s4")
+  location s5:
+    edge __end goto s3;
+end

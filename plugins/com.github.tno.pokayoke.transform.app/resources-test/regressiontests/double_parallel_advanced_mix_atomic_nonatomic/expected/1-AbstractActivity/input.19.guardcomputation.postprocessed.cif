@@ -1,0 +1,160 @@
+controllable __node__OpaqueAction__80;
+controllable __node__OpaqueAction__81;
+controllable __node__OpaqueAction__82;
+controllable __node__DecisionNode__85__0;
+controllable __node__DecisionNode__85__1;
+controllable __node__MergeNode__86__0;
+controllable __node__MergeNode__86__1;
+controllable __node__MergeNode__87__0;
+controllable __node__MergeNode__87__1;
+controllable __node__ForkNode__88;
+controllable __node__ForkNode__89;
+controllable __node__JoinNode__90;
+controllable __node__ForkNode__91;
+controllable __node__CallBehaviorAction__92;
+uncontrollable __node__CallBehaviorAction__92__result_1;
+uncontrollable __node__CallBehaviorAction__92__result_2;
+controllable __node__CallBehaviorAction__93;
+uncontrollable __node__CallBehaviorAction__93__result_1;
+uncontrollable __node__CallBehaviorAction__93__result_2;
+controllable __node__CallBehaviorAction__94;
+uncontrollable __node__CallBehaviorAction__94__na_result_1;
+uncontrollable __node__CallBehaviorAction__94__na_result_2;
+plant automaton Machine:
+  disc bool a_executed in any;
+  disc bool b_executed in any;
+  disc bool c_executed in any;
+  disc bool d_executed in any;
+  disc bool __controlflow__60;
+  disc bool __controlflow__61;
+  disc bool __controlflow__62;
+  disc bool __controlflow__63;
+  disc bool __controlflow__65;
+  disc bool __controlflow__67;
+  disc bool __controlflow__68;
+  disc bool __controlflow__69;
+  disc bool __controlflow__70;
+  disc bool __controlflow__71;
+  disc bool __controlflow__72;
+  disc bool __controlflow__73;
+  disc bool __controlflow__74;
+  disc bool __controlflow__75;
+  disc bool __controlflow__76;
+  disc bool __controlflow__77;
+  disc bool __controlflow__78;
+  disc bool __controlflow__79 = true;
+  disc int[0..2] __activeAction;
+  disc bool __nonAtomicActive____node__CallBehaviorAction__94;
+  alg bool Precondition = not a_executed and not b_executed and not c_executed and not d_executed;
+  alg bool __token_on_first_controlflow = __controlflow__79;
+  alg bool __precondition = Precondition and __token_on_first_controlflow;
+  alg bool Postcondition = a_executed = true and b_executed = true and c_executed = true and d_executed = true;
+  alg bool __postcondition_without_structure__nonAtomicActive____node__CallBehaviorAction__94 = not __nonAtomicActive____node__CallBehaviorAction__94;
+  alg bool __postcondition_without_structure__activeAction = __activeAction = 0;
+  alg bool __postcondition_without_structure__IntervalConstraintA__44__NonAtomicA__95 = IntervalConstraintA__44__NonAtomicA__95.__occurrences >= 0;
+  alg bool __postcondition_without_structure__IntervalConstraintB__48__AtomicB__97 = IntervalConstraintB__48__AtomicB__97.__occurrences >= 0;
+  alg bool __postcondition_without_structure__IntervalConstraintC__52__NonAtomicC__99 = IntervalConstraintC__52__NonAtomicC__99.__occurrences >= 0;
+  alg bool __postcondition_without_structure__IntervalConstraintD__56__AtomicD__101 = IntervalConstraintD__56__AtomicD__101.__occurrences >= 0;
+  alg bool __postcondition_without_structure = Postcondition and (__postcondition_without_structure__nonAtomicActive____node__CallBehaviorAction__94 and __postcondition_without_structure__activeAction) and (__postcondition_without_structure__IntervalConstraintA__44__NonAtomicA__95 and __postcondition_without_structure__IntervalConstraintB__48__AtomicB__97 and (__postcondition_without_structure__IntervalConstraintC__52__NonAtomicC__99 and __postcondition_without_structure__IntervalConstraintD__56__AtomicD__101));
+  alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
+  alg bool __postcondition_with_structure__controlflow__60 = not __controlflow__60;
+  alg bool __postcondition_with_structure__controlflow__61 = not __controlflow__61;
+  alg bool __postcondition_with_structure__controlflow__62 = not __controlflow__62;
+  alg bool __postcondition_with_structure__controlflow__63 = not __controlflow__63;
+  alg bool __postcondition_with_structure__controlflow__65 = not __controlflow__65;
+  alg bool __postcondition_with_structure__controlflow__67 = not __controlflow__67;
+  alg bool __postcondition_with_structure__controlflow__68 = not __controlflow__68;
+  alg bool __postcondition_with_structure__controlflow__69 = not __controlflow__69;
+  alg bool __postcondition_with_structure__controlflow__70 = not __controlflow__70;
+  alg bool __postcondition_with_structure__controlflow__71 = not __controlflow__71;
+  alg bool __postcondition_with_structure__controlflow__72 = not __controlflow__72;
+  alg bool __postcondition_with_structure__controlflow__73 = not __controlflow__73;
+  alg bool __postcondition_with_structure__controlflow__74 = not __controlflow__74;
+  alg bool __postcondition_with_structure__controlflow__75 = not __controlflow__75;
+  alg bool __postcondition_with_structure__controlflow__76 = not __controlflow__76;
+  alg bool __postcondition_with_structure__controlflow__77 = not __controlflow__77;
+  alg bool __postcondition_with_structure__controlflow__79 = not __controlflow__79;
+  alg bool __token_on_last_controlflow = __controlflow__78;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure and __postcondition_with_structure__controlflow__60 and (__postcondition_with_structure__controlflow__61 and __postcondition_with_structure__controlflow__62) and (__postcondition_with_structure__controlflow__63 and __postcondition_with_structure__controlflow__65 and (__postcondition_with_structure__controlflow__67 and (__postcondition_with_structure__controlflow__68 and __postcondition_with_structure__controlflow__69))) and (__postcondition_with_structure__controlflow__70 and __postcondition_with_structure__controlflow__71 and (__postcondition_with_structure__controlflow__72 and (__postcondition_with_structure__controlflow__73 and __postcondition_with_structure__controlflow__74)) and (__postcondition_with_structure__controlflow__75 and __postcondition_with_structure__controlflow__76 and (__postcondition_with_structure__controlflow__77 and (__postcondition_with_structure__controlflow__79 and __token_on_last_controlflow))));
+  initial __precondition;
+  marked __postcondition_with_structure;
+  location:
+    initial;
+    marked;
+    edge __node__OpaqueAction__80 when true, __controlflow__61, not __controlflow__67, __activeAction = 0 do __controlflow__61 := false, __controlflow__67 := true;
+    edge __node__OpaqueAction__81 when true, __controlflow__63, not __controlflow__76, __activeAction = 0 do a_executed := true, __controlflow__63 := false, __controlflow__76 := true;
+    edge __node__OpaqueAction__82 when true, __controlflow__65, not __controlflow__77, __activeAction = 0 do a_executed := true, __controlflow__65 := false, __controlflow__77 := true;
+    edge __node__DecisionNode__85__0 when true, __controlflow__67, not __controlflow__63, true, __activeAction = 0 do __controlflow__67 := false, __controlflow__63 := true;
+    edge __node__DecisionNode__85__1 when true, __controlflow__67, not __controlflow__65, true, __activeAction = 0 do __controlflow__67 := false, __controlflow__65 := true;
+    edge __node__MergeNode__86__0 when true, __controlflow__69, not __controlflow__71, __activeAction = 0 do __controlflow__69 := false, __controlflow__71 := true;
+    edge __node__MergeNode__86__1 when true, __controlflow__70, not __controlflow__71, __activeAction = 0 do __controlflow__70 := false, __controlflow__71 := true;
+    edge __node__MergeNode__87__0 when true, __controlflow__72, not __controlflow__74, __activeAction = 0 do __controlflow__72 := false, __controlflow__74 := true;
+    edge __node__MergeNode__87__1 when true, __controlflow__73, not __controlflow__74, __activeAction = 0 do __controlflow__73 := false, __controlflow__74 := true;
+    edge __node__ForkNode__88 when true, __controlflow__76, not __controlflow__69, not __controlflow__72, __activeAction = 0 do __controlflow__76 := false, __controlflow__69 := true, __controlflow__72 := true;
+    edge __node__ForkNode__89 when true, __controlflow__77, not __controlflow__70, not __controlflow__73, __activeAction = 0 do __controlflow__77 := false, __controlflow__70 := true, __controlflow__73 := true;
+    edge __node__JoinNode__90 when true, __controlflow__60, __controlflow__68, __controlflow__75, not __controlflow__78, __activeAction = 0 do __controlflow__60 := false, __controlflow__68 := false, __controlflow__75 := false, __controlflow__78 := true;
+    edge __node__ForkNode__91 when true, __controlflow__79, not __controlflow__61, not __controlflow__62, __activeAction = 0 do __controlflow__79 := false, __controlflow__61 := true, __controlflow__62 := true;
+    edge __node__CallBehaviorAction__92 when a_executed = true, __controlflow__71, not __controlflow__75, __activeAction = 0 do __controlflow__71 := false, __activeAction := 1;
+    edge __node__CallBehaviorAction__92__result_1 when not __controlflow__75, __activeAction = 1 do b_executed := true, __controlflow__75 := true, __activeAction := 0;
+    edge __node__CallBehaviorAction__92__result_2 when not __controlflow__75, __activeAction = 1 do b_executed := true, __controlflow__75 := true, __activeAction := 0;
+    edge __node__CallBehaviorAction__93 when a_executed = true, __controlflow__74, not __controlflow__60, __activeAction = 0 do __controlflow__74 := false, __activeAction := 2;
+    edge __node__CallBehaviorAction__93__result_1 when not __controlflow__60, __activeAction = 2 do d_executed := true, __controlflow__60 := true, __activeAction := 0;
+    edge __node__CallBehaviorAction__93__result_2 when not __controlflow__60, __activeAction = 2 do d_executed := true, __controlflow__60 := true, __activeAction := 0;
+    edge __node__CallBehaviorAction__94 when true, __controlflow__62, not __controlflow__68, __activeAction = 0, not __nonAtomicActive____node__CallBehaviorAction__94 do __controlflow__62 := false, __nonAtomicActive____node__CallBehaviorAction__94 := true;
+    edge __node__CallBehaviorAction__94__na_result_1 when not __controlflow__68, __activeAction = 0, __nonAtomicActive____node__CallBehaviorAction__94 do c_executed := true, __controlflow__68 := true, __nonAtomicActive____node__CallBehaviorAction__94 := false;
+    edge __node__CallBehaviorAction__94__na_result_2 when not __controlflow__68, __activeAction = 0, __nonAtomicActive____node__CallBehaviorAction__94 do c_executed := true, __controlflow__68 := true, __nonAtomicActive____node__CallBehaviorAction__94 := false;
+end
+requirement automaton IntervalConstraintA__44__NonAtomicA__95:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+    edge __node__OpaqueAction__80 when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+requirement automaton IntervalConstraintB__48__AtomicB__97:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+    edge __node__CallBehaviorAction__92 when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+requirement automaton IntervalConstraintC__52__NonAtomicC__99:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+    edge __node__CallBehaviorAction__94 when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+requirement automaton IntervalConstraintD__56__AtomicD__101:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+    edge __node__CallBehaviorAction__93 when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+requirement invariant Machine.__postcondition_without_structure disables __node__OpaqueAction__80;
+requirement invariant Machine.__postcondition_with_structure disables __node__OpaqueAction__81;
+requirement invariant Machine.__postcondition_with_structure disables __node__OpaqueAction__82;
+requirement invariant Machine.__postcondition_with_structure disables __node__DecisionNode__85__0;
+requirement invariant Machine.__postcondition_with_structure disables __node__DecisionNode__85__1;
+requirement invariant Machine.__postcondition_with_structure disables __node__MergeNode__86__0;
+requirement invariant Machine.__postcondition_with_structure disables __node__MergeNode__86__1;
+requirement invariant Machine.__postcondition_with_structure disables __node__MergeNode__87__0;
+requirement invariant Machine.__postcondition_with_structure disables __node__MergeNode__87__1;
+requirement invariant Machine.__postcondition_with_structure disables __node__ForkNode__88;
+requirement invariant Machine.__postcondition_with_structure disables __node__ForkNode__89;
+requirement invariant Machine.__postcondition_with_structure disables __node__JoinNode__90;
+requirement invariant Machine.__postcondition_with_structure disables __node__ForkNode__91;
+requirement invariant Machine.__postcondition_without_structure disables __node__CallBehaviorAction__92;
+requirement invariant Machine.__postcondition_with_structure disables __node__CallBehaviorAction__92__result_1;
+requirement invariant Machine.__postcondition_with_structure disables __node__CallBehaviorAction__92__result_2;
+requirement invariant Machine.__postcondition_without_structure disables __node__CallBehaviorAction__93;
+requirement invariant Machine.__postcondition_with_structure disables __node__CallBehaviorAction__93__result_1;
+requirement invariant Machine.__postcondition_with_structure disables __node__CallBehaviorAction__93__result_2;
+requirement invariant Machine.__postcondition_without_structure disables __node__CallBehaviorAction__94;
+requirement invariant Machine.__postcondition_with_structure disables __node__CallBehaviorAction__94__na_result_1;
+requirement invariant Machine.__postcondition_with_structure disables __node__CallBehaviorAction__94__na_result_2;

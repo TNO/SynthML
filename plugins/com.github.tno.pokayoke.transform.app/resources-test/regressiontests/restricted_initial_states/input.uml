@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:SynthML="https://github.com/TNO/SynthML/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="_72TYwGY8EfCnwecO0vvH-w" name="Model">
+    <packagedElement xmi:type="uml:Class" xmi:id="__KGr0GY8EfCnwecO0vvH-w" name="Context" visibility="public" classifierBehavior="_LiI_gGY9EfCnwecO0vvH-w" isActive="true">
+      <ownedAttribute xmi:id="_E64-sGY9EfCnwecO0vvH-w" name="position" visibility="public" type="_ARa5MGY9EfCnwecO0vvH-w">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_E66M0GY9EfCnwecO0vvH-w" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_E66z4GY9EfCnwecO0vvH-w" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_IIHIoGY9EfCnwecO0vvH-w" name="done" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_IIHIoWY9EfCnwecO0vvH-w" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_IIHIomY9EfCnwecO0vvH-w" value="1"/>
+      </ownedAttribute>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_LiI_gGY9EfCnwecO0vvH-w" name="Main" isAbstract="true" postcondition="_Xn_-EGY9EfCnwecO0vvH-w" precondition="_RUnUcGY9EfCnwecO0vvH-w">
+        <ownedRule xmi:id="_RUnUcGY9EfCnwecO0vvH-w" name="Pre">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="_TWu9MGY9EfCnwecO0vvH-w" name="">
+            <body>not done</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:id="_Xn_-EGY9EfCnwecO0vvH-w" name="Post">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="_ZA8uAGY9EfCnwecO0vvH-w" name="">
+            <body>done</body>
+          </specification>
+        </ownedRule>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_N0xwgGY9EfCnwecO0vvH-w" name="Action"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Enumeration" xmi:id="_ARa5MGY9EfCnwecO0vvH-w" name="Position" visibility="public">
+      <ownedLiteral xmi:id="_CPERoGY9EfCnwecO0vvH-w" name="First">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_CPE4sGY9EfCnwecO0vvH-w"/>
+      </ownedLiteral>
+      <ownedLiteral xmi:id="_DIraMGY9EfCnwecO0vvH-w" name="Second">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_DIraMWY9EfCnwecO0vvH-w" value="1"/>
+      </ownedLiteral>
+      <ownedLiteral xmi:id="_D4NZsGY9EfCnwecO0vvH-w" name="Third">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_D4NZsWY9EfCnwecO0vvH-w" value="2"/>
+      </ownedLiteral>
+    </packagedElement>
+    <profileApplication xmi:id="_HjjqEGY9EfCnwecO0vvH-w">
+      <eAnnotations xmi:id="_HjnUcGY9EfCnwecO0vvH-w" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/SynthML/#/"/>
+      </eAnnotations>
+      <appliedProfile href="platform:/plugin/com.github.tno.synthml.uml.profile.plugin/model/synthml.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+    </profileApplication>
+  </uml:Model>
+  <SynthML:FormalElement xmi:id="_PBbJ0GY9EfCnwecO0vvH-w" guard="position = Second" base_RedefinableElement="_N0xwgGY9EfCnwecO0vvH-w" atomic="true">
+    <effects>done := true</effects>
+  </SynthML:FormalElement>
+</xmi:XMI>

@@ -160,7 +160,7 @@ Let $\action : \CoreNode \rightarrow \Action$ be a projection function for obtai
 	\action((\ell,\ornode{\alpha})) = \alpha
 \end{mathpar}
 
-\paragraph{Core activities.} 
+\paragraph{Core activities.}
 Let us now define \emph{core activities}, which are essentially graphs consisting of core nodes, as defined in the previous paragraph, that are connected via guarded edges.
 The edges of core activities have two guards, namely an \emph{incoming guard} and an \emph{outgoing guard}.
 The incoming guards are (later) used to restrict when an edge can \emph{receive} a token, while outgoing guards restrict when a token can be \emph{taken} from an edge.
@@ -228,10 +228,10 @@ The two rules are:
 		\outgoing(\corenode) = \outgoing(\corenode, \sigma')
 	} {
 		(\Sigma,\sigma) \xrightarrow{\corenode} ((\Sigma \setminus \incoming(\corenode)) \cup \outgoing(\corenode),\sigma')
-	} { 
+	} {
 		\text{ for } \corenode = (\ell, \andnode{\alpha})
 	}
-	
+
 	\inferrule[Or] {
 		\coreedge \in \incoming(\corenode, \sigma) \cap \Sigma
 		\\
@@ -242,7 +242,7 @@ The two rules are:
 		\coreedge' \in \outgoing(\corenode, \sigma') \setminus (\Sigma \! \setminus \! \{\coreedge\})
 	} {
 		(\Sigma,\sigma) \xrightarrow{\corenode} ((\Sigma \setminus \{\coreedge\}) \cup \{\coreedge'\}, \sigma')
-	} { 
+	} {
 		\text{ for } \corenode = (\ell, \ornode{\alpha})
 	}
 \end{mathpar}
@@ -350,7 +350,7 @@ Join nodes ($\join$) are executed likewise to fork nodes: their executions requi
 In fUML semantics, join nodes can only fire when all incoming edges have tokens (\cite{fUMLSemantics}, page 222).
 
 Decision nodes ($\decision$) are translated as $\orlabel$-typed nodes, as their execution requires a single incoming edge (usually just one) to be enabled and nondeterministically chooses a single outgoing edge whose incoming guard holds to receive a token.
-In fUML semantics, when firing a decision node, a token is offered to all outgoing edges whose (incoming) guard holds\footnote{The actual description as given in~\cite{fUMLSemantics} is slightly more complex, since it involves decision input flows that supply extra values to decision nodes (e.g., object flows), which somehow are used as tokens. However, this is the gist of it.} (\cite{fUMLSemantics}, page 213). 
+In fUML semantics, when firing a decision node, a token is offered to all outgoing edges whose (incoming) guard holds\footnote{The actual description as given in~\cite{fUMLSemantics} is slightly more complex, since it involves decision input flows that supply extra values to decision nodes (e.g., object flows), which somehow are used as tokens. However, this is the gist of it.} (\cite{fUMLSemantics}, page 213).
 Merge nodes ($\merge$) are translated similarly: their execution requires a single incoming edge (usually multiple) to be enabled, and puts a token on one outgoing edge (usually just one).
 The description of the semantics of merge nodes in~\cite{fUMLSemantics} is not super clear.
 

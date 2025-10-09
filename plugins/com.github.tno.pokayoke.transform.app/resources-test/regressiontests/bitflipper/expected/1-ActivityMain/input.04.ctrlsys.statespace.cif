@@ -2,28 +2,28 @@ controllable flip;
 controllable initialize;
 uncontrollable initialize__result_1;
 uncontrollable initialize__result_2;
-automaton statespace:
+automaton synthesis_state_space:
   alphabet flip, initialize, initialize__result_1, initialize__result_2;
-  @state(ActiveClass = "*", ActiveClass.__activeAction = 0, ActiveClass.bit = false, ActiveClass.init = false, sup = "*")
+  @state(ActiveClass: "*", ActiveClass.__activeAction: 0, ActiveClass.bit: false, ActiveClass.init: false, sup: "*")
   location loc1:
     initial;
     edge initialize goto loc3;
-  @state(ActiveClass = "*", ActiveClass.__activeAction = 0, ActiveClass.bit = true, ActiveClass.init = false, sup = "*")
+  @state(ActiveClass: "*", ActiveClass.__activeAction: 0, ActiveClass.bit: true, ActiveClass.init: false, sup: "*")
   location loc2:
     initial;
     edge initialize goto loc4;
-  @state(ActiveClass = "*", ActiveClass.__activeAction = 1, ActiveClass.bit = false, ActiveClass.init = false, sup = "*")
+  @state(ActiveClass: "*", ActiveClass.__activeAction: 1, ActiveClass.bit: false, ActiveClass.init: false, sup: "*")
   location loc3:
     edge initialize__result_1 goto loc5;
     edge initialize__result_2 goto loc6;
-  @state(ActiveClass = "*", ActiveClass.__activeAction = 1, ActiveClass.bit = true, ActiveClass.init = false, sup = "*")
+  @state(ActiveClass: "*", ActiveClass.__activeAction: 1, ActiveClass.bit: true, ActiveClass.init: false, sup: "*")
   location loc4:
     edge initialize__result_1 goto loc5;
     edge initialize__result_2 goto loc6;
-  @state(ActiveClass = "*", ActiveClass.__activeAction = 0, ActiveClass.bit = true, ActiveClass.init = true, sup = "*")
+  @state(ActiveClass: "*", ActiveClass.__activeAction: 0, ActiveClass.bit: true, ActiveClass.init: true, sup: "*")
   location loc5:
     marked;
-  @state(ActiveClass = "*", ActiveClass.__activeAction = 0, ActiveClass.bit = false, ActiveClass.init = true, sup = "*")
+  @state(ActiveClass: "*", ActiveClass.__activeAction: 0, ActiveClass.bit: false, ActiveClass.init: true, sup: "*")
   location loc6:
     edge flip goto loc5;
 end

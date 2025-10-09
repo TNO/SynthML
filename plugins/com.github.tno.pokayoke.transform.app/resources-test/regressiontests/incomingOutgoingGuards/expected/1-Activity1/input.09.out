@@ -1,0 +1,26 @@
+.model minimal
+.dummy  __start __node__InitialNode__56__0 __node__OpaqueAction__62 __node__ActivityFinalNode__58__0 __end __node__OpaqueAction__60 __node__MergeNode__64__1 __node__DecisionNode__66__1 __node__DecisionNode__66__0 __node__MergeNode__64__0 __loop
+.graph
+__end p10
+__loop p10
+__node__ActivityFinalNode__58__0 p9
+__node__DecisionNode__66__0 p5
+__node__DecisionNode__66__1 p6
+__node__InitialNode__56__0 p3
+__node__MergeNode__64__0 p8
+__node__MergeNode__64__1 p8
+__node__OpaqueAction__60 p7
+__node__OpaqueAction__62 p4
+__start p2
+p1 __start
+p10 __loop
+p2 __node__InitialNode__56__0
+p3 __node__OpaqueAction__62
+p4 __node__DecisionNode__66__0 __node__DecisionNode__66__1
+p5 __node__OpaqueAction__60
+p6 __node__MergeNode__64__0
+p7 __node__MergeNode__64__1
+p8 __node__ActivityFinalNode__58__0
+p9 __end
+.marking { p1 }
+.end

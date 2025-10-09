@@ -1,0 +1,61 @@
+controllable left;
+controllable right;
+controllable flip;
+uncontrollable flip__na_result_1;
+uncontrollable flip__na_result_2;
+controllable __start;
+controllable __end;
+automaton projected:
+  alphabet left, right, flip, flip__na_result_1, flip__na_result_2, __start, __end;
+  @state(synthesis_state_space: "__init")
+  location s1:
+    initial;
+    edge __start goto s2;
+  @state(synthesis_state_space: "loc4")
+  @state(synthesis_state_space: "loc3")
+  @state(synthesis_state_space: "loc2")
+  @state(synthesis_state_space: "loc1")
+  location s2:
+    edge flip goto s3;
+    edge right goto s4;
+    edge left goto s5;
+  @state(synthesis_state_space: "loc7")
+  @state(synthesis_state_space: "loc6")
+  location s3:
+    edge flip__na_result_2 goto s8;
+    edge flip__na_result_1 goto s8;
+  @state(synthesis_state_space: "loc8")
+  location s4:
+    edge flip goto s7;
+  @state(synthesis_state_space: "loc5")
+  location s5:
+    edge flip goto s6;
+  @state(synthesis_state_space: "loc9")
+  location s6:
+    edge flip__na_result_2 goto s9;
+    edge flip__na_result_1 goto s9;
+  @state(synthesis_state_space: "loc12")
+  location s7:
+    edge flip__na_result_2 goto s10;
+    edge flip__na_result_1 goto s10;
+  @state(synthesis_state_space: "loc11")
+  @state(synthesis_state_space: "loc10")
+  location s8:
+    edge right goto s11;
+    edge left goto s12;
+  @state(synthesis_state_space: "loc13")
+  location s9:
+    edge __end goto s13;
+  @state(synthesis_state_space: "loc16")
+  location s10:
+    edge __end goto s13;
+  @state(synthesis_state_space: "loc14")
+  location s11:
+    edge __end goto s13;
+  @state(synthesis_state_space: "loc15")
+  location s12:
+    edge __end goto s13;
+  @state(synthesis_state_space: "__done")
+  location s13:
+    marked;
+end

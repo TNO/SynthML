@@ -1,0 +1,50 @@
+controllable __node__InitialNode__56__0;
+uncontrollable __node__ActivityFinalNode__58__0;
+uncontrollable __node__OpaqueAction__60;
+uncontrollable __node__OpaqueAction__62;
+uncontrollable __node__MergeNode__64__0;
+uncontrollable __node__MergeNode__64__1;
+uncontrollable __node__DecisionNode__66__0;
+uncontrollable __node__DecisionNode__66__1;
+controllable __start;
+controllable __end;
+automaton projected:
+  alphabet __node__InitialNode__56__0, __node__ActivityFinalNode__58__0, __node__OpaqueAction__60, __node__OpaqueAction__62, __node__MergeNode__64__0, __node__MergeNode__64__1, __node__DecisionNode__66__0, __node__DecisionNode__66__1, __start, __end;
+  @state(synthesis_state_space: "__init")
+  location s1:
+    initial;
+    edge __start goto s2;
+  @state(synthesis_state_space: "loc2")
+  @state(synthesis_state_space: "loc1")
+  location s2:
+    edge __node__InitialNode__56__0 goto s3;
+  @state(synthesis_state_space: "loc4")
+  @state(synthesis_state_space: "loc3")
+  location s3:
+    edge __node__OpaqueAction__62 goto s4;
+  @state(synthesis_state_space: "loc6")
+  @state(synthesis_state_space: "loc5")
+  @state(synthesis_state_space: "loc8")
+  @state(synthesis_state_space: "loc7")
+  location s4:
+    edge __node__DecisionNode__66__1 goto s5;
+    edge __node__DecisionNode__66__0 goto s6;
+  @state(synthesis_state_space: "loc9")
+  location s5:
+    edge __node__MergeNode__64__0 goto s8;
+  @state(synthesis_state_space: "loc10")
+  location s6:
+    edge __node__OpaqueAction__60 goto s7;
+  @state(synthesis_state_space: "loc12")
+  location s7:
+    edge __node__MergeNode__64__1 goto s8;
+  @state(synthesis_state_space: "loc11")
+  location s8:
+    edge __node__ActivityFinalNode__58__0 goto s9;
+  @state(synthesis_state_space: "loc13")
+  location s9:
+    edge __end goto s10;
+  @state(synthesis_state_space: "__done")
+  location s10:
+    marked;
+end

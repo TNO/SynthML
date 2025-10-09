@@ -26,6 +26,10 @@ supervisor automaton sup:
   location:
     initial;
     marked;
-    edge action1 when Example.__activeAction = 0 and not Example.field1;
-    edge action2 when Example.__activeAction = 0 and not Example.field2;
+    edge action1 when true;
+    edge action2 when true;
 end
+supervisor invariant Example.__postcondition disables action1;
+supervisor invariant Example.__postcondition disables action1__result_1;
+supervisor invariant Example.__postcondition disables action1__result_2;
+supervisor invariant Example.__postcondition disables action2;

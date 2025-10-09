@@ -166,6 +166,52 @@ public interface SynthMLPackage extends EPackage {
 	 */
 	int FORMAL_CONTROL_FLOW_OPERATION_COUNT = 0;
 
+	/**
+	 * The meta object id for the '{@link SynthML.impl.FormalCallBehaviorActionImpl <em>Formal Call Behavior Action</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see SynthML.impl.FormalCallBehaviorActionImpl
+	 * @see SynthML.impl.SynthMLPackageImpl#getFormalCallBehaviorAction()
+	 * @generated
+	 */
+	int FORMAL_CALL_BEHAVIOR_ACTION = 2;
+
+	/**
+	 * The feature id for the '<em><b>Arguments</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FORMAL_CALL_BEHAVIOR_ACTION__ARGUMENTS = 0;
+
+	/**
+	 * The feature id for the '<em><b>Base Call Behavior Action</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FORMAL_CALL_BEHAVIOR_ACTION__BASE_CALL_BEHAVIOR_ACTION = 1;
+
+	/**
+	 * The number of structural features of the '<em>Formal Call Behavior Action</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FORMAL_CALL_BEHAVIOR_ACTION_FEATURE_COUNT = 2;
+
+	/**
+	 * The number of operations of the '<em>Formal Call Behavior Action</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FORMAL_CALL_BEHAVIOR_ACTION_OPERATION_COUNT = 0;
+
 
 	/**
 	 * Returns the meta object for class '{@link SynthML.FormalElement <em>Formal Element</em>}'.
@@ -252,6 +298,38 @@ public interface SynthMLPackage extends EPackage {
 	 * @generated
 	 */
 	EReference getFormalControlFlow_Base_ControlFlow();
+
+	/**
+	 * Returns the meta object for class '{@link SynthML.FormalCallBehaviorAction <em>Formal Call Behavior Action</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Formal Call Behavior Action</em>'.
+	 * @see SynthML.FormalCallBehaviorAction
+	 * @generated
+	 */
+	EClass getFormalCallBehaviorAction();
+
+	/**
+	 * Returns the meta object for the attribute '{@link SynthML.FormalCallBehaviorAction#getArguments <em>Arguments</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Arguments</em>'.
+	 * @see SynthML.FormalCallBehaviorAction#getArguments()
+	 * @see #getFormalCallBehaviorAction()
+	 * @generated
+	 */
+	EAttribute getFormalCallBehaviorAction_Arguments();
+
+	/**
+	 * Returns the meta object for the reference '{@link SynthML.FormalCallBehaviorAction#getBase_CallBehaviorAction <em>Base Call Behavior Action</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Base Call Behavior Action</em>'.
+	 * @see SynthML.FormalCallBehaviorAction#getBase_CallBehaviorAction()
+	 * @see #getFormalCallBehaviorAction()
+	 * @generated
+	 */
+	EReference getFormalCallBehaviorAction_Base_CallBehaviorAction();
 
 	/**
 	 * Returns the factory that creates the instances of the model.
@@ -343,6 +421,32 @@ public interface SynthMLPackage extends EPackage {
 		 * @generated
 		 */
 		EReference FORMAL_CONTROL_FLOW__BASE_CONTROL_FLOW = eINSTANCE.getFormalControlFlow_Base_ControlFlow();
+
+		/**
+		 * The meta object literal for the '{@link SynthML.impl.FormalCallBehaviorActionImpl <em>Formal Call Behavior Action</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see SynthML.impl.FormalCallBehaviorActionImpl
+		 * @see SynthML.impl.SynthMLPackageImpl#getFormalCallBehaviorAction()
+		 * @generated
+		 */
+		EClass FORMAL_CALL_BEHAVIOR_ACTION = eINSTANCE.getFormalCallBehaviorAction();
+
+		/**
+		 * The meta object literal for the '<em><b>Arguments</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute FORMAL_CALL_BEHAVIOR_ACTION__ARGUMENTS = eINSTANCE.getFormalCallBehaviorAction_Arguments();
+
+		/**
+		 * The meta object literal for the '<em><b>Base Call Behavior Action</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference FORMAL_CALL_BEHAVIOR_ACTION__BASE_CALL_BEHAVIOR_ACTION = eINSTANCE.getFormalCallBehaviorAction_Base_CallBehaviorAction();
 
 	}
 

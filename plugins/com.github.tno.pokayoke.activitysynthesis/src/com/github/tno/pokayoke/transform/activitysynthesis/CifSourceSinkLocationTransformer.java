@@ -4,13 +4,9 @@ package com.github.tno.pokayoke.transform.activitysynthesis;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.escet.cif.bdd.conversion.CifToBddConverter;
-import org.eclipse.escet.cif.bdd.conversion.CifToBddConverter.UnsupportedPredicateException;
-import org.eclipse.escet.cif.bdd.spec.CifBddSpec;
 import org.eclipse.escet.cif.common.CifCollectUtils;
 import org.eclipse.escet.cif.common.CifValueUtils;
 import org.eclipse.escet.cif.io.CifWriter;
@@ -20,12 +16,12 @@ import org.eclipse.escet.cif.metamodel.cif.automata.Edge;
 import org.eclipse.escet.cif.metamodel.cif.automata.Location;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Declaration;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
-import org.eclipse.escet.cif.metamodel.cif.expressions.Expression;
 import org.eclipse.escet.cif.metamodel.java.CifConstructors;
 import org.eclipse.escet.common.app.framework.AppEnv;
+import org.eclipse.escet.common.java.PathPair;
 
-import com.github.javabdd.BDD;
-import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator;
+import com.github.tno.pokayoke.transform.track.SynthesisChainTracking;
+import com.github.tno.pokayoke.transform.track.UmlToCifTranslationPurpose;
 import com.google.common.base.Preconditions;
 
 /**
@@ -48,19 +44,25 @@ public class CifSourceSinkLocationTransformer {
     }
 
     /**
-     * Transforms the given specification (as described for {@link #transform(Specification)}) and writes the
-     * transformed specification to the indicated file path.
+     * Transforms the given specification (as described for {@link #transform(Specification, SynthesisChainTracking)})
+     * and writes the transformed specification to the indicated file path.
      *
      * @param specification The input specification to transform, which should contain exactly one automaton.
      * @param outputFilePath The path to the output file to write the transformation result to.
      * @param outputFolderPath The path to the folder in which the transformation result is to be written.
+     * @param tracker The tracker that indicates how results from intermediate steps of the activity synthesis chain
+     *     relate to the input UML.
      */
-    public static void transform(Specification specification, Path outputFilePath, Path outputFolderPath) {
-        transform(specification);
+    public static void transform(Specification specification, Path outputFilePath, Path outputFolderPath,
+            SynthesisChainTracking tracker)
+    {
+        transform(specification, tracker);
 
         try {
             AppEnv.registerSimple();
-            CifWriter.writeCifSpec(specification, outputFilePath.toString(), outputFolderPath.toString());
+            CifWriter.writeCifSpec(specification,
+                    new PathPair(outputFilePath.toString(), outputFilePath.toAbsolutePath().toString()),
+                    outputFolderPath.toString());
         } finally {
             AppEnv.unregisterApplication();
         }
@@ -71,8 +73,10 @@ public class CifSourceSinkLocationTransformer {
      * and a new sink (marked) location.
      *
      * @param specification The input specification to transform, which should contain exactly one automaton.
+     * @param tracker The tracker that indicates how results from intermediate steps of the activity synthesis chain
+     *     relate to the input UML.
      */
-    public static void transform(Specification specification) {
+    public static void transform(Specification specification, SynthesisChainTracking tracker) {
         // Make sure the input specification does not contain any complex component with separate initials or markeds.
         Preconditions.checkArgument(
                 CifCollectUtils.getComplexComponentsStream(specification).allMatch(c -> c.getInitials().isEmpty()),
@@ -162,30 +166,9 @@ public class CifSourceSinkLocationTransformer {
             location.getEdges().add(edge);
             location.getMarkeds().clear();
         }
-    }
 
-    /**
-     * Extends the given mapping of uncontrolled system guards with auxiliary events that were introduced as part of the
-     * {@link CifSourceSinkLocationTransformer 'single source and sink location' transformation}.
-     *
-     * @param uncontrolledSystemGuards The uncontrolled system guards mapping, which is modified in-place.
-     * @param bddSpec The CIF/BDD specification of {@code specification}.
-     * @param translator The UML to CIF translator that was used to translate the UML input model to the given CIF
-     *     specification.
-     */
-    public static void addAuxiliarySystemGuards(Map<String, BDD> uncontrolledSystemGuards, CifBddSpec bddSpec,
-            UmlToCifTranslator translator)
-    {
-        // Obtain the preconditions and postconditions of the translated CIF specification.
-        Expression precondition = translator.getTranslatedPrecondition();
-        Expression postcondition = translator.getTranslatedPostcondition();
-
-        // Extend the guard mapping with the start and end event, which map to the pre and postcondition BDDs, resp.
-        try {
-            uncontrolledSystemGuards.put(START_EVENT_NAME, CifToBddConverter.convertPred(precondition, true, bddSpec));
-            uncontrolledSystemGuards.put(END_EVENT_NAME, CifToBddConverter.convertPred(postcondition, false, bddSpec));
-        } catch (UnsupportedPredicateException ex) {
-            throw new RuntimeException("Failed to translate the pre/postcondition to a BDD: " + ex.getMessage(), ex);
-        }
+        // Update the synthesis tracker with the new start and end events.
+        tracker.addCifEvent(startEvent, UmlToCifTranslationPurpose.SYNTHESIS, null, null, true, false);
+        tracker.addCifEvent(endEvent, UmlToCifTranslationPurpose.SYNTHESIS, null, null, true, false);
     }
 }

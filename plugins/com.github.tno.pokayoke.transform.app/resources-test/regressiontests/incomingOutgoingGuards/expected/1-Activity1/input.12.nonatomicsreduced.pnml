@@ -1,0 +1,149 @@
+<pnml xmlns="http://www.pnml.org/version-2009/grammar/pnml">
+  <net id="minimal" type="http://www.pnml.org/version-2009/grammar/ptnet">
+    <page id="minimal">
+      <transition id="__start">
+        <name>
+          <text>__start</text>
+        </name>
+      </transition>
+      <transition id="__node__InitialNode__56__0">
+        <name>
+          <text>__node__InitialNode__56__0</text>
+        </name>
+      </transition>
+      <transition id="__node__OpaqueAction__62">
+        <name>
+          <text>__node__OpaqueAction__62</text>
+        </name>
+      </transition>
+      <transition id="__node__ActivityFinalNode__58__0">
+        <name>
+          <text>__node__ActivityFinalNode__58__0</text>
+        </name>
+      </transition>
+      <transition id="__end">
+        <name>
+          <text>__end</text>
+        </name>
+      </transition>
+      <transition id="__node__OpaqueAction__60">
+        <name>
+          <text>__node__OpaqueAction__60</text>
+        </name>
+      </transition>
+      <transition id="__node__MergeNode__64__1">
+        <name>
+          <text>__node__MergeNode__64__1</text>
+        </name>
+      </transition>
+      <transition id="__node__DecisionNode__66__1">
+        <name>
+          <text>__node__DecisionNode__66__1</text>
+        </name>
+      </transition>
+      <transition id="__node__DecisionNode__66__0">
+        <name>
+          <text>__node__DecisionNode__66__0</text>
+        </name>
+      </transition>
+      <transition id="__node__MergeNode__64__0">
+        <name>
+          <text>__node__MergeNode__64__0</text>
+        </name>
+      </transition>
+      <place id="p10">
+        <name>
+          <text>p10</text>
+        </name>
+      </place>
+      <arc id="__end__to__p10" source="__end" target="p10">
+      </arc>
+      <place id="p9">
+        <name>
+          <text>p9</text>
+        </name>
+      </place>
+      <arc id="__node__ActivityFinalNode__58__0__to__p9" source="__node__ActivityFinalNode__58__0" target="p9">
+      </arc>
+      <place id="p5">
+        <name>
+          <text>p5</text>
+        </name>
+      </place>
+      <arc id="__node__DecisionNode__66__0__to__p5" source="__node__DecisionNode__66__0" target="p5">
+      </arc>
+      <place id="p6">
+        <name>
+          <text>p6</text>
+        </name>
+      </place>
+      <arc id="__node__DecisionNode__66__1__to__p6" source="__node__DecisionNode__66__1" target="p6">
+      </arc>
+      <place id="p3">
+        <name>
+          <text>p3</text>
+        </name>
+      </place>
+      <arc id="__node__InitialNode__56__0__to__p3" source="__node__InitialNode__56__0" target="p3">
+      </arc>
+      <place id="p8">
+        <name>
+          <text>p8</text>
+        </name>
+      </place>
+      <arc id="__node__MergeNode__64__0__to__p8" source="__node__MergeNode__64__0" target="p8">
+      </arc>
+      <arc id="__node__MergeNode__64__1__to__p8" source="__node__MergeNode__64__1" target="p8">
+      </arc>
+      <place id="p7">
+        <name>
+          <text>p7</text>
+        </name>
+      </place>
+      <arc id="__node__OpaqueAction__60__to__p7" source="__node__OpaqueAction__60" target="p7">
+      </arc>
+      <place id="p4">
+        <name>
+          <text>p4</text>
+        </name>
+      </place>
+      <arc id="__node__OpaqueAction__62__to__p4" source="__node__OpaqueAction__62" target="p4">
+      </arc>
+      <place id="p2">
+        <name>
+          <text>p2</text>
+        </name>
+      </place>
+      <arc id="__start__to__p2" source="__start" target="p2">
+      </arc>
+      <place id="p1">
+        <name>
+          <text>p1</text>
+        </name>
+        <initialMarking>
+          <text>1</text>
+        </initialMarking>
+      </place>
+      <arc id="p1__to____start" source="p1" target="__start">
+      </arc>
+      <arc id="p2__to____node__InitialNode__56__0" source="p2" target="__node__InitialNode__56__0">
+      </arc>
+      <arc id="p3__to____node__OpaqueAction__62" source="p3" target="__node__OpaqueAction__62">
+      </arc>
+      <arc id="p4__to____node__DecisionNode__66__0" source="p4" target="__node__DecisionNode__66__0">
+      </arc>
+      <arc id="p4__to____node__DecisionNode__66__1" source="p4" target="__node__DecisionNode__66__1">
+      </arc>
+      <arc id="p5__to____node__OpaqueAction__60" source="p5" target="__node__OpaqueAction__60">
+      </arc>
+      <arc id="p6__to____node__MergeNode__64__0" source="p6" target="__node__MergeNode__64__0">
+      </arc>
+      <arc id="p7__to____node__MergeNode__64__1" source="p7" target="__node__MergeNode__64__1">
+      </arc>
+      <arc id="p8__to____node__ActivityFinalNode__58__0" source="p8" target="__node__ActivityFinalNode__58__0">
+      </arc>
+      <arc id="p9__to____end" source="p9" target="__end">
+      </arc>
+    </page>
+  </net>
+</pnml>

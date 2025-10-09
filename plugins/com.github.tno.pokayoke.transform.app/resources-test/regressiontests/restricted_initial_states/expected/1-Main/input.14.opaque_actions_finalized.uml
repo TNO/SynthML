@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:SynthML="https://github.com/TNO/SynthML/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="1" name="Model">
+    <packagedElement xmi:type="uml:Class" xmi:id="2" name="Context" visibility="public" classifierBehavior="16" isActive="true">
+      <ownedComment xmi:id="3">
+        <body>Original-ID-Path:2</body>
+      </ownedComment>
+      <ownedAttribute xmi:id="4" name="position" visibility="public" type="37">
+        <ownedComment xmi:id="5">
+          <body>Original-ID-Path:3</body>
+        </ownedComment>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="6" value="1">
+          <ownedComment xmi:id="7">
+            <body>Original-ID-Path:4</body>
+          </ownedComment>
+        </lowerValue>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="8" value="1">
+          <ownedComment xmi:id="9">
+            <body>Original-ID-Path:5</body>
+          </ownedComment>
+        </upperValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="10" name="done" visibility="public">
+        <ownedComment xmi:id="11">
+          <body>Original-ID-Path:6</body>
+        </ownedComment>
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="12" value="1">
+          <ownedComment xmi:id="13">
+            <body>Original-ID-Path:7</body>
+          </ownedComment>
+        </lowerValue>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="14" value="1">
+          <ownedComment xmi:id="15">
+            <body>Original-ID-Path:8</body>
+          </ownedComment>
+        </upperValue>
+      </ownedAttribute>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="16" name="Main" postcondition="22" precondition="18" node="30 31 32 33 34">
+        <ownedComment xmi:id="17">
+          <body>Original-ID-Path:9</body>
+        </ownedComment>
+        <ownedRule xmi:id="18" name="Pre">
+          <ownedComment xmi:id="19">
+            <body>Original-ID-Path:10</body>
+          </ownedComment>
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="20" name="">
+            <ownedComment xmi:id="21">
+              <body>Original-ID-Path:11</body>
+            </ownedComment>
+            <body>not done</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:id="22" name="Post">
+          <ownedComment xmi:id="23">
+            <body>Original-ID-Path:12</body>
+          </ownedComment>
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="24" name="">
+            <ownedComment xmi:id="25">
+              <body>Original-ID-Path:13</body>
+            </ownedComment>
+            <body>done</body>
+          </specification>
+        </ownedRule>
+        <edge xmi:type="uml:ControlFlow" xmi:id="26" name="InitialNode__p1__to____start" target="31" source="32"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="27" name="__start__to__Action" target="34" source="31"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="28" name="Action__to____end" target="30" source="34"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="29" name="__end__to__FinalNode__p4" target="33" source="30"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="30" name="__end" incoming="28" outgoing="29"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="31" name="__start" incoming="26" outgoing="27"/>
+        <node xmi:type="uml:InitialNode" xmi:id="32" name="InitialNode__p1" outgoing="26"/>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="33" name="FinalNode__p4" incoming="29"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="34" name="Action" incoming="27" outgoing="28" behavior="35"/>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="35" name="Action">
+        <ownedComment xmi:id="36">
+          <body>Original-ID-Path:14</body>
+        </ownedComment>
+      </ownedBehavior>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Enumeration" xmi:id="37" name="Position" visibility="public">
+      <ownedComment xmi:id="38">
+        <body>Original-ID-Path:15</body>
+      </ownedComment>
+      <ownedLiteral xmi:id="39" name="First">
+        <ownedComment xmi:id="40">
+          <body>Original-ID-Path:16</body>
+        </ownedComment>
+        <specification xmi:type="uml:LiteralInteger" xmi:id="41">
+          <ownedComment xmi:id="42">
+            <body>Original-ID-Path:17</body>
+          </ownedComment>
+        </specification>
+      </ownedLiteral>
+      <ownedLiteral xmi:id="43" name="Second">
+        <ownedComment xmi:id="44">
+          <body>Original-ID-Path:18</body>
+        </ownedComment>
+        <specification xmi:type="uml:LiteralInteger" xmi:id="45" value="1">
+          <ownedComment xmi:id="46">
+            <body>Original-ID-Path:19</body>
+          </ownedComment>
+        </specification>
+      </ownedLiteral>
+      <ownedLiteral xmi:id="47" name="Third">
+        <ownedComment xmi:id="48">
+          <body>Original-ID-Path:20</body>
+        </ownedComment>
+        <specification xmi:type="uml:LiteralInteger" xmi:id="49" value="2">
+          <ownedComment xmi:id="50">
+            <body>Original-ID-Path:21</body>
+          </ownedComment>
+        </specification>
+      </ownedLiteral>
+    </packagedElement>
+    <profileApplication xmi:id="51">
+      <eAnnotations xmi:id="52" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/SynthML/#/"/>
+      </eAnnotations>
+      <appliedProfile href="platform:/plugin/com.github.tno.synthml.uml.profile.plugin/model/synthml.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+    </profileApplication>
+  </uml:Model>
+  <SynthML:FormalElement xmi:id="53" guard="position = Second" base_RedefinableElement="35" atomic="true">
+    <effects>done := true</effects>
+  </SynthML:FormalElement>
+</xmi:XMI>

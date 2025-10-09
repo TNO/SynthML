@@ -6,10 +6,10 @@ plant automaton Context:
   disc bool field2 = false;
   alg bool __precondition = true;
   alg bool postcondition = field2;
-  alg bool __postcondition__at_most_once__19__left__13 = at_most_once__19__left__13.__occurrences >= 0;
-  alg bool __postcondition__at_most_once__19__right__14 = at_most_once__19__right__14.__occurrences >= 0;
-  alg bool __postcondition__blocking__21__flip__15 = blocking__21__flip__15.__occurrences >= 0;
-  alg bool __postcondition = postcondition and __postcondition__at_most_once__19__left__13 and (__postcondition__at_most_once__19__right__14 and __postcondition__blocking__21__flip__15);
+  alg bool __postcondition__at_most_once__36__left__24 = at_most_once__36__left__24.__occurrences >= 0;
+  alg bool __postcondition__at_most_once__36__right__26 = at_most_once__36__right__26.__occurrences >= 0;
+  alg bool __postcondition__blocking__40__flip__28 = blocking__40__flip__28.__occurrences >= 0;
+  alg bool __postcondition = postcondition and __postcondition__at_most_once__36__left__24 and (__postcondition__at_most_once__36__right__26 and __postcondition__blocking__40__flip__28);
   initial __precondition;
   marked __postcondition;
   location:
@@ -19,7 +19,7 @@ plant automaton Context:
     edge right when field1 do field2 := true;
     edge flip when true do field1 := not field1;
 end
-supervisor automaton at_most_once__19__left__13:
+supervisor automaton at_most_once__36__left__24:
   disc int[0..1] __occurrences;
   marked __occurrences >= 0;
   location:
@@ -27,7 +27,7 @@ supervisor automaton at_most_once__19__left__13:
     marked;
     edge left when __occurrences < 1 do __occurrences := __occurrences + 1;
 end
-supervisor automaton at_most_once__19__right__14:
+supervisor automaton at_most_once__36__right__26:
   disc int[0..1] __occurrences;
   marked __occurrences >= 0;
   location:
@@ -35,7 +35,7 @@ supervisor automaton at_most_once__19__right__14:
     marked;
     edge right when __occurrences < 1 do __occurrences := __occurrences + 1;
 end
-supervisor automaton blocking__21__flip__15:
+supervisor automaton blocking__40__flip__28:
   disc int[0..1] __occurrences;
   marked __occurrences >= 0;
   location:
@@ -48,7 +48,10 @@ supervisor automaton sup:
   location:
     initial;
     marked;
-    edge flip when false;
-    edge left when at_most_once__19__left__13.__occurrences = 0 and not Context.field2 and (at_most_once__19__right__14.__occurrences = 0 and (blocking__21__flip__15.__occurrences = 0 and not Context.field1));
-    edge right when at_most_once__19__left__13.__occurrences = 0 and not Context.field2 and (at_most_once__19__right__14.__occurrences = 0 and (blocking__21__flip__15.__occurrences = 0 and Context.field1));
+    edge flip when true;
+    edge left when true;
+    edge right when true;
 end
+supervisor invariant Context.__postcondition disables left;
+supervisor invariant Context.__postcondition disables right;
+supervisor invariant Context.__postcondition disables flip;

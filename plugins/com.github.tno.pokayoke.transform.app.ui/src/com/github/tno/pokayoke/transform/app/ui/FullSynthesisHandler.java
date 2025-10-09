@@ -7,8 +7,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Named;
-
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
@@ -28,6 +26,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 import com.github.tno.pokayoke.transform.app.FullSynthesisApp;
+
+import jakarta.inject.Named;
 
 /** Menu action handler to perform full synthesis. */
 public class FullSynthesisHandler {

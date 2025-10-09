@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:SynthML="https://github.com/TNO/SynthML/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="1" name="NewModel">
+    <packagedElement xmi:type="uml:Class" xmi:id="2" name="Machine" visibility="public" classifierBehavior="16" isActive="true">
+      <ownedComment xmi:id="3">
+        <body>Original-ID-Path:2</body>
+      </ownedComment>
+      <ownedAttribute xmi:id="4" name="a_executed" visibility="public">
+        <ownedComment xmi:id="5">
+          <body>Original-ID-Path:3</body>
+        </ownedComment>
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="6" value="1">
+          <ownedComment xmi:id="7">
+            <body>Original-ID-Path:4</body>
+          </ownedComment>
+        </lowerValue>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="8" value="1">
+          <ownedComment xmi:id="9">
+            <body>Original-ID-Path:5</body>
+          </ownedComment>
+        </upperValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="10" name="b_executed" visibility="public">
+        <ownedComment xmi:id="11">
+          <body>Original-ID-Path:6</body>
+        </ownedComment>
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="12" value="1">
+          <ownedComment xmi:id="13">
+            <body>Original-ID-Path:7</body>
+          </ownedComment>
+        </lowerValue>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="14" value="1">
+          <ownedComment xmi:id="15">
+            <body>Original-ID-Path:8</body>
+          </ownedComment>
+        </upperValue>
+      </ownedAttribute>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="16" name="AbstractActivity" postcondition="28" precondition="24" node="46 47 48 49 50 51">
+        <ownedComment xmi:id="17">
+          <body>Original-ID-Path:9</body>
+        </ownedComment>
+        <nameExpression xmi:id="18" name="StringExpression1">
+          <ownedComment xmi:id="19">
+            <body>Original-ID-Path:10</body>
+          </ownedComment>
+          <operand xmi:type="uml:LiteralInteger" xmi:id="20" name="LiteralInteger1" value="1">
+            <ownedComment xmi:id="21">
+              <body>Original-ID-Path:11</body>
+            </ownedComment>
+          </operand>
+          <operand xmi:type="uml:LiteralInteger" xmi:id="22" name="LiteralInteger0">
+            <ownedComment xmi:id="23">
+              <body>Original-ID-Path:12</body>
+            </ownedComment>
+          </operand>
+        </nameExpression>
+        <ownedRule xmi:id="24" name="Precondition">
+          <ownedComment xmi:id="25">
+            <body>Original-ID-Path:13</body>
+          </ownedComment>
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="26" name="">
+            <ownedComment xmi:id="27">
+              <body>Original-ID-Path:14</body>
+            </ownedComment>
+            <body>not a_executed and not b_executed</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:id="28" name="Postcondition">
+          <ownedComment xmi:id="29">
+            <body>Original-ID-Path:15</body>
+          </ownedComment>
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="30" name="">
+            <ownedComment xmi:id="31">
+              <body>Original-ID-Path:16</body>
+            </ownedComment>
+            <body>a_executed = true and b_executed = true</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="32" name="IntervalConstraintA" constrainedElement="52">
+          <ownedComment xmi:id="33">
+            <body>Original-ID-Path:17</body>
+          </ownedComment>
+          <specification xmi:type="uml:Interval" xmi:id="34" name="IntervalA" max="20" min="22">
+            <ownedComment xmi:id="35">
+              <body>Original-ID-Path:18</body>
+            </ownedComment>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="36" name="IntervalConstraintB" constrainedElement="54">
+          <ownedComment xmi:id="37">
+            <body>Original-ID-Path:19</body>
+          </ownedComment>
+          <specification xmi:type="uml:Interval" xmi:id="38" name="IntervalB" max="20" min="22">
+            <ownedComment xmi:id="39">
+              <body>Original-ID-Path:20</body>
+            </ownedComment>
+          </specification>
+        </ownedRule>
+        <edge xmi:type="uml:ControlFlow" xmi:id="40" name="Fork____start__to__AtomicA" target="50" source="49"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="41" name="Fork____start__to__NonAtomicB" target="51" source="49"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="42" name="AtomicA__to__Join____end" target="48" source="50"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="43" name="NonAtomicB__to__Join____end" target="48" source="51"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="44" name="Join____end__to__FinalNode__p6" target="47" source="48"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="45" name="InitialNode__p1__to__Fork____start" target="49" source="46"/>
+        <node xmi:type="uml:InitialNode" xmi:id="46" name="InitialNode__p1" outgoing="45"/>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="47" name="FinalNode__p6" incoming="44"/>
+        <node xmi:type="uml:JoinNode" xmi:id="48" name="Join____end" incoming="42 43" outgoing="44"/>
+        <node xmi:type="uml:ForkNode" xmi:id="49" name="Fork____start" incoming="45" outgoing="40 41"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="50" name="AtomicA" incoming="40" outgoing="42" behavior="52"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="51" name="NonAtomicB" incoming="41" outgoing="43" behavior="54"/>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="52" name="AtomicA">
+        <ownedComment xmi:id="53">
+          <body>Original-ID-Path:21</body>
+        </ownedComment>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="54" name="NonAtomicB">
+        <ownedComment xmi:id="55">
+          <body>Original-ID-Path:22</body>
+        </ownedComment>
+      </ownedBehavior>
+    </packagedElement>
+    <profileApplication xmi:id="56">
+      <eAnnotations xmi:id="57" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/SynthML/#/"/>
+      </eAnnotations>
+      <appliedProfile href="platform:/plugin/com.github.tno.synthml.uml.profile.plugin/model/synthml.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+    </profileApplication>
+  </uml:Model>
+  <SynthML:FormalElement xmi:id="58" guard="true" base_RedefinableElement="52" atomic="true">
+    <effects>a_executed := true</effects>
+    <effects>a_executed := true</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="59" guard="true" base_RedefinableElement="54">
+    <effects>b_executed := true</effects>
+    <effects>b_executed := true</effects>
+  </SynthML:FormalElement>
+</xmi:XMI>

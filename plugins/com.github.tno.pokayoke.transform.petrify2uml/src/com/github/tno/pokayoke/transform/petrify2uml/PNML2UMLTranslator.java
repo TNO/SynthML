@@ -8,8 +8,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.io.FilenameUtils;
@@ -17,18 +20,16 @@ import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityNode;
-import org.eclipse.uml2.uml.Behavior;
-import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.ForkNode;
 import org.eclipse.uml2.uml.JoinNode;
 import org.eclipse.uml2.uml.LiteralBoolean;
 import org.eclipse.uml2.uml.Model;
+import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.UMLFactory;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
-import com.github.tno.synthml.uml.profile.cif.CifContext;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Preconditions;
 
@@ -48,8 +49,6 @@ public class PNML2UMLTranslator {
 
     /** The abstract UML activity to translate the Petri Net to. */
     private final Activity activity;
-
-    private final CifContext context;
 
     /** The mapping from Petri Net arcs to corresponding translated UML control flows. */
     private final Map<Arc, ControlFlow> arcMapping = new LinkedHashMap<>();
@@ -76,7 +75,6 @@ public class PNML2UMLTranslator {
         Preconditions.checkArgument(activity.getEdges().isEmpty(), "Expected abstract activities to not have edges.");
 
         this.activity = activity;
-        this.context = new CifContext(activity.getModel());
     }
 
     private static Activity createEmptyUMLModelWithActivity() {
@@ -123,7 +121,13 @@ public class PNML2UMLTranslator {
         // Translate the input Petri Net to a UML activity.
         PetriNet petriNet = PNMLUMLFileHelper.readPetriNet(inputPath.toString());
         translate(petriNet);
-        PostProcessActivity.removeInternalActions(activity);
+
+        // Find the internal actions, and remove them.
+        List<ActivityNode> internalNodes = activity.getNodes().stream().filter(node -> node.getName().contains("__"))
+                .toList();
+        Set<OpaqueAction> actionsToRemove = internalNodes.stream().filter(OpaqueAction.class::isInstance)
+                .map(OpaqueAction.class::cast).collect(Collectors.toCollection(LinkedHashSet::new));
+        PostProcessActivity.removeOpaqueActions(activity, actionsToRemove);
 
         // Write the UML activity to the output file.
         String filePrefix = FilenameUtils.removeExtension(inputPath.getFileName().toString());
@@ -165,22 +169,8 @@ public class PNML2UMLTranslator {
         Preconditions.checkArgument(!transitionMapping.containsKey(transition),
                 "Expected the given transition to have not yet been translated.");
 
-        // Find the UML behavior for the action that corresponds to the given Petri Net transition.
-        Behavior behavior = context.getOpaqueBehavior(getNameWithoutDuplicationPostfix(transition.getId()));
-
         // Create the UML action node.
-        Action action;
-
-        if (behavior != null) {
-            CallBehaviorAction callAction = UML_FACTORY.createCallBehaviorAction();
-            callAction.setBehavior(behavior);
-            action = callAction;
-        } else {
-            // Here we are transforming an action for which no opaque behavior is defined. This could be due to the
-            // action being internal (e.g., 'start' or 'end') or due to translating to an empty UML model (e.g., for
-            // regression testing). Therefore these actions are translated to opaque actions instead.
-            action = UML_FACTORY.createOpaqueAction();
-        }
+        Action action = UML_FACTORY.createOpaqueAction();
 
         action.setActivity(activity);
         action.setName(transition.getId());

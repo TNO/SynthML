@@ -1,0 +1,135 @@
+controllable NonAtomicA;
+uncontrollable NonAtomicA__na_result_1;
+uncontrollable NonAtomicA__na_result_2;
+controllable NonAtomicB;
+uncontrollable NonAtomicB__na_result_1;
+uncontrollable NonAtomicB__na_result_2;
+controllable NonAtomicC;
+uncontrollable NonAtomicC__na_result_1;
+uncontrollable NonAtomicC__na_result_2;
+controllable NonAtomicD;
+uncontrollable NonAtomicD__na_result_1;
+uncontrollable NonAtomicD__na_result_2;
+controllable __start;
+controllable __end;
+automaton projected:
+  alphabet NonAtomicA, NonAtomicA__na_result_1, NonAtomicA__na_result_2, NonAtomicB, NonAtomicB__na_result_1, NonAtomicB__na_result_2, NonAtomicC, NonAtomicC__na_result_1, NonAtomicC__na_result_2, NonAtomicD, NonAtomicD__na_result_1, NonAtomicD__na_result_2, __start, __end;
+  @state(synthesis_state_space: "__init")
+  location s1:
+    initial;
+    edge __start goto s2;
+  @state(synthesis_state_space: "loc1")
+  location s2:
+    edge NonAtomicC goto s3;
+    edge NonAtomicA goto s4;
+  @state(synthesis_state_space: "loc3")
+  location s3:
+    edge NonAtomicC__na_result_2 goto s7;
+    edge NonAtomicC__na_result_1 goto s7;
+    edge NonAtomicA goto s5;
+  @state(synthesis_state_space: "loc2")
+  location s4:
+    edge NonAtomicC goto s5;
+    edge NonAtomicA__na_result_2 goto s6;
+    edge NonAtomicA__na_result_1 goto s6;
+  @state(synthesis_state_space: "loc5")
+  location s5:
+    edge NonAtomicC__na_result_2 goto s10;
+    edge NonAtomicC__na_result_1 goto s10;
+    edge NonAtomicA__na_result_2 goto s8;
+    edge NonAtomicA__na_result_1 goto s8;
+  @state(synthesis_state_space: "loc4")
+  location s6:
+    edge NonAtomicC goto s8;
+    edge NonAtomicB goto s9;
+  @state(synthesis_state_space: "loc6")
+  location s7:
+    edge NonAtomicD goto s11;
+    edge NonAtomicA goto s10;
+  @state(synthesis_state_space: "loc8")
+  location s8:
+    edge NonAtomicC__na_result_2 goto s14;
+    edge NonAtomicC__na_result_1 goto s14;
+    edge NonAtomicB goto s12;
+  @state(synthesis_state_space: "loc7")
+  location s9:
+    edge NonAtomicC goto s12;
+    edge NonAtomicB__na_result_2 goto s13;
+    edge NonAtomicB__na_result_1 goto s13;
+  @state(synthesis_state_space: "loc9")
+  location s10:
+    edge NonAtomicD goto s15;
+    edge NonAtomicA__na_result_2 goto s14;
+    edge NonAtomicA__na_result_1 goto s14;
+  @state(synthesis_state_space: "loc10")
+  location s11:
+    edge NonAtomicD__na_result_2 goto s16;
+    edge NonAtomicD__na_result_1 goto s16;
+    edge NonAtomicA goto s15;
+  @state(synthesis_state_space: "loc12")
+  location s12:
+    edge NonAtomicC__na_result_2 goto s18;
+    edge NonAtomicC__na_result_1 goto s18;
+    edge NonAtomicB__na_result_2 goto s17;
+    edge NonAtomicB__na_result_1 goto s17;
+  @state(synthesis_state_space: "loc11")
+  location s13:
+    edge NonAtomicC goto s17;
+  @state(synthesis_state_space: "loc13")
+  location s14:
+    edge NonAtomicD goto s19;
+    edge NonAtomicB goto s18;
+  @state(synthesis_state_space: "loc14")
+  location s15:
+    edge NonAtomicD__na_result_2 goto s20;
+    edge NonAtomicD__na_result_1 goto s20;
+    edge NonAtomicA__na_result_2 goto s19;
+    edge NonAtomicA__na_result_1 goto s19;
+  @state(synthesis_state_space: "loc15")
+  location s16:
+    edge NonAtomicA goto s20;
+  @state(synthesis_state_space: "loc16")
+  location s17:
+    edge NonAtomicC__na_result_2 goto s21;
+    edge NonAtomicC__na_result_1 goto s21;
+  @state(synthesis_state_space: "loc17")
+  location s18:
+    edge NonAtomicD goto s22;
+    edge NonAtomicB__na_result_2 goto s21;
+    edge NonAtomicB__na_result_1 goto s21;
+  @state(synthesis_state_space: "loc18")
+  location s19:
+    edge NonAtomicD__na_result_2 goto s23;
+    edge NonAtomicD__na_result_1 goto s23;
+    edge NonAtomicB goto s22;
+  @state(synthesis_state_space: "loc19")
+  location s20:
+    edge NonAtomicA__na_result_2 goto s23;
+    edge NonAtomicA__na_result_1 goto s23;
+  @state(synthesis_state_space: "loc20")
+  location s21:
+    edge NonAtomicD goto s24;
+  @state(synthesis_state_space: "loc21")
+  location s22:
+    edge NonAtomicD__na_result_2 goto s25;
+    edge NonAtomicD__na_result_1 goto s25;
+    edge NonAtomicB__na_result_2 goto s24;
+    edge NonAtomicB__na_result_1 goto s24;
+  @state(synthesis_state_space: "loc22")
+  location s23:
+    edge NonAtomicB goto s25;
+  @state(synthesis_state_space: "loc23")
+  location s24:
+    edge NonAtomicD__na_result_2 goto s26;
+    edge NonAtomicD__na_result_1 goto s26;
+  @state(synthesis_state_space: "loc24")
+  location s25:
+    edge NonAtomicB__na_result_2 goto s26;
+    edge NonAtomicB__na_result_1 goto s26;
+  @state(synthesis_state_space: "loc25")
+  location s26:
+    edge __end goto s27;
+  @state(synthesis_state_space: "__done")
+  location s27:
+    marked;
+end

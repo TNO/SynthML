@@ -1,0 +1,40 @@
+controllable left;
+controllable right;
+controllable flip;
+automaton synthesis_state_space:
+  alphabet left, right, flip;
+  @state(Context: "*", Context.field1: false, Context.field2: false, Context.flipped: false, occurrences__44__flip__36: "*", occurrences__44__flip__36.__occurrences: 0, occurrences__44__left__32: "*", occurrences__44__left__32.__occurrences: 0, occurrences__44__right__34: "*", occurrences__44__right__34.__occurrences: 0, sup: "*")
+  location loc1:
+    initial;
+    edge left goto loc3;
+    edge flip goto loc4;
+  @state(Context: "*", Context.field1: true, Context.field2: false, Context.flipped: false, occurrences__44__flip__36: "*", occurrences__44__flip__36.__occurrences: 0, occurrences__44__left__32: "*", occurrences__44__left__32.__occurrences: 0, occurrences__44__right__34: "*", occurrences__44__right__34.__occurrences: 0, sup: "*")
+  location loc2:
+    initial;
+    edge right goto loc5;
+    edge flip goto loc6;
+  @state(Context: "*", Context.field1: false, Context.field2: true, Context.flipped: false, occurrences__44__flip__36: "*", occurrences__44__flip__36.__occurrences: 0, occurrences__44__left__32: "*", occurrences__44__left__32.__occurrences: 1, occurrences__44__right__34: "*", occurrences__44__right__34.__occurrences: 0, sup: "*")
+  location loc3:
+    edge flip goto loc7;
+  @state(Context: "*", Context.field1: true, Context.field2: false, Context.flipped: true, occurrences__44__flip__36: "*", occurrences__44__flip__36.__occurrences: 1, occurrences__44__left__32: "*", occurrences__44__left__32.__occurrences: 0, occurrences__44__right__34: "*", occurrences__44__right__34.__occurrences: 0, sup: "*")
+  location loc4:
+    edge right goto loc8;
+  @state(Context: "*", Context.field1: true, Context.field2: true, Context.flipped: false, occurrences__44__flip__36: "*", occurrences__44__flip__36.__occurrences: 0, occurrences__44__left__32: "*", occurrences__44__left__32.__occurrences: 0, occurrences__44__right__34: "*", occurrences__44__right__34.__occurrences: 1, sup: "*")
+  location loc5:
+    edge flip goto loc9;
+  @state(Context: "*", Context.field1: false, Context.field2: false, Context.flipped: true, occurrences__44__flip__36: "*", occurrences__44__flip__36.__occurrences: 1, occurrences__44__left__32: "*", occurrences__44__left__32.__occurrences: 0, occurrences__44__right__34: "*", occurrences__44__right__34.__occurrences: 0, sup: "*")
+  location loc6:
+    edge left goto loc10;
+  @state(Context: "*", Context.field1: true, Context.field2: true, Context.flipped: true, occurrences__44__flip__36: "*", occurrences__44__flip__36.__occurrences: 1, occurrences__44__left__32: "*", occurrences__44__left__32.__occurrences: 1, occurrences__44__right__34: "*", occurrences__44__right__34.__occurrences: 0, sup: "*")
+  location loc7:
+    marked;
+  @state(Context: "*", Context.field1: true, Context.field2: true, Context.flipped: true, occurrences__44__flip__36: "*", occurrences__44__flip__36.__occurrences: 1, occurrences__44__left__32: "*", occurrences__44__left__32.__occurrences: 0, occurrences__44__right__34: "*", occurrences__44__right__34.__occurrences: 1, sup: "*")
+  location loc8:
+    marked;
+  @state(Context: "*", Context.field1: false, Context.field2: true, Context.flipped: true, occurrences__44__flip__36: "*", occurrences__44__flip__36.__occurrences: 1, occurrences__44__left__32: "*", occurrences__44__left__32.__occurrences: 0, occurrences__44__right__34: "*", occurrences__44__right__34.__occurrences: 1, sup: "*")
+  location loc9:
+    marked;
+  @state(Context: "*", Context.field1: false, Context.field2: true, Context.flipped: true, occurrences__44__flip__36: "*", occurrences__44__flip__36.__occurrences: 1, occurrences__44__left__32: "*", occurrences__44__left__32.__occurrences: 1, occurrences__44__right__34: "*", occurrences__44__right__34.__occurrences: 0, sup: "*")
+  location loc10:
+    marked;
+end

@@ -5,8 +5,6 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 
-import javax.inject.Named;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -52,6 +50,8 @@ import org.eclipse.uml2.uml.UMLFactory;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
+
+import jakarta.inject.Named;
 
 public class CreateScopedModelHandler {
     @Evaluate

@@ -1,0 +1,16 @@
+.model minimal
+.dummy __start __node__InitialNode__56__0 __node__OpaqueAction__62 __node__ActivityFinalNode__58__0 __end __node__OpaqueAction__60 __node__MergeNode__64__1 __node__DecisionNode__66__1 __node__DecisionNode__66__0 __node__MergeNode__64__0 __loop
+.state graph
+s1 __start s2
+s2 __node__InitialNode__56__0 s4
+s4 __node__OpaqueAction__62 s9
+s5 __node__ActivityFinalNode__58__0 s6
+s6 __end s3
+s7 __node__OpaqueAction__60 s8
+s8 __node__MergeNode__64__1 s5
+s9 __node__DecisionNode__66__1 s10
+s9 __node__DecisionNode__66__0 s7
+s10 __node__MergeNode__64__0 s5
+s3 __loop s3
+.marking {s1}
+.end

@@ -2,28 +2,28 @@ controllable action1;
 uncontrollable action1__result_1;
 uncontrollable action1__result_2;
 controllable action2;
-automaton statespace:
+automaton synthesis_state_space:
   alphabet action1, action1__result_1, action1__result_2, action2;
-  @state(Example = "*", Example.__activeAction = 0, Example.field1 = false, Example.field2 = false, sup = "*")
+  @state(Example: "*", Example.__activeAction: 0, Example.field1: false, Example.field2: false, sup: "*")
   location loc1:
     initial;
     edge action1 goto loc2;
     edge action2 goto loc3;
-  @state(Example = "*", Example.__activeAction = 1, Example.field1 = false, Example.field2 = false, sup = "*")
+  @state(Example: "*", Example.__activeAction: 1, Example.field1: false, Example.field2: false, sup: "*")
   location loc2:
     edge action1__result_1 goto loc4;
     edge action1__result_2 goto loc1;
-  @state(Example = "*", Example.__activeAction = 0, Example.field1 = false, Example.field2 = true, sup = "*")
+  @state(Example: "*", Example.__activeAction: 0, Example.field1: false, Example.field2: true, sup: "*")
   location loc3:
     edge action1 goto loc5;
-  @state(Example = "*", Example.__activeAction = 0, Example.field1 = true, Example.field2 = false, sup = "*")
+  @state(Example: "*", Example.__activeAction: 0, Example.field1: true, Example.field2: false, sup: "*")
   location loc4:
     edge action2 goto loc6;
-  @state(Example = "*", Example.__activeAction = 1, Example.field1 = false, Example.field2 = true, sup = "*")
+  @state(Example: "*", Example.__activeAction: 1, Example.field1: false, Example.field2: true, sup: "*")
   location loc5:
     edge action1__result_1 goto loc6;
     edge action1__result_2 goto loc3;
-  @state(Example = "*", Example.__activeAction = 0, Example.field1 = true, Example.field2 = true, sup = "*")
+  @state(Example: "*", Example.__activeAction: 0, Example.field1: true, Example.field2: true, sup: "*")
   location loc6:
     marked;
 end

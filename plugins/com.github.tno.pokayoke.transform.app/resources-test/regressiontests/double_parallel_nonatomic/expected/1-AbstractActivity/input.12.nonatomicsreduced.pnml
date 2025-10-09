@@ -1,0 +1,107 @@
+<pnml xmlns="http://www.pnml.org/version-2009/grammar/pnml">
+  <net id="minimal" type="http://www.pnml.org/version-2009/grammar/ptnet">
+    <page id="minimal">
+      <transition id="__start">
+        <name>
+          <text>__start</text>
+        </name>
+      </transition>
+      <transition id="NonAtomicC">
+        <name>
+          <text>NonAtomicC</text>
+        </name>
+      </transition>
+      <transition id="NonAtomicA">
+        <name>
+          <text>NonAtomicA</text>
+        </name>
+      </transition>
+      <transition id="NonAtomicB">
+        <name>
+          <text>NonAtomicB</text>
+        </name>
+      </transition>
+      <transition id="NonAtomicD">
+        <name>
+          <text>NonAtomicD</text>
+        </name>
+      </transition>
+      <transition id="__end">
+        <name>
+          <text>__end</text>
+        </name>
+      </transition>
+      <place id="p4">
+        <name>
+          <text>p4</text>
+        </name>
+      </place>
+      <arc id="NonAtomicA__to__p4" source="NonAtomicA" target="p4">
+      </arc>
+      <place id="p8">
+        <name>
+          <text>p8</text>
+        </name>
+      </place>
+      <arc id="NonAtomicB__to__p8" source="NonAtomicB" target="p8">
+      </arc>
+      <place id="p5">
+        <name>
+          <text>p5</text>
+        </name>
+      </place>
+      <arc id="NonAtomicC__to__p5" source="NonAtomicC" target="p5">
+      </arc>
+      <place id="p9">
+        <name>
+          <text>p9</text>
+        </name>
+      </place>
+      <arc id="NonAtomicD__to__p9" source="NonAtomicD" target="p9">
+      </arc>
+      <place id="p12">
+        <name>
+          <text>p12</text>
+        </name>
+      </place>
+      <arc id="__end__to__p12" source="__end" target="p12">
+      </arc>
+      <place id="p2">
+        <name>
+          <text>p2</text>
+        </name>
+      </place>
+      <place id="p3">
+        <name>
+          <text>p3</text>
+        </name>
+      </place>
+      <arc id="__start__to__p2" source="__start" target="p2">
+      </arc>
+      <arc id="__start__to__p3" source="__start" target="p3">
+      </arc>
+      <place id="p1">
+        <name>
+          <text>p1</text>
+        </name>
+        <initialMarking>
+          <text>1</text>
+        </initialMarking>
+      </place>
+      <arc id="p1__to____start" source="p1" target="__start">
+      </arc>
+      <arc id="p10__to____end" source="p8" target="__end">
+      </arc>
+      <arc id="p11__to____end" source="p9" target="__end">
+      </arc>
+      <arc id="p2__to__NonAtomicA" source="p2" target="NonAtomicA">
+      </arc>
+      <arc id="p3__to__NonAtomicC" source="p3" target="NonAtomicC">
+      </arc>
+      <arc id="p6__to__NonAtomicB" source="p4" target="NonAtomicB">
+      </arc>
+      <arc id="p7__to__NonAtomicD" source="p5" target="NonAtomicD">
+      </arc>
+    </page>
+  </net>
+</pnml>

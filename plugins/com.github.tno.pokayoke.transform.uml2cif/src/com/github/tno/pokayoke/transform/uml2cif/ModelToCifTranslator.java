@@ -27,6 +27,8 @@ import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.ValueSpecification;
 
+import com.github.tno.pokayoke.transform.track.SynthesisChainTracking;
+import com.github.tno.pokayoke.transform.track.UmlToCifTranslationPurpose;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
 import com.github.tno.synthml.uml.profile.cif.CifParserHelper;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
@@ -60,14 +62,31 @@ public abstract class ModelToCifTranslator {
     /** The translator for UML annotations (guards, updates, invariants, etc.). */
     protected final UmlAnnotationsToCif translator;
 
+    /** The purpose for which UML is translated to CIF. */
+    protected final UmlToCifTranslationPurpose translationPurpose;
+
+    /**
+     * The tracker that indicates how results from intermediate steps of the activity synthesis chain relate to the
+     * input UML.
+     */
+    protected final SynthesisChainTracking synthesisTracker;
+
     /**
      * Constructs a new {@link ModelToCifTranslator}.
      *
      * @param context The context for querying the input UML model.
+     * @param tracker The tracker that indicates how results from intermediate steps of the activity synthesis chain
+     *     relate to the input UML.
+     * @param purpose The translation purpose.
      */
-    public ModelToCifTranslator(CifContext context) {
+    public ModelToCifTranslator(CifContext context, SynthesisChainTracking tracker,
+            UmlToCifTranslationPurpose purpose)
+    {
         this.context = context;
-        this.translator = new UmlAnnotationsToCif(context, enumMap, enumLiteralMap, variableMap, startEventMap);
+        this.translationPurpose = purpose;
+        this.synthesisTracker = tracker;
+        this.translator = new UmlAnnotationsToCif(context, enumMap, enumLiteralMap, variableMap, tracker,
+                translationPurpose);
     }
 
     /**
@@ -116,7 +135,7 @@ public abstract class ModelToCifTranslator {
 
         // Translates all UML enumeration literals that are in context to CIF enumeration literals.
         for (EnumerationLiteral umlLiteral: context.getAllEnumerationLiterals()) {
-            EnumLiteral cifLiteral = CifConstructors.newEnumLiteral(umlLiteral.getName(), null);
+            EnumLiteral cifLiteral = CifConstructors.newEnumLiteral(null, umlLiteral.getName(), null);
             enumMap.get(umlLiteral.getEnumeration()).getLiterals().add(cifLiteral);
             enumLiteralMap.put(umlLiteral, cifLiteral);
         }
@@ -175,7 +194,7 @@ public abstract class ModelToCifTranslator {
      * @return The guard corresponding to the given CIF event.
      */
     public Expression getGuard(Event event) {
-        RedefinableElement element = startEventMap.get(event);
+        RedefinableElement element = synthesisTracker.getStartEventMap(translationPurpose).get(event);
         Preconditions.checkNotNull(element,
                 "Expected a CIF event that has been translated for some UML element in the input UML model.");
         return getGuard(element);

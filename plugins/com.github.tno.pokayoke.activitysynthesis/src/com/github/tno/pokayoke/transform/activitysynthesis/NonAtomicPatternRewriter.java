@@ -3,20 +3,17 @@ package com.github.tno.pokayoke.transform.activitysynthesis;
 
 import java.util.Comparator;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Stream;
 
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
-import org.eclipse.uml2.uml.Action;
 
-import com.github.javabdd.BDD;
-import com.google.common.base.Preconditions;
-
+import fr.lip6.move.pnml.ptnet.Arc;
 import fr.lip6.move.pnml.ptnet.Page;
 import fr.lip6.move.pnml.ptnet.PetriNet;
 import fr.lip6.move.pnml.ptnet.Place;
@@ -25,12 +22,6 @@ import fr.lip6.move.pnml.ptnet.Transition;
 
 /** Rewriter for non-atomic patterns in Petri Nets. */
 public class NonAtomicPatternRewriter {
-    /** The prefix of a tau transition. */
-    public static final String TAU_PREFIX = "__tau_";
-
-    /** The number of tau transitions that have been introduced by this rewriter. */
-    private int tauCounter = 0;
-
     /** A mapping from names of non-atomic start events to the names of their corresponding end events. */
     private final Map<String, List<String>> nonAtomicEventMap;
 
@@ -60,7 +51,7 @@ public class NonAtomicPatternRewriter {
     }
 
     /**
-     * Finds and rewrites all non-atomic patterns in the given Petri Net, by renaming all their end transitions to tau.
+     * Finds all non-atomic patterns in the given Petri Net that can be rewritten, and rewrites them.
      *
      * @param petriNet The Petri Net to rewrite, which is modified in-place.
      * @return The list of non-atomic patterns that have been rewritten.
@@ -120,7 +111,8 @@ public class NonAtomicPatternRewriter {
             return Optional.empty();
         }
 
-        // Check whether all outgoing transitions of the intermediate place are for ending the non-atomic action.
+        // Check whether all outgoing transitions of the intermediate place are for ending the non-atomic action, and
+        // there are exactly as many as expected, without duplicates.
         List<Transition> endTransitions = sorted(
                 intermediatePlace.getOutArcs().stream().map(a -> (Transition)a.getTarget()));
 
@@ -139,85 +131,61 @@ public class NonAtomicPatternRewriter {
             }
         }
 
-        return Optional.of(new NonAtomicPattern(transition, intermediatePlace, endTransitions));
+        // Check whether none of the end transitions start a fork pattern. This prevents combinations of fork and
+        // choice after the end transitions, which would be difficult to merge back.
+        for (Transition endTransition: endTransitions) {
+            if (endTransition.getOutArcs().size() != 1) {
+                return Optional.empty();
+            }
+        }
+
+        // Get the end places.
+        List<Place> endPlaces = new LinkedList<>();
+        for (Transition endTransition: endTransitions) {
+            Place endPlace = (Place)endTransition.getOutArcs().get(0).getTarget();
+            endPlaces.add(endPlace);
+        }
+
+        // Ensure that the end places have no incoming arcs starting from other transitions.
+        for (Place endPlace: endPlaces) {
+            long otherIncomingTransitions = endPlace.getInArcs().stream().map(a -> a.getSource())
+                    .filter(t -> !endTransitions.contains(t)).count();
+
+            if (otherIncomingTransitions > 0) {
+                return Optional.empty();
+            }
+        }
+
+        // Return the information about the non-atomic pattern that can be rewritten.
+        return Optional.of(new NonAtomicPattern(transition, intermediatePlace, endTransitions, endPlaces));
     }
 
     /**
-     * Rewrites the given list of non-atomic patterns, by renaming their end transitions to tau.
+     * Rewrites the given list of non-atomic patterns, by connecting the intermediate place to the transitions after the
+     * end places, skipping the end transitions and related arcs.
      *
      * @param patterns The non-atomic patterns to rewrite, which are modified in-place.
      */
     private void rewritePatterns(List<NonAtomicPattern> patterns) {
         for (NonAtomicPattern pattern: patterns) {
-            for (Transition endTransition: pattern.endTransitions) {
-                String newName = TAU_PREFIX + tauCounter;
-                endTransition.getName().setText(newName);
-                endTransition.setId(newName);
-                tauCounter++;
-            }
-        }
-    }
+            // First, remove the intermediate place's outgoing arcs.
+            EcoreUtil.deleteAll(pattern.intermediatePlace.getOutArcs(), true);
+            pattern.intermediatePlace.getOutArcs().clear();
 
-    /**
-     * Updates the given state information mapping and the uncontrollable system guards mapping, based on the given list
-     * of non-atomic patterns that have been rewritten.
-     *
-     * @param patterns The non-atomic patterns which have been rewritten.
-     * @param stateInfo The state information mapping, which is modified in-place.
-     * @param uncontrollableSystemGuards The uncontrollable system guards mapping, which is modified in-place.
-     */
-    public void updateMappings(List<NonAtomicPattern> patterns, Map<Place, BDD> stateInfo,
-            Map<String, BDD> uncontrollableSystemGuards)
-    {
-        // Determine the updated state information and new uncontrollable system guards for every non-atomic pattern.
-        for (NonAtomicPattern pattern: patterns) {
-            // Firstly, compute an uncontrollable system guard for every end/tau transition. This guard is defined to be
-            // the conjunction of the state predicates of all target places of the tau transition. That is, the guard
-            // only allows the tau transition to be taken from the system states that you would be in when you'd perform
-            // the corresponding end event (with its effects) of the non-atomic action.
-            for (Transition endTransition: pattern.endTransitions) {
-                // Check whether the current transition is indeed a tau transition, i.e., has indeed been rewritten.
-                String transitionName = endTransition.getName().getText();
-                Preconditions.checkArgument(transitionName.contains(TAU_PREFIX),
-                        String.format("Expected to find a tau transition, but got '%s'.", transitionName));
+            // Remove all the end transitions and their outgoing arcs.
+            pattern.endTransitions.stream().forEach(et -> EcoreUtil.deleteAll(et.getOutArcs(), true));
+            EcoreUtil.deleteAll(pattern.endTransitions, true);
 
-                // Compute the uncontrollable system guard.
-                BDD newGuard = endTransition.getOutArcs().stream().map(arc -> stateInfo.get(arc.getTarget()).id())
-                        .reduce(BDD::andWith).get();
-                uncontrollableSystemGuards.put(transitionName, newGuard);
+            // Connect the intermediate place with the outgoing arcs from the end places.
+            for (Place endPlace: pattern.endPlaces) {
+                for (Arc outArc: new LinkedList<>(endPlace.getOutArcs())) {
+                    outArc.setSource(pattern.intermediatePlace);
+                }
             }
 
-            // Secondly, compute the new state information predicate of the intermediate place of the current pattern.
-            // This new predicate is defined to be the disjunction of the new uncontrollable system guards of all tau
-            // transitions. That is, this predicate captures all system states that you could be in when you'd perform
-            // one of the end events (with their effects) of the non-atomic action.
-            BDD newStateInfoPredicate = pattern.endTransitions.stream()
-                    .map(t -> uncontrollableSystemGuards.get(t.getName().getText()).id()).reduce(BDD::orWith).get();
-            stateInfo.put(pattern.intermediatePlace, newStateInfoPredicate);
+            // Remove end places.
+            EcoreUtil.deleteAll(pattern.endPlaces, true);
         }
-    }
-
-    /**
-     * Finds all activity actions corresponding to start or end transitions in the given list of rewritten patterns.
-     *
-     * @param patterns The rewritten non-atomic patterns on Petri Net level.
-     * @param transitionMap The mapping from Petri Net transitions to corresponding UML actions.
-     * @return All activity actions corresponding to start or end transitions in the given list of rewritten patterns.
-     */
-    public static Set<Action> getRewrittenActions(List<NonAtomicPattern> patterns,
-            Map<Transition, Action> transitionMap)
-    {
-        Set<Action> rewrittenActions = new LinkedHashSet<>();
-
-        for (NonAtomicPattern pattern: patterns) {
-            rewrittenActions.add(transitionMap.get(pattern.startTransition()));
-
-            for (Transition endTransition: pattern.endTransitions()) {
-                rewrittenActions.add(transitionMap.get(endTransition));
-            }
-        }
-
-        return rewrittenActions;
     }
 
     private static <T extends PnObject> List<T> sorted(Stream<T> stream) {
@@ -231,9 +199,10 @@ public class NonAtomicPatternRewriter {
      * @param intermediatePlace The intermediate place that contains a token whenever the non-atomic action is
      *     executing.
      * @param endTransitions All transitions that end the execution of the non-atomic action.
+     * @param endPlaces The places after the end transitions.
      */
-    public record NonAtomicPattern(Transition startTransition, Place intermediatePlace,
-            List<Transition> endTransitions)
+    public record NonAtomicPattern(Transition startTransition, Place intermediatePlace, List<Transition> endTransitions,
+            List<Place> endPlaces)
     {
     }
 }

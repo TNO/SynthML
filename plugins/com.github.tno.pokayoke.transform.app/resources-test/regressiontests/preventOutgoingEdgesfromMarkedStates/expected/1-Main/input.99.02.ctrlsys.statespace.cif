@@ -1,11 +1,11 @@
-uncontrollable __node__CallBehaviorAction__14;
-automaton statespace:
-  alphabet __node__CallBehaviorAction__14;
-  @state(Class = "*", Class.__controlflow__12 = false, Class.__controlflow__13 = true, Class.element = "First")
+uncontrollable __node__CallBehaviorAction__27;
+automaton post_synthesis_chain_state_space:
+  alphabet __node__CallBehaviorAction__27;
+  @state(Class: "*", Class.__controlflow__22: false, Class.__controlflow__23: true, Class.element: "First")
   location loc1:
     initial;
-    edge __node__CallBehaviorAction__14 goto loc2;
-  @state(Class = "*", Class.__controlflow__12 = true, Class.__controlflow__13 = false, Class.element = "Second")
+    edge __node__CallBehaviorAction__27 goto loc2;
+  @state(Class: "*", Class.__controlflow__22: true, Class.__controlflow__23: false, Class.element: "Second")
   location loc2:
     marked;
 end

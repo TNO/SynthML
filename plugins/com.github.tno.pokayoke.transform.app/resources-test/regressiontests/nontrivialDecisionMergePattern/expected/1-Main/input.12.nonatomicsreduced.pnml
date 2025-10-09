@@ -1,0 +1,134 @@
+<pnml xmlns="http://www.pnml.org/version-2009/grammar/pnml">
+  <net id="minimal" type="http://www.pnml.org/version-2009/grammar/ptnet">
+    <page id="minimal">
+      <transition id="__start">
+        <name>
+          <text>__start</text>
+        </name>
+      </transition>
+      <transition id="flip">
+        <name>
+          <text>flip</text>
+        </name>
+      </transition>
+      <transition id="right">
+        <name>
+          <text>right</text>
+        </name>
+      </transition>
+      <transition id="left">
+        <name>
+          <text>left</text>
+        </name>
+      </transition>
+      <transition id="flip__na_result_2">
+        <name>
+          <text>flip__na_result_2</text>
+        </name>
+      </transition>
+      <transition id="flip__na_result_1">
+        <name>
+          <text>flip__na_result_1</text>
+        </name>
+      </transition>
+      <transition id="__end">
+        <name>
+          <text>__end</text>
+        </name>
+      </transition>
+      <place id="p8">
+        <name>
+          <text>p8</text>
+        </name>
+      </place>
+      <arc id="__end__to__p8" source="__end" target="p8">
+      </arc>
+      <place id="p2">
+        <name>
+          <text>p2</text>
+        </name>
+      </place>
+      <arc id="__start__to__p2" source="__start" target="p2">
+      </arc>
+      <place id="p6">
+        <name>
+          <text>p6</text>
+        </name>
+      </place>
+      <arc id="flip__to__p6" source="flip" target="p6">
+      </arc>
+      <transition id="flip/1">
+        <name>
+          <text>flip</text>
+        </name>
+      </transition>
+      <place id="p3">
+        <name>
+          <text>p3</text>
+        </name>
+      </place>
+      <arc id="flip/1__to__p3" source="flip/1" target="p3">
+      </arc>
+      <place id="p7">
+        <name>
+          <text>p7</text>
+        </name>
+      </place>
+      <arc id="flip__na_result_1__to__p7" source="flip__na_result_1" target="p7">
+      </arc>
+      <arc id="flip__na_result_2__to__p7" source="flip__na_result_2" target="p7">
+      </arc>
+      <arc id="left__to__p7" source="left" target="p7">
+      </arc>
+      <transition id="left/1">
+        <name>
+          <text>left</text>
+        </name>
+      </transition>
+      <place id="p4">
+        <name>
+          <text>p4</text>
+        </name>
+      </place>
+      <arc id="left/1__to__p4" source="left/1" target="p4">
+      </arc>
+      <place id="p1">
+        <name>
+          <text>p1</text>
+        </name>
+        <initialMarking>
+          <text>1</text>
+        </initialMarking>
+      </place>
+      <arc id="p1__to____start" source="p1" target="__start">
+      </arc>
+      <transition id="right/1">
+        <name>
+          <text>right</text>
+        </name>
+      </transition>
+      <arc id="p2__to__flip/1" source="p2" target="flip/1">
+      </arc>
+      <arc id="p2__to__left/1" source="p2" target="left/1">
+      </arc>
+      <arc id="p2__to__right/1" source="p2" target="right/1">
+      </arc>
+      <arc id="p4__to__flip" source="p4" target="flip">
+      </arc>
+      <arc id="p5__to__left" source="p3" target="left">
+      </arc>
+      <arc id="p5__to__right" source="p3" target="right">
+      </arc>
+      <arc id="p6__to__flip__na_result_1" source="p6" target="flip__na_result_1">
+      </arc>
+      <arc id="p6__to__flip__na_result_2" source="p6" target="flip__na_result_2">
+      </arc>
+      <arc id="p7__to____end" source="p7" target="__end">
+      </arc>
+      <arc id="right__to__p7" source="right" target="p7">
+      </arc>
+      <arc id="right/1__to__p4" source="right/1" target="p4">
+      </arc>
+    </page>
+  </net>
+</pnml>

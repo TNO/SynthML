@@ -1,19 +1,19 @@
 controllable change;
 controllable __start;
 controllable __end;
-automaton statespace:
+automaton synthesis_state_space:
   alphabet change, __start, __end;
-  @state(Class = "*", Class.element = "First", sup = "*")
+  @state(Class: "*", Class.element: "First", sup: "*")
   location __init:
     initial;
     edge __start goto loc1;
-  @state(Class = "*", Class.element = "First", sup = "*")
+  @state(Class: "*", Class.element: "First", sup: "*")
   location loc1:
     edge change goto loc2;
-  @state(Class = "*", Class.element = "Second", sup = "*")
+  @state(Class: "*", Class.element: "Second", sup: "*")
   location loc2:
     edge __end goto __done;
-  @state(Class = "*", Class.element = "Second", sup = "*")
+  @state(Class: "*", Class.element: "Second", sup: "*")
   location __done:
     marked;
 end

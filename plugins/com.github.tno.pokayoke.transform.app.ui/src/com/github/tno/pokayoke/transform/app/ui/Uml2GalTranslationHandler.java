@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import javax.inject.Named;
-
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
@@ -18,6 +16,8 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.json.JSONException;
 
 import com.github.tno.pokayoke.transform.app.Uml2GalTranslationApp;
+
+import jakarta.inject.Named;
 
 /** Menu action handler for translating UML models to GAL specifications. */
 public class Uml2GalTranslationHandler {
