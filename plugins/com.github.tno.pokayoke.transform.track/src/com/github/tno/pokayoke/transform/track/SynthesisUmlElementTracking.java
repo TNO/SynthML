@@ -276,6 +276,48 @@ public class SynthesisUmlElementTracking {
     }
 
     /**
+     * Returns the CIF start events whose corresponding original UML element is called as the given name.
+     *
+     * @param umlElementName The name of the UML element.
+     * @param purpose The translation purpose.
+     * @return The list of CIF start events whose corresponding original UML element name matches the given name.
+     */
+    public List<Event> getStartEventsCorrespondingToOriginalUmlElementName(String umlElementName,
+            TranslationPurpose purpose)
+    {
+        // Create a start event map for each case considering CIF events and the original UML elements.
+        Map<Event, RedefinableElement> startEventMap;
+        switch (purpose) {
+            case SYNTHESIS: {
+                startEventMap = getStartEventMap(purpose);
+                break;
+            }
+            case GUARD_COMPUTATION: {
+                startEventMap = guardComputationCifEventsToUmlElementInfo.entrySet().stream()
+                        .filter(e -> e.getValue().isStartAction() && e.getValue().getUmlElement() != null)
+                        .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getUmlElement()));
+                break;
+            }
+
+            case LANGUAGE_EQUIVALENCE: {
+                startEventMap = languageEquivalenceCifEventsToUmlElementInfo.entrySet().stream()
+                        .filter(e -> e.getValue().isStartAction() && e.getValue().getUmlElement() != null)
+                        .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getUmlElement()));
+                break;
+            }
+
+            default:
+                throw new IllegalArgumentException("Unexpected value: " + purpose);
+        }
+
+        // Filter the map to get the events corresponding to a UML element with the matching name.
+        return startEventMap
+                .entrySet().stream().filter(e -> e.getValue() instanceof RedefinableElement element
+                        && element.getName() != null && element.getName().equals(umlElementName))
+                .map(Map.Entry::getKey).toList();
+    }
+
+    /**
      * Return whether the CIF event represents a start action.
      *
      * @param cifEvent The CIF event.
