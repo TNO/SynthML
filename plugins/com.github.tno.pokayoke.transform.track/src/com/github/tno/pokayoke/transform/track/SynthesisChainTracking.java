@@ -998,6 +998,27 @@ public class SynthesisChainTracking {
     }
 
     /**
+     * Returns {@code true} if the given CIF event has been created for a finalized UML element during the guard
+     * computation or language equivalence check phase, which corresponds to a CIF event created for the synthesis phase
+     * that represents an end-only event.
+     *
+     * @param cifEvent The CIF event.
+     * @param purpose The translation purpose.
+     * @return {@code true} if the CIF event corresponds to an original end-only event, {@code false} otherwise.
+     */
+    public boolean isRelatedToEndOnlyOfOriginalElement(Event cifEvent, UmlToCifTranslationPurpose purpose) {
+        // Precondition check.
+        Verify.verify(purpose != UmlToCifTranslationPurpose.SYNTHESIS,
+                "Reference to original UML element is undefined for synthesis translation.");
+
+        // Check if the event is related to the end-only of an original element.
+        EventTraceInfo finalizedEventInfo = cifEventTraceInfo.get(cifEvent);
+        Verify.verifyNotNull(finalizedEventInfo, String.format(
+                "Event '%s' does not have any tracing info referring to the finalized UML model.", cifEvent.getName()));
+        return isRelatedToEndOnlyOfOriginalElement(finalizedEventInfo);
+    }
+
+    /**
      * Returns {@code true} if the finalized UML element is related to a start-only original CIF event.
      *
      * @param finalizedUmlElement The finalized UML element.
@@ -1062,27 +1083,6 @@ public class SynthesisChainTracking {
         RedefinableElement finalizedUmlElement = finalizedEventInfo.getUmlElement();
         return getOriginalUmlElement(finalizedUmlElement) instanceof OpaqueBehavior
                 && isRelatedToStartOfOriginalElement(finalizedEventInfo);
-    }
-
-    /**
-     * Returns {@code true} if the given CIF event has been created for a finalized UML element during the guard
-     * computation or language equivalence check phase, which corresponds to a CIF event created for the synthesis phase
-     * that represents an end-only event.
-     *
-     * @param cifEvent The CIF event.
-     * @param purpose The translation purpose.
-     * @return {@code true} if the CIF event corresponds to an original end-only event, {@code false} otherwise.
-     */
-    public boolean isRelatedToEndOnlyOfOriginalElement(Event cifEvent, UmlToCifTranslationPurpose purpose) {
-        // Precondition check.
-        Verify.verify(purpose != UmlToCifTranslationPurpose.SYNTHESIS,
-                "Reference to original UML element is undefined for synthesis translation.");
-
-        // Check if the event is related to the end-only of an original element.
-        EventTraceInfo finalizedEventInfo = cifEventTraceInfo.get(cifEvent);
-        Verify.verifyNotNull(finalizedEventInfo, String.format(
-                "Event '%s' does not have any tracing info referring to the finalized UML model.", cifEvent.getName()));
-        return isRelatedToEndOnlyOfOriginalElement(finalizedEventInfo);
     }
 
     /**
