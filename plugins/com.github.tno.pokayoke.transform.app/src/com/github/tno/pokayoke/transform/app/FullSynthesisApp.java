@@ -51,7 +51,6 @@ import com.github.tno.pokayoke.transform.activitysynthesis.ConvertExpressionUpda
 import com.github.tno.pokayoke.transform.activitysynthesis.EventGuardUpdateHelper;
 import com.github.tno.pokayoke.transform.activitysynthesis.NonAtomicPatternRewriter;
 import com.github.tno.pokayoke.transform.activitysynthesis.NonAtomicPatternRewriter.NonAtomicPattern;
-import com.github.tno.pokayoke.transform.activitysynthesis.RedundantPathsRemover;
 import com.github.tno.pokayoke.transform.activitysynthesis.StateAnnotationHelper;
 import com.github.tno.pokayoke.transform.app.StateAwareWeakLanguageEquivalenceHelper.ModelPreparationResult;
 import com.github.tno.pokayoke.transform.cif2petrify.Cif2Petrify;
@@ -170,16 +169,10 @@ public class FullSynthesisApp {
                     "Non-zero exit code for state space generation: " + exitCode + "\n" + explorerAppStream.toString());
         }
 
-        // Remove redundant paths from the CIF state space.
-        Path essentialModelPath = outputFolderPath.resolve(filePrefix + ".045.statespace.essential.cif");
-        RedundantPathsRemover redundantPathsCleaner = new RedundantPathsRemover();
-        redundantPathsCleaner.simplify(CifFileHelper.loadCifSpec(cifStateSpacePath),
-                cifBddSpec, essentialModelPath, outputFolderPath);
-
         // Transform the state space by creating a single (initial) source and a single (marked) sink location.
         Path cifStatespaceWithSingleSourceSink = outputFolderPath
                 .resolve(filePrefix + ".05.statespace.singlesourcesink.cif");
-        Specification cifStateSpace = CifFileHelper.loadCifSpec(essentialModelPath);
+        Specification cifStateSpace = CifFileHelper.loadCifSpec(cifStateSpacePath);
         CifSourceSinkLocationTransformer.transform(cifStateSpace, cifStatespaceWithSingleSourceSink, outputFolderPath);
 
         // Extend the uncontrollable system guards mapping with all auxiliary events that were introduced so far.
