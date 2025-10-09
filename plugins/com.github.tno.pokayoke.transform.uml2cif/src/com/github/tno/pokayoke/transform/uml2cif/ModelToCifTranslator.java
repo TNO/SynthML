@@ -62,6 +62,9 @@ public abstract class ModelToCifTranslator {
     /** The translator for UML annotations (guards, updates, invariants, etc.). */
     protected final UmlAnnotationsToCif translator;
 
+    /** The purpose for which UML is translated to CIF. */
+    protected final TranslationPurpose translationPurpose;
+
     /**
      * The tracker that stores UML elements and related CIF events, the Petri net transitions, and finally the generated
      * UML elements in the synthesized activity.
@@ -72,15 +75,16 @@ public abstract class ModelToCifTranslator {
      * Constructs a new {@link ModelToCifTranslator}.
      *
      * @param context The context for querying the input UML model.
-     * @param synthesisUmlElementsTracker The tracker to store the synthesis chain transformations of UML elements.
+     * @param tracker The tracker that indicates how results from intermediate steps of the activity synthesis chain
+     *     relate to the input UML.
+     * @param purpose The translation purpose.
      */
-    public ModelToCifTranslator(CifContext context, SynthesisUmlElementTracking synthesisUmlElementsTracker) {
+    public ModelToCifTranslator(CifContext context, SynthesisUmlElementTracking tracker, TranslationPurpose purpose) {
         this.context = context;
-        // TODO: here startEventMap is still needed, as it gets updated as the UML to CIF translation goes on. If we
-        // pass the synthesis tracker event map, it gets a copy, which is an empty map, and never gets updated. Maybe
-        // create a translator when it is needed and not at instantiation?
-        this.translator = new UmlAnnotationsToCif(context, enumMap, enumLiteralMap, variableMap, startEventMap);
-        this.synthesisUmlElementsTracker = synthesisUmlElementsTracker;
+        this.translationPurpose = purpose;
+        this.synthesisUmlElementsTracker = tracker;
+        this.translator = new UmlAnnotationsToCif(context, enumMap, enumLiteralMap, variableMap, tracker,
+                translationPurpose);
     }
 
     /**

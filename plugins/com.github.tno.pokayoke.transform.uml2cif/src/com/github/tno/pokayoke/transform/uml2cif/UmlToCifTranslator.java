@@ -118,9 +118,6 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
      */
     private Map<PostConditionKind, AlgVariable> postconditionVariables = new LinkedHashMap<>();
 
-    /** The purpose for which UML is translated to CIF. */
-    private final TranslationPurpose translationPurpose;
-
     /** The one-to-one mapping from UML activity edges to their corresponding translated CIF discrete variables. */
     private final BiMap<ActivityEdge, DiscVariable> controlFlowMap = HashBiMap.create();
 
@@ -148,9 +145,8 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     public UmlToCifTranslator(Activity activity, TranslationPurpose purpose,
             SynthesisUmlElementTracking synthesisUmlElementsTracker)
     {
-        super(new CifContext(activity.getModel()), synthesisUmlElementsTracker);
+        super(new CifContext(activity.getModel()), synthesisUmlElementsTracker, purpose);
         this.activity = activity;
-        this.translationPurpose = purpose;
     }
 
     /**
