@@ -36,6 +36,7 @@ import org.eclipse.escet.common.position.metamodel.position.Position;
 import org.eclipse.uml2.uml.Enumeration;
 import org.eclipse.uml2.uml.EnumerationLiteral;
 import org.eclipse.uml2.uml.Property;
+import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.Type;
 
 import com.github.tno.pokayoke.transform.track.SynthesisChainTracking;
@@ -270,7 +271,10 @@ public class UmlAnnotationsToCif extends ACifObjectWalker<Object> {
 
             for (String event: events) {
                 // Find the CIF events corresponding to the UML element called 'event'.
-                List<Event> cifEvents = synthesisTracker.getStartEventsCorrespondingToOriginalUmlElementName(event,
+                RedefinableElement umlElement = ctx.getOpaqueBehavior(event);
+                Verify.verifyNotNull(umlElement,
+                        String.format("UML element '%s' does not belong to the CIF context.", event));
+                List<Event> cifEvents = synthesisTracker.getStartEventsCorrespondingToOriginalUmlElement(umlElement,
                         translationPurpose);
                 Verify.verify(cifEvents.size() > 0, String
                         .format("Could not find any CIF event corresponding to a UML element called '%s'.", event));
