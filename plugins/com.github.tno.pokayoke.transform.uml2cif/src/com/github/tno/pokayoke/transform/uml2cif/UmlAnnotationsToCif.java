@@ -36,9 +36,10 @@ import org.eclipse.escet.common.position.metamodel.position.Position;
 import org.eclipse.uml2.uml.Enumeration;
 import org.eclipse.uml2.uml.EnumerationLiteral;
 import org.eclipse.uml2.uml.Property;
-import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.Type;
 
+import com.github.tno.pokayoke.transform.track.SynthesisUmlElementTracking;
+import com.github.tno.pokayoke.transform.track.SynthesisUmlElementTracking.TranslationPurpose;
 import com.github.tno.synthml.uml.profile.cif.ACifObjectWalker;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
 import com.github.tno.synthml.uml.profile.util.PokaYokeTypeUtil;
@@ -58,18 +59,25 @@ public class UmlAnnotationsToCif extends ACifObjectWalker<Object> {
     /** The mapping from UML properties to corresponding translated CIF discrete variables. */
     private final Map<Property, DiscVariable> variableMap;
 
-    /** The mapping from translated CIF start events to their corresponding UML elements for which they were created. */
-    private final Map<Event, RedefinableElement> startEventMap;
+    /**
+     * The tracker that indicates how results from intermediate steps of the activity synthesis chain relate to the
+     * input UML.
+     */
+    private final SynthesisUmlElementTracking synthesisTracker;
+
+    /** The translation purpose of the current UML to CIF translation. */
+    private final TranslationPurpose translationPurpose;
 
     public UmlAnnotationsToCif(CifContext context, Map<Enumeration, EnumDecl> enumMap,
             Map<EnumerationLiteral, EnumLiteral> enumLiteralMap, Map<Property, DiscVariable> variableMap,
-            Map<Event, RedefinableElement> startEventMap)
+            SynthesisUmlElementTracking tracker, TranslationPurpose purpose)
     {
         this.context = context;
         this.enumMap = enumMap;
         this.enumLiteralMap = enumLiteralMap;
         this.variableMap = variableMap;
-        this.startEventMap = startEventMap;
+        this.synthesisTracker = tracker;
+        this.translationPurpose = purpose;
     }
 
     /**
@@ -255,28 +263,23 @@ public class UmlAnnotationsToCif extends ACifObjectWalker<Object> {
             InvKind cifInvKind = translateInvKind(invKind.get());
 
             for (String event: events) {
-                boolean found = false;
-                for (var entry: startEventMap.entrySet()) {
-                    RedefinableElement umlElement = entry.getValue();
+                // Find the CIF events corresponding to the UML element called 'event'.
+                List<Event> cifEvents = synthesisTracker.getStartEventsCorrespondingToOriginalUmlElementName(event,
+                        translationPurpose);
+                Verify.verify(cifEvents.size() > 0, String
+                        .format("Could not find any CIF event corresponding to a UML element called '%s'.", event));
 
-                    if (umlElement.getName() != null && umlElement.getName().equals(event)) {
-                        Event cifEvent = entry.getKey();
+                for (Event cifEvent: cifEvents) {
+                    Invariant cifInvariant = CifConstructors.newInvariant();
+                    cifInvariant.setInvKind(cifInvKind);
+                    cifInvariant.setPredicate(EcoreUtil.copy(cifPredicate));
+                    cifInvariant.setSupKind(SupKind.REQUIREMENT);
+                    cifInvariants.add(cifInvariant);
 
-                        Invariant cifInvariant = CifConstructors.newInvariant();
-                        cifInvariant.setInvKind(cifInvKind);
-                        cifInvariant.setPredicate(EcoreUtil.copy(cifPredicate));
-                        cifInvariant.setSupKind(SupKind.REQUIREMENT);
-                        cifInvariants.add(cifInvariant);
-
-                        EventExpression cifEventExpr = CifConstructors.newEventExpression(cifEvent, null,
-                                CifConstructors.newBoolType());
-                        cifInvariant.setEvent(cifEventExpr);
-
-                        found = true;
-                        break;
-                    }
+                    EventExpression cifEventExpr = CifConstructors.newEventExpression(cifEvent, null,
+                            CifConstructors.newBoolType());
+                    cifInvariant.setEvent(cifEventExpr);
                 }
-                Verify.verify(found, "Could not find a UML element that matches the event: " + event);
             }
         }
 
