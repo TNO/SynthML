@@ -975,6 +975,12 @@ public class SynthesisChainTracking {
         RedefinableElement finalizedUmlElement = finalizedEventInfo.getUmlElement();
         Verify.verify(isFinalizedUmlElement(finalizedUmlElement),
                 String.format("Element '%s' is not a finalized UML element.", finalizedUmlElement.getName()));
+        // This handles three cases: when a non-atomic pattern is not merged, it can link back to the original CIF event
+        // and check that it is a start-only event; when a non-atomic pattern is merged, it links to an original
+        // complete CIF event while the current CIF event is a start-only event; an atomic behavior, that results in
+        // complete original CIF event and a complete current CIF event. These last two cases can be combined, checking
+        // that the original CIF event is complete and the current CIF event is a start event (i.e. start-only or
+        // complete).
         return isRelatedToOriginalStartOnlyEvent(finalizedUmlElement)
                 || (isRelatedToOriginalCompleteEvent(finalizedUmlElement) && finalizedEventInfo.isStartEvent());
     }
@@ -992,6 +998,9 @@ public class SynthesisChainTracking {
         RedefinableElement finalizedUmlElement = finalizedEventInfo.getUmlElement();
         Verify.verify(isFinalizedUmlElement(finalizedUmlElement),
                 String.format("Element '%s' is not a finalized UML element.", finalizedUmlElement.getName()));
+        // This handles two cases: when a non-atomic pattern is not merged, it can link back to the original CIF event
+        // and check that it is an end-only event; when a non-atomic pattern is merged, it links to an original
+        // complete CIF event while the current CIF event is an end-only event.
         return isRelatedToOriginalEndOnlyEvent(finalizedUmlElement)
                 || (isRelatedToOriginalCompleteEvent(finalizedUmlElement) && finalizedEventInfo.isEndOnlyEvent());
     }
