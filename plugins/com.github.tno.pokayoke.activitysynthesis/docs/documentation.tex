@@ -11,6 +11,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage{mathpar}
 \usepackage{mathtools}
+\usepackage{subcaption}
 \usepackage{cif_listing}
 
 % Color of comments in algorithms.
@@ -204,7 +205,7 @@ A brief overview is given below.
 \begin{description}
 	\item[CIF.]
 	CIF is a specification language for discrete event systems, among other systems, as well as a toolset that supports the development process of supervisory controllers.
-	CIF is part of the Eclipse ESCET toolkit, see \url{https://eclipse.dev/escet} (accessed 20254-08-21) for further details.
+	CIF is part of the Eclipse ESCET toolkit, see \url{https://eclipse.dev/escet} (accessed 2025-08-21) for further details.
 	We use the CIF data-based synthesis tool to do supervisory controller synthesis, and the CIF explorer tool for state space generation.
 	\item[Petrify.]
 	Petrify is a tool for Petri Net synthesis.
@@ -772,69 +773,69 @@ To give another example of a pattern that cannot occur: it is not possible for t
 \subsection{Reducing nonatomic patterns}
 \label{sec:reducing-non-atomic-patterns}
 
-The operation \rewriteNonAtomicPatternsLabel{} merges any nonatomic patterns in the input concrete UML activity that can be merged.
+\begin{figure}[t!]
+	\begin{subfigure}[t]{0.475\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/nonatomic-pattern/nonatomic-pattern-find.pdf}
+		\caption{A nonatomic pattern for a nonatomic nondeterministic action \textsf{A} with two nondeterministic effects.}
+		\label{fig:nonatomic-pattern-left}
+	\end{subfigure}
+	\hspace{0.01\textwidth}
+	\begin{subfigure}[t]{0.475\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/nonatomic-pattern/nonatomic-pattern-replace.pdf}
+		\caption{The rewritten nonatomic pattern shown on the left. The `end' places and transitions have been merged into the `intermediate' place.}
+		\label{fig:nonatomic-pattern-right}
+	\end{subfigure}
+	\caption{A nonatomic pattern (left) and a rewritten pattern (right).}
+	\label{fig:nonatomic-pattern}
+\end{figure}
 
-Note that, in the code implementation, this reduction step is actually done on the Petri Net level rather than the UML level, as well as the next step of computing control flow guards, described in \autoref{sec:compute-control-flow-guards}.
-This is done for technical reasons that for now are too detailed for the purpose of this document, which is why we chose to explain this (and the next) step on the UML level instead.
-The underlying reason is that the intermediate Petri Net representations have a nicer structure than the translated UML activities when it comes to computing control flow guards.
-Moreover, we have to reduce nonatomic patterns before computing control flow guards, which is why the code implementation performs also this reduction step on Petri Net level.
+The \rewriteNonAtomicPatternsLabel{} operation rewrites any nonatomic patterns in the Petri Net that can be merged.
+A \emph{nonatomic pattern} in a Petri Net is defined as shown in \autoref{fig:nonatomic-pattern-left}, consisting of:
+\begin{itemize}
+	\item A `start' transition, corresponding to a start event of an nonatomic (possibly nondeterministic) action.
+	In the figure, the \textsf{A} transition is the start transition.
+	\item One or more `end' transitions, corresponding to the end events of the nonatomic action that got started by the start transition.
+	There are multiple such end transitions if and only if the action is nondeterministic.
+	The figure shows two end transitions: \textsf{A\_\_na\_result1} and \textsf{A\_\_na\_result2}.
+	\item An `intermediate' place that connects the start and end transitions.
+	In the figure, \textsf{p0} is the intermediate place.
+	\item An `end' place for every end transition.
+	In the figure, \textsf{p1} and \textsf{p2} are the end places.
+\end{itemize}
+
+This pattern definition is strict, in the sense that no other places, transitions, and arcs can be part of the pattern.
+That is, the start transition cannot have other outgoing arcs, the intermediate place cannot have other incoming/outgoing arcs other than the ones from/to the start and end transitions as shown in \autoref{fig:nonatomic-pattern-left}, the end transitions cannot have other incoming and outgoing arcs, and the end places cannot have other incoming arcs.
+
+Every such nonatomic pattern in the Petri Net is rewritten, by replacing the start and end transitions in the pattern by a single transition for executing the nonatomic action.
+\autoref{fig:nonatomic-pattern-right} shows the rewritten pattern shown in \autoref{fig:nonatomic-pattern-left}.
 
 \paragraph{Motivation.}
 Recall that in the UML-to-CIF transformation (\autoref{sec:transform-uml-to-cif}) we created separate controllable start events and uncontrollable end events for nonatomic and atomic nondeterministic actions.
 Then, in the earlier event-based projection step (\autoref{sec:event-based-projection}) we got rid of the end events of the atomic nondeterministic actions, by projecting those out.
-However, the end events of nonatomic actions are still in the CIF specifications, and thus also in the Petri Net specifications, and thus also in the UML activity specifications.
-The \rewriteNonAtomicPatternsLabel{} operation will attempt to merge the starts and ends of nonatomic actions back to single call behavior actions wherever possible.
+However, the end events of nonatomic actions are still in the CIF specifications, and thus also in the Petri Net specifications.
+The \rewriteNonAtomicPatternsLabel{} operation will attempt to merge the starts and ends of nonatomic actions into single transitions, on the intermediate Petri Net representation.
+By doing so, these merged transitions will be turned into single UML action nodes in later steps of the synthesis chain.
 
-\begin{figure}[t!]
-	\begin{center}
-		\includegraphics[scale=0.6]{images/non_atomic_pattern}
-	\end{center}
-	\caption{Left: a nonatomic pattern for a nonatomic nondeterministic action \textsf{A} with two nondeterministic effects, presented on UML activity level.
-	Right: the same pattern, but rewritten by \rewriteNonAtomicPatternsLabel{}.}
-	\label{fig:non-atomic-pattern}
-\end{figure}
+Note that, instead of rewriting nonatomic patterns on Petri Net level, it would also be possible to rewrite them on UML activity level.
+The advantage of rewriting on the level of Petri Nets, is that Petri Nets have a nicer structure than UML activities since they do not have fork/join/decision/merge nodes, making it easier to find and replace structural patterns in them.
 
-However, merging these starts and ends is rather delicate, and not always possible.
-To see why, let us have a look at nonatomic action patterns.
-Consider a nonatomic nondeterministic action \textsf{A} that has two nondeterministic effects.
-Then one (controllable) start event and two (uncontrollable) end events were defined for \textsf{A} during the UML-to-CIF translation.
-Let us call these $\textsf{A}_{\textsf{start}}$, $\textsf{A}_{\textsf{end1}}$, and $\textsf{A}_{\textsf{end2}}$, respectively.
-\autoref{fig:non-atomic-pattern} (left) then shows an example of a nonatomic pattern for \textsf{A} as it may currently look on the UML activity level.
-The action $\textsf{A}_{\textsf{start}}$ has the original guard of \textsf{A} but no effects.
-The actions $\textsf{A}_{\textsf{end1}}$ and $\textsf{A}_{\textsf{end2}}$ both have guard \texttt{true}, and have the first and the second nondeterministic effect of \textsf{A}, respectively.
-The intermediate decision node is not allowed to be connected to any other nodes than the starts and ends of \textsf{A}, otherwise the pattern doesn't apply.
-We aim to (eventually) merge this pattern back into a single call behavior node that simply calls \textsf{A}.
-
-However, we cannot directly merge this pattern here since that would complicate choice guard computation later on.
-If we would merge the pattern here, then we would have to push down the decision node to below the merged `call $\textsf{A}$' action.
-By doing so, it would become (more) difficult to compute the control flow guards, as there may be all kinds of forking/joining/branching/merging constructions in the `$\dots$' parts below the decision node that we then would have pushed down\footnote{This is also the main reason why we actually do the guard computation on the Petri Net level rather than on UML activity level.
-On Petri Net level, there are only places and transitions, in contrast to the various different types of nodes that UML has for forking, joining, branching, merging, etc., which might also be composed in arbitrary ways.
-Nevertheless, the high-level synthesis algorithm is easier to explain on UML activity level, since then the explanation doesn't have to rely on details such as the connection/relation between the Petri Net and the translated UML activity.}.
-These constructions make it more difficult (though not impossible) to gather all necessary state information for the guard computation.
-
-Therefore, instead of directly merging the nonatomic pattern, we replace the $\textsf{A}_{\textsf{start}}$ node by a `call $\textsf{A}$' node, and replace the end nodes by internal `tau' nodes, which are later eliminated (in \autoref{sec:activity-post-processing}).
-The result is shown on the right in \autoref{fig:non-atomic-pattern}.
-With this rewritten pattern, it becomes easier to later compute the control flow guards for the decision node, since the decision node structure is now fixed by means of the internal `tau' nodes.
-This allows computing the guards for this decision node, while any (potentially complicated) structure that's below the `tau' nodes can be handled separately.
-However, to compute the choice guards for this decision node, we do have to consider that, when comparing the left pattern with the right pattern in \autoref{fig:non-atomic-pattern}, the nondeterministic effects are evaluated at different points.
-In the left pattern, the nondeterministic effect applies after the decision node, whereas in the rewritten pattern on the right, the effect applies before the decision node, as part of the `call $\textsf{A}$' action.
-\autoref{sec:compute-control-flow-guards} explains how to deal with this when computing control flow guards.
-
-Finally, merging nonatomic starts and ends is not always possible, since the nonatomic pattern may not always apply.
+Finally, merging nonatomic starts and ends is not always possible since the nonatomic pattern may not always apply.
 This may, e.g., happen in case of imperfect concurrent interleaving.
-For example, consider some atomic action \textsf{B} such that, after data-based synthesis, the synthesized supervisor allows \textsf{B} to happen before \textsf{A}, during \textsf{A} (i.e., in between its start and end events), but not after \textsf{A}.
+For example, consider some nonatomic action \textsf{A} and atomic action \textsf{B} such that, after data-based synthesis, the synthesized supervisor allows \textsf{B} to happen before \textsf{A}, during \textsf{A} (i.e., in between its start and end events), but not after \textsf{A}.
 Then there is no full diamond pattern with respect to the interleavings of \textsf{A} and \textsf{B} that can be reduced to a forking construct by Petri Net synthesis.
-As a result, the intermediate decision node in \autoref{fig:non-atomic-pattern} (left) will have an extra outgoing control flow to \textsf{B}, which breaks the nonatomic pattern.
-In such cases, we do not merge the starts and ends of nonatomic actions, but keep them separated.
-These cases are further handled during activity post-processing (\autoref{sec:activity-post-processing}).
+As a result, the intermediate place in \autoref{fig:nonatomic-pattern-left} will have an extra outgoing arc to \textsf{B}, breaking the nonatomic pattern.
+In such cases, we do not merge the start and end transitions of nonatomic actions, but keep them separated.
+These transitions are later translated to separate UML action nodes, to be further handled during activity post-processing (\autoref{sec:activity-post-processing}).
 
 \paragraph{Preconditions.}
-This operation requires a concrete UML activity resulting from the previous step (the code implementation actually requires its earlier Petri Net representation).
-This model should not use the string \tauLabel{} in any of its identifiers, as \rewriteNonAtomicPatternsLabel{} will use it to represent rewritten end points of nonatomic patterns.
+This operation requires a Petri Net resulting from the previous step.
+Moreover, this operation needs to know what Petri Net transitions start a nonatomic action, and what the corresponding end transitions are for ending these actions.
 
 \paragraph{Postconditions.}
-This operation returns the input activity, where all nonatomic patterns have been rewritten as shown on the right in \autoref{fig:non-atomic-pattern}.
-Any starts and ends of nonatomic actions whose occurrences do not fit the nonatomic pattern will not have been rewritten, and are handled during activity post-processing.
+This operation returns the input Petri Net, where all nonatomic patterns have been rewritten as shown by \autoref{fig:nonatomic-pattern}.
+Any starts and ends of nonatomic actions whose occurrences do not fit the nonatomic pattern will not have been rewritten, and are later handled on the UML activity level, during activity post-processing.
 
 \subsection{Computing control flow guards in the activity}
 \label{sec:compute-control-flow-guards}
