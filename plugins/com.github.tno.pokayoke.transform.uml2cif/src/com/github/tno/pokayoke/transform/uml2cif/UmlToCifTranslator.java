@@ -521,7 +521,6 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         Event cifStartEvent = CifConstructors.newEvent();
         cifStartEvent.setControllable(controllableStartEvent);
         cifStartEvent.setName(name);
-        startEventMap.put(cifStartEvent, umlElement);
 
         // Add the start event to the normalized name to event map.
         if (umlElement instanceof CallBehaviorAction || umlElement instanceof OpaqueAction
@@ -1252,22 +1251,10 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                         // Sanity check: we must have found at least one start event.
                         Verify.verify(!cifStartEvents.isEmpty(), "Found no CIF start events for: " + umlOpaqueBehavior);
                     } else if (translationPurpose == UmlToCifTranslationPurpose.GUARD_COMPUTATION) {
-                        // For guard computation, we don't directly translate the opaque behaviors. Instead, we inline
-                        // call behaviors to such opaque behaviors. Furthermore, some non-atomic opaque behaviors may
-                        // have separate start and end opaque actions that could not be merged back into call behaviors
-                        // to the original opaque behaviors. The occurrence constraints still refer to the original
-                        // opaque behaviors, and for both cases we have to find the relevant CIF events.
-                        cifStartEvents = startEventMap.entrySet().stream().filter(entry ->
-                        // Include all CIF events for call behavior actions that call the constrained opaque behavior.
-                        // This includes all atomic opaque behaviors, as well as merged-back non-atomic ones.
-                        (entry.getValue() instanceof CallBehaviorAction cbAction
-                                && cbAction.getBehavior().equals(umlOpaqueBehavior))
-                                // Include all CIF events for opaque actions that represent start actions of
-                                // non-deterministic opaque behaviors. These are the ones that couldn't be merged back
-                                // to call behavior actions that call the constrained opaque behavior.
-                                || (entry.getValue() instanceof OpaqueAction oAction
-                                        && oAction.getName().equals(umlOpaqueBehavior.getName() + START_ACTION_SUFFIX)))
-                                .map(Entry::getKey).toList();
+                        // For guard computation, get the CIF events that refer to the opaque behavior as the original
+                        // UML element.
+                        cifStartEvents = synthesisTracker.getFinalizedElementStartEventsForOriginalElement(
+                                umlOpaqueBehavior, translationPurpose);
 
                         // We don't check whether we found at least one start event. In case of unused actions, these
                         // won't have been translated, and we thus don't get any start events. That is OK, if we don't
@@ -1617,35 +1604,16 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                         // that the token can still pass through merge/join/etc nodes and the token can still reach
                         // the incoming control flow to the final place.
                         yield PostConditionKind.WITH_STRUCTURE;
-                    } else if (startEventMap.containsKey(cifEvent)
-                            && startEventMap.get(cifEvent) instanceof CallBehaviorAction)
-                    {
+                    } else if (synthesisTracker.isStartOfOriginalOpaqueBehavior(cifEvent, translationPurpose)) {
                         // As soon as the user-defined postconditions etc hold, we should no longer allow starting any
-                        // of the actions that the user defined. This case handles events that start such actions
-                        // through a call behavior action.
-                        yield PostConditionKind.WITHOUT_STRUCTURE;
-                    } else if (startEventMap.containsKey(cifEvent)
-                            && startEventMap.get(cifEvent) instanceof OpaqueAction oAction
-                            && oAction.getName().endsWith(START_ACTION_SUFFIX))
-                    {
-                        // As soon as the user-defined postconditions etc hold, we should no longer allow starting any
-                        // of the actions that the user defined. This case handles events that start such actions
-                        // through an opaque action, which only applies to non-atomic actions that couldn't be merged
-                        // back to a call behavior to the original opaque behavior.
+                        // of the actions that the user defined.
                         yield PostConditionKind.WITHOUT_STRUCTURE;
                     } else {
                         // We must allow finishing non-atomic/non-deterministic actions.
-                        if (startEventMap.containsKey(cifEvent)) {
-                            // End of a non-deterministic opaque behavior that couldn't be merged back to a call
-                            // behavior to the original opaque behavior, but instead is left as an opaque action.
-                            RedefinableElement umlElem = startEventMap.get(cifEvent);
-                            Verify.verify(umlElem instanceof OpaqueAction, cifEvent.getName());
-                            Verify.verify(umlElem.getName().contains(END_ACTION_SUFFIX), cifEvent.getName());
-                        } else {
-                            // End event of a call behavior to a non-atomic/non-deterministic opaque behavior.
-                            Verify.verify(synthesisTracker.getEventTraceInfo(cifEvent).isEndOnlyEvent(),
-                                    "Event '" + cifEvent.getName() + "' is not an end-only event.");
-                        }
+                        Verify.verify(
+                                synthesisTracker.isRelatedToEndOnlyOfOriginalElement(cifEvent, translationPurpose),
+                                "Event '%s' is not an end-only event.", cifEvent.getName());
+
                         yield PostConditionKind.WITH_STRUCTURE;
                     }
                 }

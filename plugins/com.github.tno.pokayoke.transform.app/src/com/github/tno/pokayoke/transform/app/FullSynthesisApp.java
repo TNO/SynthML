@@ -281,6 +281,9 @@ public class FullSynthesisApp {
         PostProcessActivity.removeOpaqueActions(activity, tracker.getInternalActions());
         FileHelper.storeModel(activity.getModel(), internalActionsRemovedUMLOutputPath.toString());
 
+        // Remove internal actions from the synthesis chain tracker.
+        tracker.removeInternalActions();
+
         // Post-process the activity to simplify it.
         Path umlSimplifiedOutputPath = outputFolderPath.resolve(filePrefix + ".16.simplified.uml");
         PostProcessActivity.simplify(activity);

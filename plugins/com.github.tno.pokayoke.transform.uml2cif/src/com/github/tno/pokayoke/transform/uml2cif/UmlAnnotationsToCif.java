@@ -270,28 +270,26 @@ public class UmlAnnotationsToCif extends ACifObjectWalker<Object> {
             InvKind cifInvKind = translateInvKind(invKind.get());
 
             for (String event: events) {
-                boolean found = false;
-                for (var entry: synthesisTracker.getStartEventMap(translationPurpose).entrySet()) {
-                    RedefinableElement umlElement = entry.getValue();
+                // Find the CIF events corresponding to the UML element called 'event'.
+                RedefinableElement umlElement = ctx.getOpaqueBehavior(event);
+                Verify.verifyNotNull(umlElement,
+                        String.format("UML element '%s' does not belong to the CIF context.", event));
+                List<Event> cifEvents = synthesisTracker.getStartEventsCorrespondingToOriginalUmlElement(umlElement,
+                        translationPurpose);
+                Verify.verify(cifEvents.size() > 0, String
+                        .format("Could not find any CIF event corresponding to a UML element called '%s'.", event));
 
-                    if (umlElement.getName() != null && umlElement.getName().equals(event)) {
-                        Event cifEvent = entry.getKey();
+                for (Event cifEvent: cifEvents) {
+                    Invariant cifInvariant = CifConstructors.newInvariant();
+                    cifInvariant.setInvKind(cifInvKind);
+                    cifInvariant.setPredicate(EcoreUtil.copy(cifPredicate));
+                    cifInvariant.setSupKind(SupKind.REQUIREMENT);
+                    cifInvariants.add(cifInvariant);
 
-                        Invariant cifInvariant = CifConstructors.newInvariant();
-                        cifInvariant.setInvKind(cifInvKind);
-                        cifInvariant.setPredicate(EcoreUtil.copy(cifPredicate));
-                        cifInvariant.setSupKind(SupKind.REQUIREMENT);
-                        cifInvariants.add(cifInvariant);
-
-                        EventExpression cifEventExpr = CifConstructors.newEventExpression(cifEvent, null,
-                                CifConstructors.newBoolType());
-                        cifInvariant.setEvent(cifEventExpr);
-
-                        found = true;
-                        break;
-                    }
+                    EventExpression cifEventExpr = CifConstructors.newEventExpression(cifEvent, null,
+                            CifConstructors.newBoolType());
+                    cifInvariant.setEvent(cifEventExpr);
                 }
-                Verify.verify(found, "Could not find a UML element that matches the event: " + event);
             }
         }
 
