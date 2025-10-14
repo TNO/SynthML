@@ -1,6 +1,7 @@
 
 package com.github.tno.pokayoke.transform.track;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -11,6 +12,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
+import org.eclipse.escet.common.java.Pair;
+import org.eclipse.escet.common.java.Sets;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.ControlNode;
@@ -1240,5 +1243,79 @@ public class SynthesisChainTracking {
                 && synthesisEventInfo.isStartEvent() == isLanguageEqStartEvent
                 && synthesisEventInfo.isEndEvent() == isLanguageEqEndEvent
                 && synthesisEventInfo.getEffectIdx() == languageEqEffectIdx;
+    }
+
+    /**
+     * Pair the CIF external events generated for the synthesis phase and the CIF external events generated for the
+     * language equivalence phase, when they are equivalent.
+     *
+     * @return The set of pairs of list of paired events.
+     */
+    public Set<Pair<List<Event>, List<Event>>> getLanguageEqEventsPaired() {
+        // Initialize set of paired events.
+        Set<Pair<List<Event>, List<Event>>> pairedEvents = new LinkedHashSet<>();
+
+        // Create a map for the external synthesis CIF events and their event trace info.
+        Map<Event, EventTraceInfo> externalSynthesisEventsMap = cifEventTraceInfo.entrySet().stream()
+                .filter(e -> e.getValue().getTranslationPurpose().equals(UmlToCifTranslationPurpose.SYNTHESIS)
+                        && e.getValue().isExternal())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (x, y) -> y, LinkedHashMap::new));
+
+        // Update the map with the removed atomic non-deterministic events.
+        for (Entry<Event, Map<Event, EventTraceInfo>> newStartAndOldEvents: atomicNonDeterministicEventTraceInfoMap
+                .entrySet())
+        {
+            Event startEvent = newStartAndOldEvents.getKey();
+            Map<Event, EventTraceInfo> oldEventInfosMap = newStartAndOldEvents.getValue();
+
+            // Find the start event of the atomic non-deterministic events.
+            EventTraceInfo startEventInfo = externalSynthesisEventsMap.get(startEvent);
+            Verify.verifyNotNull(startEventInfo, String.format(
+                    "Start event '%s' is not contained in the external synthesis event map.", startEvent.getName()));
+
+            // Remove the entry related to the start event and add all the old events and event trace infos.
+            externalSynthesisEventsMap.remove(startEvent);
+            externalSynthesisEventsMap.putAll(oldEventInfosMap);
+        }
+
+        // Create a map for the external language equivalence CIF events and their event trace info.
+        Map<Event, EventTraceInfo> externalLanguageEqEventsMap = cifEventTraceInfo.entrySet().stream()
+                .filter(e -> e.getValue().getTranslationPurpose()
+                        .equals(UmlToCifTranslationPurpose.LANGUAGE_EQUIVALENCE) && e.getValue().isExternal())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (x, y) -> y, LinkedHashMap::new));
+
+        // Pair the language equivalence events with the synthesis events. Check that all language equivalence events
+        // are paired. Note that there can be synthesis events that are not paired, because they are forbidden (e.g. by
+        // occurrence constraints) and they will not have a related language equivalence event.
+        Set<Event> usedLanguageEqEvents = new LinkedHashSet<>();
+
+        for (Entry<Event, EventTraceInfo> entrySynth: externalSynthesisEventsMap.entrySet()) {
+            List<Event> equivalentEvents = new ArrayList<>();
+
+            EventTraceInfo synthesisEventInfo = entrySynth.getValue();
+
+            for (Entry<Event, EventTraceInfo> entryLanguage: externalLanguageEqEventsMap.entrySet()) {
+                EventTraceInfo languageUmlElementInfo = entryLanguage.getValue();
+
+                // Store the equivalent events.
+                if (areEquivalentEvents(synthesisEventInfo, languageUmlElementInfo)) {
+                    equivalentEvents.add(entryLanguage.getKey());
+                    usedLanguageEqEvents.add(entryLanguage.getKey());
+                }
+            }
+
+            if (!equivalentEvents.isEmpty()) {
+                pairedEvents.add(new Pair<>(List.of(entrySynth.getKey()), equivalentEvents));
+            }
+        }
+
+        // Sanity check: all external CIF events generated for the language equivalence check should be paired with an
+        // event from the synthesis phase.
+        Verify.verify(usedLanguageEqEvents.equals(externalLanguageEqEventsMap.keySet()),
+                String.format("Found unused events '%s' in the synthesized UML model.",
+                        Sets.difference(externalLanguageEqEventsMap.keySet(), usedLanguageEqEvents).stream()
+                                .map(e -> e.getName()).toList()));
+
+        return pairedEvents;
     }
 }
