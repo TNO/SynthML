@@ -45,6 +45,12 @@ public class SynthesisChainTracking {
      */
     private final Map<Event, EventTraceInfo> cifEventTraceInfo = new LinkedHashMap<>();
 
+    /**
+     * The map from the CIF start events related to an atomic non-deterministic behavior to the events and related event
+     * tracing info created before the event-based projection step of the synthesis chain.
+     */
+    private final Map<Event, Map<Event, EventTraceInfo>> atomicNonDeterministicEventTraceInfoMap = new LinkedHashMap<>();
+
     /** The map from Petri net transitions to their corresponding tracing info. */
     private final Map<Transition, TransitionTraceInfo> transitionTraceInfo = new LinkedHashMap<>();
 
