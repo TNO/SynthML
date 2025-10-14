@@ -388,8 +388,10 @@ public class FullSynthesisApp {
 
         // Perform the language equivalence check.
         StateAwareWeakLanguageEquivalenceChecker checker = new StateAwareWeakLanguageEquivalenceChecker();
-        checker.check(stateSpace1, result.stateAnnotations1(), translator.getInternalEvents(), stateSpace2,
-                result.stateAnnotations2(), umlToCifTranslatorPostSynth.getInternalEvents(), result.pairedEvents());
+        checker.check(stateSpace1, result.stateAnnotations1(),
+                tracker.getInternalEvents(UmlToCifTranslationPurpose.SYNTHESIS), stateSpace2,
+                result.stateAnnotations2(), tracker.getInternalEvents(UmlToCifTranslationPurpose.LANGUAGE_EQUIVALENCE),
+                tracker.getLanguageEqEventsPaired());
     }
 
     private static PathPair makePathPair(Path path) {
