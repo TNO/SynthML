@@ -1165,4 +1165,20 @@ public class SynthesisChainTracking {
 
         return filteredEvents;
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Section dealing with language equivalence check preparation.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Returns the set of internal events for the given translation purpose.
+     *
+     * @param purpose The translation purpose.
+     * @return The synthesis internal events set.
+     */
+    public Set<Event> getInternalEvents(UmlToCifTranslationPurpose purpose) {
+        return cifEventTraceInfo.entrySet().stream()
+                .filter(e -> e.getValue().getTranslationPurpose().equals(purpose) && e.getValue().isInternal())
+                .map(e -> e.getKey()).collect(Collectors.toSet());
+    }
 }
