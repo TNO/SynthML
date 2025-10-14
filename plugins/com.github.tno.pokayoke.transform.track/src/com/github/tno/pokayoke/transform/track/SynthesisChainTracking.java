@@ -340,6 +340,12 @@ public class SynthesisChainTracking {
                 // Store the start event and corresponding end events to be removed.
                 eventsToRemove.add(cifEvent);
                 eventsToRemove.addAll(startEndEventsMap.get(cifEvent));
+
+                // Store the start event and the event tracing infos in the dedicated map.
+                atomicNonDeterministicEventTraceInfoMap.computeIfAbsent(cifEvent, k -> new LinkedHashMap<>())
+                        .put(cifEvent, getEventTraceInfo(cifEvent));
+                startEndEventsMap.get(cifEvent).stream().forEach(
+                        e -> atomicNonDeterministicEventTraceInfoMap.get(cifEvent).put(e, getEventTraceInfo(e)));
             } else if (eventInfo.isEndEvent()) {
                 // Store the event to be removed, find the corresponding start event for later handling.
                 eventsToRemove.add(cifEvent);
@@ -347,7 +353,13 @@ public class SynthesisChainTracking {
                         .filter(e -> e.getValue().contains(cifEvent)).map(e -> e.getKey()).toList();
                 Verify.verify(startToUpdate.size() == 1,
                         String.format("Found %d start events for end event '%s'.", startToUpdate.size(), eventName));
-                startEventsToUpdate.add(startToUpdate.get(0));
+                Event startEvent = startToUpdate.get(0);
+                startEventsToUpdate.add(startEvent);
+
+                // Store the start event and the event tracing infos in the dedicated map.
+                atomicNonDeterministicEventTraceInfoMap.computeIfAbsent(startEvent, k -> new LinkedHashMap<>())
+                        .put(startEvent, getEventTraceInfo(startEvent));
+                atomicNonDeterministicEventTraceInfoMap.get(startEvent).put(cifEvent, getEventTraceInfo(cifEvent));
             }
         }
 
