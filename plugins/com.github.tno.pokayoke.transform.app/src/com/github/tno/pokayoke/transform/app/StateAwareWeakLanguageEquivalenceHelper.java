@@ -61,26 +61,11 @@ public class StateAwareWeakLanguageEquivalenceHelper {
                 StateAwareWeakLanguageEquivalenceChecker.ERROR_PREFIX
                         + "the second model's component is not an automaton.");
 
-        Automaton stateSpace1 = (Automaton)model1.getComponents().get(0);
-        Automaton stateSpace2 = (Automaton)model2.getComponents().get(0);
-
         // Filter internal variables from state annotations.
         Map<Location, Annotation> filteredStateAnn1 = filterStateAnnotations(model1, externalVariableNames);
         Map<Location, Annotation> filteredStateAnn2 = filterStateAnnotations(model2, externalVariableNames);
 
-        // Sanity check: check that the tau and non-tau events represent the entire state space alphabet.
-        checkAlphabetCoverage(stateSpace1, namesToEvents1, tauEvents1);
-        checkAlphabetCoverage(stateSpace2, namesToEvents2, tauEvents2);
-
-        // Filter unused events from the state space alphabets.
-        Set<String> unusedEvents1 = removeAndGetUnusedEvents(stateSpace1);
-        Set<String> unusedEvents2 = removeAndGetUnusedEvents(stateSpace2);
-
-        // Check that the two alphabets are compatible, and create a set of pairs with the corresponding list of events.
-        Set<Pair<List<Event>, List<Event>>> pairedEvents = getPairedEvents(namesToEvents1, unusedEvents1,
-                stateSpace1.getName(), namesToEvents2, unusedEvents2, stateSpace2.getName());
-
-        return new ModelPreparationResult(pairedEvents, filteredStateAnn1, filteredStateAnn2);
+        return new ModelPreparationResult(filteredStateAnn1, filteredStateAnn2);
     }
 
     private static Map<Location, Annotation> filterStateAnnotations(Specification model,
@@ -232,13 +217,11 @@ public class StateAwareWeakLanguageEquivalenceHelper {
     /**
      * The result of the preparation of the two CIF state spaces.
      *
-     * @param pairedEvents The set containing pairs of corresponding (lists of) events for the two state space automata.
-     *     All events in the first list of events are equivalent to all the events in the second list of events.
      * @param stateAnnotations1 The filtered state annotations for the first state space.
      * @param stateAnnotations2 The filtered state annotations for the second state space.
      */
-    record ModelPreparationResult(Set<Pair<List<Event>, List<Event>>> pairedEvents,
-            Map<Location, Annotation> stateAnnotations1, Map<Location, Annotation> stateAnnotations2)
+    record ModelPreparationResult(Map<Location, Annotation> stateAnnotations1,
+            Map<Location, Annotation> stateAnnotations2)
     {
     }
 }
