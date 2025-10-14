@@ -503,6 +503,27 @@ public class SynthesisChainTracking {
         private boolean isEndOnlyEvent() {
             return !isStartEvent() && isEndEvent();
         }
+
+        /**
+         * Return {@code true} if the current event trace info represents an external action of the given activity. An
+         * external action corresponds to an opaque behavior, to a call behavior action or to an opaque action.
+         *
+         * @return {@code true} if the current event trace info represents an external action; {@code false} otherwise.
+         */
+        public boolean isExternal() {
+            return umlElement instanceof OpaqueBehavior || umlElement instanceof CallBehaviorAction
+                    || umlElement instanceof OpaqueAction;
+        }
+
+        /**
+         * Return {@code true} if the current event trace info represents an internal action of the given activity. An
+         * internal action corresponds to a UML element which is null or a control node.
+         *
+         * @return {@code true} if the current event trace info represents an internal action; {@code false} otherwise.
+         */
+        public boolean isInternal() {
+            return umlElement == null || umlElement instanceof ControlNode;
+        }
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
