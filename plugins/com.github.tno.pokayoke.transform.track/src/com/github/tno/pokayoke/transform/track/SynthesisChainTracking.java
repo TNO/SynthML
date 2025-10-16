@@ -631,7 +631,7 @@ public class SynthesisChainTracking {
                         "Events that are both start- and end-events are not supported for merged patterns.");
 
                 Set<RedefinableElement> umlElements = cifEvents.stream().map(e -> getEventTraceInfo(e).getUmlElement())
-                        .collect(Collectors.toSet());
+                        .collect(Collectors.toCollection(LinkedHashSet::new));
                 Verify.verify(umlElements.size() == 1,
                         String.format("Events must refer to a single UML element, found %d.", umlElements.size()));
 
@@ -1185,7 +1185,7 @@ public class SynthesisChainTracking {
     public Set<Event> getInternalEvents(UmlToCifTranslationPurpose purpose) {
         return cifEventTraceInfo.entrySet().stream()
                 .filter(e -> e.getValue().getTranslationPurpose().equals(purpose) && e.getValue().isInternal())
-                .map(e -> e.getKey()).collect(Collectors.toSet());
+                .map(e -> e.getKey()).collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     /**
