@@ -50,7 +50,8 @@ public class SynthesisChainTracking {
 
     /**
      * The map from the CIF start events related to an atomic non-deterministic behavior to the events and related event
-     * tracing info created before the event-based projection step of the synthesis chain, where the start and end events are merged into a single event..
+     * tracing info created before the event-based projection step of the synthesis chain, where the start and end
+     * events are merged into a single event..
      */
     private final Map<Event, Map<Event, EventTraceInfo>> atomicNonDeterministicEventTraceInfoMap = new LinkedHashMap<>();
 
@@ -344,7 +345,8 @@ public class SynthesisChainTracking {
                 eventsToRemove.add(cifEvent);
                 eventsToRemove.addAll(startEndEventsMap.get(cifEvent));
 
-                // Store the original start/end events and their information, per start event they will get merged into, to keep them for later use.
+                // Store the original start/end events and their information, per start event they will get merged into,
+                // to keep them for later use.
                 atomicNonDeterministicEventTraceInfoMap.computeIfAbsent(cifEvent, k -> new LinkedHashMap<>())
                         .put(cifEvent, getEventTraceInfo(cifEvent));
                 startEndEventsMap.get(cifEvent).stream().forEach(
@@ -359,7 +361,8 @@ public class SynthesisChainTracking {
                 Event startEvent = startToUpdate.get(0);
                 startEventsToUpdate.add(startEvent);
 
-                // Store the original start/end events and their information, per start event they will get merged into, to keep them for later use.
+                // Store the original start/end events and their information, per start event they will get merged into,
+                // to keep them for later use.
                 atomicNonDeterministicEventTraceInfoMap.computeIfAbsent(startEvent, k -> new LinkedHashMap<>())
                         .put(startEvent, getEventTraceInfo(startEvent));
                 atomicNonDeterministicEventTraceInfoMap.get(startEvent).put(cifEvent, getEventTraceInfo(cifEvent));
@@ -1234,10 +1237,10 @@ public class SynthesisChainTracking {
             Event languageEqSynthesisEvent = transitionInfo.getCifEvents().iterator().next();
 
             // If the event is non-atomic or deterministic, update the attributes. This avoids the update for the atomic
-            // non-deterministic opaque behaviors, which are removed from the synthesis chain before the Petri net synthesis.
-            // The atomic non-deterministic opaque behaviors are technically merged during the event-based projection, but
-            // appear as non-merged from the Petri net point of view. Since these are effectively merged, do not update
-            // the event tracing info attributes.
+            // non-deterministic opaque behaviors, which are removed from the synthesis chain before the Petri net
+            // synthesis. The atomic non-deterministic opaque behaviors are technically merged during the event-based
+            // projection, but appear as non-merged from the Petri net point of view. Since these are effectively
+            // merged, do not update the event tracing info attributes.
             if (!PokaYokeUmlProfileUtil.isAtomic(languageEqOriginalUmlElement)
                     || PokaYokeUmlProfileUtil.isDeterministic(languageEqOriginalUmlElement))
             {
@@ -1265,7 +1268,8 @@ public class SynthesisChainTracking {
         // Initialize set of paired events.
         Set<Pair<List<Event>, List<Event>>> pairedEvents = new LinkedHashSet<>();
 
-        // Update the external synthesis events map to contain the original events for the atomic non-deterministic opaque behaviors that got merged.
+        // Update the external synthesis events map to contain the original events for the atomic non-deterministic
+        // opaque behaviors that got merged.
         Map<Event, EventTraceInfo> externalSynthesisEventsMap = cifEventTraceInfo.entrySet().stream()
                 .filter(e -> e.getValue().getTranslationPurpose().equals(UmlToCifTranslationPurpose.SYNTHESIS)
                         && e.getValue().isExternal())
