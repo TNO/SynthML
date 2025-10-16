@@ -1267,14 +1267,20 @@ public class SynthesisChainTracking {
         // Initialize set of paired events.
         Set<Pair<List<Event>, List<Event>>> pairedEvents = new LinkedHashSet<>();
 
-        // Update the external synthesis events map to contain the original events for the atomic non-deterministic
-        // opaque behaviors that got merged.
+        // Create a map for the external synthesis CIF events and their event trace info.
         Map<Event, EventTraceInfo> externalSynthesisEventsMap = cifEventTraceInfo.entrySet().stream()
                 .filter(e -> e.getValue().getTranslationPurpose().equals(UmlToCifTranslationPurpose.SYNTHESIS)
                         && e.getValue().isExternal())
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (x, y) -> y, LinkedHashMap::new));
 
-        // Update the map with the removed atomic non-deterministic events.
+        // Create a map for the external language equivalence CIF events and their event trace info.
+        Map<Event, EventTraceInfo> externalLanguageEqEventsMap = cifEventTraceInfo.entrySet().stream()
+                .filter(e -> e.getValue().getTranslationPurpose()
+                        .equals(UmlToCifTranslationPurpose.LANGUAGE_EQUIVALENCE) && e.getValue().isExternal())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (x, y) -> y, LinkedHashMap::new));
+
+        // Update the external synthesis events map to contain the original events for the atomic non-deterministic
+        // opaque behaviors that got merged.
         for (Entry<Event, Map<Event, EventTraceInfo>> newStartAndOldEvents: atomicNonDeterministicEventTraceInfoMap
                 .entrySet())
         {
@@ -1290,12 +1296,6 @@ public class SynthesisChainTracking {
             externalSynthesisEventsMap.remove(startEvent);
             externalSynthesisEventsMap.putAll(oldEventInfosMap);
         }
-
-        // Create a map for the external language equivalence CIF events and their event trace info.
-        Map<Event, EventTraceInfo> externalLanguageEqEventsMap = cifEventTraceInfo.entrySet().stream()
-                .filter(e -> e.getValue().getTranslationPurpose()
-                        .equals(UmlToCifTranslationPurpose.LANGUAGE_EQUIVALENCE) && e.getValue().isExternal())
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (x, y) -> y, LinkedHashMap::new));
 
         // Pair the language equivalence events with the synthesis events. Check that all language equivalence events
         // are paired. Note that there can be synthesis events that are not paired, because they are forbidden (e.g. by
