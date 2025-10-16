@@ -1254,7 +1254,7 @@ public class SynthesisChainTracking {
         return synthesisEventInfo.getUmlElement().equals(languageEqOriginalUmlElement)
                 && synthesisEventInfo.isStartEvent() == isLanguageEqStartEvent
                 && synthesisEventInfo.isEndEvent() == isLanguageEqEndEvent
-                && synthesisEventInfo.getEffectIdx() == languageEqEffectIdx;
+                && synthesisEventInfo.getEffectIdx().equals(languageEqEffectIdx);
     }
 
     /**
