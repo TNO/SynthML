@@ -1177,16 +1177,6 @@ public class SynthesisChainTracking {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * Returns {@code true} if the CIF event is an internal event.
-     *
-     * @param cifEvent The CIF event.
-     * @return {@code true} if the CIF event is an internal event; {@code false} otherwise.
-     */
-    public boolean isInternal(Event cifEvent) {
-        return cifEventTraceInfo.get(cifEvent).isInternal();
-    }
-
-    /**
      * Returns the set of internal events for the given translation purpose.
      *
      * @param purpose The translation purpose.
