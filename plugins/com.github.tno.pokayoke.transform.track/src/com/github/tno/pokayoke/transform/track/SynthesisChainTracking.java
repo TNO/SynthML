@@ -1180,7 +1180,7 @@ public class SynthesisChainTracking {
      * Returns the set of internal events for the given translation purpose.
      *
      * @param purpose The translation purpose.
-     * @return The synthesis internal events set.
+     * @return The internal events set.
      */
     public Set<Event> getInternalEvents(UmlToCifTranslationPurpose purpose) {
         return cifEventTraceInfo.entrySet().stream()
