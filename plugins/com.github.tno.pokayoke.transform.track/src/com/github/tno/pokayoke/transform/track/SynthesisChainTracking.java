@@ -1234,22 +1234,20 @@ public class SynthesisChainTracking {
         languageEqOriginalUmlElement = getOriginalUmlElement(languageEqOriginalUmlElement);
 
         // If the language equivalence CIF event originates from a non-merged pattern, trace the synthesis event info.
-        if (!transitionInfo.isMergedTransition()) {
+        // If the event is non-atomic or deterministic, update the attributes. This avoids the update for the atomic
+        // non-deterministic opaque behaviors, which are removed from the synthesis chain before the Petri net
+        // synthesis. The end events of atomic non-deterministic opaque behaviors are removed during the event-based
+        // projection, but appear as non-merged from the transition tracing info point of view. Since the atomic
+        // non-deterministic opaque behaviors implicitly refer to multiple CIF events, do not update the event tracing
+        // info attributes.
+        if (!transitionInfo.isMergedTransition() && (!PokaYokeUmlProfileUtil.isAtomic(languageEqOriginalUmlElement)
+                || PokaYokeUmlProfileUtil.isDeterministic(languageEqOriginalUmlElement)))
+        {
             Event languageEqSynthesisEvent = transitionInfo.getSingleCifEvent();
-
-            // If the event is non-atomic or deterministic, update the attributes. This avoids the update for the atomic
-            // non-deterministic opaque behaviors, which are removed from the synthesis chain before the Petri net
-            // synthesis. The atomic non-deterministic opaque behaviors are technically merged during the event-based
-            // projection, but appear as non-merged from the Petri net point of view. Since these are effectively
-            // merged, do not update the event tracing info attributes.
-            if (!PokaYokeUmlProfileUtil.isAtomic(languageEqOriginalUmlElement)
-                    || PokaYokeUmlProfileUtil.isDeterministic(languageEqOriginalUmlElement))
-            {
-                EventTraceInfo thatSynthesisEventInfo = getEventTraceInfo(languageEqSynthesisEvent);
-                isLanguageEqStartEvent = thatSynthesisEventInfo.isStartEvent();
-                isLanguageEqEndEvent = thatSynthesisEventInfo.isEndEvent();
-                languageEqEffectIdx = thatSynthesisEventInfo.getEffectIdx();
-            }
+            EventTraceInfo thatSynthesisEventInfo = getEventTraceInfo(languageEqSynthesisEvent);
+            isLanguageEqStartEvent = thatSynthesisEventInfo.isStartEvent();
+            isLanguageEqEndEvent = thatSynthesisEventInfo.isEndEvent();
+            languageEqEffectIdx = thatSynthesisEventInfo.getEffectIdx();
         }
 
         // Compare the UML elements and the attributes.
