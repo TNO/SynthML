@@ -689,10 +689,13 @@ public class SynthesisChainTracking {
          *     otherwise.
          */
         private boolean isCompleteTransition() {
+            if (isMergedTransition()) {
+                return true;
+            }
+
             // If the transition is not merged, it has a single CIF event, and we can query if that is complete.
-            Event cifEvent = cifEvents.iterator().next();
-            EventTraceInfo eventInfo = getEventTraceInfo(cifEvent);
-            return isMergedTransition() || eventInfo.isCompleteEvent();
+            EventTraceInfo eventInfo = getEventTraceInfo(getSingleCifEvent());
+            return eventInfo.isCompleteEvent();
         }
 
         /**
@@ -707,8 +710,7 @@ public class SynthesisChainTracking {
             }
 
             // If the transition is not merged, it has a single CIF event, and we can query if that is start-only.
-            Event cifEvent = cifEvents.iterator().next();
-            EventTraceInfo eventInfo = getEventTraceInfo(cifEvent);
+            EventTraceInfo eventInfo = getEventTraceInfo(getSingleCifEvent());
             return eventInfo.isStartOnlyEvent();
         }
 
@@ -724,8 +726,7 @@ public class SynthesisChainTracking {
             }
 
             // If the transition is not merged, it has a single CIF event, and we can query if that is end-only.
-            Event cifEvent = cifEvents.iterator().next();
-            EventTraceInfo eventInfo = getEventTraceInfo(cifEvent);
+            EventTraceInfo eventInfo = getEventTraceInfo(getSingleCifEvent());
             return eventInfo.isEndOnlyEvent();
         }
 
@@ -754,8 +755,7 @@ public class SynthesisChainTracking {
             Verify.verify(isEndOnlyTransition(), "Effect index is valid exlusively for end-only CIF events.");
 
             // The transition is not merged, thus it has a single CIF event, and we query its related effect index.
-            Event cifEvent = cifEvents.iterator().next();
-            EventTraceInfo eventInfo = getEventTraceInfo(cifEvent);
+            EventTraceInfo eventInfo = getEventTraceInfo(getSingleCifEvent());
             return eventInfo.getEffectIdx();
         }
 
