@@ -758,6 +758,17 @@ public class SynthesisChainTracking {
             EventTraceInfo eventInfo = getEventTraceInfo(cifEvent);
             return eventInfo.getEffectIdx();
         }
+
+        /**
+         * Returns the single CIF event associated to the transition tracing info. If more than one CIF event is
+         * present, throws an error.
+         *
+         * @return The CIF event linked to the transition tracing info.
+         */
+        private Event getSingleCifEvent() {
+            Verify.verify(cifEvents.size() == 1, "Found more than one CIF event.");
+            return cifEvents.iterator().next();
+        }
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1224,7 +1235,7 @@ public class SynthesisChainTracking {
 
         // If the language equivalence CIF event originates from a non-merged pattern, trace the synthesis event info.
         if (!transitionInfo.isMergedTransition()) {
-            Event languageEqSynthesisEvent = transitionInfo.getCifEvents().iterator().next();
+            Event languageEqSynthesisEvent = transitionInfo.getSingleCifEvent();
 
             // If the event is non-atomic or deterministic, update the attributes. This avoids the update for the atomic
             // non-deterministic opaque behaviors, which are removed from the synthesis chain before the Petri net
