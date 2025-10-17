@@ -375,9 +375,17 @@ public class FullSynthesisApp {
         // Load state space post-synthesis chain file.
         Specification stateSpacePostSynthChain = CifFileHelper.loadCifSpec(cifStateSpacePath);
 
-        // Filter the state annotations to keep only the external variables.
+        // Get internal event sets for the synthesis and language equivalence translations.
+        Set<Event> synthesisInternalEvents = tracker.getInternalEvents(UmlToCifTranslationPurpose.SYNTHESIS);
+        Set<Event> languageEqInternalEvents = tracker
+                .getInternalEvents(UmlToCifTranslationPurpose.LANGUAGE_EQUIVALENCE);
+
+        // Filter the state annotations to keep only the external variables, and check that external and internal vents
+        // cover the entire model alphabet.
         ModelPreparationResult result = StateAwareWeakLanguageEquivalenceHelper.prepareModels(stateSpaceGenerated,
-                stateSpacePostSynthChain, translator.getVariableNames());
+                tracker.getExternalEvents(UmlToCifTranslationPurpose.SYNTHESIS), synthesisInternalEvents,
+                stateSpacePostSynthChain, tracker.getExternalEvents(UmlToCifTranslationPurpose.LANGUAGE_EQUIVALENCE),
+                languageEqInternalEvents, translator.getVariableNames());
 
         // Get the two state space automata to compare.
         Automaton stateSpace1 = (Automaton)stateSpaceGenerated.getComponents().get(0);
@@ -385,10 +393,8 @@ public class FullSynthesisApp {
 
         // Perform the language equivalence check.
         StateAwareWeakLanguageEquivalenceChecker checker = new StateAwareWeakLanguageEquivalenceChecker();
-        checker.check(stateSpace1, result.stateAnnotations1(),
-                tracker.getInternalEvents(UmlToCifTranslationPurpose.SYNTHESIS), stateSpace2,
-                result.stateAnnotations2(), tracker.getInternalEvents(UmlToCifTranslationPurpose.LANGUAGE_EQUIVALENCE),
-                tracker.getLanguageEqEventsPaired());
+        checker.check(stateSpace1, result.stateAnnotations1(), synthesisInternalEvents, stateSpace2,
+                result.stateAnnotations2(), languageEqInternalEvents, tracker.getLanguageEqEventsPaired());
     }
 
     private static PathPair makePathPair(Path path) {
