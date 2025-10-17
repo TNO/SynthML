@@ -2,6 +2,7 @@
 package com.github.tno.synthml.uml.profile.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,8 +12,10 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.uml2.uml.Action;
+import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.CallBehaviorAction;
+import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.Element;
@@ -494,5 +497,54 @@ public class PokaYokeUmlProfileUtil {
         Verify.verify(constraintStereotypes.size() <= 1,
                 String.format("Found more than one stereotype applied to constraint '%s'.", constraint.getName()));
         return constraintStereotypes.isEmpty() ? null : constraintStereotypes.get(0);
+    }
+
+    /**
+     * Returns the supported stereotypes for the given constraint.
+     *
+     * @param constraint The constraint.
+     * @return A list of supported stereotypes for the given constraint.
+     */
+    public static List<Stereotype> getSupportedConstraintStereotypes(Constraint constraint) {
+        if (isPreconditionConstraint(constraint)) {
+            return Arrays.asList(getStereotype(constraint, ST_SYNTHESIS_PRECONDITION),
+                    getStereotype(constraint, ST_USAGE_PRECONDITION));
+        } else if (isPostconditionConstraint(constraint)) {
+            return Arrays.asList(getStereotype(constraint, ST_POSTCONDITION));
+        } else if (isClassRequirement(constraint)) {
+            return Arrays.asList(getStereotype(constraint, ST_CLASS_REQUIREMENT));
+        } else {
+            throw new RuntimeException(
+                    String.format("Constraint '%s' is not a precondition, postcondition, nor class requirement.",
+                            constraint.getName()));
+        }
+    }
+
+    private static boolean isPreconditionConstraint(Constraint constraint) {
+        if (!(constraint.eContainer() instanceof Activity)) {
+            return false;
+        }
+
+        return ((Activity)constraint.eContainer()).getPreconditions().contains(constraint);
+    }
+
+    private static boolean isPostconditionConstraint(Constraint constraint) {
+        if (!(constraint.eContainer() instanceof Activity)) {
+            return false;
+        }
+
+        return ((Activity)constraint.eContainer()).getPostconditions().contains(constraint);
+    }
+
+    private static boolean isClassRequirement(Constraint constraint) {
+        if (!(constraint.eContainer() instanceof Classifier)) {
+            return false;
+        }
+
+        return ((Classifier)constraint.eContainer()).getOwnedRules().contains(constraint);
+    }
+
+    private static Stereotype getStereotype(Constraint constraint, String stereotypeName) {
+        return getPokaYokeProfile(constraint).getOwnedStereotype(stereotypeName);
     }
 }
