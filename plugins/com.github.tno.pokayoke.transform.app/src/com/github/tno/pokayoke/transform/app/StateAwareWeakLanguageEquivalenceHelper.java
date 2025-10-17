@@ -107,6 +107,38 @@ public class StateAwareWeakLanguageEquivalenceHelper {
         return locToFilteredAnnotations;
     }
 
+    private static void checkAlphabetCoverage(Automaton stateSpace, Set<Event> externalEvents,
+            Set<Event> internalEvents)
+    {
+        // Check that the alphabet of the state space is equal to the union of external and internal events. This check
+        // is performed by absolute names, since they are different objects.
+        Set<Event> eventsMerged = new LinkedHashSet<>();
+        eventsMerged.addAll(externalEvents);
+        eventsMerged.addAll(internalEvents);
+
+        Set<Event> stateSpaceAlphabet = CifEventUtils.getAlphabet(stateSpace);
+        Set<String> absNamesStateSpace = stateSpaceAlphabet.stream().map(e -> CifTextUtils.getAbsName(e))
+                .collect(Collectors.toSet());
+        Set<String> absNamesEventsMerged = eventsMerged.stream().map(e -> CifTextUtils.getAbsName(e))
+                .collect(Collectors.toSet());
+
+        if (!absNamesStateSpace.equals(absNamesEventsMerged)) {
+            Set<String> onlyInMerged = Sets.difference(absNamesEventsMerged, absNamesStateSpace);
+            Set<String> onlyInStateSpace = Sets.difference(absNamesStateSpace, absNamesEventsMerged);
+
+            if (!onlyInStateSpace.isEmpty()) {
+                throw new RuntimeException(StateAwareWeakLanguageEquivalenceChecker.ERROR_PREFIX
+                        + String.format("state space '%s' contains events that are neither internal nor external: %s.",
+                                stateSpace.getName(), String.join(", ", onlyInStateSpace)));
+            } else {
+                absNamesEventsMerged.removeAll(absNamesStateSpace);
+                throw new RuntimeException(StateAwareWeakLanguageEquivalenceChecker.ERROR_PREFIX + String.format(
+                        "There are internal/external events that do not belong to the state space '%s' alphabet: %s.",
+                        stateSpace.getName(), String.join(", ", onlyInMerged)));
+            }
+        }
+    }
+
     /**
      * The result of the preparation of the two CIF state spaces.
      *
