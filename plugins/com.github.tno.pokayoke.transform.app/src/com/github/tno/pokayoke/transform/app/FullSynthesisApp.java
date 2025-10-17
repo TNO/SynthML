@@ -272,14 +272,14 @@ public class FullSynthesisApp {
         PostProcessActivity.finalizeOpaqueActions(activity, tracker, warnings);
         FileHelper.storeModel(activity.getModel(), opaqueActionsFinalizedOutputPath.toString());
 
-        // Remove the internal actions that were added in CIF specification and petrification.
-        Path internalActionsRemovedUMLOutputPath = outputFolderPath
+        // Remove the temporary actions that were added in CIF specification and petrification.
+        Path temporaryActionsRemovedUMLOutputPath = outputFolderPath
                 .resolve(filePrefix + ".15.internalactionsremoved.uml");
-        PostProcessActivity.removeOpaqueActions(activity, tracker.getInternalActions());
-        FileHelper.storeModel(activity.getModel(), internalActionsRemovedUMLOutputPath.toString());
+        PostProcessActivity.removeOpaqueActions(activity, tracker.getNullElementActions());
+        FileHelper.storeModel(activity.getModel(), temporaryActionsRemovedUMLOutputPath.toString());
 
-        // Remove internal actions from the synthesis chain tracker.
-        tracker.removeInternalActions();
+        // Remove temporary actions created for petrification from the synthesis chain tracker.
+        tracker.removeTemporaryPetrificationActions();
 
         // Post-process the activity to simplify it.
         Path umlSimplifiedOutputPath = outputFolderPath.resolve(filePrefix + ".16.simplified.uml");
