@@ -582,4 +582,13 @@ public class PokaYokeUmlProfileUtil {
             throw new IllegalArgumentException("Unexpected stereotype name: " + stereotypeName);
         }
     }
+
+    public static String getConstraintExpression(Constraint constraint) {
+        ValueSpecification expr = constraint.getSpecification();
+        return expr == null ? null : expr.stringValue();
+    }
+
+    public static void setConstraintExpression(Constraint constraint, String newValue) {
+        constraint.setSpecification(createCifExpression(newValue));
+    }
 }
