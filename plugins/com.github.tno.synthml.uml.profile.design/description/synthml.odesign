@@ -234,7 +234,7 @@
       <pages name="PR_PropertyPage" labelExpression="SynthML" domainClass="uml::Property" groups="//@extensions.0/@categories.0/@groups.2"/>
       <pages name="PR_PrimitiveTypePage" labelExpression="SynthML" domainClass="uml::PrimitiveType" groups="//@extensions.0/@categories.0/@groups.3"/>
       <pages name="PR_ActivityPage" labelExpression="SynthML" domainClass="uml::Activity"/>
-      <pages name="PR_ConstraintPage" labelExpression="SynthML" domainClass="uml::Constraint" semanticCandidateExpression="var:self" groups="//@extensions.0/@categories.0/@groups.5"/>
+      <pages name="PR_ConstraintPage" labelExpression="SynthML" domainClass="uml::Constraint" preconditionExpression="aql:not self.oclIsKindOf(uml::IntervalConstraint)" groups="//@extensions.0/@categories.0/@groups.5"/>
       <groups name="PR_FormalElementGroup" labelExpression="General" semanticCandidateExpression="var:self">
         <controls xsi:type="properties:TextDescription" name="PR_AC_Name" labelExpression="Name:" helpExpression="The Name of the Action" valueExpression="feature:name">
           <initialOperation>
