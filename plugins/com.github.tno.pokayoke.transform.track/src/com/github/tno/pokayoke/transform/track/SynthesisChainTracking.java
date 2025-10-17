@@ -1301,7 +1301,9 @@ public class SynthesisChainTracking {
 
         // Pair the language equivalence events with the synthesis events. Check that all language equivalence events
         // are paired. Note that there can be synthesis events that are not paired, because they are forbidden (e.g. by
-        // occurrence constraints) and they will not have a related language equivalence event.
+        // occurrence constraints) and they will not have a related language equivalence event. During the language
+        // equivalence phase, opaque behaviors are not translated, only the call behavior actions and opaque actions
+        // deriving from them.
         Set<Event> usedLanguageEqEvents = new LinkedHashSet<>();
 
         for (Entry<Event, EventTraceInfo> entrySynth: externalSynthesisEventsMap.entrySet()) {
