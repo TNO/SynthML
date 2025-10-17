@@ -8,6 +8,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -1199,6 +1200,41 @@ public class SynthesisChainTracking {
     }
 
     /**
+     * Returns the set of external events for the given translation purpose.
+     *
+     * @param purpose The translation purpose.
+     * @return The external events set.
+     */
+    public Set<Event> getExternalEvents(UmlToCifTranslationPurpose purpose) {
+        Set<Event> externalEvents = cifEventTraceInfo.entrySet().stream()
+                .filter(e -> e.getValue().getTranslationPurpose().equals(purpose) && e.getValue().isExternal())
+                .map(e -> e.getKey()).collect(Collectors.toCollection(LinkedHashSet::new));
+
+        if (purpose == UmlToCifTranslationPurpose.SYNTHESIS) {
+            // Update the external synthesis events set to contain the original events for the atomic non-deterministic
+            // opaque behaviors that got merged.
+            for (Entry<Event, Map<Event, EventTraceInfo>> newStartAndOldEvents: atomicNonDeterministicEventTraceInfoMap
+                    .entrySet())
+            {
+                Event startEvent = newStartAndOldEvents.getKey();
+                Set<Event> oldEventSet = newStartAndOldEvents.getValue().entrySet().stream().map(e -> e.getKey())
+                        .collect(Collectors.toSet());
+
+                // Ensure that the start event of the atomic non-deterministic events is contained in the set.
+                Verify.verify(externalEvents.contains(startEvent),
+                        String.format("Start event '%s' is not contained in the external synthesis event set.",
+                                startEvent.getName()));
+
+                // Remove the entry related to the start event and add all the old events.
+                externalEvents.remove(startEvent);
+                externalEvents.addAll(oldEventSet);
+            }
+        }
+
+        return externalEvents;
+    }
+
+    /**
      * Return {@code true} if the two given event trace infos are equivalent. The equivalence is based on all event
      * trace info fields (excluding the translation purpose) and whether the event trace infos refer to the same
      * original UML element. Note that the synthesis event trace info already refers to the original UML element and
@@ -1255,7 +1291,7 @@ public class SynthesisChainTracking {
         return synthesisEventInfo.getUmlElement().equals(languageEqOriginalUmlElement)
                 && synthesisEventInfo.isStartEvent() == isLanguageEqStartEvent
                 && synthesisEventInfo.isEndEvent() == isLanguageEqEndEvent
-                && synthesisEventInfo.getEffectIdx() == (languageEqEffectIdx);
+                && Objects.equals(synthesisEventInfo.getEffectIdx(), languageEqEffectIdx);
     }
 
     /**
