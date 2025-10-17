@@ -13,6 +13,7 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.CallBehaviorAction;
+import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.LiteralBoolean;
@@ -30,11 +31,17 @@ import org.eclipse.uml2.uml.ValueSpecification;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.google.common.base.Strings;
+import com.google.common.base.Verify;
 
 import SynthML.FormalCallBehaviorAction;
+import SynthML.FormalConstraint;
 import SynthML.FormalControlFlow;
 import SynthML.FormalElement;
+import SynthML.Postcondition;
+import SynthML.Requirement;
 import SynthML.SynthMLPackage;
+import SynthML.SynthesisPrecondition;
+import SynthML.UsagePrecondition;
 
 public class PokaYokeUmlProfileUtil {
     private static final String ST_FORMAL_ELEMENT = SynthMLPackage.Literals.FORMAL_ELEMENT.getName();
@@ -56,6 +63,16 @@ public class PokaYokeUmlProfileUtil {
     private static final String PROP_FORMAL_CALL_BEHAVIOR_ACTION_ARGUMENTS = SynthMLPackage.Literals.FORMAL_CALL_BEHAVIOR_ACTION__ARGUMENTS
             .getName();
 
+    private static final String ST_FORMAL_CONSTRAINT = SynthMLPackage.Literals.FORMAL_CONSTRAINT.getName();
+
+    private static final String ST_CLASS_REQUIREMENT = SynthMLPackage.Literals.REQUIREMENT.getName();
+
+    private static final String ST_SYNTHESIS_PRECONDITION = SynthMLPackage.Literals.SYNTHESIS_PRECONDITION.getName();
+
+    private static final String ST_USAGE_PRECONDITION = SynthMLPackage.Literals.USAGE_PRECONDITION.getName();
+
+    private static final String ST_POSTCONDITION = SynthMLPackage.Literals.POSTCONDITION.getName();
+
     /** Qualified name for the {@link SynthMLPackage Poka Yoke} profile. */
     public static final String POKA_YOKE_PROFILE = SynthMLPackage.eNAME;
 
@@ -70,6 +87,25 @@ public class PokaYokeUmlProfileUtil {
     /** Qualified name for the {@link FormalControlFlow} stereotype. */
     public static final String FORMAL_CONTROL_FLOW_STEREOTYPE = POKA_YOKE_PROFILE + NamedElement.SEPARATOR
             + ST_FORMAL_CONTROL_FLOW;
+
+    /** Qualified name for the {@link FormalConstraint} stereotype. */
+    public static final String FORMAL_CONSTRAINT_STEREOTYPE = POKA_YOKE_PROFILE + NamedElement.SEPARATOR
+            + ST_FORMAL_CONSTRAINT;
+
+    /** Qualified name for the {@link Requirement} stereotype. */
+    public static final String REQUIREMENT_STEREOTYPE = POKA_YOKE_PROFILE + NamedElement.SEPARATOR
+            + ST_CLASS_REQUIREMENT;
+
+    /** Qualified name for the {@link SynthesisPrecondition} stereotype. */
+    public static final String SYNTHESIS_PRECONDITION_STEREOTYPE = POKA_YOKE_PROFILE + NamedElement.SEPARATOR
+            + ST_SYNTHESIS_PRECONDITION;
+
+    /** Qualified name for the {@link UsagePrecondition} stereotype. */
+    public static final String USAGE_PRECONDITION_STEREOTYPE = POKA_YOKE_PROFILE + NamedElement.SEPARATOR
+            + ST_USAGE_PRECONDITION;
+
+    /** Qualified name for the {@link Postcondition} stereotype. */
+    public static final String POSTCONDITION_STEREOTYPE = POKA_YOKE_PROFILE + NamedElement.SEPARATOR + ST_POSTCONDITION;
 
     private PokaYokeUmlProfileUtil() {
         // Empty for utility classes
@@ -451,5 +487,12 @@ public class PokaYokeUmlProfileUtil {
         expression.getLanguages().add("CIF");
         expression.getBodies().add(newValue);
         return expression;
+    }
+
+    public static Stereotype getConstraintStereotype(Constraint constraint) {
+        List<Stereotype> constraintStereotypes = constraint.getAppliedStereotypes();
+        Verify.verify(constraintStereotypes.size() <= 1,
+                String.format("Found more than one stereotype applied to constraint '%s'.", constraint.getName()));
+        return constraintStereotypes.isEmpty() ? null : constraintStereotypes.get(0);
     }
 }
