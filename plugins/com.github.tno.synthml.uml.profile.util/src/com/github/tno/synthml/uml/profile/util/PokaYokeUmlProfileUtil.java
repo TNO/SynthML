@@ -591,4 +591,19 @@ public class PokaYokeUmlProfileUtil {
     public static void setConstraintExpression(Constraint constraint, String newValue) {
         constraint.setSpecification(createCifExpression(newValue));
     }
+
+    public static String getStereotypeName(Stereotype st) {
+        // Returns a slightly better formatted name for the preconditions.
+        if (st.getName().equals(ST_CLASS_REQUIREMENT)) {
+            return "Requirement";
+        } else if (st.getName().equals(ST_SYNTHESIS_PRECONDITION)) {
+            return "Synthesis Precondition";
+        } else if (st.getName().equals(ST_USAGE_PRECONDITION)) {
+            return "Usage Precondition";
+        } else if (st.getName().equals(ST_POSTCONDITION)) {
+            return "Postcondition";
+        } else {
+            throw new IllegalArgumentException("Unexpected stereotype : " + st.getName());
+        }
+    }
 }
