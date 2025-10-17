@@ -547,4 +547,39 @@ public class PokaYokeUmlProfileUtil {
     private static Stereotype getStereotype(Constraint constraint, String stereotypeName) {
         return getPokaYokeProfile(constraint).getOwnedStereotype(stereotypeName);
     }
+
+    /**
+     * Set the given stereotype to the given constraint.
+     *
+     * @param constraint The constraint.
+     * @param stereotype The stereotype.
+     */
+    public static void setConstraintStereotype(Constraint constraint, Stereotype stereotype) {
+        List<Stereotype> constraintStereotypes = constraint.getAppliedStereotypes();
+        Verify.verify(constraintStereotypes.size() <= 1,
+                String.format("Found more than one stereotype applied to constraint '%s'.", constraint.getName()));
+
+        PokaYokeUmlProfileUtil.applyPokaYokeProfile(constraint);
+
+        if (!constraintStereotypes.isEmpty()) {
+            PokaYokeUmlProfileUtil.unapplyStereotype(constraint,
+                    getQualifiedStereotypeName(constraintStereotypes.get(0).getName()));
+        }
+
+        applyStereotype(constraint, stereotype);
+    }
+
+    private static String getQualifiedStereotypeName(String stereotypeName) {
+        if (ST_CLASS_REQUIREMENT.equals(stereotypeName)) {
+            return REQUIREMENT_STEREOTYPE;
+        } else if (ST_SYNTHESIS_PRECONDITION.equals(stereotypeName)) {
+            return SYNTHESIS_PRECONDITION_STEREOTYPE;
+        } else if (ST_USAGE_PRECONDITION.equals(stereotypeName)) {
+            return USAGE_PRECONDITION_STEREOTYPE;
+        } else if (ST_POSTCONDITION.equals(stereotypeName)) {
+            return POSTCONDITION_STEREOTYPE;
+        } else {
+            throw new IllegalArgumentException("Unexpected stereotype name: " + stereotypeName);
+        }
+    }
 }
