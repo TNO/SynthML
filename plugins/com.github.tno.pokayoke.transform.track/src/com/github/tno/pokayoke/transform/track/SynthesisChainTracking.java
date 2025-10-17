@@ -913,23 +913,22 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Returns {@code true} if the opaque action is internal, i.e. the corresponding UML element is {@code null}.
+     * Returns {@code true} if the opaque action's corresponding UML element is {@code null}.
      *
      * @param action The opaque action.
-     * @return {@code true} if the action is internal, {@code false} otherwise.
+     * @return {@code true} if the action has a corresponding {@code null} UML element, {@code false} otherwise.
      */
-    public boolean isInternalAction(OpaqueAction action) {
-        // Internal actions (e.g. control nodes) do not have any UML element to refer to.
+    public boolean isNullElementAction(OpaqueAction action) {
         return getUmlElement(action) == null;
     }
 
     /**
-     * Returns the set of internal actions.
+     * Returns the set of actions whose corresponding UML element is {@code null}.
      *
-     * @return The set of internal actions.
+     * @return The set of actions whose corresponding UML element is {@code null}.
      */
-    public Set<OpaqueAction> getInternalActions() {
-        return actionToTransition.keySet().stream().filter(a -> isInternalAction(a))
+    public Set<OpaqueAction> getNullElementActions() {
+        return actionToTransition.keySet().stream().filter(a -> isNullElementAction(a))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
