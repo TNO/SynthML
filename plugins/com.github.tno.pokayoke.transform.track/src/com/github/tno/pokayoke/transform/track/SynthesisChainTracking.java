@@ -1216,6 +1216,8 @@ public class SynthesisChainTracking {
                 "The input event trace info must be related to a synthesis CIF event.");
         Verify.verify(languageEqEventInfo.getTranslationPurpose() == UmlToCifTranslationPurpose.LANGUAGE_EQUIVALENCE,
                 "The input event trace info must be related to a language equivalence CIF event.");
+        Verify.verify(synthesisEventInfo.getUmlElement() != null,
+                "The synthesis CIF event refers to a 'null' UML element."); // To be removed for vertical scaling.
 
         // Get the attributes of the language equivalence event trace info.
         RedefinableElement languageEqOriginalUmlElement = languageEqEventInfo.getUmlElement();
@@ -1254,7 +1256,7 @@ public class SynthesisChainTracking {
         return synthesisEventInfo.getUmlElement().equals(languageEqOriginalUmlElement)
                 && synthesisEventInfo.isStartEvent() == isLanguageEqStartEvent
                 && synthesisEventInfo.isEndEvent() == isLanguageEqEndEvent
-                && synthesisEventInfo.getEffectIdx().equals(languageEqEffectIdx);
+                && synthesisEventInfo.getEffectIdx() == (languageEqEffectIdx);
     }
 
     /**
