@@ -888,11 +888,11 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Removes the internal actions created for petrification in the internal mappings. Specifically targeted at the
+     * Removes the temporary actions created for petrification in the internal mappings. Specifically targeted at the
      * single source and single sink "__start" and "__end" events.
      */
-    public void removeInternalActions() {
-        // Removes internal actions created for petrification. Store the related transitions.
+    public void removeTemporaryPetrificationActions() {
+        // Removes temporary actions created for petrification. Store the related transitions.
         Set<Action> actionsToRemove = new LinkedHashSet<>();
         Set<Transition> transitionsToRemove = new LinkedHashSet<>();
         for (Entry<OpaqueAction, Transition> entry: actionToTransition.entrySet()) {
