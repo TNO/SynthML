@@ -244,8 +244,15 @@ public interface CifContext {
     }
 
     public static boolean isActivityPrePostconditionConstraint(Constraint constraint) {
-        return constraint.getContext() instanceof Activity a
-                && (a.getPreconditions().contains(constraint) || a.getPostconditions().contains(constraint));
+        return isActivityPreconditionConstraint(constraint) || isActivityPostconditionConstraint(constraint);
+    }
+
+    public static boolean isActivityPreconditionConstraint(Constraint constraint) {
+        return constraint.getContext() instanceof Activity a && a.getPreconditions().contains(constraint);
+    }
+
+    public static boolean isActivityPostconditionConstraint(Constraint constraint) {
+        return constraint.getContext() instanceof Activity a && a.getPostconditions().contains(constraint);
     }
 
     public static boolean isClassConstraint(Constraint constraint) {
