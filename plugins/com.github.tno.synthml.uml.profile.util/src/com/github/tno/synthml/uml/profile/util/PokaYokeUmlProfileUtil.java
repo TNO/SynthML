@@ -495,6 +495,7 @@ public class PokaYokeUmlProfileUtil {
     public static Stereotype getConstraintStereotype(Constraint constraint) {
         List<Stereotype> constraintStereotypes = constraint.getAppliedStereotypes();
         Verify.verify(constraintStereotypes.size() <= 1,
+                // The constraint can have no stereotypes if it has just been created.
                 String.format("Found more than one stereotype applied to constraint '%s'.", constraint.getName()));
         return constraintStereotypes.isEmpty() ? null : constraintStereotypes.get(0);
     }
@@ -548,6 +549,7 @@ public class PokaYokeUmlProfileUtil {
     public static void setConstraintStereotype(Constraint constraint, Stereotype stereotype) {
         List<Stereotype> constraintStereotypes = constraint.getAppliedStereotypes();
         Verify.verify(constraintStereotypes.size() <= 1,
+                // The constraint can have no stereotypes if it has just been created.
                 String.format("Found more than one stereotype applied to constraint '%s'.", constraint.getName()));
 
         PokaYokeUmlProfileUtil.applyPokaYokeProfile(constraint);
