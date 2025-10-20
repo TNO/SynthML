@@ -59,6 +59,7 @@ import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.RedefinableElement;
+import org.eclipse.uml2.uml.Stereotype;
 import org.eclipse.uml2.uml.TemplateParameter;
 import org.eclipse.uml2.uml.TemplateSignature;
 import org.eclipse.uml2.uml.Type;
@@ -77,6 +78,7 @@ import com.github.tno.synthml.uml.profile.cif.TypeException;
 import com.github.tno.synthml.uml.profile.util.PokaYokeTypeUtil;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Strings;
+import com.google.common.base.Verify;
 import com.google.common.collect.Sets;
 
 import SynthML.FormalCallBehaviorAction;
@@ -1005,6 +1007,22 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     }
 
     private void checkValidActivityPrePostconditionConstraint(Constraint constraint) {
+        // Check that the constraint has the right stereotype applied.
+        List<Stereotype> stereotypes = constraint.getAppliedStereotypes();
+        Verify.verify(stereotypes.size() == 1,
+                String.format("Constraint '%s' must have exactly one stereotype applied.", constraint.getName()));
+
+        if (CifContext.isActivityPreconditionConstraint(constraint)) {
+            Verify.verify(
+                    stereotypes.get(0).getName().equals(PokaYokeUmlProfileUtil.ST_SYNTHESIS_PRECONDITION)
+                            || stereotypes.get(0).getName().equals(PokaYokeUmlProfileUtil.ST_USAGE_PRECONDITION),
+                    String.format("Constraint '%s' must have a precondition stereotype applied.",
+                            constraint.getName()));
+        } else {
+            Verify.verify(stereotypes.get(0).getName().equals(PokaYokeUmlProfileUtil.ST_POSTCONDITION), String
+                    .format("Constraint '%s' must have a postcondition stereotype applied.", constraint.getName()));
+        }
+
         try {
             AInvariant invariant = CifParserHelper.parseInvariant(constraint);
             new CifTypeChecker(getScopedContext(constraint)).checkInvariant(invariant);
@@ -1021,6 +1039,13 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     }
 
     private void checkValidClassConstraint(Constraint constraint) {
+        // Check that the constraint has the right stereotype applied.
+        List<Stereotype> stereotypes = constraint.getAppliedStereotypes();
+        Verify.verify(stereotypes.size() == 1,
+                String.format("Constraint '%s' must have exactly one stereotype applied.", constraint.getName()));
+        Verify.verify(stereotypes.get(0).getName().equals(PokaYokeUmlProfileUtil.ST_CLASS_REQUIREMENT),
+                String.format("Constraint '%s' must have a requirement stereotype applied.", constraint.getName()));
+
         try {
             new CifTypeChecker(getGlobalContext(constraint)).checkInvariant(CifParserHelper.parseInvariant(constraint));
         } catch (RuntimeException e) {
