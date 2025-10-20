@@ -1023,6 +1023,19 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                     .format("Constraint '%s' must have a postcondition stereotype applied.", constraint.getName()));
         }
 
+        // Check that the constraint specification is supported.
+        Verify.verify(constraint.getSpecification() instanceof OpaqueExpression, String
+                .format("Constraint '%s' must have an opaque expression as specification.", constraint.getName()));
+        Verify.verify(((OpaqueExpression)constraint.getSpecification()).getBodies().size() == 1,
+                String.format("Constraint '%s' must have an opaque expression specification with exactly one body.",
+                        constraint.getName()));
+        Verify.verify(
+                ((OpaqueExpression)constraint.getSpecification()).getBodies().get(0) != null
+                        && !((OpaqueExpression)constraint.getSpecification()).getBodies().get(0).isEmpty(),
+                String.format(
+                        "Constraint '%s' must have an opaque expression specification containing a valid expression.",
+                        constraint.getName()));
+
         try {
             AInvariant invariant = CifParserHelper.parseInvariant(constraint);
             new CifTypeChecker(getScopedContext(constraint)).checkInvariant(invariant);
@@ -1045,6 +1058,19 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                 String.format("Constraint '%s' must have exactly one stereotype applied.", constraint.getName()));
         Verify.verify(stereotypes.get(0).getName().equals(PokaYokeUmlProfileUtil.ST_CLASS_REQUIREMENT),
                 String.format("Constraint '%s' must have a requirement stereotype applied.", constraint.getName()));
+
+        // Check that the constraint specification is supported.
+        Verify.verify(constraint.getSpecification() instanceof OpaqueExpression, String
+                .format("Constraint '%s' must have an opaque expression as specification.", constraint.getName()));
+        Verify.verify(((OpaqueExpression)constraint.getSpecification()).getBodies().size() == 1,
+                String.format("Constraint '%s' must have an opaque expression specification with exactly one body.",
+                        constraint.getName()));
+        Verify.verify(
+                ((OpaqueExpression)constraint.getSpecification()).getBodies().get(0) != null
+                        && !((OpaqueExpression)constraint.getSpecification()).getBodies().get(0).isEmpty(),
+                String.format(
+                        "Constraint '%s' must have an opaque expression specification containing a valid expression.",
+                        constraint.getName()));
 
         try {
             new CifTypeChecker(getGlobalContext(constraint)).checkInvariant(CifParserHelper.parseInvariant(constraint));
