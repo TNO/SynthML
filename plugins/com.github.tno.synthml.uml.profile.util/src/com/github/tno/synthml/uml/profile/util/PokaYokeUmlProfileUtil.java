@@ -521,27 +521,18 @@ public class PokaYokeUmlProfileUtil {
     }
 
     private static boolean isPreconditionConstraint(Constraint constraint) {
-        if (!(constraint.eContainer() instanceof Activity)) {
-            return false;
-        }
-
-        return ((Activity)constraint.eContainer()).getPreconditions().contains(constraint);
+        return (constraint.eContainer() instanceof Activity)
+                && ((Activity)constraint.eContainer()).getPreconditions().contains(constraint);
     }
 
     private static boolean isPostconditionConstraint(Constraint constraint) {
-        if (!(constraint.eContainer() instanceof Activity)) {
-            return false;
-        }
-
-        return ((Activity)constraint.eContainer()).getPostconditions().contains(constraint);
+        return (constraint.eContainer() instanceof Activity)
+                && ((Activity)constraint.eContainer()).getPostconditions().contains(constraint);
     }
 
     private static boolean isClassRequirement(Constraint constraint) {
-        if (!(constraint.eContainer() instanceof Classifier)) {
-            return false;
-        }
-
-        return ((Classifier)constraint.eContainer()).getOwnedRules().contains(constraint);
+        return (constraint.eContainer() instanceof Classifier)
+                && ((Classifier)constraint.eContainer()).getOwnedRules().contains(constraint);
     }
 
     private static Stereotype getStereotype(Constraint constraint, String stereotypeName) {
