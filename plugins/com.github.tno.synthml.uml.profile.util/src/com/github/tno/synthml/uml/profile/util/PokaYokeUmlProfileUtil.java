@@ -68,13 +68,13 @@ public class PokaYokeUmlProfileUtil {
 
     private static final String ST_FORMAL_CONSTRAINT = SynthMLPackage.Literals.FORMAL_CONSTRAINT.getName();
 
-    private static final String ST_CLASS_REQUIREMENT = SynthMLPackage.Literals.REQUIREMENT.getName();
+    public static final String ST_CLASS_REQUIREMENT = SynthMLPackage.Literals.REQUIREMENT.getName();
 
-    private static final String ST_SYNTHESIS_PRECONDITION = SynthMLPackage.Literals.SYNTHESIS_PRECONDITION.getName();
+    public static final String ST_SYNTHESIS_PRECONDITION = SynthMLPackage.Literals.SYNTHESIS_PRECONDITION.getName();
 
-    private static final String ST_USAGE_PRECONDITION = SynthMLPackage.Literals.USAGE_PRECONDITION.getName();
+    public static final String ST_USAGE_PRECONDITION = SynthMLPackage.Literals.USAGE_PRECONDITION.getName();
 
-    private static final String ST_POSTCONDITION = SynthMLPackage.Literals.POSTCONDITION.getName();
+    public static final String ST_POSTCONDITION = SynthMLPackage.Literals.POSTCONDITION.getName();
 
     /** Qualified name for the {@link SynthMLPackage Poka Yoke} profile. */
     public static final String POKA_YOKE_PROFILE = SynthMLPackage.eNAME;
