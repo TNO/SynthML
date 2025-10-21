@@ -646,7 +646,7 @@ public class SynthesisChainTracking {
                 // tracing info effect indexes are the same numbers as the UML element's effects. Verify that there are
                 // no additional effect indexes.
                 Set<Integer> eventsEffectIdxs = endEvents.stream().map(e -> getEventTraceInfo(e).getEffectIdx())
-                        .collect(Collectors.toSet());
+                        .collect(Collectors.toCollection(LinkedHashSet::new));
                 int umlElemEffectSize = PokaYokeUmlProfileUtil
                         .getEffects(getEventTraceInfo(cifEvents.iterator().next()).getUmlElement()).size();
                 for (int i = 0; i < umlElemEffectSize; i++) {
