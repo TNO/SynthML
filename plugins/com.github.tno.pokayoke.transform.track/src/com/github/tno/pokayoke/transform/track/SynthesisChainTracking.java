@@ -1287,6 +1287,7 @@ public class SynthesisChainTracking {
         // To summarize, these are the cases, given the tracing information available at the time of the language
         // equivalence check:
         //
+        // @formatter:off
         // Case                 Event info (synthesis) Transition info                     Event info (language equiv.)
         // -------------------- ---------------------- ----------------------------------- ----------------------------
         // Atomic non-det start start + end            Single event (looks non-merged)     start     (no need to trace)
@@ -1295,6 +1296,7 @@ public class SynthesisChainTracking {
         // Non-atomic end       end                    Merged (traces to multiple events)  end       (no need to trace)
         // Non-atomic start     start                  Non-merged (traces to single event) start + end  (need to trace)
         // Non-atomic end       end                    Non-merged (traces to single event) start + end  (need to trace)
+        // @formatter:on
         if (!transitionInfo.isMergedTransition() && (!PokaYokeUmlProfileUtil.isAtomic(languageEqOriginalUmlElement)
                 || PokaYokeUmlProfileUtil.isDeterministic(languageEqOriginalUmlElement)))
         {
