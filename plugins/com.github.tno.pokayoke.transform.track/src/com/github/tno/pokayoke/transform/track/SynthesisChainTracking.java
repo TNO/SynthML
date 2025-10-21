@@ -1217,7 +1217,7 @@ public class SynthesisChainTracking {
                     .entrySet())
             {
                 Event startEvent = newStartAndOldEvents.getKey();
-                Set<Event> oldEventSet = newStartAndOldEvents.getValue().entrySet().keySet();
+                Set<Event> oldEventSet = newStartAndOldEvents.getValue().keySet();
 
                 // Ensure that the start event of the atomic non-deterministic events is contained in the set.
                 Verify.verify(externalEvents.contains(startEvent),
