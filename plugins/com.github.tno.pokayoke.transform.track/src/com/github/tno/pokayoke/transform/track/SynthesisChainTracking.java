@@ -52,7 +52,7 @@ public class SynthesisChainTracking {
     /**
      * The map from the CIF start events related to an atomic non-deterministic behavior to the events and related event
      * tracing info created before the event-based projection step of the synthesis chain, where the start and end
-     * events are merged into a single event..
+     * events are merged into a single event.
      */
     private final Map<Event, Map<Event, EventTraceInfo>> atomicNonDeterministicEventTraceInfoMap = new LinkedHashMap<>();
 
@@ -1217,8 +1217,7 @@ public class SynthesisChainTracking {
                     .entrySet())
             {
                 Event startEvent = newStartAndOldEvents.getKey();
-                Set<Event> oldEventSet = newStartAndOldEvents.getValue().entrySet().stream().map(e -> e.getKey())
-                        .collect(Collectors.toSet());
+                Set<Event> oldEventSet = newStartAndOldEvents.getValue().entrySet().keySet();
 
                 // Ensure that the start event of the atomic non-deterministic events is contained in the set.
                 Verify.verify(externalEvents.contains(startEvent),
@@ -1270,13 +1269,32 @@ public class SynthesisChainTracking {
         // Consider the original UML element.
         languageEqOriginalUmlElement = getOriginalUmlElement(languageEqOriginalUmlElement);
 
-        // If the language equivalence CIF event originates from a non-merged pattern, trace the synthesis event info.
-        // If the event is non-atomic or deterministic, update the attributes. This avoids the update for the atomic
-        // non-deterministic opaque behaviors, which are removed from the synthesis chain before the Petri net
-        // synthesis. The end events of atomic non-deterministic opaque behaviors are removed during the event-based
-        // projection, but appear as non-merged from the transition tracing info point of view. Since the atomic
-        // non-deterministic opaque behaviors implicitly refer to multiple CIF events, do not update the event tracing
-        // info attributes.
+        // If the language equivalence CIF event looks like it is part of a non-merged pattern, trace back the event
+        // to its related synthesis event info, to see what it originally represented, to allow for proper comparison
+        // against the synthesis CIF events, which are already original.
+        //
+        // Only if the language equivalence CIF event is non-atomic or deterministic, trace it back and update the
+        // attributes. This avoids tracing back for the events related to atomic non-deterministic original opaque
+        // behaviors, for which the synthesis CIF events have been removed from the synthesis chain before the Petri
+        // net synthesis, and can thus not be directly traced back. That is, the synthesis CIF end events of atomic
+        // non-deterministic opaque behaviors were removed during the event-based projection, and the info of the
+        // synthesis CIF start event got updated to represent the combined start and end events. Since we can't trace
+        // the atomic non-deterministic language equivalence CIF events back in the same way as we do for non-atomic
+        // and determinstic ones, we simply keep using the language equivalence event CIF event info. This is allowed,
+        // since atomic non-deterministic patterns are always merged back. They may look like parts of a non-merged
+        // pattern from the tracing information, but they are not.
+        //
+        // To summarize, these are the cases, given the tracing information available at the time of the language
+        // equivalence check:
+        //
+        // Case                 Event info (synthesis) Transition info                     Event info (language equiv.)
+        // -------------------- ---------------------- ----------------------------------- ----------------------------
+        // Atomic non-det start start + end            Single event (looks non-merged)     start     (no need to trace)
+        // Atomic non-det end   (merged into start)    (n/a)                               end       (no need to trace)
+        // Non-atomic start     start                  Merged (traces to multiple events)  start     (no need to trace)
+        // Non-atomic end       end                    Merged (traces to multiple events)  end       (no need to trace)
+        // Non-atomic start     start                  Non-merged (traces to single event) start + end  (need to trace)
+        // Non-atomic end       end                    Non-merged (traces to single event) start + end  (need to trace)
         if (!transitionInfo.isMergedTransition() && (!PokaYokeUmlProfileUtil.isAtomic(languageEqOriginalUmlElement)
                 || PokaYokeUmlProfileUtil.isDeterministic(languageEqOriginalUmlElement)))
         {
@@ -1336,9 +1354,9 @@ public class SynthesisChainTracking {
 
         // Pair the language equivalence events with the synthesis events. Check that all language equivalence events
         // are paired. Note that there can be synthesis events that are not paired, because they are forbidden (e.g. by
-        // occurrence constraints) and they will not have a related language equivalence event. During the language
-        // equivalence phase, opaque behaviors are not translated, only the call behavior actions and opaque actions
-        // deriving from them.
+        // occurrence constraints) and they will not have a related language equivalence event. That is, during the
+        // language equivalence phase, opaque behaviors are not translated; only called opaque behavior behaviors and
+        // non-merged opaque behaviors get translated.
         Set<Event> usedLanguageEqEvents = new LinkedHashSet<>();
 
         for (Entry<Event, EventTraceInfo> entrySynth: externalSynthesisEventsMap.entrySet()) {
