@@ -62,7 +62,8 @@ public class StateAwareWeakLanguageEquivalenceHelper {
         Map<Location, Annotation> filteredStateAnn1 = filterStateAnnotations(model1, externalVariableNames);
         Map<Location, Annotation> filteredStateAnn2 = filterStateAnnotations(model2, externalVariableNames);
 
-        // Sanity check: check that the external and internal events represent the entire state space alphabet.
+        // Sanity check: check that the external and internal events represent the entire state space alphabet, and that
+        // they do not overlap.
         Automaton stateSpace1 = (Automaton)model1.getComponents().get(0);
         Automaton stateSpace2 = (Automaton)model2.getComponents().get(0);
 
@@ -110,6 +111,12 @@ public class StateAwareWeakLanguageEquivalenceHelper {
     private static void checkAlphabetCoverage(Automaton stateSpace, Set<Event> externalEvents,
             Set<Event> internalEvents)
     {
+        // Check that internal and external events do not overlap.
+        Set<Event> intersection = Sets.intersection(externalEvents, internalEvents);
+        Verify.verify(intersection.isEmpty(),
+                String.format("External and internal event sets contain overlapping events: ",
+                        String.join(", ", intersection.stream().map(e -> e.getName()).toList())));
+
         // Check that the alphabet of the state space is equal to the union of external and internal events. This check
         // is performed by absolute names, since they are different objects.
         Set<Event> eventsMerged = new LinkedHashSet<>();
