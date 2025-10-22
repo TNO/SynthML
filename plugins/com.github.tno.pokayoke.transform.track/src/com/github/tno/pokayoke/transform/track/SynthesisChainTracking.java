@@ -897,11 +897,20 @@ public class SynthesisChainTracking {
         Set<Action> actionsToRemove = new LinkedHashSet<>();
         Set<Transition> transitionsToRemove = new LinkedHashSet<>();
         for (Entry<OpaqueAction, Transition> entry: actionToTransition.entrySet()) {
-            if (entry.getKey().getName().contains("__") && getUmlElement(entry.getKey()) == null) {
+            if (entry.getKey().getName().contains("__") && isTemporaryPetrificationAction(entry.getKey())) {
                 actionsToRemove.add(entry.getKey());
                 transitionsToRemove.add(entry.getValue());
             }
         }
+
+        // Sanity check: the temporary actions should be called '__start' and '__end'. There can be more than two
+        // temporary actions, depending on the activity structure.
+        Verify.verify(
+                actionsToRemove.stream().anyMatch(a -> a.getName().equals("__start"))
+                        && actionsToRemove.stream().anyMatch(a -> a.getName().equals("__end")),
+                "Expected temporary petrification actions to be called '__start' and '__end'.");
+
+        // Remove temporary actions.
         actionToTransition.keySet().removeAll(actionsToRemove);
 
         // Remove the transitions corresponding to temporary actions. Store the corresponding CIF events.
