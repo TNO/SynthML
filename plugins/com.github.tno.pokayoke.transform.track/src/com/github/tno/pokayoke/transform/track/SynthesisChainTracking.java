@@ -673,6 +673,17 @@ public class SynthesisChainTracking {
         }
 
         /**
+         * Returns the single CIF event associated to the transition tracing info. If more than one CIF event is
+         * present, throws an error.
+         *
+         * @return The CIF event linked to the transition tracing info.
+         */
+        private Event getSingleCifEvent() {
+            Verify.verify(cifEvents.size() == 1, "Found more than one CIF event.");
+            return cifEvents.iterator().next();
+        }
+
+        /**
          * Indicates whether the transition relates to a merged (rewritten) non-atomic pattern.
          *
          * @return {@code true} if the transition is merged, {@code false} otherwise.
@@ -758,17 +769,6 @@ public class SynthesisChainTracking {
             // The transition is not merged, thus it has a single CIF event, and we query its related effect index.
             EventTraceInfo eventInfo = getEventTraceInfo(getSingleCifEvent());
             return eventInfo.getEffectIdx();
-        }
-
-        /**
-         * Returns the single CIF event associated to the transition tracing info. If more than one CIF event is
-         * present, throws an error.
-         *
-         * @return The CIF event linked to the transition tracing info.
-         */
-        private Event getSingleCifEvent() {
-            Verify.verify(cifEvents.size() == 1, "Found more than one CIF event.");
-            return cifEvents.iterator().next();
         }
     }
 
