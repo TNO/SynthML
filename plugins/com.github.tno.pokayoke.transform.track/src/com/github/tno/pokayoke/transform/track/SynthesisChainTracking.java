@@ -1235,6 +1235,42 @@ public class SynthesisChainTracking {
     }
 
     /**
+     * Returns the map from external events to their event tracing info for the given translation purpose.
+     *
+     * @param purpose The translation purpose.
+     * @return The map from external events to their event tracing info.
+     */
+    public Map<Event, EventTraceInfo> getExternalEventsMap(UmlToCifTranslationPurpose purpose) {
+        // Create a map for the external CIF events and their event trace info.
+        Map<Event, EventTraceInfo> externalEventsMap = cifEventTraceInfo.entrySet().stream()
+                .filter(e -> e.getValue().getTranslationPurpose().equals(purpose) && e.getValue().isExternal())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (x, y) -> y, LinkedHashMap::new));
+
+        if (purpose == UmlToCifTranslationPurpose.SYNTHESIS) {
+            // Update the external synthesis events map to contain the original events for the atomic non-deterministic
+            // opaque behaviors that got merged.
+            for (Entry<Event, Map<Event, EventTraceInfo>> newStartAndOldEvents: atomicNonDeterministicEventTraceInfoMap
+                    .entrySet())
+            {
+                Event startEvent = newStartAndOldEvents.getKey();
+                Map<Event, EventTraceInfo> oldEventInfosMap = newStartAndOldEvents.getValue();
+
+                // Find the start event of the atomic non-deterministic events.
+                EventTraceInfo startEventInfo = externalEventsMap.get(startEvent);
+                Verify.verifyNotNull(startEventInfo,
+                        String.format("Start event '%s' is not contained in the external synthesis event map.",
+                                startEvent.getName()));
+
+                // Remove the entry related to the start event and add all the old events and event trace infos.
+                externalEventsMap.remove(startEvent);
+                externalEventsMap.putAll(oldEventInfosMap);
+            }
+        }
+
+        return externalEventsMap;
+    }
+
+    /**
      * Return {@code true} if the two given event trace infos are equivalent. The equivalence is based on all event
      * trace info fields (excluding the translation purpose) and whether the event trace infos refer to the same
      * original UML element. Note that the synthesis event trace info already refers to the original UML element and
