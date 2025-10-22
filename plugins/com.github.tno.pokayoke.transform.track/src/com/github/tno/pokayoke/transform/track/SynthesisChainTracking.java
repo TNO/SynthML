@@ -1207,31 +1207,7 @@ public class SynthesisChainTracking {
      * @return The external events set.
      */
     public Set<Event> getExternalEvents(UmlToCifTranslationPurpose purpose) {
-        Set<Event> externalEvents = cifEventTraceInfo.entrySet().stream()
-                .filter(e -> e.getValue().getTranslationPurpose().equals(purpose) && e.getValue().isExternal())
-                .map(e -> e.getKey()).collect(Collectors.toCollection(LinkedHashSet::new));
-
-        if (purpose == UmlToCifTranslationPurpose.SYNTHESIS) {
-            // Update the external synthesis events set to contain the original events for the atomic non-deterministic
-            // opaque behaviors that got merged.
-            for (Entry<Event, Map<Event, EventTraceInfo>> newStartAndOldEvents: atomicNonDeterministicEventTraceInfoMap
-                    .entrySet())
-            {
-                Event startEvent = newStartAndOldEvents.getKey();
-                Set<Event> oldEventSet = newStartAndOldEvents.getValue().keySet();
-
-                // Ensure that the start event of the atomic non-deterministic events is contained in the set.
-                Verify.verify(externalEvents.contains(startEvent),
-                        String.format("Start event '%s' is not contained in the external synthesis event set.",
-                                startEvent.getName()));
-
-                // Remove the entry related to the start event and add all the old events.
-                externalEvents.remove(startEvent);
-                externalEvents.addAll(oldEventSet);
-            }
-        }
-
-        return externalEvents;
+        return getExternalEventsMap(purpose).keySet();
     }
 
     /**
@@ -1361,35 +1337,13 @@ public class SynthesisChainTracking {
         // Initialize set of paired events.
         Set<Pair<List<Event>, List<Event>>> pairedEvents = new LinkedHashSet<>();
 
-        // Create a map for the external synthesis CIF events and their event trace info.
-        Map<Event, EventTraceInfo> externalSynthesisEventsMap = cifEventTraceInfo.entrySet().stream()
-                .filter(e -> e.getValue().getTranslationPurpose().equals(UmlToCifTranslationPurpose.SYNTHESIS)
-                        && e.getValue().isExternal())
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (x, y) -> y, LinkedHashMap::new));
+        // Get the map for the external synthesis CIF events and their event trace info.
+        Map<Event, EventTraceInfo> externalSynthesisEventsMap = getExternalEventsMap(
+                UmlToCifTranslationPurpose.SYNTHESIS);
 
-        // Create a map for the external language equivalence CIF events and their event trace info.
-        Map<Event, EventTraceInfo> externalLanguageEqEventsMap = cifEventTraceInfo.entrySet().stream()
-                .filter(e -> e.getValue().getTranslationPurpose()
-                        .equals(UmlToCifTranslationPurpose.LANGUAGE_EQUIVALENCE) && e.getValue().isExternal())
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (x, y) -> y, LinkedHashMap::new));
-
-        // Update the external synthesis events map to contain the original events for the atomic non-deterministic
-        // opaque behaviors that got merged.
-        for (Entry<Event, Map<Event, EventTraceInfo>> newStartAndOldEvents: atomicNonDeterministicEventTraceInfoMap
-                .entrySet())
-        {
-            Event startEvent = newStartAndOldEvents.getKey();
-            Map<Event, EventTraceInfo> oldEventInfosMap = newStartAndOldEvents.getValue();
-
-            // Find the start event of the atomic non-deterministic events.
-            EventTraceInfo startEventInfo = externalSynthesisEventsMap.get(startEvent);
-            Verify.verifyNotNull(startEventInfo, String.format(
-                    "Start event '%s' is not contained in the external synthesis event map.", startEvent.getName()));
-
-            // Remove the entry related to the start event and add all the old events and event trace infos.
-            externalSynthesisEventsMap.remove(startEvent);
-            externalSynthesisEventsMap.putAll(oldEventInfosMap);
-        }
+        // Get the map for the external language equivalence CIF events and their event trace info.
+        Map<Event, EventTraceInfo> externalLanguageEqEventsMap = getExternalEventsMap(
+                UmlToCifTranslationPurpose.LANGUAGE_EQUIVALENCE);
 
         // Pair the language equivalence events with the synthesis events. Check that all language equivalence events
         // are paired. Note that there can be synthesis events that are not paired, because they are forbidden (e.g. by
