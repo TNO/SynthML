@@ -62,10 +62,10 @@ public class StateAwareWeakLanguageEquivalenceHelper {
         Map<Location, Annotation> filteredStateAnn1 = filterStateAnnotations(model1, externalVariableNames);
         Map<Location, Annotation> filteredStateAnn2 = filterStateAnnotations(model2, externalVariableNames);
 
+        // Sanity check: check that the external and internal events represent the entire state space alphabet.
         Automaton stateSpace1 = (Automaton)model1.getComponents().get(0);
         Automaton stateSpace2 = (Automaton)model2.getComponents().get(0);
 
-        // Sanity check: check that the external and internal events represent the entire state space alphabet.
         checkAlphabetCoverage(stateSpace1, externalEvents1, internalEvents1);
         checkAlphabetCoverage(stateSpace2, externalEvents2, internalEvents2);
 
