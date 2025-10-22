@@ -1272,10 +1272,6 @@ public class SynthesisChainTracking {
         boolean isLanguageEqEndEvent = languageEqEventInfo.isEndEvent();
         Integer languageEqEffectIdx = languageEqEventInfo.getEffectIdx();
 
-        // Find the original UML element of the language equivalence event and the related synthesis event, if possible.
-        // If the event derives from a non-merged pattern, we can trace the related synthesis CIF event. Otherwise, if
-        // the event derives from a merged pattern, use the attributes of the given event trace info.
-
         // Trace to the Petri net transition.
         TransitionTraceInfo transitionInfo = getTransitionTraceInfo(getOpaqueAction(languageEqOriginalUmlElement));
 
