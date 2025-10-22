@@ -904,7 +904,7 @@ public class SynthesisChainTracking {
         }
         actionToTransition.keySet().removeAll(actionsToRemove);
 
-        // Remove the transitions corresponding to internal actions. Store the corresponding CIF events.
+        // Remove the transitions corresponding to temporary actions. Store the corresponding CIF events.
         Set<Event> eventsToRemove = transitionsToRemove.stream()
                 .flatMap(t -> transitionTraceInfo.get(t).getCifEvents().stream()).collect(Collectors.toSet());
         transitionTraceInfo.keySet().removeAll(transitionsToRemove);
@@ -914,12 +914,13 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Returns {@code true} if the opaque action's corresponding UML element is {@code null}.
+     * Returns {@code true} if the opaque action is a temporary petrification action, i.e. if its corresponding UML
+     * element is {@code null}.
      *
      * @param action The opaque action.
-     * @return {@code true} if the action has a corresponding {@code null} UML element, {@code false} otherwise.
+     * @return {@code true} if the action is a temporary petrification action, {@code false} otherwise.
      */
-    public boolean isNullElementAction(OpaqueAction action) {
+    public boolean isTemporaryPetrificationAction(OpaqueAction action) {
         return getUmlElement(action) == null;
     }
 
@@ -929,7 +930,7 @@ public class SynthesisChainTracking {
      * @return The set of actions whose corresponding UML element is {@code null}.
      */
     public Set<OpaqueAction> getNullElementActions() {
-        return actionToTransition.keySet().stream().filter(a -> isNullElementAction(a))
+        return actionToTransition.keySet().stream().filter(a -> isTemporaryPetrificationAction(a))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 

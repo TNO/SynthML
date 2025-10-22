@@ -123,8 +123,8 @@ public class PostProcessActivity {
     public static void finalizeOpaqueActions(Activity activity, SynthesisChainTracking tracker, List<String> warnings) {
         for (ActivityNode node: List.copyOf(activity.getNodes())) {
             if (node instanceof OpaqueAction action) {
-                if (tracker.isNullElementAction(action)) {
-                    // If the action has a 'null' UML element, skip the current action.
+                if (tracker.isTemporaryPetrificationAction(action)) {
+                    // If the action is temporary, skip the current action.
                     continue;
                 }
 
