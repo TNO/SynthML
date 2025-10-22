@@ -380,8 +380,8 @@ public class FullSynthesisApp {
         Set<Event> languageEqInternalEvents = tracker
                 .getInternalEvents(UmlToCifTranslationPurpose.LANGUAGE_EQUIVALENCE);
 
-        // Filter the state annotations to keep only the external variables, and check that external and internal events
-        // cover the entire state space alphabets.
+        // Filter the state annotations to keep only the external variables, check that external and internal events
+        // cover the entire state space alphabets, and that they do not overlap.
         ModelPreparationResult result = StateAwareWeakLanguageEquivalenceHelper.prepareModels(stateSpaceGenerated,
                 tracker.getExternalEvents(UmlToCifTranslationPurpose.SYNTHESIS), synthesisInternalEvents,
                 stateSpacePostSynthChain, tracker.getExternalEvents(UmlToCifTranslationPurpose.LANGUAGE_EQUIVALENCE),
