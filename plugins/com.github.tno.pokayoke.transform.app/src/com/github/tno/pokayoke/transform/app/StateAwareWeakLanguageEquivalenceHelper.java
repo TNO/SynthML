@@ -118,9 +118,9 @@ public class StateAwareWeakLanguageEquivalenceHelper {
 
         Set<Event> stateSpaceAlphabet = CifEventUtils.getAlphabet(stateSpace);
         Set<String> absNamesStateSpace = stateSpaceAlphabet.stream().map(e -> CifTextUtils.getAbsName(e))
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(LinkedHashSet::new));
         Set<String> absNamesEventsMerged = eventsMerged.stream().map(e -> CifTextUtils.getAbsName(e))
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(LinkedHashSet::new));
 
         if (!absNamesStateSpace.equals(absNamesEventsMerged)) {
             Set<String> onlyInMerged = Sets.difference(absNamesEventsMerged, absNamesStateSpace);
