@@ -275,7 +275,7 @@ public class FullSynthesisApp {
         // Remove the temporary actions that were added in CIF specification and petrification.
         Path temporaryActionsRemovedUMLOutputPath = outputFolderPath
                 .resolve(filePrefix + ".15.internalactionsremoved.uml");
-        PostProcessActivity.removeOpaqueActions(activity, tracker.getNullElementActions());
+        PostProcessActivity.removeOpaqueActions(activity, tracker.getTemporaryPetrificationActions());
         FileHelper.storeModel(activity.getModel(), temporaryActionsRemovedUMLOutputPath.toString());
 
         // Remove temporary actions created for petrification from the synthesis chain tracker.

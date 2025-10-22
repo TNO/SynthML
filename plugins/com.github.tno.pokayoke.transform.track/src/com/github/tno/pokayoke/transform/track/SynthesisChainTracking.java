@@ -925,11 +925,11 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Returns the set of actions whose corresponding UML element is {@code null}.
+     * Returns the set of temporary petrification actions, i.e. actions whose corresponding UML element is {@code null}.
      *
-     * @return The set of actions whose corresponding UML element is {@code null}.
+     * @return The set of temporary petrification actions.
      */
-    public Set<OpaqueAction> getNullElementActions() {
+    public Set<OpaqueAction> getTemporaryPetrificationActions() {
         return actionToTransition.keySet().stream().filter(a -> isTemporaryPetrificationAction(a))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
