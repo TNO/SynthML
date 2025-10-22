@@ -731,45 +731,6 @@ Further, the `final' place \texttt{p4} is equipped with a self-loop, which will 
 	\label{fig:petrify-out}
 \end{figure}
 
-\subsection{Transforming the Petri Net to an activity}
-\label{sec:transform-petrinet-to-activity}
-
-The operation \transformToActivity{\var{petriNet}} transforms the given (possibly free-choice) Petri Net \var{petriNet} in PNML format to a concrete UML activity.
-
-\paragraph{Motivation.}
-The overall aim of the activity synthesis chain is to synthesize concrete UML activities.
-Since activities are reasonably close to Petri Nets, we do this by first synthesizing a Petri Net using known techniques, and transforming this Petri Net to a concrete UML activity using \transformToActivityLabel{}.
-
-\paragraph{Preconditions.}
-The input \var{petriNet} must be in PNML format.
-It must have exactly one place that has an initial token, which must additionally have no incoming arcs and exactly one outgoing arc to a transition named \startLabel{}.
-It must have exactly one (sink) place that does not have any outgoing arcs, which must additionally have at least one incoming arc from a transition named \stopLabel{}.
-
-\paragraph{Postconditions.}
-The output is a concrete UML activity which has been translated from \var{petriNet}.
-The returned concrete UML activity contains:
-\begin{itemize}
-	\item Exactly one initial node and exactly one final node, which have been translated from the two places described above in the preconditions paragraph.
-	\item One auxiliary opaque action named \startLabel{}, which has been created for the start event introduced earlier, as explained in \autoref{sec:single-source-and-sink}.
-	Then the initial node has exactly one outgoing control flow to this \startLabel{} action.
-	\item An auxiliary opaque action named \stopLabel{} for every end event introduced earlier, as explained in \autoref{sec:single-source-and-sink}.
-	\item No other opaque action, apart from the \startLabel{} and \stopLabel{} opaque actions.
-	Then all these opaque \stopLabel{} actions have exactly one outgoing control flow that goes to the final node.
-	\item Fork/join/decision/merge control nodes, as translated from similar patterns in \var{petriNet}.
-	For example, a Petri Net place with multiple incoming arcs and one outgoing arc is translated to a UML merge node.
-	The only control nodes that have multiple incoming control flows are join and merge nodes.
-	The only control nodes that have multiple outgoing control flows are fork and decision nodes.
-	\item Call behavior nodes for every transition in \var{petriNet} that performs an action.
-	These nodes then call the appropriate UML opaque behavior of the action.
-	Any duplication that was introduced by label splitting (recall from \autoref{sec:petrinet-synthesis}) has been removed during the process of finding the right UML opaque behavior corresponding to a Petri Net transition.
-	\item No guards on any control flows.
-	Control flow guards are computed later, in \autoref{sec:compute-control-flow-guards}.
-\end{itemize}
-
-Furthermore, \transformToActivityLabel{} ensures that every control flow that goes out of a decision node will end in either some (call behavior) action node, or in the final node (in which case there was also an action, but it was the auxiliary internal $\stopLabel$ action).
-This is a consequence of the structure of the Petri Nets that are synthesized by Petrify, and the patterns that they could have.
-To give another example of a pattern that cannot occur: it is not possible for the concrete UML activity to have a control flow that goes from some decision node to some other decision node, because in the Petri Net there cannot be an arc from a place to another place.
-
 \subsection{Reducing nonatomic patterns}
 \label{sec:reducing-non-atomic-patterns}
 
@@ -836,6 +797,53 @@ Moreover, this operation needs to know what Petri Net transitions start a nonato
 \paragraph{Postconditions.}
 This operation returns the input Petri Net, where all nonatomic patterns have been rewritten as shown by \autoref{fig:nonatomic-pattern}.
 Any starts and ends of nonatomic actions whose occurrences do not fit the nonatomic pattern will not have been rewritten, and are later handled on the UML activity level, during activity post-processing.
+
+\subsection{Transforming the Petri Net to an activity}
+\label{sec:transform-petrinet-to-activity}
+
+The operation \transformToActivity{\var{petriNet}} transforms the given Petri Net \var{petriNet} in PNML format to a concrete UML activity.
+This operation takes care of unmerged nonatomic patterns, i.e., ones that were not rewritten by \rewriteNonAtomicPatternsLabel{}, by translating their start and end transitions to UML opaque actions with the proper guards and effects.
+Furthermore, this operation removes any internal actions, notably \startLabel{} and \stopLabel{}.
+
+\paragraph{Motivation.}
+The overall aim of the activity synthesis chain is to synthesize concrete UML activities.
+Since activities are reasonably close to Petri Nets, we do this by first synthesizing a Petri Net using known techniques, and transforming this Petri Net to a concrete UML activity using \transformToActivityLabel{}.
+
+\paragraph{Preconditions.}
+The input \var{petriNet} must be in PNML format.
+This Petri Net may be, but does not have to be, free-choice.
+It must have exactly one place that has an initial token, which must additionally have no incoming arcs and exactly one outgoing arc to a transition named \startLabel{}.
+It must have exactly one (sink) place that does not have any outgoing arcs, which must additionally have at least one incoming arc from a transition named \stopLabel{}.
+Finally, the Petri Net must not contain transitions corresponding to control nodes of any concrete activities that are called by the to-be-synthesized activity.
+Adding support for synthesizing hierarhical activities is planned as future work.
+
+\paragraph{Postconditions.}
+The output is a concrete UML activity which has been translated from \var{petriNet}.
+The returned concrete UML activity contains:
+\begin{itemize}
+	\item Exactly one UML initial node and exactly one UML final node, which have been translated from the two places described above in the preconditions paragraph.
+	\item For every transition in \var{petriNet} that performs either an atomic action or a nonatomic action for which the nonatomic pattern has been merged, a UML call behavior node that calls the UML opaque behavior of the action to perform.
+	Any duplication that was introduced by label splitting (recall from \autoref{sec:petrinet-synthesis}) has been removed during the process of finding the right UML opaque behavior to call.
+	\item For every start transition of an unmerged nonatomic pattern in \var{petriNet}, an UML opaque action node is created to start the nonatomic action.
+	This UML opaque action node is atomic, takes over the guard of the nonatomic action, and has no effects.
+	The name of this opaque action node will be the nonatomic action name, followed by ``\texttt{\_start}''.
+	For example, \texttt{A\_start}.
+	\item For every end transition of an unmerged nonatomic pattern in \var{petriNet}, an UML opaque action node is created to end the nonatomic action.
+	This UML opaque action node is atomic, has guard \texttt{true}, and takes over the effect of the nonatomic action.
+	In case the nonatomic action was also nondeterministic, the right effect is taken over.
+	The name of this opaque action node will be the nonatomic action name, followed by ``\texttt{\_end}'', followed by the effect index.
+	For example, \texttt{A\_end\_1} and \texttt{A\_end\_2}.
+	\item Fork/join/decision/merge control nodes, as translated from similar patterns in \var{petriNet}.
+	For example, a Petri Net place with multiple incoming arcs and one outgoing arc is translated to a UML merge node.
+	The only UML control nodes that can have multiple incoming control flows are join and merge nodes.
+	The only UML control nodes that can have multiple outgoing control flows are fork and decision nodes.
+	\item No guards on any control flows.
+	Control flow guards are computed later, in \autoref{sec:compute-control-flow-guards}.
+\end{itemize}
+
+Furthermore, \transformToActivityLabel{} ensures that every control flow that goes out of a decision node will end in either some action node, or in the final node (in which case there was also an action, but it was the auxiliary internal $\stopLabel$ action).
+This is a consequence of the structure of the Petri Nets that are synthesized by Petrify, and the patterns that they could have.
+To give another example of a pattern that cannot occur: it is not possible for the concrete UML activity to have a control flow that goes from some decision node to some other decision node, because in the Petri Net there cannot be an arc from a place to another place.
 
 \subsection{Computing control flow guards in the activity}
 \label{sec:compute-control-flow-guards}
