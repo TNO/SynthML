@@ -894,20 +894,24 @@ public class SynthesisChainTracking {
      */
     public void removeTemporaryPetrificationActions() {
         // Removes temporary actions created for petrification. Store the related transitions.
-        Set<Action> actionsToRemove = new LinkedHashSet<>();
+        Set<OpaqueAction> actionsToRemove = new LinkedHashSet<>();
         Set<Transition> transitionsToRemove = new LinkedHashSet<>();
         for (Entry<OpaqueAction, Transition> entry: actionToTransition.entrySet()) {
-            if (entry.getKey().getName().contains("__") && isTemporaryPetrificationAction(entry.getKey())) {
+            if (entry.getKey().getName().contains("__")) {
                 actionsToRemove.add(entry.getKey());
                 transitionsToRemove.add(entry.getValue());
             }
         }
 
+        // Sanity check: actions with double underscores in their names should be temporary petrification actions.
+        Verify.verify(actionsToRemove.stream().allMatch(a -> isTemporaryPetrificationAction(a)),
+                "Found non-temporary actions with double underscore in their name.");
+
         // Sanity check: the temporary actions should be called '__start' and '__end'. There can be more than two
         // temporary actions, depending on the activity structure.
         Verify.verify(
-                actionsToRemove.stream().anyMatch(a -> a.getName().equals("__start"))
-                        && actionsToRemove.stream().anyMatch(a -> a.getName().equals("__end")),
+                actionsToRemove.stream().map(a -> a.getName()).collect(Collectors.toSet())
+                        .equals(Set.of("__start", "__end")),
                 "Expected temporary petrification actions to be called '__start' and '__end'.");
 
         // Remove temporary actions.
