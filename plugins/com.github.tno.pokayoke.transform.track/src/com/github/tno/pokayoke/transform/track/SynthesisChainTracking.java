@@ -912,7 +912,7 @@ public class SynthesisChainTracking {
         Verify.verify(
                 actionsToRemove.stream().map(a -> a.getName()).collect(Collectors.toSet())
                         .equals(Set.of("__start", "__end")),
-                "Expected temporary petrification actions to be called '__start' and '__end'.");
+                "Expected temporary petrification actions to be present, and called '__start' and '__end'.");
 
         // Remove temporary actions.
         actionToTransition.keySet().removeAll(actionsToRemove);
