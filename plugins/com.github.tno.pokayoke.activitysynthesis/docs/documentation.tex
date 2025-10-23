@@ -48,7 +48,7 @@
 \newcommand{\petrinetSynthesisLabel}[0]{\keyw{petrinet-synthesis}}
 \newcommand{\transformToActivityLabel}[0]{\keyw{transform-to-activity}}
 \newcommand{\rewriteNonAtomicPatternsLabel}[0]{\keyw{rewrite-nonatomic-patterns}}
-\newcommand{\computeEdgeGuardsLabel}[0]{\keyw{compute-edge-guards}}
+\newcommand{\computeGuardsLabel}[0]{\keyw{compute-guards}}
 \newcommand{\postprocessActivityLabel}[0]{\keyw{postprocess-activity}}
 
 \newcommand{\getOrderedAbstrActivities}[1]{\getOrderedAbstrActivitiesLabel(\ensuremath{#1})}
@@ -61,7 +61,7 @@
 \newcommand{\petrinetSynthesis}[1]{\petrinetSynthesisLabel(\ensuremath{#1})}
 \newcommand{\transformToActivity}[1]{\transformToActivityLabel(\ensuremath{#1})}
 \newcommand{\reduceNonAtomicPatterns}[1]{\rewriteNonAtomicPatternsLabel(\ensuremath{#1})}
-\newcommand{\computeEdgeGuards}[1]{\computeEdgeGuardsLabel(\ensuremath{#1})}
+\newcommand{\computeGuards}[1]{\computeGuardsLabel(\ensuremath{#1})}
 \newcommand{\postprocessActivity}[1]{\postprocessActivityLabel(\ensuremath{#1})}
 
 \newcommand{\doneLabel}[0]{\texttt{\_\_done}}
@@ -283,8 +283,8 @@ In case any cycles are detected in these dependencies, then the synthesis algori
 		\var{petriNet_{red}} := \reduceNonAtomicPatterns{\var{petriNet}}\;
 		\tcp{Transform the Petri Net to an activity without control flow guards.}
 		\var{umlActivity_{concr}} := \transformToActivity{\var{petriNet_{red}}}\;
-		\tcp{Compute the control flow guards for the decision nodes.}
-		\var{umlActivity_{guards}} := \computeEdgeGuards{\var{umlActivity_{red}}, \, \dots}\;
+		\tcp{Compute the control flow guards for the synthesized activity.}
+		\var{umlActivity_{guards}} := \computeGuards{\var{umlActivity_{concr}}}\;
 		\tcp{Post-process the synthesized activity.}
 		\var{umlActivity_{post}} := \postprocessActivity{\var{umlActivity_{guards}}}\;
 		\Return \var{umlActivity_{post}}\;
@@ -848,123 +848,81 @@ To give another example of a pattern that cannot occur: it is not possible for t
 \subsection{Computing control flow guards in the activity}
 \label{sec:compute-control-flow-guards}
 
-The operation \computeEdgeGuards{\var{umlActivity_{red}}, \, \dots} computes guards for every control flow in the single concretized UML activity \var{umlActivity_{red}} that goes out of a decision node.
-These guards are computed by using intermediate results from earlier steps in the activity synthesis algorithm, notably the extra conditions that have been synthesized earlier by data-based synthesis, the CIF state annotations in the generated/projected/minimized CIF state space, the region mapping, the tracing information from the earlier steps in the synthesis chain, etc.
-Rather than listing all items explicitly, we abbreviate them as `$\dots$'.
+The \computeGuards{\var{umlActivity_{concr}}} operation computes incoming and outgoing guards for the control flows of the given concrete activity \var{umlActivity_{concr}}.
+These guards are computed by first translating \var{umlActivity_{concr}} to a CIF specification, and then using CIF data-based synthesis to compute extra guards for the controllable events of that specification, which are the start events for executing the nodes of \var{umlActivity_{concr}}.
+Thus by doing so, for every activity node, we compute the extra guard that must hold to be able to safely execute that node. 
+These extra guards are then translated to incoming and/or outgoing guards of the incoming and/or outgoing control flows of the activity nodes.
+Whether an incoming or outgoing guard is computed, or whether this computed guard is put on an incoming or outgoing control flow of an activity node, is dependent on the type of the activity node.
+This is further elaborated upon below.
 
 \paragraph{Motivation.}
 At this point in the activity synthesis algorithm we managed to synthesize the structure of the concrete UML activity.
-This activity may have decision nodes.
-The execution of these decision nodes should follow one of its outgoing control flows, based on the current state of the system.
-However, the guards that determine which control flow should be followed are missing at this point.
-These choice guards could not have yet been computed since Petrify (or any other known algorithm for Petri Net synthesis) cannot handle data.
-So we need to compute them separately, and add them to the concrete UML activity.
+However, this activity does not contain any data (other than the guards and effects of actions).
+This is primarily because Petri Net synthesis is unable to deal with data.
+As a result, the (incoming and outgoing) guards that determine which control flow should be followed are missing at this point.
+Without control flow guards, the synthesized activity may have more behavior than allowed by the requirements, including potentially wrong or deadlocking behavior.
+Hence, we must compute the control flow guards and add them to the activity, which is what \computeGuardsLabel{} does. 
 
-The three essential ingredients for computing control flow guards are:
+The \computeGuardsLabel{} operation starts by translating \var{umlActivity_{concr}} to a CIF specification in a similar way as described in \autoref{sec:transform-uml-to-cif}.
+In fact, the same transformation \transformUmlToCifLabel{} is used for this, with some minor differences:
 \begin{itemize}
-	\item The \emph{uncontrolled system guards}, as a mapping from actions to their corresponding guards as defined in the original input UML model.
-	These guards can thus be obtained by querying the original UML input model.
-	\item The \emph{controlled system guards}, as a mapping from actions that were controllable on the CIF level, to their corresponding synthesized guards.
-	The synthesized guards thus are the full conditions computed by data-based synthesis, under which the action is enabled in the controlled system.
-	\item The \emph{state information}, as a mapping from control flows (or, equivalently, Petri Net places), to the predicate that describes all states the system can be in whenever the control flow is enabled (i.e., whenever their is a token on the corresponding Petri Net place).
+	\item We now give a concrete UML activity as input, rather than an abstract one.
+	So instead of translating the UML opaque behaviors in the input model, we now translate the nodes and control flows of \var{umlActivity_{concr}} (as described already in \autoref{sec:transform-uml-to-cif} for activities that are being called).
+	However, we do not translate the initial node and final node, since execution of these nodes only has meaning when \var{umlActivity_{concr}} is being called from some other activity, which is not the case here as \var{umlActivity_{concr}} is considered in isolation.
+	The UML-to-CIF translation ensures that there is a token on the single initial control flow---the one that goes out of the initial node of \var{umlActivity_{concr}}---by letting the corresponding CIF variable have \texttt{true} as the default value.
+	Moreover, we do not translate any other concrete activities that might be in the input model, since \var{umlActivity_{concr}} will not call any other activities since it is flattened.
+	\item Two variants of the activity postcondition are now translated to CIF: one ``without structure'' and one ``with structure''.
+	The ``without structure'' variant is the same as the postcondition translation as explained in \autoref{sec:transform-uml-to-cif}.
+	The ``with structure'' variant is extra, and is equivalent to the ``without structure'' variant plus the extra condition that only the final control flow---the one that goes into the final UML node of \var{umlActivity_{concr}}---holds a token.
+	Both postcondition variants are translated to Boolean-typed algebraic variables in CIF.
+	The algebraic variable for the ``with structure'' variant is used to indicate the marked states of the CIF specification.
+	\item Extra CIF requirements are generated expressing that, whenever the activity postcondition holds, no further action nodes can be executed.
+	Similar requirements were already generated before, as explained in \autoref{sec:transform-uml-to-cif}.
+	Here we slightly change them for the purpose of guard computation, since we must still allow the execution of control nodes whenever the activity postcondition holds, e.g., to execute join/merge/final nodes of \var{umlActivity_{concr}} to finalize the execution.
+	To achieve that, we require that the start events of all action nodes are disabled whenever the ``without structure'' variant of the activity postcondition holds, and that the start events of all control nodes are disabled whenever the stronger ``with structure'' variant of the postcondition holds.
+	\item Every CIF event for starting the execution of some node in \var{umlActivity_{concr}} is translated as a controllable event.
+	This is different from before: \autoref{sec:transform-uml-to-cif} describes that, when calling a concrete activity from a to-be-synthesized activity, only the start events of initial nodes are controllable, and the others are all uncontrollable.
+	However, \var{umlActivity_{concr}} does not call other activities, as it is flattened.
+	Our goal now is computing the extra conditions needed to safely execute the nodes of \var{umlActivity_{concr}}, hence we make all their start events controllable.
+	By doing so, we are able to compute control flow guards as locally as possible.
+	\item The translation of occurrence constraints is slightly different, to be able to correctly handle unmerged nonatomic patterns.
+	In particular, for every nonatomic action that is subject to an occurrence constraint, the translated CIF requirement automaton for the constraint should consider: (1) the CIF events created for the call behavior nodes in \var{umlActivity_{concr}} that call the UML opaque behavior of that action, as well as (2) the CIF start events of the unmerged nonatomic patterns involving that action.
 \end{itemize}
 
-These three ingredients can be computed from the intermediate results of earlier steps in the synthesis chain, as indicated in the preamble of this section.
+After translating \var{umlActivity_{concr}} to a CIF specification, extra guards are computed for the CIF start events for the activity nodes, using CIF data-based synthesis.
+Data-based synthesis is configured to do forward reachability (\texttt{--forward-reach=true}) and to start with forward reachability in the fixed-point order (\texttt{--fixed-point-order=reach-nonblock-ctrl}).
+So far, this configuration seems to perform best in practice.
+However, we have not yet validated this, so we are unsure whether this is the best fixpoint order strategy in general.
+We also configure data-based synthesis to not free certain Binary Decision Diagrams (BDDs) that we need for guard computation, which are otherwise freed by the synthesis procedure.
+BDDs are used (by data-based synthesis but also guard computation) to symbolically represent and conveniently manupulate sets of system states.
+Since guards are predicates over the system state, they can be represented as BDDs.
+We will compute control flow guards on BDD level, after which we convert them to CIF expressions.
 
-Constructing the state information mapping requires some backtracking.
-For every execution point (roughly corresponding to control flows) in the synthesized UML activity, we need to know the set of all states in which the system may be at that point.
-These sets of states can be found by tracing back the CIF state annotations from the earlier generated CIF state space (see \autoref{sec:state-space-generation}), through the various CIF event-based toolkit steps.
-So for every control flow we must: (1) determine the Petri Net place corresponding to it, (2) use the region mapping produced in \autoref{sec:petrinet-synthesis} to determine which CIF locations correspond to that Petri Net place, and (3) collect the state annotations from these locations in the generated CIF state space.
-Step (3) is slightly tricky in case there were atomic nondeterministic actions, as we should not consider the state annotations of any `intermediate' CIF locations in which an atomic nondeterministic action is being executed (e.g., since the atomicity variable is \texttt{true} in any such intermediate state, and choice guards should not depend on internal details).
-Therefore, any such state annotations must be filtered out first.
-The set of all system states can then be represented as a single predicate.
-
-Note that all the predicates are internally represented in the code implementation as Binary Decision Diagrams (BDD).
-This is because BDDs allow easy manipulation of Boolean functions, like BDD simplification, i.e., \texttt{simplify}.
-CIF contains functionality for translating BDD representations of predicates, to CIF expressions, which can in turn be translated to strings.
-
-Now let us explain how control flow guards are computed.
-To start, let us first determine an \emph{uncontrolled guard} and a \emph{controlled guard} for every UML action node, which form the basis for computing control flow guards.
-Let $N$ be any action node in the UML activity for which we want to compute control flow guards.
-We define $\mathit{uncontrolled}(N)$ to be the uncontrolled guard predicate for $N$ such that:
-\begin{itemize}
-	\item In case $N$ is a call behavior action node, $\mathit{uncontrolled}(N)$ is the uncontrolled system guard for that action.
-	\item In case $N$ is an internal \startLabel{} action node, $\mathit{uncontrolled}(N)$ is the user-defined activity precondition, plus any extra preconditions that may have been generated by \transformUmlToCifLabel{}.
-	That is, $N$ is only executed in states where the `full' activity precondition holds.
-	\item In case $N$ is an internal \stopLabel{} action node, $\mathit{uncontrolled}(N)$ is the user-defined activity postcondition, plus any extra postconditions that may have been generated by \transformUmlToCifLabel{}.
-	That is, $N$ is only executed in states where the `full' activity postcondition holds.
-	\item In case $N$ is an internal \tauLabel{} action node, $\mathit{uncontrolled}(N)$ is the conjunction of the state info predicates of all outgoing control flows of the \tauLabel{} node.
-	That is, $N$ is only executed from system states where the corresponding effect of the nonatomic action has applied.
-	With \emph{state info predicates} we mean the predicates from the state information mapping, in this case for all outgoing control flows of the \tauLabel{} node.
-	We compute the \emph{conjunction} of all these state info predicates, since that predicate describes all states the system can be in right after the corresponding effect has been executed.
-	Especially in case the activity forks after the \tauLabel{} action node, computing the conjunction ensures that we get the state info predicate that applies right after the \tauLabel{} node and right before the fork node.
-	This computation of $\mathit{uncontrolled}(N)$ is needed since we've rewritten the nonatomic pattern in the previous step, meaning that we have to calculate the new uncontrolled guards of the \tauLabel{}-s for the new situation.
-	\item In all other cases, $\mathit{uncontrolled}(N)$ is the predicate \texttt{true}.
-	That is, the execution of $N$ is not restricted by any guard predicate, which may happen, e.g., if $N$ is an nonatomic end event that's not reduced earlier.
-\end{itemize}
-Let us define $\mathit{controlled}(N)$ to be the controlled guard predicate for $N$ such that:
-\begin{itemize}
-	\item In case $N$ is a call behavior action node, $\mathit{controlled}(N)$ is the controlled system guard for that action.
-	That is, $\mathit{controlled}(N)$ is the controlled-system condition resulting from synthesis, for the action called by $N$.
-	\item In all other cases, $\mathit{controlled}(N)$ is undefined.
-	That is, no conditions were synthesized that further restrict $N$ in the controlled system.
-\end{itemize}
-Next we define $\mathit{extra}(N)$ as a predicate describing the extra synthesized condition for executing $N$, such that:
-\begin{itemize}
-	\item If $\mathit{controlled}(N)$ is not defined, then $\mathit{extra}(N) = \mathit{uncontrolled}(N)$.
-	\item If $\mathit{controlled}(N)$ is defined, then $$\mathit{extra}(N) =\texttt{simplify}(\mathit{controlled}(N), \mathit{uncontrolled}(N)),$$ where $\texttt{simplify}(p,q)$ is an operation that simplifies some given predicate $p$ with respect to some predicate $q$, and returns the simplified predicate.
-	This simplification is based on heuristics.
-	Various algorithms exist for simplifying (symbolic representations of) predicates.
-	We can simplify here since any restrictions covered by the controlled guard for $N$ are already considered by the execution semantics of activities.
-\end{itemize}
-
-Now, given any control flow $\mathit{cf}$ in the UML activity that goes from some decision node to some action node $N$, we may use $\mathit{extra}(N)$ as the control flow guard for $\mathit{cf}$.
-This would be a valid guard, but it can also be quite lengthy since we configured data-based synthesis to not perform any simplifications.
-It is known that data-based synthesis may synthesize long control conditions that are difficult to read and understand by engineers.
-To make the guard (hopefully) human readable, we can further simplify it by state information.
-Another reason for further simplification is that $\mathit{extra}(N)$ may be expressed over internal state, like internal CIF variables for encoding occurrence constraints that keep track of the number of occurrences of actions, which should not end up in control flow guards.
-It therefore makes sense to simplify $\mathit{extra}(N)$ by using any contextual information we have at hand, if $\mathit{extra}(N)$ happens to be non-trivial.
-
-Also note that, in UML activities, the control flows that go out of decision nodes do not have to always target an action node.
-The target node could in principle also, e.g., be a fork or join node introduced by \transformToActivityLabel{}.
-This is why the code implementation actually computes choice guards on the Petri Net level, and then adds them to the UML activity.
-Any UML decision node corresponds to a Petri Net place, and by the structure of Petri Nets, all outgoing arcs of that place will have a Petri Net transition as target, corresponding to some action.
-This makes guard computation easier to do on the Petri Net representations as then you don't have to deal with any additional structure introduced by \transformToActivityLabel{}.
-Yet the high-level ideas can well be explained on the level of UML activities.
-
-To allow further simplification, we first define the state information predicate $\mathit{stateinfo}(D)$ for any decision node $N$, so that:
-\begin{itemize}
-	\item If $D$ is an intermediate decision node of a rewritten nonatomic action pattern, then $\mathit{stateinfo}(D)$ is defined to be disjunction of the predicates $\mathit{uncontrolled}(\tauLabel{}_i)$ of all the internal $\tauLabel{}_0, \tauLabel{}_1, \dots$ nodes connected to $D$ by an outgoing control flow.
-	In other words, the system states you can be in while executing $D$, are all the system states you can be in directly after the nonatomic action has taken effect.
-	Note that this computation of $\mathit{stateinfo}(D)$ is needed since we've rewritten the nonatomic pattern, meaning that we have to recompute the relevant state information for $D$.
-	\item Otherwise, if $D$ is not part of any nonatomic pattern, then $\mathit{stateinfo}(D)$ is defined to be the state information predicate of its incoming control flow.
-	(Recall that \transformToActivityLabel{} guarantees that $D$ has a single incoming control flow.)
-\end{itemize}
-
-Now we can further simplify the extra guard predicates defined earlier, which finishes guard computation.
-Given any control flow $\mathit{cf}$ in the UML activity that goes from some decision node \var{D} to some node \var{N}, we define the guard for $\mathit{cf}$ to be $\texttt{simplify}(\mathit{extra}(N), \mathit{stateinfo}(D))$.
-With these simplifications we can hopefully also eliminate any parts of the control flow guard that depends on internal state.
-We are not sure though whether such parts can always be eliminated.
+% TODO explain the actual guard computation
 
 \paragraph{Preconditions.}
-The input UML activity \var{umlActivity_{red}} should be a synthesized concrete UML activity, with its nonatomic patterns reduced wherever possible (as result of \autoref{sec:reducing-non-atomic-patterns}).
-Moreover, all intermediate information from earlier steps of the activity synthesis algorithm must be available, like the original UML input model, the synthesized Petri Net, the region mapping, the state annotations of the generated/projected/minimized CIF state space, the CIF supervisor, etc.
+The input UML activity \var{umlActivity_{concr}} should be a synthesized concrete UML activity, with its nonatomic patterns reduced wherever possible as result of \autoref{sec:reducing-non-atomic-patterns}.
+The input activity must not call other activities, i.e., it must be flattened, which is ensured already by the previous steps.
 
-As indicated earlier in \autoref{sec:data-based-synthesis}, the CIF data-based synthesis tool should have been configured to disable all BDD simplification.
-This is needed for computing choice guards, since if synthesized conditions were simplified, they may no longer capture restrictions that are imposed by CIF requirements as those would have been simplified away.
-Instead, we want the synthesized conditions to completely capture all imposed restrictions, including requirements.
+Moreover, tracing information must be available indicating how this concrete activity relates to the input UML model, as well as to all the intermediate steps/representations that were needed to synthesize this concrete activity.
+This tracing information is needed, e.g., for finding all CIF events that have been created for the nodes of \var{umlActivity_{concr}}.
 
-Moreover, all nonatomic patterns must have been reduced, since their reduction has an impact on the computation of choice guards, as motivated earlier.
+% TODO I'm not sure about the 'tracing information' part. Do we really depend on that? Revisit + decide later.
 
 \paragraph{Postconditions.}
-The output is a UML activity that is equal to \var{umlActivity_{red}}, but with proper choice guards added to all control flows that go out of decision nodes.
-These added choice guards are Boolean predicates that express extra guard conditions for taking the control flow, that are not yet captured by the original action guards nor other known system state information.
 
-Moreover, the added choice guards do (hopefully) not use internal variables, like the atomicity variable.
-We are not sure that the computed choice guards will indeed never use internal variables.
-On the other hand, we have not found a counterexample yet where the computed guards use internally generated variables.
-To be sure, we have added an assertion in the code to check for use of internal variables, and if such use is detected, the \computeEdgeGuardsLabel{} operation will terminate exceptionally.
-So if the operation terminates, then the choice guards do not use internal variables.
+% TODO Postconditions
+
+The output is a UML activity that is equal to \var{umlActivity_{concr}}, but with proper incoming and outgoing control flow guards added to it.
+These control flow guards ensure correctness: any execution of \var{umlActivity_{concr}} is guaranteed to not deadlock nor to reach a system state that violates the requirements.
+The added incoming and outgoing control flow guards are Boolean conditions that express extra conditions for placing a token on a control flow, or for taking a token from a control flow, respectively.
+These conditions are extra in the sense that they are not yet captured by the guards of any actions performed by \var{umlActivity_{concr}}.
+
+Moreover, the added control flow guards are guaranteed not use internal variables that were used for synthesizing \var{umlActivity_{concr}}, like the atomicity variable or occurrence constraint variables.
+However, it might happen that \var{umlActivity_{concr}} requires control flow guards that cannot be expressed in a way that is independent of internal state.
+In that case, the synthesis algorithm will terminate exceptionally.
+We have shown that this can happen with some rather artificial synthesis examples.
+So far we have not experienced such problems with more realistic synthesis examples.
 
 \subsection{Post-processing of the activity}
 \label{sec:activity-post-processing}
