@@ -349,7 +349,7 @@
             <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="service:self.setConstraintStereotype(newValue)"/>
           </initialOperation>
         </controls>
-        <controls xsi:type="properties:TextAreaDescription" name="PR_C_Expression" labelExpression="Expression: " helpExpression="The expression of the constraint. " valueExpression="service:self.getConstraintExpression()">
+        <controls xsi:type="properties:TextAreaDescription" name="PR_C_Expression" labelExpression="Expression: " helpExpression="The expression of the constraint." valueExpression="service:self.getConstraintExpression()">
           <initialOperation>
             <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="service:self.setConstraintExpression(newValue)"/>
           </initialOperation>

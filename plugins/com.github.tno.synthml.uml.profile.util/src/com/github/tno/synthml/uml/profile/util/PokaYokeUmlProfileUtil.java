@@ -590,9 +590,9 @@ public class PokaYokeUmlProfileUtil {
         if (st.getName().equals(ST_CLASS_REQUIREMENT)) {
             return "Requirement";
         } else if (st.getName().equals(ST_SYNTHESIS_PRECONDITION)) {
-            return "Synthesis Precondition";
+            return "Synthesis precondition";
         } else if (st.getName().equals(ST_USAGE_PRECONDITION)) {
-            return "Usage Precondition";
+            return "Usage precondition";
         } else if (st.getName().equals(ST_POSTCONDITION)) {
             return "Postcondition";
         } else {
