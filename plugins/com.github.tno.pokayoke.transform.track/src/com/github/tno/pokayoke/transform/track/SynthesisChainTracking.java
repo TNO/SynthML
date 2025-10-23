@@ -1340,14 +1340,14 @@ public class SynthesisChainTracking {
      */
     public Set<Pair<List<Event>, List<Event>>> getLanguageEqEventsPaired() {
         // Initialize set of paired events. This set contains 1-to-many pairs, each composed of a single synthesis CIF
-        // event and one or more language equivalence CIF events. One single synthesis event can generate multiple language
-        // equivalence events: for instance, let us consider an atomic deterministic opaque behavior. For the synthesis
-        // purpose, the opaque behavior is translated as a single event; then, it can be used multiple times in the
-        // synthesized CIF model and hence in the synthesized activity, where it is translated as a call behavior. Each
-        // call behavior generates a single language equivalence CIF event, but they are all related to the same
-        // synthesis event (and thus its corresponding the opaque behavior). Note that each language equivalence CIF
-        // event can be related only to one synthesis event. The pairs use a list of events for the synthesis part for
-        // compatibility with the language equivalence checker methods.
+        // event and one or more language equivalence CIF events. One single synthesis event can generate multiple
+        // language equivalence events: for instance, let us consider an atomic deterministic opaque behavior. For the
+        // synthesis purpose, the opaque behavior is translated as a single event; then, it can be used multiple times
+        // in the synthesized CIF model and hence in the synthesized activity, where it is translated as a call
+        // behavior. Each call behavior generates a single language equivalence CIF event, but they are all related to
+        // the same synthesis event (and thus its corresponding the opaque behavior). Note that each language
+        // equivalence CIF event can be related only to one synthesis event. The pairs use a list of events for the
+        // synthesis part for compatibility with the language equivalence checker methods.
         Set<Pair<List<Event>, List<Event>>> pairedEvents = new LinkedHashSet<>();
 
         // Get the map for the external synthesis CIF events and their event trace info.
