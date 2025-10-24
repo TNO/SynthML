@@ -1,16 +1,20 @@
 
 package com.github.tno.pokayoke.transform.track;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
+import org.eclipse.escet.common.java.Pair;
+import org.eclipse.escet.common.java.Sets;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.ControlNode;
@@ -44,6 +48,13 @@ public class SynthesisChainTracking {
      * add events.
      */
     private final Map<Event, EventTraceInfo> cifEventTraceInfo = new LinkedHashMap<>();
+
+    /**
+     * The map from the CIF start events related to an atomic non-deterministic behavior to the events and related event
+     * tracing info created before the event-based projection step of the synthesis chain, where the start and end
+     * events are merged into a single event.
+     */
+    private final Map<Event, Map<Event, EventTraceInfo>> atomicNonDeterministicEventTraceInfoMap = new LinkedHashMap<>();
 
     /** The map from Petri net transitions to their corresponding tracing info. */
     private final Map<Transition, TransitionTraceInfo> transitionTraceInfo = new LinkedHashMap<>();
@@ -334,6 +345,13 @@ public class SynthesisChainTracking {
                 // Store the start event and corresponding end events to be removed.
                 eventsToRemove.add(cifEvent);
                 eventsToRemove.addAll(startEndEventsMap.get(cifEvent));
+
+                // Store the original start/end events and their information, per start event they will get merged into,
+                // to keep them for later use.
+                atomicNonDeterministicEventTraceInfoMap.computeIfAbsent(cifEvent, k -> new LinkedHashMap<>())
+                        .put(cifEvent, getEventTraceInfo(cifEvent));
+                startEndEventsMap.get(cifEvent).stream().forEach(
+                        e -> atomicNonDeterministicEventTraceInfoMap.get(cifEvent).put(e, getEventTraceInfo(e)));
             } else if (eventInfo.isEndEvent()) {
                 // Store the event to be removed, find the corresponding start event for later handling.
                 eventsToRemove.add(cifEvent);
@@ -341,7 +359,14 @@ public class SynthesisChainTracking {
                         .filter(e -> e.getValue().contains(cifEvent)).map(e -> e.getKey()).toList();
                 Verify.verify(startToUpdate.size() == 1,
                         String.format("Found %d start events for end event '%s'.", startToUpdate.size(), eventName));
-                startEventsToUpdate.add(startToUpdate.get(0));
+                Event startEvent = startToUpdate.get(0);
+                startEventsToUpdate.add(startEvent);
+
+                // Store the original start/end events and their information, per start event they will get merged into,
+                // to keep them for later use.
+                atomicNonDeterministicEventTraceInfoMap.computeIfAbsent(startEvent, k -> new LinkedHashMap<>())
+                        .put(startEvent, getEventTraceInfo(startEvent));
+                atomicNonDeterministicEventTraceInfoMap.get(startEvent).put(cifEvent, getEventTraceInfo(cifEvent));
             }
         }
 
@@ -485,6 +510,27 @@ public class SynthesisChainTracking {
         private boolean isEndOnlyEvent() {
             return !isStartEvent() && isEndEvent();
         }
+
+        /**
+         * Return {@code true} if the current event trace info represents an external action of the given activity. An
+         * external action corresponds to an opaque behavior, to a call behavior action or to an opaque action.
+         *
+         * @return {@code true} if the current event trace info represents an external action; {@code false} otherwise.
+         */
+        public boolean isExternal() {
+            return umlElement instanceof OpaqueBehavior || umlElement instanceof CallBehaviorAction
+                    || umlElement instanceof OpaqueAction;
+        }
+
+        /**
+         * Return {@code true} if the current event trace info represents an internal action of the given activity. An
+         * internal action corresponds to a UML element which is {@code null} or a control node.
+         *
+         * @return {@code true} if the current event trace info represents an internal action; {@code false} otherwise.
+         */
+        public boolean isInternal() {
+            return umlElement == null || umlElement instanceof ControlNode;
+        }
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -586,7 +632,7 @@ public class SynthesisChainTracking {
                         "Events that are both start- and end-events are not supported for merged patterns.");
 
                 Set<RedefinableElement> umlElements = cifEvents.stream().map(e -> getEventTraceInfo(e).getUmlElement())
-                        .collect(Collectors.toSet());
+                        .collect(Collectors.toCollection(LinkedHashSet::new));
                 Verify.verify(umlElements.size() == 1,
                         String.format("Events must refer to a single UML element, found %d.", umlElements.size()));
 
@@ -600,7 +646,7 @@ public class SynthesisChainTracking {
                 // tracing info effect indexes are the same numbers as the UML element's effects. Verify that there are
                 // no additional effect indexes.
                 Set<Integer> eventsEffectIdxs = endEvents.stream().map(e -> getEventTraceInfo(e).getEffectIdx())
-                        .collect(Collectors.toSet());
+                        .collect(Collectors.toCollection(LinkedHashSet::new));
                 int umlElemEffectSize = PokaYokeUmlProfileUtil
                         .getEffects(getEventTraceInfo(cifEvents.iterator().next()).getUmlElement()).size();
                 for (int i = 0; i < umlElemEffectSize; i++) {
@@ -627,6 +673,17 @@ public class SynthesisChainTracking {
         }
 
         /**
+         * Returns the single CIF event associated to the transition tracing info. If more than one CIF event is
+         * present, throws an error.
+         *
+         * @return The CIF event linked to the transition tracing info.
+         */
+        private Event getSingleCifEvent() {
+            Verify.verify(cifEvents.size() == 1, "Found more than one CIF event.");
+            return cifEvents.iterator().next();
+        }
+
+        /**
          * Indicates whether the transition relates to a merged (rewritten) non-atomic pattern.
          *
          * @return {@code true} if the transition is merged, {@code false} otherwise.
@@ -644,10 +701,13 @@ public class SynthesisChainTracking {
          *     otherwise.
          */
         private boolean isCompleteTransition() {
+            if (isMergedTransition()) {
+                return true;
+            }
+
             // If the transition is not merged, it has a single CIF event, and we can query if that is complete.
-            Event cifEvent = cifEvents.iterator().next();
-            EventTraceInfo eventInfo = getEventTraceInfo(cifEvent);
-            return isMergedTransition() || eventInfo.isCompleteEvent();
+            EventTraceInfo eventInfo = getEventTraceInfo(getSingleCifEvent());
+            return eventInfo.isCompleteEvent();
         }
 
         /**
@@ -662,8 +722,7 @@ public class SynthesisChainTracking {
             }
 
             // If the transition is not merged, it has a single CIF event, and we can query if that is start-only.
-            Event cifEvent = cifEvents.iterator().next();
-            EventTraceInfo eventInfo = getEventTraceInfo(cifEvent);
+            EventTraceInfo eventInfo = getEventTraceInfo(getSingleCifEvent());
             return eventInfo.isStartOnlyEvent();
         }
 
@@ -679,8 +738,7 @@ public class SynthesisChainTracking {
             }
 
             // If the transition is not merged, it has a single CIF event, and we can query if that is end-only.
-            Event cifEvent = cifEvents.iterator().next();
-            EventTraceInfo eventInfo = getEventTraceInfo(cifEvent);
+            EventTraceInfo eventInfo = getEventTraceInfo(getSingleCifEvent());
             return eventInfo.isEndOnlyEvent();
         }
 
@@ -709,8 +767,7 @@ public class SynthesisChainTracking {
             Verify.verify(isEndOnlyTransition(), "Effect index is valid exlusively for end-only CIF events.");
 
             // The transition is not merged, thus it has a single CIF event, and we query its related effect index.
-            Event cifEvent = cifEvents.iterator().next();
-            EventTraceInfo eventInfo = getEventTraceInfo(cifEvent);
+            EventTraceInfo eventInfo = getEventTraceInfo(getSingleCifEvent());
             return eventInfo.getEffectIdx();
         }
     }
@@ -832,22 +889,35 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Removes the internal actions created for petrification in the internal mappings. Specifically targeted at the
+     * Removes the temporary actions created for petrification in the internal mappings. Specifically targeted at the
      * single source and single sink "__start" and "__end" events.
      */
-    public void removeInternalActions() {
-        // Removes internal actions created for petrification. Store the related transitions.
-        Set<Action> actionsToRemove = new LinkedHashSet<>();
+    public void removeTemporaryPetrificationActions() {
+        // Removes temporary actions created for petrification. Store the related transitions.
+        Set<OpaqueAction> actionsToRemove = new LinkedHashSet<>();
         Set<Transition> transitionsToRemove = new LinkedHashSet<>();
         for (Entry<OpaqueAction, Transition> entry: actionToTransition.entrySet()) {
-            if (entry.getKey().getName().contains("__") && getUmlElement(entry.getKey()) == null) {
+            if (entry.getKey().getName().contains("__")) {
                 actionsToRemove.add(entry.getKey());
                 transitionsToRemove.add(entry.getValue());
             }
         }
+
+        // Sanity check: actions with double underscores in their names should be temporary petrification actions.
+        Verify.verify(actionsToRemove.stream().allMatch(a -> isTemporaryPetrificationAction(a)),
+                "Found non-temporary actions with double underscore in their name.");
+
+        // Sanity check: the temporary actions should be called '__start' and '__end'. There can be more than two
+        // temporary actions, depending on the activity structure.
+        Verify.verify(
+                actionsToRemove.stream().map(a -> a.getName()).collect(Collectors.toSet())
+                        .equals(Set.of("__start", "__end")),
+                "Expected temporary petrification actions to be present, and called '__start' and '__end'.");
+
+        // Remove temporary actions.
         actionToTransition.keySet().removeAll(actionsToRemove);
 
-        // Remove the transitions corresponding to internal actions. Store the corresponding CIF events.
+        // Remove the transitions corresponding to temporary actions. Store the corresponding CIF events.
         Set<Event> eventsToRemove = transitionsToRemove.stream()
                 .flatMap(t -> transitionTraceInfo.get(t).getCifEvents().stream()).collect(Collectors.toSet());
         transitionTraceInfo.keySet().removeAll(transitionsToRemove);
@@ -857,23 +927,23 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Returns {@code true} if the opaque action is internal, i.e. the corresponding UML element is {@code null}.
+     * Returns {@code true} if the opaque action is a temporary petrification action, i.e. if its corresponding UML
+     * element is {@code null}.
      *
      * @param action The opaque action.
-     * @return {@code true} if the action is internal, {@code false} otherwise.
+     * @return {@code true} if the action is a temporary petrification action, {@code false} otherwise.
      */
-    public boolean isInternalAction(OpaqueAction action) {
-        // Internal actions (e.g. control nodes) do not have any UML element to refer to.
+    public boolean isTemporaryPetrificationAction(OpaqueAction action) {
         return getUmlElement(action) == null;
     }
 
     /**
-     * Returns the set of internal actions.
+     * Returns the set of temporary petrification actions, i.e. actions whose corresponding UML element is {@code null}.
      *
-     * @return The set of internal actions.
+     * @return The set of temporary petrification actions.
      */
-    public Set<OpaqueAction> getInternalActions() {
-        return actionToTransition.keySet().stream().filter(a -> isInternalAction(a))
+    public Set<OpaqueAction> getTemporaryPetrificationActions() {
+        return actionToTransition.keySet().stream().filter(a -> isTemporaryPetrificationAction(a))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
@@ -1125,5 +1195,207 @@ public class SynthesisChainTracking {
                 .map(Map.Entry::getKey).toList();
 
         return filteredEvents;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Section dealing with language equivalence check preparation.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Returns the set of internal events for the given translation purpose.
+     *
+     * @param purpose The translation purpose.
+     * @return The internal events set.
+     */
+    public Set<Event> getInternalEvents(UmlToCifTranslationPurpose purpose) {
+        return cifEventTraceInfo.entrySet().stream()
+                .filter(e -> e.getValue().getTranslationPurpose().equals(purpose) && e.getValue().isInternal())
+                .map(e -> e.getKey()).collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    /**
+     * Returns the set of external events for the given translation purpose.
+     *
+     * @param purpose The translation purpose.
+     * @return The external events set.
+     */
+    public Set<Event> getExternalEvents(UmlToCifTranslationPurpose purpose) {
+        return getExternalEventsMap(purpose).keySet();
+    }
+
+    /**
+     * Returns the map from external events to their event tracing info for the given translation purpose.
+     *
+     * @param purpose The translation purpose.
+     * @return The map from external events to their event tracing info.
+     */
+    public Map<Event, EventTraceInfo> getExternalEventsMap(UmlToCifTranslationPurpose purpose) {
+        // Create a map for the external CIF events and their event trace info.
+        Map<Event, EventTraceInfo> externalEventsMap = cifEventTraceInfo.entrySet().stream()
+                .filter(e -> e.getValue().getTranslationPurpose().equals(purpose) && e.getValue().isExternal())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (x, y) -> y, LinkedHashMap::new));
+
+        if (purpose == UmlToCifTranslationPurpose.SYNTHESIS) {
+            // Update the external synthesis events map to contain the original events for the atomic non-deterministic
+            // opaque behaviors that got merged.
+            for (Entry<Event, Map<Event, EventTraceInfo>> newStartAndOldEvents: atomicNonDeterministicEventTraceInfoMap
+                    .entrySet())
+            {
+                Event startEvent = newStartAndOldEvents.getKey();
+                Map<Event, EventTraceInfo> oldEventInfosMap = newStartAndOldEvents.getValue();
+
+                // Find the start event of the atomic non-deterministic events.
+                EventTraceInfo startEventInfo = externalEventsMap.get(startEvent);
+                Verify.verifyNotNull(startEventInfo,
+                        String.format("Start event '%s' is not contained in the external synthesis event map.",
+                                startEvent.getName()));
+
+                // Remove the entry related to the start event and add all the old events and event trace infos.
+                externalEventsMap.remove(startEvent);
+                externalEventsMap.putAll(oldEventInfosMap);
+            }
+        }
+
+        return externalEventsMap;
+    }
+
+    /**
+     * Return {@code true} if the two given event trace infos are equivalent. The equivalence is based on all event
+     * trace info fields (excluding the translation purpose) and whether the event trace infos refer to the same
+     * original UML element. Note that the synthesis event trace info already refers to the original UML element and
+     * attributes; the method traces back the original attributes of the language equivalence event trace info, and
+     * compares them to the synthesis event info ones.
+     *
+     * @param synthesisEventInfo The event trace info linked to a synthesis CIF event.
+     * @param languageEqEventInfo The event trace info linked to a language equivalence CIF event.
+     * @return {@code true} if the given event trace infos are equivalent; {@code false} otherwise.
+     */
+    public boolean areEquivalentEvents(EventTraceInfo synthesisEventInfo, EventTraceInfo languageEqEventInfo) {
+        // Sanity checks.
+        Verify.verify(synthesisEventInfo.getTranslationPurpose() == UmlToCifTranslationPurpose.SYNTHESIS,
+                "The input event trace info must be related to a synthesis CIF event.");
+        Verify.verify(languageEqEventInfo.getTranslationPurpose() == UmlToCifTranslationPurpose.LANGUAGE_EQUIVALENCE,
+                "The input event trace info must be related to a language equivalence CIF event.");
+        Verify.verify(synthesisEventInfo.getUmlElement() != null,
+                "The synthesis CIF event refers to a 'null' UML element."); // To be removed for vertical scaling.
+
+        // Get the attributes of the language equivalence event trace info.
+        RedefinableElement languageEqOriginalUmlElement = languageEqEventInfo.getUmlElement();
+        boolean isLanguageEqStartEvent = languageEqEventInfo.isStartEvent();
+        boolean isLanguageEqEndEvent = languageEqEventInfo.isEndEvent();
+        Integer languageEqEffectIdx = languageEqEventInfo.getEffectIdx();
+
+        // Trace to the Petri net transition.
+        TransitionTraceInfo transitionInfo = getTransitionTraceInfo(getOpaqueAction(languageEqOriginalUmlElement));
+
+        // Consider the original UML element.
+        languageEqOriginalUmlElement = getOriginalUmlElement(languageEqOriginalUmlElement);
+
+        // If the language equivalence CIF event looks like it is part of a non-merged pattern, trace back the event
+        // to its related synthesis event info, to see what it originally represented, to allow for proper comparison
+        // against the synthesis CIF events, which are already original.
+        //
+        // Only if the language equivalence CIF event is non-atomic or deterministic, trace it back and update the
+        // attributes. This avoids tracing back for the events related to atomic non-deterministic original opaque
+        // behaviors, for which the synthesis CIF events have been removed from the synthesis chain before the Petri
+        // net synthesis, and can thus not be directly traced back. That is, the synthesis CIF end events of atomic
+        // non-deterministic opaque behaviors were removed during the event-based projection, and the info of the
+        // synthesis CIF start event got updated to represent the combined start and end events. Since we can't trace
+        // the atomic non-deterministic language equivalence CIF events back in the same way as we do for non-atomic
+        // and determinstic ones, we simply keep using the language equivalence event CIF event info. This is allowed,
+        // since atomic non-deterministic patterns are always merged back. They may look like parts of a non-merged
+        // pattern from the tracing information, but they are not.
+        //
+        // To summarize, these are the cases, given the tracing information available at the time of the language
+        // equivalence check:
+        //
+        // @formatter:off
+        // Case                 Event info (synthesis) Transition info                     Event info (language equiv.)
+        // -------------------- ---------------------- ----------------------------------- ----------------------------
+        // Atomic non-det start start + end            Single event (looks non-merged)     start     (no need to trace)
+        // Atomic non-det end   (merged into start)    (n/a)                               end       (no need to trace)
+        // Non-atomic start     start                  Merged (traces to multiple events)  start     (no need to trace)
+        // Non-atomic end       end                    Merged (traces to multiple events)  end       (no need to trace)
+        // Non-atomic start     start                  Non-merged (traces to single event) start + end  (need to trace)
+        // Non-atomic end       end                    Non-merged (traces to single event) start + end  (need to trace)
+        // @formatter:on
+        if (!transitionInfo.isMergedTransition() && (!PokaYokeUmlProfileUtil.isAtomic(languageEqOriginalUmlElement)
+                || PokaYokeUmlProfileUtil.isDeterministic(languageEqOriginalUmlElement)))
+        {
+            Event languageEqSynthesisEvent = transitionInfo.getSingleCifEvent();
+            EventTraceInfo thatSynthesisEventInfo = getEventTraceInfo(languageEqSynthesisEvent);
+            isLanguageEqStartEvent = thatSynthesisEventInfo.isStartEvent();
+            isLanguageEqEndEvent = thatSynthesisEventInfo.isEndEvent();
+            languageEqEffectIdx = thatSynthesisEventInfo.getEffectIdx();
+        }
+
+        // Compare the UML elements and the attributes.
+        return synthesisEventInfo.getUmlElement().equals(languageEqOriginalUmlElement)
+                && synthesisEventInfo.isStartEvent() == isLanguageEqStartEvent
+                && synthesisEventInfo.isEndEvent() == isLanguageEqEndEvent
+                && Objects.equals(synthesisEventInfo.getEffectIdx(), languageEqEffectIdx);
+    }
+
+    /**
+     * Pair the CIF external events generated for the synthesis phase and the CIF external events generated for the
+     * language equivalence phase, when they are equivalent.
+     *
+     * @return The set of pairs of list of paired events.
+     */
+    public Set<Pair<List<Event>, List<Event>>> getLanguageEqEventsPaired() {
+        // Initialize set of paired events. This set contains 1-to-many pairs, each composed of a single synthesis CIF
+        // event and one or more language equivalence CIF events. One single synthesis event can generate multiple
+        // language equivalence events: for instance, let us consider an atomic deterministic opaque behavior. For the
+        // synthesis purpose, the opaque behavior is translated as a single event; then, it can be used multiple times
+        // in the synthesized CIF model and hence in the synthesized activity, where it is translated as a call
+        // behavior. Each call behavior generates a single language equivalence CIF event, but they are all related to
+        // the same synthesis event (and thus its corresponding the opaque behavior). Note that each language
+        // equivalence CIF event can be related only to one synthesis event. The pairs use a list of events for the
+        // synthesis part for compatibility with the language equivalence checker methods.
+        Set<Pair<List<Event>, List<Event>>> pairedEvents = new LinkedHashSet<>();
+
+        // Get the map for the external synthesis CIF events and their event trace info.
+        Map<Event, EventTraceInfo> externalSynthesisEventsMap = getExternalEventsMap(
+                UmlToCifTranslationPurpose.SYNTHESIS);
+
+        // Get the map for the external language equivalence CIF events and their event trace info.
+        Map<Event, EventTraceInfo> externalLanguageEqEventsMap = getExternalEventsMap(
+                UmlToCifTranslationPurpose.LANGUAGE_EQUIVALENCE);
+
+        // Pair the language equivalence events with the synthesis events. Check that all language equivalence events
+        // are paired. Note that there can be synthesis events that are not paired, because they are forbidden (e.g. by
+        // occurrence constraints) and they will not have a related language equivalence event. That is, during the
+        // language equivalence phase, opaque behaviors are not translated; only called opaque behavior behaviors and
+        // non-merged opaque behaviors get translated.
+        Set<Event> usedLanguageEqEvents = new LinkedHashSet<>();
+
+        for (Entry<Event, EventTraceInfo> entrySynth: externalSynthesisEventsMap.entrySet()) {
+            EventTraceInfo synthesisEventInfo = entrySynth.getValue();
+
+            List<Event> equivalentEvents = new ArrayList<>();
+
+            for (Entry<Event, EventTraceInfo> entryLanguage: externalLanguageEqEventsMap.entrySet()) {
+                EventTraceInfo languageUmlElementInfo = entryLanguage.getValue();
+
+                // Store the equivalent events.
+                if (areEquivalentEvents(synthesisEventInfo, languageUmlElementInfo)) {
+                    equivalentEvents.add(entryLanguage.getKey());
+                    usedLanguageEqEvents.add(entryLanguage.getKey());
+                }
+            }
+
+            if (!equivalentEvents.isEmpty()) {
+                pairedEvents.add(new Pair<>(List.of(entrySynth.getKey()), equivalentEvents));
+            }
+        }
+
+        // Sanity check: all external CIF events generated for the language equivalence check should be paired with an
+        // event from the synthesis phase.
+        Verify.verify(usedLanguageEqEvents.equals(externalLanguageEqEventsMap.keySet()),
+                String.format("Found unpaired external events '%s' in the language equivalence CIF model.",
+                        Sets.difference(externalLanguageEqEventsMap.keySet(), usedLanguageEqEvents).stream()
+                                .map(e -> e.getName()).toList()));
+
+        return pairedEvents;
     }
 }

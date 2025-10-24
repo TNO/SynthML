@@ -1,7 +1,6 @@
 
 package com.github.tno.pokayoke.transform.app;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -10,7 +9,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.escet.cif.common.CifEventUtils;
 import org.eclipse.escet.cif.common.CifTextUtils;
 import org.eclipse.escet.cif.metamodel.cif.Specification;
@@ -33,20 +31,19 @@ public class StateAwareWeakLanguageEquivalenceHelper {
 
     /**
      * Prepares two CIF models for the language equivalence check. Performs sanity checks, removes internal variables
-     * from state annotations, and maps the events of one state space to the events of the other. Returns a record
-     * containing the mapped events, and the filtered state annotations.
+     * from state annotations. Returns a record containing the filtered state annotations.
      *
      * @param model1 The first CIF model.
-     * @param namesToEvents1 The map from names of UML elements to CIF events, for the first state space.
-     * @param tauEvents1 The set of events that represent tau transitions, for the first state space.
+     * @param externalEvents1 The set of external events of the first model.
+     * @param internalEvents1 The set of internal events of the first model.
      * @param model2 The second CIF model.
-     * @param namesToEvents2 The map from names of UML elements to CIF events, for the second state space.
-     * @param tauEvents2 The set of events that represent tau transitions, for the second state space.
+     * @param externalEvents2 The set of external events of the second model.
+     * @param internalEvents2 The set of internal events of the second model.
      * @param externalVariableNames The set containing non-escaped external variable names.
      * @return The model preparation result.
      */
-    public static ModelPreparationResult prepareModels(Specification model1, Map<String, List<Event>> namesToEvents1,
-            Set<Event> tauEvents1, Specification model2, Map<String, List<Event>> namesToEvents2, Set<Event> tauEvents2,
+    public static ModelPreparationResult prepareModels(Specification model1, Set<Event> externalEvents1,
+            Set<Event> internalEvents1, Specification model2, Set<Event> externalEvents2, Set<Event> internalEvents2,
             Set<String> externalVariableNames)
     {
         // Sanity checks. The models should only have one component, an automaton.
@@ -61,26 +58,19 @@ public class StateAwareWeakLanguageEquivalenceHelper {
                 StateAwareWeakLanguageEquivalenceChecker.ERROR_PREFIX
                         + "the second model's component is not an automaton.");
 
-        Automaton stateSpace1 = (Automaton)model1.getComponents().get(0);
-        Automaton stateSpace2 = (Automaton)model2.getComponents().get(0);
-
         // Filter internal variables from state annotations.
         Map<Location, Annotation> filteredStateAnn1 = filterStateAnnotations(model1, externalVariableNames);
         Map<Location, Annotation> filteredStateAnn2 = filterStateAnnotations(model2, externalVariableNames);
 
-        // Sanity check: check that the tau and non-tau events represent the entire state space alphabet.
-        checkAlphabetCoverage(stateSpace1, namesToEvents1, tauEvents1);
-        checkAlphabetCoverage(stateSpace2, namesToEvents2, tauEvents2);
+        // Sanity check: check that the external and internal events represent the entire state space alphabet, and that
+        // they do not overlap.
+        Automaton stateSpace1 = (Automaton)model1.getComponents().get(0);
+        Automaton stateSpace2 = (Automaton)model2.getComponents().get(0);
 
-        // Filter unused events from the state space alphabets.
-        Set<String> unusedEvents1 = removeAndGetUnusedEvents(stateSpace1);
-        Set<String> unusedEvents2 = removeAndGetUnusedEvents(stateSpace2);
+        checkAlphabetCoverage(stateSpace1, externalEvents1, internalEvents1);
+        checkAlphabetCoverage(stateSpace2, externalEvents2, internalEvents2);
 
-        // Check that the two alphabets are compatible, and create a set of pairs with the corresponding list of events.
-        Set<Pair<List<Event>, List<Event>>> pairedEvents = getPairedEvents(namesToEvents1, unusedEvents1,
-                stateSpace1.getName(), namesToEvents2, unusedEvents2, stateSpace2.getName());
-
-        return new ModelPreparationResult(pairedEvents, filteredStateAnn1, filteredStateAnn2);
+        return new ModelPreparationResult(filteredStateAnn1, filteredStateAnn2);
     }
 
     private static Map<Location, Annotation> filterStateAnnotations(Specification model,
@@ -118,20 +108,26 @@ public class StateAwareWeakLanguageEquivalenceHelper {
         return locToFilteredAnnotations;
     }
 
-    private static void checkAlphabetCoverage(Automaton stateSpace, Map<String, List<Event>> namesToEvents,
-            Set<Event> tauEvents)
+    private static void checkAlphabetCoverage(Automaton stateSpace, Set<Event> externalEvents,
+            Set<Event> internalEvents)
     {
-        // Check that the alphabet of the state space is equal to the union of non-tau and the tau events. This check is
-        // performed by absolute names, since they are different objects.
+        // Check that internal and external events do not overlap.
+        Set<Event> intersection = Sets.intersection(externalEvents, internalEvents);
+        Verify.verify(intersection.isEmpty(),
+                String.format("External and internal event sets contain overlapping events: ",
+                        String.join(", ", intersection.stream().map(e -> e.getName()).toList())));
+
+        // Check that the alphabet of the state space is equal to the union of external and internal events. This check
+        // is performed by absolute names, since they are different objects.
         Set<Event> eventsMerged = new LinkedHashSet<>();
-        namesToEvents.values().forEach(e -> eventsMerged.addAll(e));
-        eventsMerged.addAll(tauEvents);
+        eventsMerged.addAll(externalEvents);
+        eventsMerged.addAll(internalEvents);
 
         Set<Event> stateSpaceAlphabet = CifEventUtils.getAlphabet(stateSpace);
         Set<String> absNamesStateSpace = stateSpaceAlphabet.stream().map(e -> CifTextUtils.getAbsName(e))
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(LinkedHashSet::new));
         Set<String> absNamesEventsMerged = eventsMerged.stream().map(e -> CifTextUtils.getAbsName(e))
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(LinkedHashSet::new));
 
         if (!absNamesStateSpace.equals(absNamesEventsMerged)) {
             Set<String> onlyInMerged = Sets.difference(absNamesEventsMerged, absNamesStateSpace);
@@ -150,95 +146,14 @@ public class StateAwareWeakLanguageEquivalenceHelper {
         }
     }
 
-    private static Set<String> removeAndGetUnusedEvents(Automaton stateSpace) {
-        // Removes the unused events from the alphabet, and returns the unused events names.
-        Set<Event> preFilterAlphabet = CifEventUtils.getAlphabet(stateSpace);
-        stateSpace.setAlphabet(null);
-        Set<Event> postFilterAlphabet = CifEventUtils.getAlphabet(stateSpace);
-        preFilterAlphabet.removeAll(postFilterAlphabet);
-        return preFilterAlphabet.stream().map(e -> CifTextUtils.getAbsName(e)).collect(Collectors.toSet());
-    }
-
-    /**
-     * Compute the events from two state spaces that represent the same UML element, and pair them together. If the
-     * events in one state space are not related to any event in the other state space, throws an error.
-     *
-     * @param namesToEvents1 The map from the name of the UML element to the list of events related to it, in the first
-     *     state space.
-     * @param unusedEvents1 Names of events that are not used in the first state space.
-     * @param stateSpace1Name The name of the first state space.
-     * @param namesToEvents2 The map from the name of the UML element to the list of events related to it, in the second
-     *     state space.
-     * @param unusedEvents2 Names of events that are not used in the second state space.
-     * @param stateSpace2Name The name of the second state space.
-     * @return The set containing pairs of corresponding (lists of) events for the two state space automata. All events
-     *     in the first list of events are equivalent to all the events in the second list of events.
-     */
-    private static Set<Pair<List<Event>, List<Event>>> getPairedEvents(Map<String, List<Event>> namesToEvents1,
-            Set<String> unusedEvents1, String stateSpace1Name, Map<String, List<Event>> namesToEvents2,
-            Set<String> unusedEvents2, String stateSpace2Name)
-    {
-        Set<Pair<List<Event>, List<Event>>> pairedEvents = new LinkedHashSet<>();
-        for (Entry<String, List<Event>> entry: namesToEvents1.entrySet()) {
-            String umlElementName = entry.getKey();
-            List<Event> events1 = entry.getValue();
-            List<Event> events2 = namesToEvents2.getOrDefault(umlElementName, new ArrayList<>());
-
-            // Remove events that are not used.
-            List<Event> usedEvents1 = events1.stream().filter(e -> !unusedEvents1.contains(CifTextUtils.getAbsName(e)))
-                    .toList();
-            List<Event> usedEvents2 = events2.stream().filter(e -> !unusedEvents2.contains(CifTextUtils.getAbsName(e)))
-                    .toList();
-
-            // Remove the item from the second map, to later check that all items from the second map have been looped
-            // through.
-            namesToEvents2.remove(umlElementName);
-
-            if (!usedEvents1.isEmpty() && !usedEvents2.isEmpty()) {
-                // Pair the two lists of equivalent events.
-                pairedEvents.add(Pair.of(usedEvents1, usedEvents2));
-            } else if (usedEvents1.isEmpty() != usedEvents2.isEmpty()) {
-                // If one set of events is empty and the other is not, one model can have a transition while the other
-                // model cannot; this means that the two state spaces are not equivalent, thus throw an error.
-                String emptyEventSSpaceName;
-                String fullEventSSpaceName;
-                String eventName;
-                if (usedEvents1.isEmpty()) {
-                    emptyEventSSpaceName = stateSpace1Name;
-                    fullEventSSpaceName = stateSpace2Name;
-                    eventName = usedEvents2.get(0).getName();
-                } else {
-                    emptyEventSSpaceName = stateSpace2Name;
-                    fullEventSSpaceName = stateSpace1Name;
-                    eventName = usedEvents1.get(0).getName();
-                }
-
-                throw new RuntimeException(StateAwareWeakLanguageEquivalenceChecker.ERROR_PREFIX + String.format(
-                        "found non-matching events related to UML element '%s'. "
-                                + "The state space '%s' has no events, while the state space '%s' has event '%s'.",
-                        umlElementName, emptyEventSSpaceName, fullEventSSpaceName, eventName));
-            }
-        }
-
-        // If second map is not empty, the two state spaces are not equivalent.
-        if (!namesToEvents2.isEmpty()) {
-            throw new RuntimeException(String.format("The second model contains non-matching events, e.g. '%s'.",
-                    namesToEvents2.keySet().iterator().next()));
-        }
-
-        return pairedEvents;
-    }
-
     /**
      * The result of the preparation of the two CIF state spaces.
      *
-     * @param pairedEvents The set containing pairs of corresponding (lists of) events for the two state space automata.
-     *     All events in the first list of events are equivalent to all the events in the second list of events.
      * @param stateAnnotations1 The filtered state annotations for the first state space.
      * @param stateAnnotations2 The filtered state annotations for the second state space.
      */
-    record ModelPreparationResult(Set<Pair<List<Event>, List<Event>>> pairedEvents,
-            Map<Location, Annotation> stateAnnotations1, Map<Location, Annotation> stateAnnotations2)
+    record ModelPreparationResult(Map<Location, Annotation> stateAnnotations1,
+            Map<Location, Annotation> stateAnnotations2)
     {
     }
 }

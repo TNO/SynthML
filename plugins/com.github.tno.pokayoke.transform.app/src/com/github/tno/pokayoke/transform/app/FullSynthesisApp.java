@@ -275,14 +275,14 @@ public class FullSynthesisApp {
         PostProcessActivity.finalizeOpaqueActions(activity, tracker, warnings);
         FileHelper.storeModel(activity.getModel(), opaqueActionsFinalizedOutputPath.toString());
 
-        // Remove the internal actions that were added in CIF specification and petrification.
-        Path internalActionsRemovedUMLOutputPath = outputFolderPath
-                .resolve(filePrefix + ".15.internalactionsremoved.uml");
-        PostProcessActivity.removeOpaqueActions(activity, tracker.getInternalActions());
-        FileHelper.storeModel(activity.getModel(), internalActionsRemovedUMLOutputPath.toString());
+        // Remove the temporary actions that were added to the CIF specification for petrification.
+        Path temporaryActionsRemovedUMLOutputPath = outputFolderPath
+                .resolve(filePrefix + ".15.petrifyactionsremoved.uml");
+        PostProcessActivity.removeOpaqueActions(activity, tracker.getTemporaryPetrificationActions());
+        FileHelper.storeModel(activity.getModel(), temporaryActionsRemovedUMLOutputPath.toString());
 
-        // Remove internal actions from the synthesis chain tracker.
-        tracker.removeInternalActions();
+        // Remove temporary actions created for petrification from the synthesis chain tracker.
+        tracker.removeTemporaryPetrificationActions();
 
         // Post-process the activity to simplify it.
         Path umlSimplifiedOutputPath = outputFolderPath.resolve(filePrefix + ".16.simplified.uml");
@@ -391,12 +391,17 @@ public class FullSynthesisApp {
         // Load state space post-synthesis chain file.
         Specification stateSpacePostSynthChain = CifFileHelper.loadCifSpec(cifStateSpacePath);
 
-        // Filter the state annotations to keep only the external variables, and get the tau and non-tau events before
-        // the language equivalence check.
+        // Get internal event sets for the synthesis and language equivalence translations.
+        Set<Event> synthesisInternalEvents = tracker.getInternalEvents(UmlToCifTranslationPurpose.SYNTHESIS);
+        Set<Event> languageEqInternalEvents = tracker
+                .getInternalEvents(UmlToCifTranslationPurpose.LANGUAGE_EQUIVALENCE);
+
+        // Filter the state annotations to keep only the external variables, check that external and internal events
+        // cover the entire state space alphabets, and that they do not overlap.
         ModelPreparationResult result = StateAwareWeakLanguageEquivalenceHelper.prepareModels(stateSpaceGenerated,
-                translator.getNormalizedNameToEventsMap(), translator.getInternalEvents(), stateSpacePostSynthChain,
-                umlToCifTranslatorPostSynth.getNormalizedNameToEventsMap(),
-                umlToCifTranslatorPostSynth.getInternalEvents(), translator.getVariableNames());
+                tracker.getExternalEvents(UmlToCifTranslationPurpose.SYNTHESIS), synthesisInternalEvents,
+                stateSpacePostSynthChain, tracker.getExternalEvents(UmlToCifTranslationPurpose.LANGUAGE_EQUIVALENCE),
+                languageEqInternalEvents, translator.getVariableNames());
 
         // Get the two state space automata to compare.
         Automaton stateSpace1 = (Automaton)stateSpaceGenerated.getComponents().get(0);
@@ -404,8 +409,8 @@ public class FullSynthesisApp {
 
         // Perform the language equivalence check.
         StateAwareWeakLanguageEquivalenceChecker checker = new StateAwareWeakLanguageEquivalenceChecker();
-        checker.check(stateSpace1, result.stateAnnotations1(), translator.getInternalEvents(), stateSpace2,
-                result.stateAnnotations2(), umlToCifTranslatorPostSynth.getInternalEvents(), result.pairedEvents());
+        checker.check(stateSpace1, result.stateAnnotations1(), synthesisInternalEvents, stateSpace2,
+                result.stateAnnotations2(), languageEqInternalEvents, tracker.getLanguageEqEventsPaired());
     }
 
     private static PathPair makePathPair(Path path) {
