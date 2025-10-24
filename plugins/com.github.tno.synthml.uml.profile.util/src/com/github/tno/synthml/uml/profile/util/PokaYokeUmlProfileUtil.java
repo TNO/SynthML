@@ -515,9 +515,7 @@ public class PokaYokeUmlProfileUtil {
         } else if (isClassRequirement(constraint)) {
             return Arrays.asList(getStereotype(constraint, ST_CLASS_REQUIREMENT));
         } else {
-            throw new RuntimeException(
-                    String.format("Constraint '%s' is not a precondition, postcondition, nor class requirement.",
-                            constraint.getName()));
+            return List.of();
         }
     }
 
