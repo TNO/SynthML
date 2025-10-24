@@ -78,7 +78,6 @@ import com.github.tno.synthml.uml.profile.cif.TypeException;
 import com.github.tno.synthml.uml.profile.util.PokaYokeTypeUtil;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Strings;
-import com.google.common.base.Verify;
 import com.google.common.collect.Sets;
 
 import SynthML.FormalCallBehaviorAction;
@@ -1009,32 +1008,40 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     private void checkValidActivityPrePostconditionConstraint(Constraint constraint) {
         // Check that the constraint has the right stereotype applied.
         List<Stereotype> stereotypes = constraint.getAppliedStereotypes();
-        Verify.verify(stereotypes.size() == 1,
-                String.format("Constraint '%s' must have exactly one stereotype applied.", constraint.getName()));
+        if (stereotypes.size() != 1) {
+            error(String.format("Constraint '%s' must have exactly one stereotype applied.", constraint.getName()),
+                    UMLPackage.Literals.CONSTRAINT__CONTEXT);
+        }
 
-        if (CifContext.isActivityPreconditionConstraint(constraint)) {
-            Verify.verify(
-                    stereotypes.get(0).getName().equals(PokaYokeUmlProfileUtil.ST_SYNTHESIS_PRECONDITION)
-                            || stereotypes.get(0).getName().equals(PokaYokeUmlProfileUtil.ST_USAGE_PRECONDITION),
-                    String.format("Constraint '%s' must have a precondition stereotype applied.",
-                            constraint.getName()));
-        } else {
-            Verify.verify(stereotypes.get(0).getName().equals(PokaYokeUmlProfileUtil.ST_POSTCONDITION), String
-                    .format("Constraint '%s' must have a postcondition stereotype applied.", constraint.getName()));
+        if (CifContext.isActivityPreconditionConstraint(constraint)
+                && !(stereotypes.get(0).getName().equals(PokaYokeUmlProfileUtil.ST_SYNTHESIS_PRECONDITION)
+                        || stereotypes.get(0).getName().equals(PokaYokeUmlProfileUtil.ST_USAGE_PRECONDITION)))
+        {
+            error(String.format("Constraint '%s' must have a precondition stereotype applied.", constraint.getName()),
+                    UMLPackage.Literals.CONSTRAINT__CONTEXT);
+        } else if (!(stereotypes.get(0).getName().equals(PokaYokeUmlProfileUtil.ST_POSTCONDITION))) {
+            error(String.format("Constraint '%s' must have a postcondition stereotype applied.", constraint.getName()),
+                    UMLPackage.Literals.CONSTRAINT__CONTEXT);
         }
 
         // Check that the constraint specification is supported.
-        Verify.verify(constraint.getSpecification() instanceof OpaqueExpression, String
-                .format("Constraint '%s' must have an opaque expression as specification.", constraint.getName()));
-        Verify.verify(((OpaqueExpression)constraint.getSpecification()).getBodies().size() == 1,
-                String.format("Constraint '%s' must have an opaque expression specification with exactly one body.",
-                        constraint.getName()));
-        Verify.verify(
-                ((OpaqueExpression)constraint.getSpecification()).getBodies().get(0) != null
-                        && !((OpaqueExpression)constraint.getSpecification()).getBodies().get(0).isEmpty(),
-                String.format(
-                        "Constraint '%s' must have an opaque expression specification containing a valid expression.",
-                        constraint.getName()));
+        if (!(constraint.getSpecification() instanceof OpaqueExpression)) {
+            error(String.format("Constraint '%s' must have an opaque expression as specification.",
+                    constraint.getName()), UMLPackage.Literals.CONSTRAINT__CONTEXT);
+        }
+
+        if (((OpaqueExpression)constraint.getSpecification()).getBodies().size() != 1) {
+            error(String.format("Constraint '%s' must have an opaque expression specification with exactly one body.",
+                    constraint.getName()), UMLPackage.Literals.CONSTRAINT__CONTEXT);
+        }
+
+        if (((OpaqueExpression)constraint.getSpecification()).getBodies().get(0) == null
+                || ((OpaqueExpression)constraint.getSpecification()).getBodies().get(0).isEmpty())
+        {
+            error(String.format(
+                    "Constraint '%s' must have an opaque expression specification containing a valid expression.",
+                    constraint.getName()), UMLPackage.Literals.CONSTRAINT__CONTEXT);
+        }
 
         try {
             AInvariant invariant = CifParserHelper.parseInvariant(constraint);
@@ -1054,23 +1061,35 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     private void checkValidClassConstraint(Constraint constraint) {
         // Check that the constraint has the right stereotype applied.
         List<Stereotype> stereotypes = constraint.getAppliedStereotypes();
-        Verify.verify(stereotypes.size() == 1,
-                String.format("Constraint '%s' must have exactly one stereotype applied.", constraint.getName()));
-        Verify.verify(stereotypes.get(0).getName().equals(PokaYokeUmlProfileUtil.ST_CLASS_REQUIREMENT),
-                String.format("Constraint '%s' must have a requirement stereotype applied.", constraint.getName()));
+
+        if (stereotypes.size() != 1) {
+            error(String.format("Constraint '%s' must have exactly one stereotype applied.", constraint.getName()),
+                    UMLPackage.Literals.CONSTRAINT__CONTEXT);
+        }
+
+        if (!stereotypes.get(0).getName().equals(PokaYokeUmlProfileUtil.ST_CLASS_REQUIREMENT)) {
+            error(String.format("Constraint '%s' must have a requirement stereotype applied.", constraint.getName()),
+                    UMLPackage.Literals.CONSTRAINT__CONTEXT);
+        }
 
         // Check that the constraint specification is supported.
-        Verify.verify(constraint.getSpecification() instanceof OpaqueExpression, String
-                .format("Constraint '%s' must have an opaque expression as specification.", constraint.getName()));
-        Verify.verify(((OpaqueExpression)constraint.getSpecification()).getBodies().size() == 1,
-                String.format("Constraint '%s' must have an opaque expression specification with exactly one body.",
-                        constraint.getName()));
-        Verify.verify(
-                ((OpaqueExpression)constraint.getSpecification()).getBodies().get(0) != null
-                        && !((OpaqueExpression)constraint.getSpecification()).getBodies().get(0).isEmpty(),
-                String.format(
-                        "Constraint '%s' must have an opaque expression specification containing a valid expression.",
-                        constraint.getName()));
+        if (!(constraint.getSpecification() instanceof OpaqueExpression)) {
+            error(String.format("Constraint '%s' must have an opaque expression as specification.",
+                    constraint.getName()), UMLPackage.Literals.CONSTRAINT__CONTEXT);
+        }
+
+        if (((OpaqueExpression)constraint.getSpecification()).getBodies().size() != 1) {
+            error(String.format("Constraint '%s' must have an opaque expression specification with exactly one body.",
+                    constraint.getName()), UMLPackage.Literals.CONSTRAINT__CONTEXT);
+        }
+
+        if (((OpaqueExpression)constraint.getSpecification()).getBodies().get(0) == null
+                || ((OpaqueExpression)constraint.getSpecification()).getBodies().get(0).isEmpty())
+        {
+            error(String.format(
+                    "Constraint '%s' must have an opaque expression specification containing a valid expression.",
+                    constraint.getName()), UMLPackage.Literals.CONSTRAINT__CONTEXT);
+        }
 
         try {
             new CifTypeChecker(getGlobalContext(constraint)).checkInvariant(CifParserHelper.parseInvariant(constraint));
