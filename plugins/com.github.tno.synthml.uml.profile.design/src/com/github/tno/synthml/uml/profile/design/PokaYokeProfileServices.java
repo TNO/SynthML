@@ -676,8 +676,8 @@ public class PokaYokeProfileServices {
         }
     }
 
-    public Stereotype getConstraintStereotype(Constraint constraint) {
-        return PokaYokeUmlProfileUtil.getConstraintStereotype(constraint);
+    public Stereotype getConstraintFirstStereotype(Constraint constraint) {
+        return PokaYokeUmlProfileUtil.getConstraintFirstStereotype(constraint);
     }
 
     public List<Stereotype> getSupportedConstraintStereotypes(Constraint constraint) {

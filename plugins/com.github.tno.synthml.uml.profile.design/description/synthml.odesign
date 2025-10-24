@@ -344,7 +344,7 @@
             <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="service:self.setName(newValue)"/>
           </initialOperation>
         </controls>
-        <controls xsi:type="properties:SelectDescription" name="PR_C_Kind" labelExpression="Constraint Kind: " helpExpression="The kind of constraint." valueExpression="service:self.getConstraintStereotype()" candidatesExpression="service:self.getSupportedConstraintStereotypes()" candidateDisplayExpression="service:candidate.getStereotypeName()">
+        <controls xsi:type="properties:SelectDescription" name="PR_C_Kind" labelExpression="Constraint Kind: " helpExpression="The kind of constraint." valueExpression="service:self.getConstraintFirstStereotype()" candidatesExpression="service:self.getSupportedConstraintStereotypes()" candidateDisplayExpression="service:candidate.getStereotypeName()">
           <initialOperation>
             <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="service:self.setConstraintStereotype(newValue)"/>
           </initialOperation>

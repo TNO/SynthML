@@ -491,7 +491,7 @@ public class PokaYokeUmlProfileUtil {
         return expression;
     }
 
-    public static Stereotype getConstraintStereotype(Constraint constraint) {
+    public static Stereotype getConstraintFirstStereotype(Constraint constraint) {
         List<Stereotype> constraintStereotypes = constraint.getAppliedStereotypes();
         return constraintStereotypes.isEmpty() ? null : constraintStereotypes.get(0);
     }
