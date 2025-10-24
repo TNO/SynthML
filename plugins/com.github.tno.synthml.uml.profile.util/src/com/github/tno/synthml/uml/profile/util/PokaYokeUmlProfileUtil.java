@@ -34,7 +34,6 @@ import org.eclipse.uml2.uml.ValueSpecification;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.google.common.base.Strings;
-import com.google.common.base.Verify;
 
 import SynthML.FormalCallBehaviorAction;
 import SynthML.FormalConstraint;
@@ -494,9 +493,6 @@ public class PokaYokeUmlProfileUtil {
 
     public static Stereotype getConstraintStereotype(Constraint constraint) {
         List<Stereotype> constraintStereotypes = constraint.getAppliedStereotypes();
-        Verify.verify(constraintStereotypes.size() <= 1,
-                // The constraint can have no stereotypes if it has just been created.
-                String.format("Found more than one stereotype applied to constraint '%s'.", constraint.getName()));
         return constraintStereotypes.isEmpty() ? null : constraintStereotypes.get(0);
     }
 
