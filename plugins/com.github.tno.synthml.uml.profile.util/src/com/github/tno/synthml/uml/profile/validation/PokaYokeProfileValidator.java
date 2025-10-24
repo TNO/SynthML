@@ -1077,6 +1077,12 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                     constraint.getName()), UMLPackage.Literals.CONSTRAINT__CONTEXT);
         }
 
+        if (!((OpaqueExpression)constraint.getSpecification()).getLanguages().equals(List.of("CIF"))) {
+            error(String.format(
+                    "Constraint '%s' must have an opaque expression specification with exactly one language that must be 'CIF'.",
+                    constraint.getName()), UMLPackage.Literals.CONSTRAINT__CONTEXT);
+        }
+
         if (((OpaqueExpression)constraint.getSpecification()).getBodies().get(0) == null
                 || ((OpaqueExpression)constraint.getSpecification()).getBodies().get(0).isEmpty())
         {
