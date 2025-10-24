@@ -530,8 +530,7 @@ public class PokaYokeUmlProfileUtil {
     }
 
     private static boolean isClassRequirement(Constraint constraint) {
-        return (constraint.eContainer() instanceof Classifier clazz)
-                && clazz.getOwnedRules().contains(constraint);
+        return (constraint.eContainer() instanceof Classifier clazz) && clazz.getOwnedRules().contains(constraint);
     }
 
     private static Stereotype getStereotype(Constraint constraint, String stereotypeName) {
@@ -548,10 +547,9 @@ public class PokaYokeUmlProfileUtil {
         List<Stereotype> constraintStereotypes = constraint.getAppliedStereotypes();
         PokaYokeUmlProfileUtil.applyPokaYokeProfile(constraint);
 
-        if (!constraintStereotypes.isEmpty()) {
-            PokaYokeUmlProfileUtil.unapplyStereotype(constraint,
-                    getQualifiedStereotypeName(constraintStereotypes.get(0).getName()));
-        }
+        // Unapply all and only the formal constraint stereotypes.
+        constraintStereotypes.stream().filter(s -> getQualifiedStereotypeName(s.getName()) != null).forEach(
+                s -> PokaYokeUmlProfileUtil.unapplyStereotype(constraint, getQualifiedStereotypeName(s.getName())));
 
         applyStereotype(constraint, stereotype);
     }
@@ -566,7 +564,7 @@ public class PokaYokeUmlProfileUtil {
         } else if (ST_POSTCONDITION.equals(stereotypeName)) {
             return POSTCONDITION_STEREOTYPE;
         } else {
-            throw new IllegalArgumentException("Unexpected stereotype name: " + stereotypeName);
+            return null;
         }
     }
 
