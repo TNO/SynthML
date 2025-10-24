@@ -1025,23 +1025,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
 
         // Check that the constraint specification is supported.
-        if (!(constraint.getSpecification() instanceof OpaqueExpression)) {
-            error(String.format("Constraint '%s' must have an opaque expression as specification.",
-                    constraint.getName()), UMLPackage.Literals.CONSTRAINT__CONTEXT);
-        }
-
-        if (((OpaqueExpression)constraint.getSpecification()).getBodies().size() != 1) {
-            error(String.format("Constraint '%s' must have an opaque expression specification with exactly one body.",
-                    constraint.getName()), UMLPackage.Literals.CONSTRAINT__CONTEXT);
-        }
-
-        if (((OpaqueExpression)constraint.getSpecification()).getBodies().get(0) == null
-                || ((OpaqueExpression)constraint.getSpecification()).getBodies().get(0).isEmpty())
-        {
-            error(String.format(
-                    "Constraint '%s' must have an opaque expression specification containing a valid expression.",
-                    constraint.getName()), UMLPackage.Literals.CONSTRAINT__CONTEXT);
-        }
+        checkConstraintSpecification(constraint);
 
         try {
             AInvariant invariant = CifParserHelper.parseInvariant(constraint);
@@ -1073,6 +1057,16 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
 
         // Check that the constraint specification is supported.
+        checkConstraintSpecification(constraint);
+
+        try {
+            new CifTypeChecker(getGlobalContext(constraint)).checkInvariant(CifParserHelper.parseInvariant(constraint));
+        } catch (RuntimeException e) {
+            error("Invalid invariant: " + e.getLocalizedMessage(), UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
+        }
+    }
+
+    private void checkConstraintSpecification(Constraint constraint) {
         if (!(constraint.getSpecification() instanceof OpaqueExpression)) {
             error(String.format("Constraint '%s' must have an opaque expression as specification.",
                     constraint.getName()), UMLPackage.Literals.CONSTRAINT__CONTEXT);
@@ -1089,12 +1083,6 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             error(String.format(
                     "Constraint '%s' must have an opaque expression specification containing a valid expression.",
                     constraint.getName()), UMLPackage.Literals.CONSTRAINT__CONTEXT);
-        }
-
-        try {
-            new CifTypeChecker(getGlobalContext(constraint)).checkInvariant(CifParserHelper.parseInvariant(constraint));
-        } catch (RuntimeException e) {
-            error("Invalid invariant: " + e.getLocalizedMessage(), UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
         }
     }
 
