@@ -1021,7 +1021,9 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             error(String.format("Constraint '%s' must have a precondition stereotype applied.", constraint.getName()),
                     UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
             return;
-        } else if (!(stereotypes.get(0).getName().equals(PokaYokeUmlProfileUtil.ST_POSTCONDITION))) {
+        } else if (CifContext.isActivityPostconditionConstraint(constraint)
+                && !(stereotypes.get(0).getName().equals(PokaYokeUmlProfileUtil.ST_POSTCONDITION)))
+        {
             error(String.format("Constraint '%s' must have a postcondition stereotype applied.", constraint.getName()),
                     UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
             return;
