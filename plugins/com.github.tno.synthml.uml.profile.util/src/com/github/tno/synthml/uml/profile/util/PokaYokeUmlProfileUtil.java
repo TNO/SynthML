@@ -543,8 +543,9 @@ public class PokaYokeUmlProfileUtil {
         PokaYokeUmlProfileUtil.applyPokaYokeProfile(constraint);
 
         // Unapply all and only the formal constraint stereotypes.
-        constraintStereotypes.stream().filter(s -> getQualifiedStereotypeName(s.getName()) != null).forEach(
-                s -> PokaYokeUmlProfileUtil.unapplyStereotype(constraint, getQualifiedStereotypeName(s.getName())));
+        constraintStereotypes.stream().map(s -> getQualifiedStereotypeName(s.getName()))
+                .filter(qualifiedName -> qualifiedName != null)
+                .forEach(qualifiedName -> PokaYokeUmlProfileUtil.unapplyStereotype(constraint, qualifiedName));
 
         applyStereotype(constraint, stereotype);
     }
