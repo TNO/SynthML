@@ -892,11 +892,80 @@ In fact, the same transformation \transformUmlToCifLabel{} is used for this, wit
 After translating \var{umlActivity_{concr}} to a CIF specification, extra guards are computed for the CIF start events for the activity nodes, using CIF data-based synthesis.
 Data-based synthesis is configured to do forward reachability (\texttt{--forward-reach=true}) and to start with forward reachability in the fixed-point order (\texttt{--fixed-point-order=reach-nonblock-ctrl}).
 So far, this configuration seems to perform best in practice.
-However, we have not yet validated this, so we are unsure whether this is the best fixpoint order strategy in general.
+However, we have not yet properly validated this, so we are unsure whether this is the best fixpoint order strategy in general.
 We also configure data-based synthesis to not free certain Binary Decision Diagrams (BDDs) that we need for guard computation, which are otherwise freed by the synthesis procedure.
-BDDs are used (by data-based synthesis but also guard computation) to symbolically represent and conveniently manupulate sets of system states.
+BDDs are used by data-based synthesis, but also by guard computation, to symbolically represent and conveniently manupulate sets of system states.
 Since guards are predicates over the system state, they can be represented as BDDs.
-We will compute control flow guards on BDD level, after which we convert them to CIF expressions.
+We will therefore compute control flow guards on BDD level, after which we will convert them to CIF expressions.
+
+At this point, we have used CIF data-based synthesis to compute the controlled-behavior predicate as a BDD, as well as extra guards for the controllable CIF events, also as BDDs.
+The next step is using these BDDs to compute the extra guards needed for executing the activity nodes, after which we turn these extra guards into incoming and/or outgoing control flow guards.
+The extra guards for activity nodes are computed in the following way.
+Let $\mathit{edge}$ be the CIF/BDD edge for starting the execution of some activity node.
+Then $\mathit{edge}$ must have a controllable event.
+The extra guard $\texttt{extra}(\mathit{edge})$ for $\mathit{edge}$, i.e., the extra guard for executing the activity node, is essentially\footnote{This definition is slightly simplified.
+The actual definition additionally eliminates internal variables using existential quantification.
+We come back to that later.} defined as:
+\begin{equation*}
+	\texttt{extra}(\mathit{edge}) = \texttt{simplify}(\texttt{and}(\texttt{guard}(\mathit{edge}), \mathit{ctrlBeh}), \texttt{and}(\texttt{origGuard}(\mathit{edge}), \mathit{ctrlBeh}))
+\end{equation*}
+where:
+\begin{itemize}
+	\item $\texttt{origGuard}(\mathit{edge})$ is the original guard for $\mathit{edge}$ that was used as input for CIF data-based synthesis, as a BDD.
+	\item $\texttt{guard}(\mathit{edge})$ is the strengthened guard for $\mathit{edge}$ that was produced as output of CIF data-based synthesis, as a BDD.
+	\item $\mathit{ctrlBeh}$ is the controlled-behavior predicate computed by CIF data-based synthesis, as a BDD.
+	\item $\texttt{and}$ is a binary BDD operation that computes the conjunction of the two given BDDs.
+	\item $\texttt{simplify}$ is a binary BDD operation that attempts to simplify the structure of the first given BDD by assuming the second BDD.
+	This simplification is done to produce more readable control flow guards.
+\end{itemize}
+
+To understand this computation, let $S$ be the set of all controlled system states in which the uncontrolled system guard of $\mathit{edge}$ holds.
+This set $S$ is captured exactly by the BDD $\texttt{and}(\texttt{origGuard}(\mathit{edge}), \mathit{ctrlBeh})$.
+Now we must find the subset $S' \subseteq S$ of these system states from which the application of $\mathit{edge}$ always ends up in a controlled system state.
+Finding this subset $S'$ is important since the activity node corresponding to $\mathit{edge}$ must not be executed in any system state $S \setminus S'$, and $\texttt{extra}(\mathit{edge})$ should capture exactly that.
+To compute $S'$ as a BDD, we have to reason about applications of $\mathit{edge}$.
+Luckily, CIF data-based synthesis has already done this for us, as it computed $\texttt{guard}(\mathit{edge})$, which ensures that any application of $\mathit{edge}$ ends up in a controlled system state.
+Thus, the set $S'$ is captured exactly by the BDD $\texttt{and}(\texttt{guard}(\mathit{edge}), \mathit{ctrlBeh})$.
+Note that the construction of this BDD still requires a conjunction with $\mathit{ctrlBeh}$.
+This is to ensure that the subset relation $S' \subseteq S$ indeed holds, which is needed for ensuring that \texttt{simplify} produces a correct extra guard\footnote{CIF data-based synthesis guarantees that any execution of $\mathit{edge}$ from a controlled system state in which $\texttt{guard}(\mathit{edge})$ holds end up in a controlled system state.
+However, the predicate $\texttt{guard}(\mathit{edge})$ may itself describe more system states than just the controlled ones.
+In other words, the set of states described by $\texttt{guard}(\mathit{edge})$ is not necessarily a subset of $\mathit{ctrlBeh}$.
+The extra $\texttt{and}$ computation is to ensure this subset relation.
+Without it, the $\texttt{simplify}$ operation may assume too many states, which has shown to lead to incorrectly computed extra guards.}.
+Now that we have BDDs representing the sets $S$ and $S'$, we can compute $\texttt{extra}(\mathit{edge})$ by means of BDD simplication: assuming we are in a system state from $S$, what is the extra condition needed to ensure that we are also in a system state from $S'$?
+This extra condition is thus defined as the `simplication' of the BDD representation of $S'$ with respect to the BDD representation of $S$.
+
+Note that, due to the way $\texttt{extra}(\mathit{edge})$ is defined, we assume that $\mathit{edge}$ is only taken from controlled system states, i.e., states from $\mathit{ctrlBeh}$.
+The correctness argument of $\texttt{extra}(\mathit{edge})$ is inductive: assuming we execute the activity in a controlled manner up to the execution of the activity node represented by $\mathit{edge}$, we now have to compute the extra guard that ensures that the execution of $\mathit{edge}$ ends up in a controlled system state again.
+If we do this consistently, then every activity execution will be safe (under the control flow guards that we compute for the activity, via $\texttt{extra}$) by induction on the length of the execution trace.
+We thus stay within the controlled system behavior.
+As an alternative, we could have defined $\texttt{extra}(\mathit{edge})$ in a way that does not rely on this assumption.
+Then $\texttt{extra}(\mathit{edge})$ would have been defined as $\texttt{simplify}(\texttt{guard}(\mathit{edge}), \texttt{origGuard}(\mathit{edge}))$.
+This definition would be correct in theory, but in practice it would lead to much duplication in computed control flow guards.
+In particular, we have seen that, if some control flow in the synthesized activity would get some non-trivial guard, then all subsequently reachable control flows would also get that guard.
+We now prevent this duplication.
+
+Moreover, the definition of $\texttt{extra}(\mathit{edge})$ as given earlier is slightly simplified.
+The actual definition also ensures that the computed extra guard does not depend on any internal CIF variables that were introduced by the UML-to-CIF transformation, like the atomicity variable.
+Such a thing can be ensured because there might be multiple valid ways to \texttt{simplify} a BDD, leading to different results which are all correct.
+In other words, a correct simplification result is not necessarily unique.
+In practice it might happen that multiple extra guards exist for $\mathit{edge}$ that are all correct, some of which are expressed over internal CIF variables and some of which are not.
+And as a result of the $\texttt{simplify}$ operation, it may happen that $\texttt{extra}(\mathit{edge})$ becomes a predicate that does depend in internal state.
+We could have avoided that, by eliminating all internal CIF variables from the BDD representations of $S$ and $S'$ using existential quantification.
+By doing so, $\texttt{extra}(\mathit{edge})$ is guaranteed not to depend on internal state.
+However, as a downside to this, it might not always be possible to compute extra guards.
+Sometimes the only way of expressing the extra guard of $\mathit{edge}$ is via internal state.
+The code implementation checks for such internal state dependencies.
+The activity synthesis algorithm terminates exceptionally when this check finds such a dependency, resulting in an error message for the user.
+The full definition of $\texttt{extra}(\mathit{edge})$ now becomes:
+\begin{equation*}
+	\begin{split}
+		\texttt{extra}(\mathit{edge}) &= \texttt{simplify}( \\
+			&\texttt{exists}(\texttt{and}(\texttt{guard}(\mathit{edge}), \mathit{ctrlBeh}), \mathit{internalVars}), \\
+			&\texttt{exists}(\texttt{and}(\texttt{origGuard}(\mathit{edge}), \mathit{ctrlBeh}), \mathit{internalVars}))
+	\end{split}
+\end{equation*}
+where $\mathit{internalVars}$ is a BDD representing the set of internal variables to eliminate, and $\texttt{exists}$ is the BDD operation that computes the existential quantification of a given BDD over a set of variables also given as a BDD.
 
 % TODO explain the actual guard computation
 
