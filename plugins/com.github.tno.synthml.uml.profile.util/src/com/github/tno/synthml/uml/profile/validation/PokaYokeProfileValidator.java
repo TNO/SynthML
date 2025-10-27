@@ -1010,7 +1010,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         List<Stereotype> stereotypes = constraint.getAppliedStereotypes();
         if (stereotypes.size() != 1) {
             error(String.format("Constraint '%s' must have exactly one stereotype applied.", constraint.getName()),
-                    UMLPackage.Literals.CONSTRAINT__CONTEXT);
+                    UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
             return;
         }
 
@@ -1019,11 +1019,11 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                         || stereotypes.get(0).getName().equals(PokaYokeUmlProfileUtil.ST_USAGE_PRECONDITION)))
         {
             error(String.format("Constraint '%s' must have a precondition stereotype applied.", constraint.getName()),
-                    UMLPackage.Literals.CONSTRAINT__CONTEXT);
+                    UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
             return;
         } else if (!(stereotypes.get(0).getName().equals(PokaYokeUmlProfileUtil.ST_POSTCONDITION))) {
             error(String.format("Constraint '%s' must have a postcondition stereotype applied.", constraint.getName()),
-                    UMLPackage.Literals.CONSTRAINT__CONTEXT);
+                    UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
             return;
         }
 
@@ -1051,13 +1051,13 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
 
         if (stereotypes.size() != 1) {
             error(String.format("Constraint '%s' must have exactly one stereotype applied.", constraint.getName()),
-                    UMLPackage.Literals.CONSTRAINT__CONTEXT);
+                    UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
             return;
         }
 
         if (!stereotypes.get(0).getName().equals(PokaYokeUmlProfileUtil.ST_CLASS_REQUIREMENT)) {
             error(String.format("Constraint '%s' must have a requirement stereotype applied.", constraint.getName()),
-                    UMLPackage.Literals.CONSTRAINT__CONTEXT);
+                    UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
             return;
         }
 
@@ -1074,20 +1074,20 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     private void checkConstraintSpecificationForm(Constraint constraint) {
         if (!(constraint.getSpecification() instanceof OpaqueExpression)) {
             error(String.format("Constraint '%s' must have an opaque expression as specification.",
-                    constraint.getName()), UMLPackage.Literals.CONSTRAINT__CONTEXT);
+                    constraint.getName()), UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
             return;
         }
 
         if (((OpaqueExpression)constraint.getSpecification()).getBodies().size() != 1) {
             error(String.format("Constraint '%s' must have an opaque expression specification with exactly one body.",
-                    constraint.getName()), UMLPackage.Literals.CONSTRAINT__CONTEXT);
+                    constraint.getName()), UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
             return;
         }
 
         if (!((OpaqueExpression)constraint.getSpecification()).getLanguages().equals(List.of("CIF"))) {
             error(String.format(
                     "Constraint '%s' must have an opaque expression specification with exactly one language that must be 'CIF'.",
-                    constraint.getName()), UMLPackage.Literals.CONSTRAINT__CONTEXT);
+                    constraint.getName()), UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
             return;
         }
 
@@ -1096,7 +1096,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         {
             error(String.format(
                     "Constraint '%s' must have an opaque expression specification containing a valid expression.",
-                    constraint.getName()), UMLPackage.Literals.CONSTRAINT__CONTEXT);
+                    constraint.getName()), UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
             return;
         }
     }
