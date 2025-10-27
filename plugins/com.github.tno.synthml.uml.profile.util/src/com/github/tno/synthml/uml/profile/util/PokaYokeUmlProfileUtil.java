@@ -2,7 +2,6 @@
 package com.github.tno.synthml.uml.profile.util;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -504,12 +503,12 @@ public class PokaYokeUmlProfileUtil {
      */
     public static List<Stereotype> getSupportedConstraintStereotypes(Constraint constraint) {
         if (isPreconditionConstraint(constraint)) {
-            return Arrays.asList(getStereotype(constraint, ST_SYNTHESIS_PRECONDITION),
+            return List.of(getStereotype(constraint, ST_SYNTHESIS_PRECONDITION),
                     getStereotype(constraint, ST_USAGE_PRECONDITION));
         } else if (isPostconditionConstraint(constraint)) {
-            return Arrays.asList(getStereotype(constraint, ST_POSTCONDITION));
+            return List.of(getStereotype(constraint, ST_POSTCONDITION));
         } else if (isClassRequirement(constraint)) {
-            return Arrays.asList(getStereotype(constraint, ST_CLASS_REQUIREMENT));
+            return List.of(getStereotype(constraint, ST_CLASS_REQUIREMENT));
         } else {
             return List.of();
         }
