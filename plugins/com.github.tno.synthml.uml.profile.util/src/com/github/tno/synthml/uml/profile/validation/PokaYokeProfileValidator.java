@@ -1027,8 +1027,10 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             return;
         }
 
-        // Check that the constraint specification is supported.
-        isValidConstraintSpecificationForm(constraint);
+        // Check if the constraint specification is supported.
+        if (!isValidConstraintSpecificationForm(constraint)) {
+            return;
+        }
 
         try {
             AInvariant invariant = CifParserHelper.parseInvariant(constraint);
@@ -1061,8 +1063,10 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             return;
         }
 
-        // Check that the constraint specification is supported.
-        isValidConstraintSpecificationForm(constraint);
+        // Check if the constraint specification is supported.
+        if (!isValidConstraintSpecificationForm(constraint)) {
+            return;
+        }
 
         try {
             new CifTypeChecker(getGlobalContext(constraint)).checkInvariant(CifParserHelper.parseInvariant(constraint));
@@ -1071,24 +1075,24 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
     }
 
-    private void isValidConstraintSpecificationForm(Constraint constraint) {
+    private boolean isValidConstraintSpecificationForm(Constraint constraint) {
         if (!(constraint.getSpecification() instanceof OpaqueExpression)) {
             error(String.format("Constraint '%s' must have an opaque expression as specification.",
                     constraint.getName()), UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
-            return;
+            return false;
         }
 
         if (((OpaqueExpression)constraint.getSpecification()).getBodies().size() != 1) {
             error(String.format("Constraint '%s' must have an opaque expression specification with exactly one body.",
                     constraint.getName()), UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
-            return;
+            return false;
         }
 
         if (!((OpaqueExpression)constraint.getSpecification()).getLanguages().equals(List.of("CIF"))) {
             error(String.format(
                     "Constraint '%s' must have an opaque expression specification with exactly one language that must be 'CIF'.",
                     constraint.getName()), UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
-            return;
+            return false;
         }
 
         if (((OpaqueExpression)constraint.getSpecification()).getBodies().get(0) == null
@@ -1097,8 +1101,10 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             error(String.format(
                     "Constraint '%s' must have an opaque expression specification containing a valid expression.",
                     constraint.getName()), UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
-            return;
+            return false;
         }
+
+        return true;
     }
 
     private void checkValidOccurrenceConstraint(IntervalConstraint constraint) {
