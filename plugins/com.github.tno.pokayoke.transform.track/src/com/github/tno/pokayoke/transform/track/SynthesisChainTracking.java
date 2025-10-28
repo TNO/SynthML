@@ -61,8 +61,8 @@ public class SynthesisChainTracking {
     private final Map<Transition, TransitionTraceInfo> transitionTraceInfo = new LinkedHashMap<>();
 
     /**
-     * The map from new (in the body of the abstract activity being synthesized) UML opaque actions to their
-     * corresponding Petri net transitions.
+     * The map from new (in the body of the abstract activity being synthesized) UML opaque actions and activity nodes
+     * from called concrete activities to their corresponding Petri net transitions.
      */
     private final Map<OpaqueAction, Transition> activityNodeToTransition = new LinkedHashMap<>();
 
