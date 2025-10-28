@@ -789,20 +789,21 @@ public class SynthesisChainTracking {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * Stores the non-finalized UML opaque actions and the Petri net transitions they originate from. A non-finalized
-     * opaque action represents a 'placeholder' UML element, that will later be finalized in the synthesis chain. It has
-     * no guard nor effects. It can be finalized into an opaque action with guard and/or effects, or into a call
-     * behavior action. The synthesis tracker stores the non-finalized opaque actions even when they might be destroyed
-     * in the finalization synthesis chain step, and might no longer be present in the intermediate and final UML
-     * models.
+     * Stores the activity nodes of the synthesized activity (including both the activity nodes of any called concrete
+     * activity and the non-finalized UML opaque actions) and the Petri net transitions they originate from. A
+     * non-finalized opaque action represents a 'placeholder' UML element, that will later be finalized in the synthesis
+     * chain. It has no guard nor effects. It can be finalized into an opaque action with guard and/or effects, or into
+     * a call behavior action. The synthesis tracker stores the non-finalized opaque actions even when they might be
+     * destroyed in the finalization synthesis chain step, and might no longer be present in the intermediate and final
+     * UML models.
      *
-     * @param transitionNodeMap The map from Petri net transitions to UML actions.
+     * @param transitionNodeMap The map from Petri net transitions to UML activity nodes.
      */
-    public void addActions(Map<Transition, ActivityNode> transitionNodeMap) {
+    public void addActivityNodes(Map<Transition, ActivityNode> transitionNodeMap) {
         // Sanity check: ensure that there are no duplicate actions before reversing the map.
         Verify.verify(
                 transitionNodeMap.values().stream().collect(Collectors.toSet()).size() == transitionNodeMap.size(),
-                "Found duplicate actions in the transition-action map.");
+                "Found duplicate activity nodes in the transition-action map.");
 
         transitionNodeMap.entrySet().stream().forEach(e -> activityNodeToTransition.put(e.getValue(), e.getKey()));
     }
