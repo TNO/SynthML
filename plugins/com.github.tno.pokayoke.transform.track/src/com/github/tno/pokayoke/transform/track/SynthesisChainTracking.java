@@ -772,6 +772,18 @@ public class SynthesisChainTracking {
         }
     }
 
+    /**
+     * Return the UML element (can be {@code null}) corresponding to the input Petri net transition.
+     *
+     * @param transition The Petri net transition.
+     * @return The corresponding UML element.
+     */
+    public RedefinableElement getUmlElement(Transition transition) {
+        Verify.verify(transitionTraceInfo.keySet().contains(transition),
+                String.format("Transition '%s' does nt have any tracing info.", transition.getName()));
+        return transitionTraceInfo.get(transition).getUmlElement();
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Section dealing with newly generated opaque actions.
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -792,8 +804,7 @@ public class SynthesisChainTracking {
                 transitionNodeMap.values().stream().collect(Collectors.toSet()).size() == transitionNodeMap.size(),
                 "Found duplicate actions in the transition-action map.");
 
-        transitionNodeMap.entrySet().stream()
-                .forEach(e -> activityNodeToTransition.put(e.getValue(), e.getKey()));
+        transitionNodeMap.entrySet().stream().forEach(e -> activityNodeToTransition.put(e.getValue(), e.getKey()));
     }
 
     /**
