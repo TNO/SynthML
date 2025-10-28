@@ -56,8 +56,8 @@ public class PNML2UMLTranslator {
     /** The mapping from Petri Net places to corresponding translated UML control flows. */
     private final Map<Place, ControlFlow> placeMapping = new LinkedHashMap<>();
 
-    /** The mapping from Petri Net transitions to corresponding translated UML action nodes. */
-    private final Map<Transition, Action> transitionMapping = new LinkedHashMap<>();
+    /** The mapping from Petri Net transitions to corresponding translated UML activity nodes. */
+    private final Map<Transition, ActivityNode> transitionMapping = new LinkedHashMap<>();
 
     /** The mapping from UML activity nodes to corresponding Petri Net nodes. */
     private final Map<ActivityNode, Node> nodeMapping = new LinkedHashMap<>();
@@ -105,7 +105,7 @@ public class PNML2UMLTranslator {
         return Collections.unmodifiableMap(placeMapping);
     }
 
-    public Map<Transition, Action> getTransitionMapping() {
+    public Map<Transition, ActivityNode> getTransitionMapping() {
         return Collections.unmodifiableMap(transitionMapping);
     }
 
