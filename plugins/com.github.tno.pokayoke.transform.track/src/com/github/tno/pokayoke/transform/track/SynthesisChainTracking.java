@@ -16,6 +16,7 @@ import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.common.java.Pair;
 import org.eclipse.escet.common.java.Sets;
 import org.eclipse.uml2.uml.Action;
+import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.ControlNode;
 import org.eclipse.uml2.uml.OpaqueAction;
@@ -784,15 +785,15 @@ public class SynthesisChainTracking {
      * in the finalization synthesis chain step, and might no longer be present in the intermediate and final UML
      * models.
      *
-     * @param transitionActionMap The map from Petri net transitions to UML actions.
+     * @param transitionNodeMap The map from Petri net transitions to UML actions.
      */
-    public void addActions(Map<Transition, Action> transitionActionMap) {
+    public void addActions(Map<Transition, ActivityNode> transitionNodeMap) {
         // Sanity check: ensure that there are no duplicate actions before reversing the map.
         Verify.verify(
-                transitionActionMap.values().stream().collect(Collectors.toSet()).size() == transitionActionMap.size(),
+                transitionNodeMap.values().stream().collect(Collectors.toSet()).size() == transitionNodeMap.size(),
                 "Found duplicate actions in the transition-action map.");
 
-        transitionActionMap.entrySet().stream()
+        transitionNodeMap.entrySet().stream()
                 .forEach(e -> actionToTransition.put((OpaqueAction)e.getValue(), e.getKey()));
     }
 
