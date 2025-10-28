@@ -69,7 +69,9 @@ public class SynthesisChainTracking {
     private final Map<RedefinableElement, OpaqueAction> finalizedElementToAction = new LinkedHashMap<>();
 
     public static enum ActionKind {
-        START_OPAQUE_BEHAVIOR, END_OPAQUE_BEHAVIOR, COMPLETE_OPAQUE_BEHAVIOR, CONTROL_NODE;
+        START_OPAQUE_BEHAVIOR, END_OPAQUE_BEHAVIOR, COMPLETE_OPAQUE_BEHAVIOR, START_SHADOW, END_SHADOW, COMPLETE_SHADOW,
+        START_OPAQUE_ACTION, END_OPAQUE_ACTION, COMPLETE_OPAQUE_ACTION, COMPLETE_CALL_BEHAVIOR, START_CALL_BEHAVIOR,
+        END_CALL_BEHAVIOR, CONTROL_NODE;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -842,7 +844,9 @@ public class SynthesisChainTracking {
     public ActionKind getActionKind(OpaqueAction action) {
         TransitionTraceInfo transitionInfo = getTransitionTraceInfo(action);
 
-        if (transitionInfo.getUmlElement() instanceof OpaqueBehavior) {
+        RedefinableElement umlElement = transitionInfo.getUmlElement();
+
+        if (umlElement instanceof OpaqueBehavior) {
             if (transitionInfo.isCompleteTransition()) {
                 return ActionKind.COMPLETE_OPAQUE_BEHAVIOR;
             } else if (transitionInfo.isStartOnlyTransition()) {
@@ -850,6 +854,39 @@ public class SynthesisChainTracking {
             } else {
                 Verify.verify(transitionInfo.isEndOnlyTransition(), "Expected an end-only event.");
                 return ActionKind.END_OPAQUE_BEHAVIOR;
+            }
+        }
+
+        if (umlElement instanceof OpaqueAction) {
+            if (transitionInfo.isCompleteTransition()) {
+                return ActionKind.COMPLETE_OPAQUE_ACTION;
+            } else if (transitionInfo.isStartOnlyTransition()) {
+                return ActionKind.START_OPAQUE_ACTION;
+            } else {
+                Verify.verify(transitionInfo.isEndOnlyTransition(), "Expected an end-only event.");
+                return ActionKind.END_OPAQUE_ACTION;
+            }
+        }
+
+        if (umlElement instanceof CallBehaviorAction cbAction && PokaYokeUmlProfileUtil.isFormalElement(cbAction)) {
+            if (transitionInfo.isCompleteTransition()) {
+                return ActionKind.COMPLETE_SHADOW;
+            } else if (transitionInfo.isStartOnlyTransition()) {
+                return ActionKind.START_SHADOW;
+            } else {
+                Verify.verify(transitionInfo.isEndOnlyTransition(), "Expected an end-only event.");
+                return ActionKind.END_SHADOW;
+            }
+        }
+
+        if (umlElement instanceof CallBehaviorAction cbAction && !PokaYokeUmlProfileUtil.isFormalElement(cbAction)) {
+            if (transitionInfo.isCompleteTransition()) {
+                return ActionKind.COMPLETE_CALL_BEHAVIOR;
+            } else if (transitionInfo.isStartOnlyTransition()) {
+                return ActionKind.START_CALL_BEHAVIOR;
+            } else {
+                Verify.verify(transitionInfo.isEndOnlyTransition(), "Expected an end-only event.");
+                return ActionKind.END_CALL_BEHAVIOR;
             }
         }
 
