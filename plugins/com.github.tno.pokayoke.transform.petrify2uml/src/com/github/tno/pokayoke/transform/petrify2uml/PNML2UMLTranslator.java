@@ -180,6 +180,7 @@ public class PNML2UMLTranslator {
 
         RedefinableElement umlElement = tracker.getUmlElement(transition);
         ActivityNode node;
+
         // Create an activity node based on the underlying UML element.
         if (umlElement instanceof ForkNode) {
             // Create the fork node.

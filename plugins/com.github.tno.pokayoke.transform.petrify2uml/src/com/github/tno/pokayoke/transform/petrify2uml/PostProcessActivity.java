@@ -177,7 +177,7 @@ public class PostProcessActivity {
                         callAction.setActivity(activity);
                         callAction.setName(action.getName());
 
-                        // Store the new UML element in the synthesis transformation tracker.
+                        // Store the new UML element in the synthesis chain tracker.
                         tracker.addFinalizedUmlElement(callAction, action);
 
                         // Redirect the incoming/outgoing control flow edges, and destroy the original action.
@@ -195,7 +195,7 @@ public class PostProcessActivity {
                         PokaYokeUmlProfileUtil.setGuard(action,
                                 PokaYokeUmlProfileUtil.getGuard(((CallBehaviorAction)umlElement).getBehavior()));
 
-                        // Store the new UML element in the synthesis transformation tracker.
+                        // Store the new UML element in the synthesis chain tracker.
                         tracker.addFinalizedUmlElement(action, action);
 
                         // Add a warning that the non-atomic start action has not been fully merged.
@@ -213,7 +213,7 @@ public class PostProcessActivity {
                         PokaYokeUmlProfileUtil.setAtomic(action, PokaYokeUmlProfileUtil.isAtomic(umlElement));
                         action.setName(action.getName());
 
-                        // Store the new UML element in the synthesis transformation tracker.
+                        // Store the new UML element in the synthesis chain tracker.
                         tracker.addFinalizedUmlElement(action, action);
 
                         break;
@@ -225,7 +225,7 @@ public class PostProcessActivity {
                         PokaYokeUmlProfileUtil.setAtomic(action, true);
                         action.setName(action.getName() + UmlToCifTranslator.START_ACTION_SUFFIX);
 
-                        // Store the new UML element in the synthesis transformation tracker.
+                        // Store the new UML element in the synthesis chain tracker.
                         tracker.addFinalizedUmlElement(action, action);
 
                         // Add a warning that the non-atomic start action has not been fully merged.
@@ -243,7 +243,7 @@ public class PostProcessActivity {
                         PokaYokeUmlProfileUtil.setAtomic(action, PokaYokeUmlProfileUtil.isAtomic(umlElement));
                         action.setName(action.getName());
 
-                        // Store the new UML element in the synthesis transformation tracker.
+                        // Store the new UML element in the synthesis chain tracker.
                         tracker.addFinalizedUmlElement(action, action);
 
                         break;
@@ -255,7 +255,7 @@ public class PostProcessActivity {
                         PokaYokeUmlProfileUtil.setAtomic(action, true);
                         action.setName(action.getName() + UmlToCifTranslator.START_ACTION_SUFFIX);
 
-                        // Store the new UML element in the synthesis transformation tracker.
+                        // Store the new UML element in the synthesis chain tracker.
                         tracker.addFinalizedUmlElement(action, action);
 
                         // Add a warning that the non-atomic start action has not been fully merged.
@@ -270,7 +270,7 @@ public class PostProcessActivity {
                         Verify.verify(action.getName().contains(UmlToCifTranslator.NONATOMIC_OUTCOME_SUFFIX),
                                 "End of non-atomic action name does not contain the non-atomic outcome suffix.");
 
-                        // The action is the end of a non-merged non-atomic opaque behavior. Rename the current action,
+                        // The action is the end of a non-merged non-atomic UML element. Rename the current action,
                         // set its guard to 'true', and retain the original relevant effect.
                         int effectIdx = tracker.getEffectIdx(action);
                         action.setName(action.getName().replace(UmlToCifTranslator.NONATOMIC_OUTCOME_SUFFIX,
@@ -290,7 +290,7 @@ public class PostProcessActivity {
                         }
                         PokaYokeUmlProfileUtil.setEffects(action, List.of(effect));
 
-                        // Store the finalized UML element in the tracker.
+                        // Store the finalized UML element in the synthesis chain tracker.
                         tracker.addFinalizedUmlElement(action, action);
 
                         // Add a warning that the non-atomic end action has not been fully merged.
