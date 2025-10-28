@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.common.java.Pair;
 import org.eclipse.escet.common.java.Sets;
-import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.ControlNode;
@@ -64,7 +63,7 @@ public class SynthesisChainTracking {
      * The map from new (in the body of the abstract activity being synthesized) UML opaque actions and activity nodes
      * from called concrete activities to their corresponding Petri net transitions.
      */
-    private final Map<OpaqueAction, Transition> activityNodeToTransition = new LinkedHashMap<>();
+    private final Map<ActivityNode, Transition> activityNodeToTransition = new LinkedHashMap<>();
 
     /** The map from the finalized UML elements to the non-finalized opaque actions they originate from. */
     private final Map<RedefinableElement, OpaqueAction> finalizedElementToAction = new LinkedHashMap<>();
@@ -794,7 +793,7 @@ public class SynthesisChainTracking {
                 "Found duplicate actions in the transition-action map.");
 
         transitionNodeMap.entrySet().stream()
-                .forEach(e -> activityNodeToTransition.put((OpaqueAction)e.getValue(), e.getKey()));
+                .forEach(e -> activityNodeToTransition.put(e.getValue(), e.getKey()));
     }
 
     /**
@@ -897,9 +896,9 @@ public class SynthesisChainTracking {
         // Removes temporary actions created for petrification. Store the related transitions.
         Set<OpaqueAction> actionsToRemove = new LinkedHashSet<>();
         Set<Transition> transitionsToRemove = new LinkedHashSet<>();
-        for (Entry<OpaqueAction, Transition> entry: activityNodeToTransition.entrySet()) {
-            if (entry.getKey().getName().contains("__")) {
-                actionsToRemove.add(entry.getKey());
+        for (Entry<ActivityNode, Transition> entry: activityNodeToTransition.entrySet()) {
+            if (entry.getKey() instanceof OpaqueAction action && action.getName().contains("__")) {
+                actionsToRemove.add(action);
                 transitionsToRemove.add(entry.getValue());
             }
         }
@@ -944,8 +943,9 @@ public class SynthesisChainTracking {
      * @return The set of temporary petrification actions.
      */
     public Set<OpaqueAction> getTemporaryPetrificationActions() {
-        return activityNodeToTransition.keySet().stream().filter(a -> isTemporaryPetrificationAction(a))
-                .collect(Collectors.toCollection(LinkedHashSet::new));
+        return activityNodeToTransition.keySet().stream()
+                .filter(a -> a instanceof OpaqueAction action && isTemporaryPetrificationAction(action))
+                .map(OpaqueAction.class::cast).collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
