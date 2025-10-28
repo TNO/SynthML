@@ -222,11 +222,18 @@
       <appliedProfile href="platform:/plugin/com.github.tno.synthml.uml.profile.plugin/model/synthml.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
     </profileApplication>
   </uml:Model>
-  <SynthML:FormalControlFlow xmi:id="100" outgoingGuard="init = true" base_ControlFlow="65"/>
-  <SynthML:FormalElement xmi:id="101" guard="init" base_RedefinableElement="90" atomic="true">
+  <SynthML:FormalElement xmi:id="100" guard="init" base_RedefinableElement="51" atomic="true">
     <effects>val := not val</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalElement xmi:id="102" guard="not init" base_RedefinableElement="92" atomic="true">
+  <SynthML:FormalElement xmi:id="101" guard="not init" base_RedefinableElement="52" atomic="true">
+    <effects>init := true, val := true</effects>
+    <effects>init := true, val := false</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalControlFlow xmi:id="102" outgoingGuard="init = true" base_ControlFlow="65"/>
+  <SynthML:FormalElement xmi:id="103" guard="init" base_RedefinableElement="90" atomic="true">
+    <effects>val := not val</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="104" guard="not init" base_RedefinableElement="92" atomic="true">
     <effects>init := true, val := true</effects>
     <effects>init := true, val := false</effects>
   </SynthML:FormalElement>
