@@ -647,8 +647,16 @@ public class SynthesisChainTracking {
                 // no additional effect indexes.
                 Set<Integer> eventsEffectIdxs = endEvents.stream().map(e -> getEventTraceInfo(e).getEffectIdx())
                         .collect(Collectors.toCollection(LinkedHashSet::new));
-                int umlElemEffectSize = PokaYokeUmlProfileUtil
-                        .getEffects(getEventTraceInfo(cifEvents.iterator().next()).getUmlElement()).size();
+
+                // If the UML element is a non-shadowed call behavior action, consider the called opaque behavior.
+                RedefinableElement umlElement = getEventTraceInfo(cifEvents.iterator().next()).getUmlElement();
+                if (umlElement instanceof CallBehaviorAction cbAction
+                        && !PokaYokeUmlProfileUtil.isFormalElement(cbAction))
+                {
+                    umlElement = cbAction.getBehavior();
+                }
+
+                int umlElemEffectSize = PokaYokeUmlProfileUtil.getEffects(umlElement).size();
                 for (int i = 0; i < umlElemEffectSize; i++) {
                     Verify.verify(eventsEffectIdxs.contains(i),
                             String.format("Effect index %d of UML element '%s' is missing.", i,
