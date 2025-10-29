@@ -59,6 +59,7 @@ import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.RedefinableElement;
+import org.eclipse.uml2.uml.Stereotype;
 import org.eclipse.uml2.uml.TemplateParameter;
 import org.eclipse.uml2.uml.TemplateSignature;
 import org.eclipse.uml2.uml.Type;
@@ -1005,6 +1006,34 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     }
 
     private void checkValidActivityPrePostconditionConstraint(Constraint constraint) {
+        // Check that the constraint has the right stereotype applied.
+        List<Stereotype> stereotypes = constraint.getAppliedStereotypes();
+        if (stereotypes.size() != 1) {
+            error(String.format("Constraint '%s' must have exactly one stereotype applied.", constraint.getName()),
+                    UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
+            return;
+        }
+
+        if (CifContext.isActivityPreconditionConstraint(constraint)
+                && !(stereotypes.get(0).getName().equals(PokaYokeUmlProfileUtil.ST_SYNTHESIS_PRECONDITION)
+                        || stereotypes.get(0).getName().equals(PokaYokeUmlProfileUtil.ST_USAGE_PRECONDITION)))
+        {
+            error(String.format("Constraint '%s' must have a precondition stereotype applied.", constraint.getName()),
+                    UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
+            return;
+        } else if (CifContext.isActivityPostconditionConstraint(constraint)
+                && !(stereotypes.get(0).getName().equals(PokaYokeUmlProfileUtil.ST_POSTCONDITION)))
+        {
+            error(String.format("Constraint '%s' must have a postcondition stereotype applied.", constraint.getName()),
+                    UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
+            return;
+        }
+
+        // Check if the constraint specification is supported.
+        if (!isValidConstraintSpecificationForm(constraint)) {
+            return;
+        }
+
         try {
             AInvariant invariant = CifParserHelper.parseInvariant(constraint);
             new CifTypeChecker(getScopedContext(constraint)).checkInvariant(invariant);
@@ -1021,11 +1050,63 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     }
 
     private void checkValidClassConstraint(Constraint constraint) {
+        // Check that the constraint has the right stereotype applied.
+        List<Stereotype> stereotypes = constraint.getAppliedStereotypes();
+
+        if (stereotypes.size() != 1) {
+            error(String.format("Constraint '%s' must have exactly one stereotype applied.", constraint.getName()),
+                    UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
+            return;
+        }
+
+        if (!stereotypes.get(0).getName().equals(PokaYokeUmlProfileUtil.ST_CLASS_REQUIREMENT)) {
+            error(String.format("Constraint '%s' must have a requirement stereotype applied.", constraint.getName()),
+                    UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
+            return;
+        }
+
+        // Check if the constraint specification is supported.
+        if (!isValidConstraintSpecificationForm(constraint)) {
+            return;
+        }
+
         try {
             new CifTypeChecker(getGlobalContext(constraint)).checkInvariant(CifParserHelper.parseInvariant(constraint));
         } catch (RuntimeException e) {
             error("Invalid invariant: " + e.getLocalizedMessage(), UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
         }
+    }
+
+    private boolean isValidConstraintSpecificationForm(Constraint constraint) {
+        if (!(constraint.getSpecification() instanceof OpaqueExpression)) {
+            error(String.format("Constraint '%s' must have an opaque expression as specification.",
+                    constraint.getName()), UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
+            return false;
+        }
+
+        if (((OpaqueExpression)constraint.getSpecification()).getBodies().size() != 1) {
+            error(String.format("Constraint '%s' must have an opaque expression specification with exactly one body.",
+                    constraint.getName()), UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
+            return false;
+        }
+
+        if (!((OpaqueExpression)constraint.getSpecification()).getLanguages().equals(List.of("CIF"))) {
+            error(String.format(
+                    "Constraint '%s' must have an opaque expression specification with exactly one language that must be 'CIF'.",
+                    constraint.getName()), UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
+            return false;
+        }
+
+        if (((OpaqueExpression)constraint.getSpecification()).getBodies().get(0) == null
+                || ((OpaqueExpression)constraint.getSpecification()).getBodies().get(0).isEmpty())
+        {
+            error(String.format(
+                    "Constraint '%s' must have an opaque expression specification containing a valid expression.",
+                    constraint.getName()), UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
+            return false;
+        }
+
+        return true;
     }
 
     private void checkValidOccurrenceConstraint(IntervalConstraint constraint) {

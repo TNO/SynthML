@@ -3,10 +3,15 @@
 package SynthML.impl;
 
 import SynthML.FormalCallBehaviorAction;
+import SynthML.FormalConstraint;
 import SynthML.FormalControlFlow;
 import SynthML.FormalElement;
+import SynthML.Postcondition;
+import SynthML.Requirement;
 import SynthML.SynthMLFactory;
 import SynthML.SynthMLPackage;
+import SynthML.SynthesisPrecondition;
+import SynthML.UsagePrecondition;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
@@ -47,6 +52,41 @@ public class SynthMLPackageImpl extends EPackageImpl implements SynthMLPackage {
 	 * @generated
 	 */
 	private EClass formalCallBehaviorActionEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass requirementEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass formalConstraintEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass synthesisPreconditionEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass usagePreconditionEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass postconditionEClass = null;
 
 	/**
 	 * Creates an instance of the model <b>Package</b>, registered with
@@ -229,6 +269,66 @@ public class SynthMLPackageImpl extends EPackageImpl implements SynthMLPackage {
 	 * @generated
 	 */
 	@Override
+	public EClass getRequirement() {
+		return requirementEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EClass getFormalConstraint() {
+		return formalConstraintEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getFormalConstraint_Base_Constraint() {
+		return (EReference)formalConstraintEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EClass getSynthesisPrecondition() {
+		return synthesisPreconditionEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EClass getUsagePrecondition() {
+		return usagePreconditionEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EClass getPostcondition() {
+		return postconditionEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public SynthMLFactory getSynthMLFactory() {
 		return (SynthMLFactory)getEFactoryInstance();
 	}
@@ -265,6 +365,17 @@ public class SynthMLPackageImpl extends EPackageImpl implements SynthMLPackage {
 		formalCallBehaviorActionEClass = createEClass(FORMAL_CALL_BEHAVIOR_ACTION);
 		createEAttribute(formalCallBehaviorActionEClass, FORMAL_CALL_BEHAVIOR_ACTION__ARGUMENTS);
 		createEReference(formalCallBehaviorActionEClass, FORMAL_CALL_BEHAVIOR_ACTION__BASE_CALL_BEHAVIOR_ACTION);
+
+		requirementEClass = createEClass(REQUIREMENT);
+
+		formalConstraintEClass = createEClass(FORMAL_CONSTRAINT);
+		createEReference(formalConstraintEClass, FORMAL_CONSTRAINT__BASE_CONSTRAINT);
+
+		synthesisPreconditionEClass = createEClass(SYNTHESIS_PRECONDITION);
+
+		usagePreconditionEClass = createEClass(USAGE_PRECONDITION);
+
+		postconditionEClass = createEClass(POSTCONDITION);
 	}
 
 	/**
@@ -299,6 +410,10 @@ public class SynthMLPackageImpl extends EPackageImpl implements SynthMLPackage {
 		// Set bounds for type parameters
 
 		// Add supertypes to classes
+		requirementEClass.getESuperTypes().add(this.getFormalConstraint());
+		synthesisPreconditionEClass.getESuperTypes().add(this.getFormalConstraint());
+		usagePreconditionEClass.getESuperTypes().add(this.getFormalConstraint());
+		postconditionEClass.getESuperTypes().add(this.getFormalConstraint());
 
 		// Initialize classes, features, and operations; add parameters
 		initEClass(formalElementEClass, FormalElement.class, "FormalElement", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -314,6 +429,17 @@ public class SynthMLPackageImpl extends EPackageImpl implements SynthMLPackage {
 		initEClass(formalCallBehaviorActionEClass, FormalCallBehaviorAction.class, "FormalCallBehaviorAction", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getFormalCallBehaviorAction_Arguments(), theTypesPackage.getString(), "arguments", null, 0, 1, FormalCallBehaviorAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, !IS_ORDERED);
 		initEReference(getFormalCallBehaviorAction_Base_CallBehaviorAction(), theUMLPackage.getCallBehaviorAction(), null, "base_CallBehaviorAction", null, 1, 1, FormalCallBehaviorAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, !IS_ORDERED);
+
+		initEClass(requirementEClass, Requirement.class, "Requirement", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+
+		initEClass(formalConstraintEClass, FormalConstraint.class, "FormalConstraint", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getFormalConstraint_Base_Constraint(), theUMLPackage.getConstraint(), null, "base_Constraint", null, 1, 1, FormalConstraint.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, !IS_ORDERED);
+
+		initEClass(synthesisPreconditionEClass, SynthesisPrecondition.class, "SynthesisPrecondition", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+
+		initEClass(usagePreconditionEClass, UsagePrecondition.class, "UsagePrecondition", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+
+		initEClass(postconditionEClass, Postcondition.class, "Postcondition", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
 		// Create resource
 		createResource(eNS_URI);

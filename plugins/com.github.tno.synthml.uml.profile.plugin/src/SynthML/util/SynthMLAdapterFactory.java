@@ -80,6 +80,26 @@ public class SynthMLAdapterFactory extends AdapterFactoryImpl {
 				return createFormalCallBehaviorActionAdapter();
 			}
 			@Override
+			public Adapter caseRequirement(Requirement object) {
+				return createRequirementAdapter();
+			}
+			@Override
+			public Adapter caseFormalConstraint(FormalConstraint object) {
+				return createFormalConstraintAdapter();
+			}
+			@Override
+			public Adapter caseSynthesisPrecondition(SynthesisPrecondition object) {
+				return createSynthesisPreconditionAdapter();
+			}
+			@Override
+			public Adapter caseUsagePrecondition(UsagePrecondition object) {
+				return createUsagePreconditionAdapter();
+			}
+			@Override
+			public Adapter casePostcondition(Postcondition object) {
+				return createPostconditionAdapter();
+			}
+			@Override
 			public Adapter defaultCase(EObject object) {
 				return createEObjectAdapter();
 			}
@@ -138,6 +158,76 @@ public class SynthMLAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createFormalCallBehaviorActionAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link SynthML.Requirement <em>Requirement</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see SynthML.Requirement
+	 * @generated
+	 */
+	public Adapter createRequirementAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link SynthML.FormalConstraint <em>Formal Constraint</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see SynthML.FormalConstraint
+	 * @generated
+	 */
+	public Adapter createFormalConstraintAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link SynthML.SynthesisPrecondition <em>Synthesis Precondition</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see SynthML.SynthesisPrecondition
+	 * @generated
+	 */
+	public Adapter createSynthesisPreconditionAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link SynthML.UsagePrecondition <em>Usage Precondition</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see SynthML.UsagePrecondition
+	 * @generated
+	 */
+	public Adapter createUsagePreconditionAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link SynthML.Postcondition <em>Postcondition</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see SynthML.Postcondition
+	 * @generated
+	 */
+	public Adapter createPostconditionAdapter() {
 		return null;
 	}
 

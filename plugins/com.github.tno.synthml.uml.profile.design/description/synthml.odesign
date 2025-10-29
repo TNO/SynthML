@@ -234,6 +234,7 @@
       <pages name="PR_PropertyPage" labelExpression="SynthML" domainClass="uml::Property" groups="//@extensions.0/@categories.0/@groups.2"/>
       <pages name="PR_PrimitiveTypePage" labelExpression="SynthML" domainClass="uml::PrimitiveType" groups="//@extensions.0/@categories.0/@groups.3"/>
       <pages name="PR_ActivityPage" labelExpression="SynthML" domainClass="uml::Activity"/>
+      <pages name="PR_ConstraintPage" labelExpression="SynthML" domainClass="uml::Constraint" preconditionExpression="aql:not self.oclIsKindOf(uml::IntervalConstraint) and not self.eContainer().oclIsKindOf(uml::PrimitiveType)" groups="//@extensions.0/@categories.0/@groups.5"/>
       <groups name="PR_FormalElementGroup" labelExpression="General" semanticCandidateExpression="var:self">
         <controls xsi:type="properties:TextDescription" name="PR_AC_Name" labelExpression="Name:" helpExpression="The Name of the Action" valueExpression="feature:name">
           <initialOperation>
@@ -334,6 +335,23 @@
         <controls xsi:type="properties:TextAreaDescription" name="PR_CB_arguments" labelExpression="Arguments" helpExpression="The arguments of the call behavior action" valueExpression="service:self.getArguments()">
           <initialOperation>
             <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="service:self.setArguments(newValue)"/>
+          </initialOperation>
+        </controls>
+      </groups>
+      <groups name="PR_ConstraintGroup" labelExpression="General" semanticCandidateExpression="var:self">
+        <controls xsi:type="properties:TextDescription" name="PR_C_Name" labelExpression="Name:" helpExpression="The name of the constraint." valueExpression="feature:name">
+          <initialOperation>
+            <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="service:self.setName(newValue)"/>
+          </initialOperation>
+        </controls>
+        <controls xsi:type="properties:SelectDescription" name="PR_C_Kind" labelExpression="Constraint Kind: " helpExpression="The kind of constraint." valueExpression="service:self.getConstraintFirstStereotype()" candidatesExpression="service:self.getSupportedConstraintStereotypes()" candidateDisplayExpression="service:candidate.getStereotypeName()">
+          <initialOperation>
+            <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="service:self.setConstraintStereotype(newValue)"/>
+          </initialOperation>
+        </controls>
+        <controls xsi:type="properties:TextAreaDescription" name="PR_C_Expression" labelExpression="Expression: " helpExpression="The expression of the constraint." valueExpression="service:self.getConstraintExpression()">
+          <initialOperation>
+            <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="service:self.setConstraintExpression(newValue)"/>
           </initialOperation>
         </controls>
       </groups>
