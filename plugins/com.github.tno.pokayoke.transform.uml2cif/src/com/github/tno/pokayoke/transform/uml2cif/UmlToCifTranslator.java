@@ -703,16 +703,19 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             throw new RuntimeException("Unsupported activity node: " + node);
         }
 
-        // If the UML activity node is initial, then add the activity preconditions as extra guards for performing the
-        // translated CIF start events for the initial node.
+        // If the UML activity node is initial, then add the activity usage preconditions as extra guards for performing
+        // the translated CIF start events for the initial node.
         if (node instanceof InitialNode) {
             for (Entry<Event, Edge> entry: newEventEdges.entrySet()) {
                 Event cifEvent = entry.getKey();
                 Edge cifEdge = entry.getValue();
 
-                // If the current CIF event is a start event, then add all preconditions to its edge as extra guards.
+                // If the current CIF event is a start event, then add all the usage preconditions to its edge as extra
+                // guards.
                 if (synthesisTracker.getEventTraceInfo(cifEvent).isStartEvent()) {
-                    for (Constraint precondition: node.getActivity().getPreconditions()) {
+                    List<Constraint> usagePreconditions = node.getActivity().getPreconditions().stream()
+                            .filter(p -> PokaYokeUmlProfileUtil.isUsagePrecondition(p)).toList();
+                    for (Constraint precondition: usagePreconditions) {
                         cifEdge.getGuards().add(getStateInvariant(precondition));
                     }
                 }
