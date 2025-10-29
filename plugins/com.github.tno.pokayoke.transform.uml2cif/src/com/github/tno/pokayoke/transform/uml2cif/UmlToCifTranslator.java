@@ -1293,15 +1293,17 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     }
 
     /**
-     * Translates the user-specified UML activity preconditions and any other required preconditions to CIF algebraic
-     * variables, combining them into a single algebraic precondition variable.
+     * Translates the user-specified UML activity synthesis preconditions and any other required preconditions to CIF
+     * algebraic variables, combining them into a single algebraic precondition variable.
      *
      * @return A pair consisting of auxiliary CIF algebraic variables that encode parts of the precondition, together
      *     with the CIF algebraic variable that encodes the entire precondition.
      */
     private Pair<List<AlgVariable>, AlgVariable> translatePreconditions() {
-        // Translate the user-specified activity preconditions.
-        List<AlgVariable> preconditionVars = translateUserSpecifiedPrePostconditions(activity.getPreconditions());
+        // Translate the user-specified activity synthesis preconditions.
+        List<Constraint> synthesisPreconditions = activity.getPreconditions().stream()
+                .filter(p -> PokaYokeUmlProfileUtil.isSynthesisPrecondition(p)).toList();
+        List<AlgVariable> preconditionVars = translateUserSpecifiedPrePostconditions(synthesisPreconditions);
 
         // Add the synthesized activity's initial node configuration.
         if (translationPurpose != UmlToCifTranslationPurpose.SYNTHESIS) {
