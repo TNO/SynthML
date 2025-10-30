@@ -70,8 +70,8 @@ public class SynthesisChainTracking {
 
     public static enum ActionKind {
         START_OPAQUE_BEHAVIOR, END_OPAQUE_BEHAVIOR, COMPLETE_OPAQUE_BEHAVIOR, START_SHADOW, END_SHADOW, COMPLETE_SHADOW,
-        START_OPAQUE_ACTION, END_OPAQUE_ACTION, COMPLETE_OPAQUE_ACTION, COMPLETE_CALL_BEHAVIOR, START_CALL_BEHAVIOR,
-        END_CALL_BEHAVIOR, CONTROL_NODE;
+        START_OPAQUE_ACTION, END_OPAQUE_ACTION, COMPLETE_OPAQUE_ACTION, START_CALL_BEHAVIOR, END_CALL_BEHAVIOR,
+        COMPLETE_CALL_BEHAVIOR, CONTROL_NODE;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
