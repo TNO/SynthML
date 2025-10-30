@@ -874,25 +874,27 @@ public class SynthesisChainTracking {
             }
         }
 
-        if (umlElement instanceof CallBehaviorAction cbAction && PokaYokeUmlProfileUtil.isFormalElement(cbAction)) {
-            if (transitionInfo.isCompleteTransition()) {
-                return ActionKind.COMPLETE_SHADOW;
-            } else if (transitionInfo.isStartOnlyTransition()) {
-                return ActionKind.START_SHADOW;
+        if (umlElement instanceof CallBehaviorAction cbAction) {
+            if (PokaYokeUmlProfileUtil.isFormalElement(cbAction)) {
+                // If the call behavior action is a shadowed call behavior.
+                if (transitionInfo.isCompleteTransition()) {
+                    return ActionKind.COMPLETE_SHADOW;
+                } else if (transitionInfo.isStartOnlyTransition()) {
+                    return ActionKind.START_SHADOW;
+                } else {
+                    Verify.verify(transitionInfo.isEndOnlyTransition(), "Expected an end-only event.");
+                    return ActionKind.END_SHADOW;
+                }
             } else {
-                Verify.verify(transitionInfo.isEndOnlyTransition(), "Expected an end-only event.");
-                return ActionKind.END_SHADOW;
-            }
-        }
-
-        if (umlElement instanceof CallBehaviorAction cbAction && !PokaYokeUmlProfileUtil.isFormalElement(cbAction)) {
-            if (transitionInfo.isCompleteTransition()) {
-                return ActionKind.COMPLETE_CALL_BEHAVIOR;
-            } else if (transitionInfo.isStartOnlyTransition()) {
-                return ActionKind.START_CALL_BEHAVIOR;
-            } else {
-                Verify.verify(transitionInfo.isEndOnlyTransition(), "Expected an end-only event.");
-                return ActionKind.END_CALL_BEHAVIOR;
+                // If the call behavior action is a non-shadowed call behavior.
+                if (transitionInfo.isCompleteTransition()) {
+                    return ActionKind.COMPLETE_CALL_BEHAVIOR;
+                } else if (transitionInfo.isStartOnlyTransition()) {
+                    return ActionKind.START_CALL_BEHAVIOR;
+                } else {
+                    Verify.verify(transitionInfo.isEndOnlyTransition(), "Expected an end-only event.");
+                    return ActionKind.END_CALL_BEHAVIOR;
+                }
             }
         }
 
