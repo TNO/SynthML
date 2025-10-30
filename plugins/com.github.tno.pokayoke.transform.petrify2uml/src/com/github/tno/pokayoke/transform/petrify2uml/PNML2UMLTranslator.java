@@ -21,6 +21,7 @@ import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityFinalNode;
 import org.eclipse.uml2.uml.ActivityNode;
+import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.DecisionNode;
@@ -31,6 +32,7 @@ import org.eclipse.uml2.uml.LiteralBoolean;
 import org.eclipse.uml2.uml.MergeNode;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.OpaqueAction;
+import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.UMLFactory;
 
@@ -181,23 +183,19 @@ public class PNML2UMLTranslator {
         RedefinableElement umlElement = tracker.getUmlElement(transition);
         ActivityNode node;
 
-        // Create an activity node based on the underlying UML element.
-        if (umlElement instanceof ForkNode) {
-            // Create the fork node.
-            node = UML_FACTORY.createForkNode();
-        } else if (umlElement instanceof JoinNode) {
-            // Create the join node.
-            node = UML_FACTORY.createJoinNode();
-        } else if (umlElement instanceof DecisionNode || umlElement instanceof InitialNode) {
-            // Create the decision node.
-            node = UML_FACTORY.createDecisionNode();
-        } else if (umlElement instanceof MergeNode || umlElement instanceof ActivityFinalNode) {
-            // Create the merge node.
-            node = UML_FACTORY.createMergeNode();
-        } else {
-            // Create the UML action node. These can transform into an opaque actions, call behaviors and shadowed call
-            // behaviors in future synthesis steps.
-            node = UML_FACTORY.createOpaqueAction();
+        switch (umlElement) {
+            case ForkNode f -> node = UML_FACTORY.createForkNode();
+            case JoinNode j -> node = UML_FACTORY.createJoinNode();
+            case DecisionNode d -> node = UML_FACTORY.createDecisionNode();
+            case InitialNode i -> node = UML_FACTORY.createDecisionNode();
+            case MergeNode m -> node = UML_FACTORY.createMergeNode();
+            case ActivityFinalNode f -> node = UML_FACTORY.createMergeNode();
+            case OpaqueBehavior o -> node = UML_FACTORY.createOpaqueAction();
+            case CallBehaviorAction c -> node = UML_FACTORY.createOpaqueAction();
+            case OpaqueAction o -> node = UML_FACTORY.createOpaqueAction();
+            case null -> node = UML_FACTORY.createOpaqueAction();
+            default -> throw new IllegalArgumentException(
+                    "Unexpected UML element class: " + umlElement.getClass().getSimpleName());
         }
 
         node.setActivity(activity);
