@@ -177,7 +177,7 @@ public class PostProcessActivity {
                         callAction.setActivity(activity);
                         callAction.setName(action.getName());
 
-                        // Store the new UML element in the synthesis chain tracker.
+                        // Store the finalized UML element in the synthesis chain tracker.
                         tracker.addFinalizedUmlElement(callAction, action);
 
                         // Redirect the incoming/outgoing control flow edges, and destroy the original action.
@@ -213,7 +213,7 @@ public class PostProcessActivity {
                         PokaYokeUmlProfileUtil.setAtomic(action, PokaYokeUmlProfileUtil.isAtomic(umlElement));
                         action.setName(action.getName());
 
-                        // Store the new UML element in the synthesis chain tracker.
+                        // Store the finalized UML element in the synthesis chain tracker.
                         tracker.addFinalizedUmlElement(action, action);
 
                         break;
@@ -225,7 +225,7 @@ public class PostProcessActivity {
                         PokaYokeUmlProfileUtil.setAtomic(action, true);
                         action.setName(action.getName() + UmlToCifTranslator.START_ACTION_SUFFIX);
 
-                        // Store the new UML element in the synthesis chain tracker.
+                        // Store the finalized UML element in the synthesis chain tracker.
                         tracker.addFinalizedUmlElement(action, action);
 
                         // Add a warning that the non-atomic start action has not been fully merged.
@@ -243,7 +243,7 @@ public class PostProcessActivity {
                         PokaYokeUmlProfileUtil.setAtomic(action, PokaYokeUmlProfileUtil.isAtomic(umlElement));
                         action.setName(action.getName());
 
-                        // Store the new UML element in the synthesis chain tracker.
+                        // Store the finalized UML element in the synthesis chain tracker.
                         tracker.addFinalizedUmlElement(action, action);
 
                         break;
@@ -255,7 +255,7 @@ public class PostProcessActivity {
                         PokaYokeUmlProfileUtil.setAtomic(action, true);
                         action.setName(action.getName() + UmlToCifTranslator.START_ACTION_SUFFIX);
 
-                        // Store the new UML element in the synthesis chain tracker.
+                        // Store the finalized UML element in the synthesis chain tracker.
                         tracker.addFinalizedUmlElement(action, action);
 
                         // Add a warning that the non-atomic start action has not been fully merged.
