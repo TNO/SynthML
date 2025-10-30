@@ -1,12 +1,11 @@
 /**
  */
+
 package SynthML;
 
-
 /**
- * <!-- begin-user-doc -->
- * A representation of the model object '<em><b>Synthesis Precondition</b></em>'.
- * <!-- end-user-doc -->
+ * <!-- begin-user-doc --> A representation of the model object '<em><b>Synthesis Precondition</b></em>'. <!--
+ * end-user-doc -->
  *
  *
  * @see SynthML.SynthMLPackage#getSynthesisPrecondition()
@@ -14,4 +13,5 @@ package SynthML;
  * @generated
  */
 public interface SynthesisPrecondition extends FormalConstraint {
-} // SynthesisPrecondition
+    // SynthesisPrecondition
+}
