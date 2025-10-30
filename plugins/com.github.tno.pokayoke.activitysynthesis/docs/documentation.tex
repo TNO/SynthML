@@ -49,7 +49,6 @@
 \newcommand{\transformToActivityLabel}[0]{\keyw{transform-to-activity}}
 \newcommand{\rewriteNonAtomicPatternsLabel}[0]{\keyw{rewrite-nonatomic-patterns}}
 \newcommand{\computeGuardsLabel}[0]{\keyw{compute-guards}}
-\newcommand{\postprocessActivityLabel}[0]{\keyw{postprocess-activity}}
 
 \newcommand{\getOrderedAbstrActivities}[1]{\getOrderedAbstrActivitiesLabel(\ensuremath{#1})}
 \newcommand{\transformUmlToCif}[1]{\transformUmlToCifLabel(\ensuremath{#1})}
@@ -62,7 +61,6 @@
 \newcommand{\transformToActivity}[1]{\transformToActivityLabel(\ensuremath{#1})}
 \newcommand{\reduceNonAtomicPatterns}[1]{\rewriteNonAtomicPatternsLabel(\ensuremath{#1})}
 \newcommand{\computeGuards}[1]{\computeGuardsLabel(\ensuremath{#1})}
-\newcommand{\postprocessActivity}[1]{\postprocessActivityLabel(\ensuremath{#1})}
 
 \newcommand{\doneLabel}[0]{\texttt{\_\_done}}
 \newcommand{\initLabel}[0]{\texttt{\_\_init}}
@@ -285,9 +283,7 @@ In case any cycles are detected in these dependencies, then the synthesis algori
 		\var{umlActivity_{concr}} := \transformToActivity{\var{petriNet_{red}}}\;
 		\tcp{Compute the control flow guards for the synthesized activity.}
 		\var{umlActivity_{guards}} := \computeGuards{\var{umlActivity_{concr}}}\;
-		\tcp{Post-process the synthesized activity.}
-		\var{umlActivity_{post}} := \postprocessActivity{\var{umlActivity_{guards}}}\;
-		\Return \var{umlActivity_{post}}\;
+		\Return \var{umlActivity_{guards}}\;
 	}
 
 	\caption{Synthesis of Poka Yoke activity diagrams}
@@ -803,11 +799,17 @@ Any starts and ends of nonatomic actions whose occurrences do not fit the nonato
 
 The operation \transformToActivity{\var{petriNet}} transforms the given Petri Net \var{petriNet} in PNML format to a concrete UML activity.
 This operation takes care of unmerged nonatomic patterns, i.e., ones that were not rewritten by \rewriteNonAtomicPatternsLabel{}, by translating their start and end transitions to UML opaque actions with the proper guards and effects.
-Furthermore, this operation removes any internal actions, notably \startLabel{} and \stopLabel{}.
+Furthermore, this operation performs some post-processing: (1) it removes any internal actions, notably \startLabel{} and \stopLabel{}, (2) it further simplifies the synthesized activity, and (3) it removes some names from UML control nodes and control flows, for better readability. 
 
 \paragraph{Motivation.}
 The overall aim of the activity synthesis chain is to synthesize concrete UML activities.
 Since activities are reasonably close to Petri Nets, we do this by first synthesizing a Petri Net using known techniques, and transforming this Petri Net to a concrete UML activity using \transformToActivityLabel{}.
+This activity is then post-processed to improve its readability.
+Internal actions are removed since they were only needed to be able to synthesize the activity.
+Then the activity is further simplified.
+This is done for two reasons: (1) we know that translating a minimal Petri Net to a UML activity does not imply that the translated activity is minimal, and (2) the removal of internal actions may lead to patterns in the activity that may further be reduced.
+This simplification step searches for several predefined patterns in the UML activity, and rewrites any found instances of these patterns.
+Finally, activity post-processing gives the opportunity to do some other minor improvements, e.g., to improve readability a bit by removing some names.
 
 \paragraph{Preconditions.}
 The input \var{petriNet} must be in PNML format.
@@ -844,6 +846,9 @@ The returned concrete UML activity contains:
 Furthermore, \transformToActivityLabel{} ensures that every control flow that goes out of a decision node will end in either some action node, or in the final node (in which case there was also an action, but it was the auxiliary internal $\stopLabel$ action).
 This is a consequence of the structure of the Petri Nets that are synthesized by Petrify, and the patterns that they could have.
 To give another example of a pattern that cannot occur: it is not possible for the concrete UML activity to have a control flow that goes from some decision node to some other decision node, because in the Petri Net there cannot be an arc from a place to another place.
+
+Finally, \transformToActivityLabel{} ensures that the translated UML activity no longer contains internal actions and is simplified.
+Moreover, all names of control nodes (initial/final/fork/join/decision/merge nodes) and control flow have been removed for better readability.
 
 \subsection{Computing control flow guards in the activity}
 \label{sec:compute-control-flow-guards}
@@ -950,14 +955,14 @@ The actual definition also ensures that the computed extra guard does not depend
 Such a thing can be ensured because there might be multiple valid ways to \texttt{simplify} a BDD, leading to different results which are all correct.
 In other words, a correct simplification result is not necessarily unique.
 In practice it might happen that multiple extra guards exist for $\mathit{edge}$ that are all correct, some of which are expressed over internal CIF variables and some of which are not.
-And as a result of the $\texttt{simplify}$ operation, it may happen that $\texttt{extra}(\mathit{edge})$ becomes a predicate that does depend in internal state.
+And as a result of the $\texttt{simplify}$ operation, it might happen that $\texttt{extra}(\mathit{edge})$ becomes a predicate that does depend in internal state.
 We could have avoided that, by eliminating all internal CIF variables from the BDD representations of $S$ and $S'$ using existential quantification.
 By doing so, $\texttt{extra}(\mathit{edge})$ is guaranteed not to depend on internal state.
-However, as a downside to this, it might not always be possible to compute extra guards.
+However, as a downside to this, it might then not always be possible to compute extra guards.
 Sometimes the only way of expressing the extra guard of $\mathit{edge}$ is via internal state.
 The code implementation checks for such internal state dependencies.
-The activity synthesis algorithm terminates exceptionally when this check finds such a dependency, resulting in an error message for the user.
-The full definition of $\texttt{extra}(\mathit{edge})$ now becomes:
+The activity synthesis algorithm terminates exceptionally when such a case is detected, resulting in an error message for the user.
+With the addition of existential quantification, the full definition of $\texttt{extra}(\mathit{edge})$ now becomes:
 \begin{equation*}
 	\begin{split}
 		\texttt{extra}(\mathit{edge}) &= \texttt{simplify}( \\
@@ -967,7 +972,53 @@ The full definition of $\texttt{extra}(\mathit{edge})$ now becomes:
 \end{equation*}
 where $\mathit{internalVars}$ is a BDD representing the set of internal variables to eliminate, and $\texttt{exists}$ is the BDD operation that computes the existential quantification of a given BDD over a set of variables also given as a BDD.
 
-% TODO explain the actual guard computation
+Finally, now that we have computed extra guards $\texttt{extra}(\mathit{edge})$ for every CIF/BDD edge $\mathit{edge}$ with a controllable event, we must now translate these extra guards to incoming and/or outgoing control flow guards in the activity.
+Recall that $\mathit{edge}$ that been created by the UML-to-CIF translator to start the execution of some activity node.
+Let $\mathit{umlNode}$ be the UML activity node for which the CIF/BDD edge $\mathit{edge}$ has been created.
+Then we can translate $\texttt{extra}(\mathit{edge})$ to incoming/outgoing guards of the incoming/outgoing control flows of $\mathit{umlNode}$.
+This translation is done by case distinction on the activity node type:
+\begin{itemize}
+	\item If $\mathit{umlNode}$ is a fork node, then $\texttt{extra}(\mathit{edge})$ will become the outgoing guard of the single incoming control flow of $\mathit{umlNode}$.
+	By doing so, $\mathit{umlNode}$ can only be executed if it can take a token from its single incoming control flow, to which we have added the extra guard.
+	\item If $\mathit{umlNode}$ is a fork node, then $\texttt{extra}(\mathit{edge})$ will become the outgoing guard of the single incoming control flow of $\mathit{umlNode}$.
+	Note that an execution of $\mathit{umlNode}$ is atomic and has no guards nor effects.
+	Therefore, $\mathit{umlNode}$ can only be executed if it can take a token from its single incoming control flow, to which we have added the extra guard.
+	\item If $\mathit{umlNode}$ is a join node, then $\texttt{extra}(\mathit{edge})$ will become the incoming guard of the single outgoing control flow of $\mathit{umlNode}$.
+	Note that an execution of $\mathit{umlNode}$ is atomic and has no guards nor effects.
+	Therefore, $\mathit{umlNode}$ can only be executed if it can put a token on its single outgoing control flow, to which we have added the extra guard.
+	\item If $\mathit{umlNode}$ is a decision node, we may have multiple extra guards, since the UML-to-CIF translator created a controlled CIF event for every decision branch, i.e., for every outgoing control flow.
+	Then $\texttt{extra}(\mathit{edge})$ will become the incoming guard of the outgoing control flow of $\mathit{umlNode}$ for which $\mathit{edge}$ was created.
+	Note that an execution of $\mathit{umlNode}$ is atomic and has no guards nor effects.
+	Therefore, the execution of $\mathit{umlNode}$ can only follow a certain decision branch if a token can be put on that outgoing control flow, to which we have added the extra guard.
+	\item If $\mathit{umlNode}$ is a merge node, we may have multiple extra guards, since the UML-to-CIF translator created a controlled CIF event for every merge branch, i.e., for every incoming control flow.
+	Then $\texttt{extra}(\mathit{edge})$ will become the outgoing guard of the incoming control flow of $\mathit{umlNode}$ for which $\mathit{edge}$ was created.
+	Note that an execution of $\mathit{umlNode}$ is atomic and has no guards nor effects.
+	Therefore, the execution of $\mathit{umlNode}$ can only follow a certain merge branch if a token can be taken from that incoming control flow, to which we have added the extra guard.
+	\item If $\mathit{umlNode}$ is the initial node, then the situation is slightly different, since we have not created a controllable CIF event for its execution\footnote{This is because the execution of an initial node also involves another activity that calls it, to transfer the token to the called activity.}.
+	Instead, in the CIF translation, we made sure via the initials predicate that initially there is a token on its outgoing control flow.
+	So guard computation works slightly different here, but still follows the same principles.
+	Revisiting our earlier explanation of $\texttt{extra}$; we now let $S$ be the set of all (controlled or uncontrolled) system states in which the the activity precondition holds and in which there is a token on the single outgoing control flow of the initial node.
+	And we let $S'$ be the set of all controlled system states that are in $S$.
+	Then clearly $S' \subseteq S$, thus we can compute an extra guard, which expresses the extra condition needed on top of the activity precondition for calling the activity, i.e., for putting a token on the single outgoing control flow of the initial node.
+	The extra guard thus becomes an incoming guard of that control flow.
+	Note that $S$ may contain uncontrolled system states.
+	This has to do with the inductive correctness argument: the extra incoming guard should ensure that we start activity execution in a controlled system state, so that the inductive correctness argument applies.
+	\item If $\mathit{umlNode}$ is the final node, then the situation is slightly different as well, since we have not created a controllable CIF event for its execution\footnote{This is because the execution of a final node also involves another activity that called it, to transfer the token back to the calling activity.}.
+	Instead, in the CIF translation, we made sure via the marked predicate that activity execution is truly finished when (1) there is a token on the incoming control flow of $\mathit{umlNode}$, (2) the activity postcondition holds, and (3) no other control flow holds a token.
+	So guard computation works slightly different here, but still follows the same principles.
+	Revisiting our earlier explanation of $\texttt{extra}$; we now let $S$ be the set of all controlled system states in which the single incoming control flow of $\mathit{umlNode}$ has a token.
+	And we let $S'$ be the set of all system states in $S$ in which the activity postcondition holds.
+	Note that $S$ now contains only controlled system states, which is unlike the explanation for initial nodes above.
+	This is because of the inductive correctness argument: every execution step ends in a controlled system state, including the step to finalize the execution of this activity.
+	Yet we may only `safely' finalize the activity in a system state where the activity postcondition holds, which is captured by $S'$.
+	Thus $S' \subseteq S$.
+	So we can compute an extra guard, which expresses the extra condition needed to be able to safely finalize activity execution.
+	However, due the extra state/event exclusion invariants that we generated to prevent the activity to perform any more actions when its postcondition holds, this extra guard will always be trivially \texttt{true}.
+	This expectation is also checked in the code implementation with an assertion.
+	So the incoming control flow of $\mathit{umlNode}$ will never get a non-trivial extra guard.
+\end{itemize}
+
+Finally, as a last step, to prevent BDD memory leaks, we free all BDDs that have not been freed by data-based synthesis, due to our configuration.
 
 \paragraph{Preconditions.}
 The input UML activity \var{umlActivity_{concr}} should be a synthesized concrete UML activity, with its nonatomic patterns reduced wherever possible as result of \autoref{sec:reducing-non-atomic-patterns}.
@@ -976,11 +1027,7 @@ The input activity must not call other activities, i.e., it must be flattened, w
 Moreover, tracing information must be available indicating how this concrete activity relates to the input UML model, as well as to all the intermediate steps/representations that were needed to synthesize this concrete activity.
 This tracing information is needed, e.g., for finding all CIF events that have been created for the nodes of \var{umlActivity_{concr}}.
 
-% TODO I'm not sure about the 'tracing information' part. Do we really depend on that? Revisit + decide later.
-
 \paragraph{Postconditions.}
-
-% TODO Postconditions
 
 The output is a UML activity that is equal to \var{umlActivity_{concr}}, but with proper incoming and outgoing control flow guards added to it.
 These control flow guards ensure correctness: any execution of \var{umlActivity_{concr}} is guaranteed to not deadlock nor to reach a system state that violates the requirements.
@@ -992,42 +1039,6 @@ However, it might happen that \var{umlActivity_{concr}} requires control flow gu
 In that case, the synthesis algorithm will terminate exceptionally.
 We have shown that this can happen with some rather artificial synthesis examples.
 So far we have not experienced such problems with more realistic synthesis examples.
-
-\subsection{Post-processing of the activity}
-\label{sec:activity-post-processing}
-
-The operation \postprocessActivity{\var{umlActivity_{guards}}} post-processes the synthesized activity \var{umlActivity_{guards}}, to:
-\begin{itemize}
-	\item Rewrite any leftover nonatomic actions that were not merged earlier by \rewriteNonAtomicPatternsLabel{}.
-	\item Remove any internal actions have been introduced in earlier steps, like the opaque \startLabel{}, \stopLabel{}, and \tauLabel{} actions.
-	\item Further simplify the synthesized activity.
-	\item Remove some names from UML control nodes and control flows, for better readability in UML Designer.
-\end{itemize}
-
-\paragraph{Motivation.}
-
-The \postprocessActivityLabel{} operation first rewrites any leftover nonatomic actions that were not merged earlier.
-Recall from \autoref{sec:reducing-non-atomic-patterns} that not all occurrences of nonatomic actions can be reduced as part of a nonatomic pattern.
-This means that the activity might still contain separate actions for the starts and ends of nonreduced nonatomic actions.
-We rewrite these to ensure that the synthesized activity is valid.
-We do this by turning all such starts to opaque actions that have the original action guard and no effects, and turning all ends to opaque actions that have guard \texttt{true} and the corresponding effect of the nonatomic action as their (single) effect.
-We also rename all these opaque actions, to ensure that they are no longer considered to be internal actions.
-
-Next, we remove any internal actions.
-Any auxiliary actions that were not part of the original input UML model should be removed from the synthesized result, as these should not be visible to the user.
-
-After that, we further simplify the synthesized activity.
-This is done for two reasons: (1) we know that translating a minimal Petri Net to a UML activity does not imply that the translated activity is minimal, and (2) the removal of internal actions may lead to patterns in the UML activity that may further be reduced.
-This simplification step searches for several predefined patterns in the UML activity, and rewrites any found instances of these patterns.
-
-Finally, activity post-processing gives the opportunity to do some other minor improvements, e.g., to improve readability a bit by removing some names.
-
-\paragraph{Preconditions.}
-This operation requires a concrete synthesized UML activity \var{umlActivity_{guards}} resulting from the earlier steps.
-
-\paragraph{Postconditions.}
-This operation ensures that the synthesized UML activity no longer contains internal actions, is simplified, and has any leftover nonatomic starts and ends rewritten in order to get a valid activity.
-Moreover, all names of control nodes (initial/final/fork/join/decision/merge nodes) and control flow have been removed for better readability.
 
 \begin{example*}[Running Example]
 Finally, the synthesized activity is shown in Fig.~\ref{fig:synthesized-bitflipper}.
