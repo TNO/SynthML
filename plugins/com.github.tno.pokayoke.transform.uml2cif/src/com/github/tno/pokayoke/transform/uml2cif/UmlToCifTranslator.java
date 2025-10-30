@@ -703,7 +703,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             throw new RuntimeException("Unsupported activity node: " + node);
         }
 
-        // If the UML activity node is initial, then add the activity usage preconditions as extra guards for performing
+        // If the UML activity node is initial, then add the usage preconditions of the activity as extra guards for performing
         // the translated CIF start events for the initial node.
         if (node instanceof InitialNode) {
             for (Entry<Event, Edge> entry: newEventEdges.entrySet()) {
@@ -1303,7 +1303,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
      *     with the CIF algebraic variable that encodes the entire precondition.
      */
     private Pair<List<AlgVariable>, AlgVariable> translatePreconditions() {
-        // Translate the user-specified activity synthesis preconditions.
+        // Translate the user-specified synthesis preconditions of the activity.
         List<Constraint> synthesisPreconditions = activity.getPreconditions().stream()
                 .filter(p -> PokaYokeUmlProfileUtil.isSynthesisPrecondition(p)).toList();
         List<AlgVariable> preconditionVars = translateUserSpecifiedPrePostconditions(synthesisPreconditions);
