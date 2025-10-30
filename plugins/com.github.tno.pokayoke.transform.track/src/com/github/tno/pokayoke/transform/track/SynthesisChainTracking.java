@@ -60,8 +60,7 @@ public class SynthesisChainTracking {
     private final Map<Transition, TransitionTraceInfo> transitionTraceInfo = new LinkedHashMap<>();
 
     /**
-     * The map from new (in the body of the abstract activity being synthesized) UML opaque actions and activity nodes
-     * from called concrete activities to their corresponding Petri net transitions.
+     * The map from new (in the body of the abstract activity being synthesized) UML activity nodes (placeholder opaque actions, or control nodes from called concrete activities) to their corresponding Petri net transitions.
      */
     private final Map<ActivityNode, Transition> activityNodeToTransition = new LinkedHashMap<>();
 
@@ -783,7 +782,7 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Return the UML element corresponding to the input Petri net transition. It can be {@code null} if the transition
+     * Return the UML element corresponding to the given Petri net transition. It can be {@code null} if the transition
      * corresponds to no UML element or if the transition is not present in the tracing infos.
      *
      * @param transition The Petri net transition.
@@ -813,7 +812,7 @@ public class SynthesisChainTracking {
         // Sanity check: ensure that there are no duplicate actions before reversing the map.
         Verify.verify(
                 transitionNodeMap.values().stream().collect(Collectors.toSet()).size() == transitionNodeMap.size(),
-                "Found duplicate activity nodes in the transition-action map.");
+                "Found duplicate activity nodes in the transition-node map.");
 
         transitionNodeMap.entrySet().stream().forEach(e -> activityNodeToTransition.put(e.getValue(), e.getKey()));
     }

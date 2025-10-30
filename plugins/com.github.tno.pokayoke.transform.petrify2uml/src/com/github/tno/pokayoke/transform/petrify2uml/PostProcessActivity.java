@@ -195,7 +195,7 @@ public class PostProcessActivity {
                         PokaYokeUmlProfileUtil.setGuard(action,
                                 PokaYokeUmlProfileUtil.getGuard(((CallBehaviorAction)umlElement).getBehavior()));
 
-                        // Store the new UML element in the synthesis chain tracker.
+                        // Store the finalized UML element in the synthesis chain tracker.
                         tracker.addFinalizedUmlElement(action, action);
 
                         // Add a warning that the non-atomic start action has not been fully merged.
@@ -206,7 +206,7 @@ public class PostProcessActivity {
                         break;
                     }
                     case COMPLETE_OPAQUE_ACTION -> {
-                        // Atomic or rewritten opaque actions. Add the original UML element's guard and effects to the
+                        // Atomic or rewritten opaque action. Add the original UML element's guard and effects to the
                         // current action.
                         PokaYokeUmlProfileUtil.setGuard(action, PokaYokeUmlProfileUtil.getGuard(umlElement));
                         PokaYokeUmlProfileUtil.setEffects(action, PokaYokeUmlProfileUtil.getEffects(umlElement));
@@ -236,7 +236,7 @@ public class PostProcessActivity {
                         break;
                     }
                     case COMPLETE_SHADOW -> {
-                        // Atomic or rewritten shadowed call behaviors. Add the original UML element's guard and effects
+                        // Atomic or rewritten shadowed call behavior. Add the original UML element's guard and effects
                         // to the current action.
                         PokaYokeUmlProfileUtil.setGuard(action, PokaYokeUmlProfileUtil.getGuard(umlElement));
                         PokaYokeUmlProfileUtil.setEffects(action, PokaYokeUmlProfileUtil.getEffects(umlElement));
