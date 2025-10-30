@@ -1296,7 +1296,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     }
 
     /**
-     * Translates the user-specified UML activity synthesis preconditions and any other required preconditions to CIF
+     * Translates the user-specified UML synthesis preconditions of the activity and any other required preconditions to CIF
      * algebraic variables, combining them into a single algebraic precondition variable.
      *
      * @return A pair consisting of auxiliary CIF algebraic variables that encode parts of the precondition, together
