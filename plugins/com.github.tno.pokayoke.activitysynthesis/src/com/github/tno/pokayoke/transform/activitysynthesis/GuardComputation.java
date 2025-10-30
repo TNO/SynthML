@@ -173,10 +173,11 @@ public class GuardComputation {
                 BDD guard = computeGuard(edge, controlledStates, internalVars);
                 PokaYokeUmlProfileUtil.setIncomingGuard(outgoing, toUmlGuard(guard, cifBddSpec));
             } else if (node instanceof InitialNode) {
-                // Compute an incoming guard for the (single) outgoing control flow of the initial node.
+                // Compute an incoming guard for the (single) outgoing control flow of the initial node. There is no
+                // need to get the token constraint, since this has already been included in the initial predicate of
+                // the plant during the UML to CIF translation.
                 ActivityEdge outgoing = Lists.single(node.getOutgoings());
-                BDD tokenConstraint = getTokenConstraint(outgoing, cifBddSpec);
-                BDD uncontrolledGuard = cifBddSpec.initialPlantInv.id().andWith(tokenConstraint);
+                BDD uncontrolledGuard = cifBddSpec.initialPlantInv.id();
                 BDD controlledGuard = uncontrolledGuard.and(controlledStates);
                 BDD guard = computeGuard(uncontrolledGuard, controlledGuard, internalVars);
                 controlledGuard.free();
