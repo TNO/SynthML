@@ -1018,7 +1018,11 @@ This translation is done by case distinction on the activity node type:
 	So the incoming control flow of $\mathit{umlNode}$ will never get a non-trivial extra guard.
 \end{itemize}
 
-Finally, as a last step, to prevent BDD memory leaks, we free all BDDs that have not been freed by data-based synthesis, due to our configuration.
+As a last step, to prevent BDD memory leaks, we free all BDDs that have not been freed by data-based synthesis, due to our configuration.
+Moreover, a final check is done over the synthesized activity to see whether it has nondeterministic choices.
+An activity has nondeterministic choices when it has decision nodes where multiple decision branches can become enabled in the same system state.
+We aim to synthesize deterministic controllers, i.e., UML activities with deterministic behavior.
+So a user warning will be given for every found nondeterministic choice.
 
 \paragraph{Preconditions.}
 The input UML activity \var{umlActivity_{concr}} should be a synthesized concrete UML activity, with its nonatomic patterns reduced wherever possible as result of \autoref{sec:reducing-non-atomic-patterns}.
@@ -1039,6 +1043,8 @@ However, it might happen that \var{umlActivity_{concr}} requires control flow gu
 In that case, the synthesis algorithm will terminate exceptionally.
 We have shown that this can happen with some rather artificial synthesis examples.
 So far we have not experienced such problems with more realistic synthesis examples.
+
+User warnings are given for any nondeterministic choices in the synthesized activities with control flow guards.
 
 \begin{example*}[Running Example]
 Finally, the synthesized activity is shown in Fig.~\ref{fig:synthesized-bitflipper}.
