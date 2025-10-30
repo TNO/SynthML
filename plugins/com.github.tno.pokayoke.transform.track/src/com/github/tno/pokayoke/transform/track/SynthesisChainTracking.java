@@ -60,7 +60,8 @@ public class SynthesisChainTracking {
     private final Map<Transition, TransitionTraceInfo> transitionTraceInfo = new LinkedHashMap<>();
 
     /**
-     * The map from new (in the body of the abstract activity being synthesized) UML activity nodes (placeholder opaque actions, or control nodes from called concrete activities) to their corresponding Petri net transitions.
+     * The map from new (in the body of the abstract activity being synthesized) UML activity nodes (placeholder opaque
+     * actions, or control nodes from called concrete activities) to their corresponding Petri net transitions.
      */
     private final Map<ActivityNode, Transition> activityNodeToTransition = new LinkedHashMap<>();
 
@@ -798,7 +799,7 @@ public class SynthesisChainTracking {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * Stores the activity nodes of the synthesized activity (including both the activity nodes of any called concrete
+     * Stores the activity node of the synthesized activity (including both the activity nodes of any called concrete
      * activity and the non-finalized UML opaque actions) and the Petri net transitions they originate from. A
      * non-finalized opaque action represents a 'placeholder' UML element, that will later be finalized in the synthesis
      * chain. It has no guard nor effects. It can be finalized into an opaque action with guard and/or effects, or into
@@ -806,15 +807,17 @@ public class SynthesisChainTracking {
      * destroyed in the finalization synthesis chain step, and might no longer be present in the intermediate and final
      * UML models.
      *
-     * @param transitionNodeMap The map from Petri net transitions to UML activity nodes.
+     * @param activityNode The activity node.
+     * @param transition The Petri net transition.
      */
-    public void addActivityNodes(Map<Transition, ActivityNode> transitionNodeMap) {
-        // Sanity check: ensure that there are no duplicate actions before reversing the map.
-        Verify.verify(
-                transitionNodeMap.values().stream().collect(Collectors.toSet()).size() == transitionNodeMap.size(),
-                "Found duplicate activity nodes in the transition-node map.");
+    public void addActivityNode(ActivityNode activityNode, Transition transition) {
+        // Sanity check: ensure that there are no duplications in the activity node to transition map.
+        Verify.verify(!activityNodeToTransition.values().contains(transition), String.format(
+                "Transition '%s' already present in the activity node to transition map.", transition.getName()));
+        Verify.verify(!activityNodeToTransition.keySet().contains(activityNode), String.format(
+                "Activity node '%s' already present in the activity node to transition map.", activityNode.getName()));
 
-        transitionNodeMap.entrySet().stream().forEach(e -> activityNodeToTransition.put(e.getValue(), e.getKey()));
+        activityNodeToTransition.put(activityNode, transition);
     }
 
     /**
