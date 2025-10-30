@@ -205,6 +205,9 @@ public class PNML2UMLTranslator {
 
         nodeMapping.put(node, transition);
         transitionMapping.put(transition, node);
+
+        // Add the newly generated activity nodes and their corresponding transitions to the tracker.
+        tracker.addActivityNode(node, transition);
     }
 
     private void translate(Place place) {
