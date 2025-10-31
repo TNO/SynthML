@@ -140,7 +140,7 @@ public class PostProcessActivity {
                         callAction.setActivity(activity);
                         callAction.setName(action.getName());
 
-                        // Store the finalized UML element in the tracker.
+                        // Store the finalized UML element in the synthesis chain tracker.
                         tracker.addFinalizedUmlElement(callAction, action);
 
                         // Redirect the incoming/outgoing control flow edges, and destroy the original action.
@@ -159,7 +159,7 @@ public class PostProcessActivity {
                         PokaYokeUmlProfileUtil.setAtomic(action, true);
                         PokaYokeUmlProfileUtil.setGuard(action, PokaYokeUmlProfileUtil.getGuard(umlElement));
 
-                        // Store the finalized UML element in the tracker.
+                        // Store the finalized UML element in the synthesis chain tracker.
                         tracker.addFinalizedUmlElement(action, action);
 
                         // Add a warning that the non-atomic start action has not been fully merged.
@@ -189,8 +189,9 @@ public class PostProcessActivity {
                         break;
                     }
                     case START_CALL_BEHAVIOR -> {
-                        // The opaque action represents the start of a non-rewritten call behavior that calls a 
-                        // non-atomic opaque behavior. Add the guards of the called opaque behavior to the opaque action. Set
+                        // The opaque action represents the start of a non-rewritten call behavior that calls a
+                        // non-atomic opaque behavior. Add the guards of the called opaque behavior to the opaque
+                        // action. Set
                         // the atomicity variable to 'true'.
                         action.setName(action.getName() + UmlToCifTranslator.START_ACTION_SUFFIX);
                         PokaYokeUmlProfileUtil.setAtomic(action, true);
