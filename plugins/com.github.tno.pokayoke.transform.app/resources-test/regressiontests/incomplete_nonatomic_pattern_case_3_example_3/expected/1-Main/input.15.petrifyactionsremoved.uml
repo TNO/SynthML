@@ -90,6 +90,7 @@
             <ownedComment xmi:id="37">
               <body>Original-ID-Path:19</body>
             </ownedComment>
+            <language>CIF</language>
             <body>not done_a and not done_b and not flag</body>
           </specification>
         </ownedRule>
@@ -101,6 +102,7 @@
             <ownedComment xmi:id="41">
               <body>Original-ID-Path:21</body>
             </ownedComment>
+            <language>CIF</language>
             <body>done_a and done_b</body>
           </specification>
         </ownedRule>
@@ -183,18 +185,20 @@ flag := true</effects>
   <SynthML:FormalElement xmi:id="93" guard="not flag and not done_b" base_RedefinableElement="30">
     <effects>done_b := true</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalElement xmi:id="94" guard="not flag and not done_b" base_RedefinableElement="71" atomic="true"/>
-  <SynthML:FormalElement xmi:id="95" guard="not flag and not done_b" base_RedefinableElement="72" atomic="true"/>
-  <SynthML:FormalElement xmi:id="96" guard="true" base_RedefinableElement="73" atomic="true">
+  <SynthML:SynthesisPrecondition xmi:id="94" base_Constraint="34"/>
+  <SynthML:Postcondition xmi:id="95" base_Constraint="38"/>
+  <SynthML:FormalElement xmi:id="96" guard="not flag and not done_b" base_RedefinableElement="71" atomic="true"/>
+  <SynthML:FormalElement xmi:id="97" guard="not flag and not done_b" base_RedefinableElement="72" atomic="true"/>
+  <SynthML:FormalElement xmi:id="98" guard="true" base_RedefinableElement="73" atomic="true">
     <effects>done_b := true</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalElement xmi:id="97" guard="true" base_RedefinableElement="74" atomic="true">
+  <SynthML:FormalElement xmi:id="99" guard="true" base_RedefinableElement="74" atomic="true">
     <effects>done_b := true</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalElement xmi:id="98" guard="true" base_RedefinableElement="75" atomic="true">
+  <SynthML:FormalElement xmi:id="100" guard="true" base_RedefinableElement="75" atomic="true">
     <effects>done_b := true</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalElement xmi:id="99" guard="flag" base_RedefinableElement="88" atomic="true">
+  <SynthML:FormalElement xmi:id="101" guard="flag" base_RedefinableElement="88" atomic="true">
     <effects>flag := false</effects>
   </SynthML:FormalElement>
 </xmi:XMI>

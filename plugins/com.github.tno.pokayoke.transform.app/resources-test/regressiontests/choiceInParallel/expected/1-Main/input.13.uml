@@ -146,6 +146,7 @@
             <ownedComment xmi:id="55">
               <body>Original-ID-Path:28</body>
             </ownedComment>
+            <language>CIF</language>
             <body>Is_Computer_On and Is_Computer_Ready and Has_Drank_Coffee_or_Tea and Is_Ready_to_Work</body>
           </specification>
         </ownedRule>
@@ -279,22 +280,23 @@
       <appliedProfile href="platform:/plugin/com.github.tno.synthml.uml.profile.plugin/model/synthml.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
     </profileApplication>
   </uml:Model>
-  <SynthML:FormalElement xmi:id="119" guard="not Is_Computer_Ready and not Is_Computer_On" base_RedefinableElement="91" atomic="true">
+  <SynthML:Postcondition xmi:id="119" base_Constraint="52"/>
+  <SynthML:FormalElement xmi:id="120" guard="not Is_Computer_Ready and not Is_Computer_On" base_RedefinableElement="91" atomic="true">
     <effects>Is_Computer_On := true</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalElement xmi:id="120" guard="not Is_Computer_Ready and Is_Computer_On" base_RedefinableElement="93" atomic="true">
+  <SynthML:FormalElement xmi:id="121" guard="not Is_Computer_Ready and Is_Computer_On" base_RedefinableElement="93" atomic="true">
     <effects>Is_Computer_Ready := true</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalElement xmi:id="121" guard="not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Coffee" base_RedefinableElement="95" atomic="true">
+  <SynthML:FormalElement xmi:id="122" guard="not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Coffee" base_RedefinableElement="95" atomic="true">
     <effects>Has_Drank_Coffee_or_Tea := true, Coffee_or_Tea:= Unknown</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalElement xmi:id="122" guard="not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Tea" base_RedefinableElement="97" atomic="true">
+  <SynthML:FormalElement xmi:id="123" guard="not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Tea" base_RedefinableElement="97" atomic="true">
     <effects>Has_Drank_Coffee_or_Tea := true, Coffee_or_Tea:= Unknown</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalElement xmi:id="123" guard="Has_Drank_Coffee_or_Tea and Is_Computer_Ready" base_RedefinableElement="99" atomic="true">
+  <SynthML:FormalElement xmi:id="124" guard="Has_Drank_Coffee_or_Tea and Is_Computer_Ready" base_RedefinableElement="99" atomic="true">
     <effects>Is_Ready_to_Work:= true</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalElement xmi:id="124" guard="Is_Computer_On and not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Unknown" base_RedefinableElement="101" atomic="true">
+  <SynthML:FormalElement xmi:id="125" guard="Is_Computer_On and not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Unknown" base_RedefinableElement="101" atomic="true">
     <effects>Coffee_or_Tea:= Coffee</effects>
     <effects>Coffee_or_Tea:= Tea</effects>
   </SynthML:FormalElement>

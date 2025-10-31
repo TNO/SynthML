@@ -64,6 +64,7 @@
             <ownedComment xmi:id="25">
               <body>Original-ID-Path:13</body>
             </ownedComment>
+            <language>CIF</language>
             <body>not field1 and not field2</body>
           </specification>
         </ownedRule>
@@ -75,6 +76,7 @@
             <ownedComment xmi:id="29">
               <body>Original-ID-Path:15</body>
             </ownedComment>
+            <language>CIF</language>
             <body>field1 and field2</body>
           </specification>
         </ownedRule>
@@ -115,4 +117,6 @@
   <SynthML:FormalElement xmi:id="52" guard="not field2" base_RedefinableElement="18" atomic="true">
     <effects>field2 := true</effects>
   </SynthML:FormalElement>
+  <SynthML:SynthesisPrecondition xmi:id="53" base_Constraint="22"/>
+  <SynthML:Postcondition xmi:id="54" base_Constraint="26"/>
 </xmi:XMI>

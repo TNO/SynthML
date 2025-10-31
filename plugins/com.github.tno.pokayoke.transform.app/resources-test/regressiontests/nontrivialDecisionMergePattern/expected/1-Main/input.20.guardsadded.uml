@@ -129,6 +129,7 @@
             <ownedComment xmi:id="49">
               <body>Original-ID-Path:25</body>
             </ownedComment>
+            <language>CIF</language>
             <body>field2 and flipped</body>
           </specification>
         </ownedRule>
@@ -236,27 +237,28 @@ flipped := true</effects>
     <effects>field1 := not field1,&#xD;
 flipped := true</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalControlFlow xmi:id="100" outgoingGuard="true" base_ControlFlow="54"/>
-  <SynthML:FormalControlFlow xmi:id="101" outgoingGuard="true" base_ControlFlow="56"/>
-  <SynthML:FormalControlFlow xmi:id="102" outgoingGuard="true" base_ControlFlow="58"/>
-  <SynthML:FormalControlFlow xmi:id="103" outgoingGuard="true" base_ControlFlow="60"/>
-  <SynthML:FormalControlFlow xmi:id="104" outgoingGuard="true" base_ControlFlow="62"/>
-  <SynthML:FormalControlFlow xmi:id="105" outgoingGuard="true" base_ControlFlow="65"/>
-  <SynthML:FormalControlFlow xmi:id="106" outgoingGuard="true" base_ControlFlow="66"/>
-  <SynthML:FormalControlFlow xmi:id="107" outgoingGuard="true" base_ControlFlow="67"/>
-  <SynthML:FormalControlFlow xmi:id="108" outgoingGuard="true" base_ControlFlow="68"/>
-  <SynthML:FormalControlFlow xmi:id="109" outgoingGuard="true" base_ControlFlow="70"/>
-  <SynthML:FormalControlFlow xmi:id="110" outgoingGuard="true" base_ControlFlow="73"/>
-  <SynthML:FormalControlFlow xmi:id="111" outgoingGuard="true" base_ControlFlow="74"/>
-  <SynthML:FormalControlFlow xmi:id="112" outgoingGuard="true" base_ControlFlow="75"/>
-  <SynthML:FormalControlFlow xmi:id="113" outgoingGuard="true" base_ControlFlow="76"/>
-  <SynthML:FormalControlFlow xmi:id="114" outgoingGuard="true" base_ControlFlow="77"/>
-  <SynthML:FormalElement xmi:id="115" base_RedefinableElement="80" atomic="true"/>
-  <SynthML:FormalElement xmi:id="116" guard="true" base_RedefinableElement="81" atomic="true">
+  <SynthML:Postcondition xmi:id="100" base_Constraint="46"/>
+  <SynthML:FormalControlFlow xmi:id="101" outgoingGuard="true" base_ControlFlow="54"/>
+  <SynthML:FormalControlFlow xmi:id="102" outgoingGuard="true" base_ControlFlow="56"/>
+  <SynthML:FormalControlFlow xmi:id="103" outgoingGuard="true" base_ControlFlow="58"/>
+  <SynthML:FormalControlFlow xmi:id="104" outgoingGuard="true" base_ControlFlow="60"/>
+  <SynthML:FormalControlFlow xmi:id="105" outgoingGuard="true" base_ControlFlow="62"/>
+  <SynthML:FormalControlFlow xmi:id="106" outgoingGuard="true" base_ControlFlow="65"/>
+  <SynthML:FormalControlFlow xmi:id="107" outgoingGuard="true" base_ControlFlow="66"/>
+  <SynthML:FormalControlFlow xmi:id="108" outgoingGuard="true" base_ControlFlow="67"/>
+  <SynthML:FormalControlFlow xmi:id="109" outgoingGuard="true" base_ControlFlow="68"/>
+  <SynthML:FormalControlFlow xmi:id="110" outgoingGuard="true" base_ControlFlow="70"/>
+  <SynthML:FormalControlFlow xmi:id="111" outgoingGuard="true" base_ControlFlow="73"/>
+  <SynthML:FormalControlFlow xmi:id="112" outgoingGuard="true" base_ControlFlow="74"/>
+  <SynthML:FormalControlFlow xmi:id="113" outgoingGuard="true" base_ControlFlow="75"/>
+  <SynthML:FormalControlFlow xmi:id="114" outgoingGuard="true" base_ControlFlow="76"/>
+  <SynthML:FormalControlFlow xmi:id="115" outgoingGuard="true" base_ControlFlow="77"/>
+  <SynthML:FormalElement xmi:id="116" base_RedefinableElement="80" atomic="true"/>
+  <SynthML:FormalElement xmi:id="117" guard="true" base_RedefinableElement="81" atomic="true">
     <effects>field1 := not field1,&#xD;
 flipped := true</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalElement xmi:id="117" guard="true" base_RedefinableElement="82" atomic="true">
+  <SynthML:FormalElement xmi:id="118" guard="true" base_RedefinableElement="82" atomic="true">
     <effects>field1 := not field1,&#xD;
 flipped := true</effects>
   </SynthML:FormalElement>

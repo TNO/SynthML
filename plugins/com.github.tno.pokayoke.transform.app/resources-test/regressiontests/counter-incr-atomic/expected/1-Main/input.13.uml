@@ -78,6 +78,7 @@
             <ownedComment xmi:id="33">
               <body>Original-ID-Path:17</body>
             </ownedComment>
+            <language>CIF</language>
             <body>not init and count = 0</body>
           </specification>
         </ownedRule>
@@ -89,6 +90,7 @@
             <ownedComment xmi:id="37">
               <body>Original-ID-Path:19</body>
             </ownedComment>
+            <language>CIF</language>
             <body>count = 3</body>
           </specification>
         </ownedRule>
@@ -173,4 +175,6 @@ count := 2</effects>
   <SynthML:FormalElement xmi:id="77" guard="init" base_RedefinableElement="26" atomic="true">
     <effects>count := count + 2</effects>
   </SynthML:FormalElement>
+  <SynthML:SynthesisPrecondition xmi:id="78" base_Constraint="30"/>
+  <SynthML:Postcondition xmi:id="79" base_Constraint="34"/>
 </xmi:XMI>

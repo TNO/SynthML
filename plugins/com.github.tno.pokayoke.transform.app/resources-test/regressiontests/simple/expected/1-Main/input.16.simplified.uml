@@ -28,6 +28,7 @@
           <ownedComment xmi:id="13">
             <body>Original-ID-Path:7</body>
           </ownedComment>
+          <language>CIF</language>
           <body>robot_move_to_location2 needs robotLocation = Location1 and location2Prepared</body>
         </specification>
       </ownedRule>
@@ -39,6 +40,7 @@
           <ownedComment xmi:id="17">
             <body>Original-ID-Path:9</body>
           </ownedComment>
+          <language>CIF</language>
           <body>robot_move_to_location1 needs robotLocation = Location2</body>
         </specification>
       </ownedRule>
@@ -50,6 +52,7 @@
           <ownedComment xmi:id="21">
             <body>Original-ID-Path:11</body>
           </ownedComment>
+          <language>CIF</language>
           <body>robot_adjust_product needs robotLocation = Location2</body>
         </specification>
       </ownedRule>
@@ -201,6 +204,7 @@
             <ownedComment xmi:id="75">
               <body>Original-ID-Path:38</body>
             </ownedComment>
+            <language>CIF</language>
             <body>not robotHasProduct and robotLocation = Location1 and location2HasProduct and productCorrectlyPlaced = True</body>
           </specification>
         </ownedRule>
@@ -364,25 +368,29 @@
       <appliedProfile href="platform:/plugin/com.github.tno.synthml.uml.profile.plugin/model/synthml.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
     </profileApplication>
   </uml:Model>
-  <SynthML:FormalElement xmi:id="149" guard="not robotPrepared" base_RedefinableElement="109" atomic="true">
+  <SynthML:Requirement xmi:id="149" base_Constraint="10"/>
+  <SynthML:Requirement xmi:id="150" base_Constraint="14"/>
+  <SynthML:Requirement xmi:id="151" base_Constraint="18"/>
+  <SynthML:Postcondition xmi:id="152" base_Constraint="72"/>
+  <SynthML:FormalElement xmi:id="153" guard="not robotPrepared" base_RedefinableElement="109" atomic="true">
     <effects>robotPrepared := true</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalElement xmi:id="150" guard="robotPrepared" base_RedefinableElement="111" atomic="true">
+  <SynthML:FormalElement xmi:id="154" guard="robotPrepared" base_RedefinableElement="111" atomic="true">
     <effects>robotLocation := Location1</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalElement xmi:id="151" guard="robotPrepared" base_RedefinableElement="113" atomic="true">
+  <SynthML:FormalElement xmi:id="155" guard="robotPrepared" base_RedefinableElement="113" atomic="true">
     <effects>robotLocation := Location2</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalElement xmi:id="152" guard="robotPrepared and productCorrectlyPlaced = False" base_RedefinableElement="115" atomic="true">
+  <SynthML:FormalElement xmi:id="156" guard="robotPrepared and productCorrectlyPlaced = False" base_RedefinableElement="115" atomic="true">
     <effects>productCorrectlyPlaced := Unknown</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalElement xmi:id="153" guard="robotPrepared and robotLocation = Location2" base_RedefinableElement="117" atomic="true">
+  <SynthML:FormalElement xmi:id="157" guard="robotPrepared and robotLocation = Location2" base_RedefinableElement="117" atomic="true">
     <effects>robotHasProduct := false, location2HasProduct := true</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalElement xmi:id="154" guard="not location2Prepared" base_RedefinableElement="119" atomic="true">
+  <SynthML:FormalElement xmi:id="158" guard="not location2Prepared" base_RedefinableElement="119" atomic="true">
     <effects>location2Prepared := true</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalElement xmi:id="155" guard="location2Prepared and location2HasProduct and productCorrectlyPlaced = Unknown" base_RedefinableElement="121" atomic="true">
+  <SynthML:FormalElement xmi:id="159" guard="location2Prepared and location2HasProduct and productCorrectlyPlaced = Unknown" base_RedefinableElement="121" atomic="true">
     <effects>productCorrectlyPlaced := True</effects>
     <effects>productCorrectlyPlaced := False</effects>
   </SynthML:FormalElement>

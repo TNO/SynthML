@@ -48,6 +48,7 @@
             <ownedComment xmi:id="21">
               <body>Original-ID-Path:11</body>
             </ownedComment>
+            <language>CIF</language>
             <body>not done</body>
           </specification>
         </ownedRule>
@@ -59,6 +60,7 @@
             <ownedComment xmi:id="25">
               <body>Original-ID-Path:13</body>
             </ownedComment>
+            <language>CIF</language>
             <body>done</body>
           </specification>
         </ownedRule>
@@ -121,9 +123,11 @@
       <appliedProfile href="platform:/plugin/com.github.tno.synthml.uml.profile.plugin/model/synthml.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
     </profileApplication>
   </uml:Model>
-  <SynthML:FormalControlFlow xmi:id="50" outgoingGuard="true" base_ControlFlow="26"/>
-  <SynthML:FormalControlFlow xmi:id="51" outgoingGuard="true" base_ControlFlow="27"/>
-  <SynthML:FormalElement xmi:id="52" guard="position = Second" base_RedefinableElement="32" atomic="true">
+  <SynthML:SynthesisPrecondition xmi:id="50" base_Constraint="18"/>
+  <SynthML:Postcondition xmi:id="51" base_Constraint="22"/>
+  <SynthML:FormalControlFlow xmi:id="52" outgoingGuard="true" base_ControlFlow="26"/>
+  <SynthML:FormalControlFlow xmi:id="53" outgoingGuard="true" base_ControlFlow="27"/>
+  <SynthML:FormalElement xmi:id="54" guard="position = Second" base_RedefinableElement="32" atomic="true">
     <effects>done := true</effects>
   </SynthML:FormalElement>
 </xmi:XMI>

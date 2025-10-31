@@ -20,11 +20,13 @@
       <ownedBehavior xmi:type="uml:Activity" xmi:id="_jGcVIMd9Ee--jc4lXL-BHw" name="ActivityMain" isAbstract="true" postcondition="_tuw-sMd9Ee--jc4lXL-BHw" precondition="_mh5IUMd9Ee--jc4lXL-BHw">
         <ownedRule xmi:id="_mh5IUMd9Ee--jc4lXL-BHw" name="precondition">
           <specification xmi:type="uml:OpaqueExpression" xmi:id="_o3tJIMd9Ee--jc4lXL-BHw" name="">
+            <language>CIF</language>
             <body>not init</body>
           </specification>
         </ownedRule>
         <ownedRule xmi:id="_tuw-sMd9Ee--jc4lXL-BHw" name="postcondition">
           <specification xmi:type="uml:OpaqueExpression" xmi:id="_wBaWwMd9Ee--jc4lXL-BHw" name="">
+            <language>CIF</language>
             <body>bit and init</body>
           </specification>
         </ownedRule>
@@ -48,4 +50,7 @@ bit := true</effects>
     <effects>init := true,&#xD;
 bit := false</effects>
   </SynthML:FormalElement>
+
+<SynthML:SynthesisPrecondition xmi:id="_qpgOurYEsNZJMCrVJmfnpr" base_Constraint="_mh5IUMd9Ee--jc4lXL-BHw"/>
+<SynthML:Postcondition xmi:id="_ittaxncqkZAvkUVKftpMGA" base_Constraint="_tuw-sMd9Ee--jc4lXL-BHw"/>
 </xmi:XMI>

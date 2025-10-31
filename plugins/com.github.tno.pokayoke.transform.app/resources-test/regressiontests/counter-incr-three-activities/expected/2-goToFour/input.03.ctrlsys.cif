@@ -53,7 +53,7 @@ plant automaton Context:
     edge initialize__na_result_2 when __nonAtomicActive__initialize do init := true, count := 2, __nonAtomicActive__initialize := false;
     edge incr1 when init do count := count + 1;
     edge incr2 when init do count := count + 2;
-    edge __node__InitialNode__96__0 when true, not __controlflow__91, true, not init and count = 0 do __controlflow__91 := true;
+    edge __node__InitialNode__96__0 when true, not __controlflow__91, true do __controlflow__91 := true;
     edge __node__DecisionNode__98__0 when true, __controlflow__82, not __controlflow__74, count = 1 or (count = 3 or count = 5) do __controlflow__82 := false, __controlflow__74 := true;
     edge __node__DecisionNode__98__1 when true, __controlflow__82, not __controlflow__78, count = 0 or (count = 2 or count = 4) do __controlflow__82 := false, __controlflow__78 := true;
     edge __node__MergeNode__100__0 when true, __controlflow__84, true, not __controlflow__88 do __controlflow__84 := false, __controlflow__88 := true;

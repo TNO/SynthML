@@ -19,11 +19,13 @@
         </nameExpression>
         <ownedRule xmi:id="_4pGXkGqyEe-p_p2iQq3wLQ" name="Precondition">
           <specification xmi:type="uml:OpaqueExpression" xmi:id="_5mxgwGqyEe-p_p2iQq3wLQ" name="">
+            <language>CIF</language>
             <body>not a_executed and not b_executed</body>
           </specification>
         </ownedRule>
         <ownedRule xmi:id="__uZmUGqyEe-p_p2iQq3wLQ" name="Postcondition">
           <specification xmi:type="uml:OpaqueExpression" xmi:id="_AyQQAGqzEe-p_p2iQq3wLQ" name="">
+            <language>CIF</language>
             <body>a_executed = true and b_executed = true</body>
           </specification>
         </ownedRule>
@@ -52,4 +54,7 @@
     <effects>b_executed := true</effects>
     <effects>b_executed := true</effects>
   </SynthML:FormalElement>
+
+<SynthML:SynthesisPrecondition xmi:id="_btTZtwlojMabEBePEWUSbt" base_Constraint="_4pGXkGqyEe-p_p2iQq3wLQ"/>
+<SynthML:Postcondition xmi:id="_cTpqzPECpcgksmMfAMEmrd" base_Constraint="__uZmUGqyEe-p_p2iQq3wLQ"/>
 </xmi:XMI>
