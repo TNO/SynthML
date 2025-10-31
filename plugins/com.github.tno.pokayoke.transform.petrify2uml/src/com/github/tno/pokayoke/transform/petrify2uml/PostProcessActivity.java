@@ -171,7 +171,7 @@ public class PostProcessActivity {
                     }
                     case COMPLETE_CALL_BEHAVIOR -> {
                         // The opaque action represents a call behavior action that calls either an atomic opaque
-                        // behavior or the start of a rewritten non-atomic opaque behavior. Transform it to a call
+                        // behavior or a rewritten non-atomic opaque behavior. Transform it to a call
                         // behavior.
                         CallBehaviorAction callAction = UML_FACTORY.createCallBehaviorAction();
                         callAction.setBehavior(((CallBehaviorAction)umlElement).getBehavior());
@@ -189,8 +189,8 @@ public class PostProcessActivity {
                         break;
                     }
                     case START_CALL_BEHAVIOR -> {
-                        // The opaque action represents a call behavior action that calls the start of a non-rewritten
-                        // non-atomic opaque behavior. Add the guards of the called behavior to the opaque action. Set
+                        // The opaque action represents the start of a non-rewritten call behavior that calls a 
+                        // non-atomic opaque behavior. Add the guards of the called opaque behavior to the opaque action. Set
                         // the atomicity variable to 'true'.
                         action.setName(action.getName() + UmlToCifTranslator.START_ACTION_SUFFIX);
                         PokaYokeUmlProfileUtil.setAtomic(action, true);

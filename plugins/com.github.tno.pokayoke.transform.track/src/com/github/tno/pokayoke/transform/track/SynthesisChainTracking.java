@@ -799,8 +799,8 @@ public class SynthesisChainTracking {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * Stores the activity node of the synthesized activity (including both the activity nodes of any called concrete
-     * activity and the non-finalized UML opaque actions) and the Petri net transitions they originate from.
+     * Stores an activity node of the synthesized activity (either an activity node of any called concrete
+     * activity or a non-finalized UML opaque action) and the Petri net transition it originates from.
      * <p>
      * A non-finalized opaque action represents a 'placeholder' UML element, that will later be finalized in the
      * synthesis chain. It has no guard nor effects. It can be finalized into an opaque action with guard and/or
@@ -816,9 +816,9 @@ public class SynthesisChainTracking {
      */
     public void addActivityNode(ActivityNode activityNode, Transition transition) {
         // Sanity check: ensure that there are no duplications in the activity node to transition map.
-        Verify.verify(!activityNodeToTransition.values().contains(transition), String.format(
+        Verify.verify(!activityNodeToTransition.containsValue(activityNode), String.format(
                 "Transition '%s' already present in the activity node to transition map.", transition.getName()));
-        Verify.verify(!activityNodeToTransition.keySet().contains(activityNode), String.format(
+        Verify.verify(!activityNodeToTransition.containsKey(activityNode), String.format(
                 "Activity node '%s' already present in the activity node to transition map.", activityNode.getName()));
 
         activityNodeToTransition.put(activityNode, transition);
@@ -875,8 +875,7 @@ public class SynthesisChainTracking {
         }
 
         if (umlElement instanceof CallBehaviorAction cbAction) {
-            if (PokaYokeUmlProfileUtil.isFormalElement(cbAction)) {
-                // If the call behavior action is a shadowed call behavior.
+            if (PokaYokeUmlProfileUtil.isFormalElement(cbAction)) { // Shadowed call behavior.
                 if (transitionInfo.isCompleteTransition()) {
                     return ActionKind.COMPLETE_SHADOW;
                 } else if (transitionInfo.isStartOnlyTransition()) {
@@ -885,8 +884,7 @@ public class SynthesisChainTracking {
                     Verify.verify(transitionInfo.isEndOnlyTransition(), "Expected an end-only event.");
                     return ActionKind.END_SHADOW;
                 }
-            } else {
-                // If the call behavior action is a non-shadowed call behavior.
+            } else { // Non-shadowed call behavior.
                 if (transitionInfo.isCompleteTransition()) {
                     return ActionKind.COMPLETE_CALL_BEHAVIOR;
                 } else if (transitionInfo.isStartOnlyTransition()) {
