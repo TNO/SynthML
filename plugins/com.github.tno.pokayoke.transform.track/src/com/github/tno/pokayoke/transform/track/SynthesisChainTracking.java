@@ -896,7 +896,8 @@ public class SynthesisChainTracking {
             }
         }
 
-        return ActionKind.CONTROL_NODE;
+        throw new RuntimeException(
+                "A non-finalized opaque action can only be related to opaque behaviors, call behavior actions and opaque actions.");
     }
 
     /**
