@@ -20,11 +20,13 @@
       <ownedBehavior xmi:type="uml:Activity" xmi:id="_cMRz4K5ZEe-pAeQafpoVMg" name="Main" isAbstract="true" postcondition="_zQQF0K5ZEe-pAeQafpoVMg" precondition="_vLVe4K5ZEe-pAeQafpoVMg">
         <ownedRule xmi:id="_vLVe4K5ZEe-pAeQafpoVMg" name="Pre">
           <specification xmi:type="uml:OpaqueExpression" xmi:id="_wkMvQK5ZEe-pAeQafpoVMg" name="">
+            <language>CIF</language>
             <body>not field2</body>
           </specification>
         </ownedRule>
         <ownedRule xmi:id="_zQQF0K5ZEe-pAeQafpoVMg" name="Post">
           <specification xmi:type="uml:OpaqueExpression" xmi:id="_0k3vYK5ZEe-pAeQafpoVMg" name="">
+            <language>CIF</language>
             <body>field2</body>
           </specification>
         </ownedRule>
@@ -70,4 +72,7 @@
   <SynthML:FormalElement xmi:id="_ZIW6cK5aEe-pAeQafpoVMg" guard="field1" base_RedefinableElement="_YUdYUK5aEe-pAeQafpoVMg" atomic="true">
     <effects>field2 := true</effects>
   </SynthML:FormalElement>
+
+<SynthML:SynthesisPrecondition xmi:id="_RSqJMoqtYLfwApsNjprJws" base_Constraint="_vLVe4K5ZEe-pAeQafpoVMg"/>
+<SynthML:Postcondition xmi:id="_mFjJqUiUmUsaJByqwLGjFT" base_Constraint="_zQQF0K5ZEe-pAeQafpoVMg"/>
 </xmi:XMI>

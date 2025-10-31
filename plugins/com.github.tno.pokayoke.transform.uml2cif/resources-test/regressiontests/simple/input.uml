@@ -8,16 +8,19 @@
     <packagedElement xmi:type="uml:Class" xmi:id="_hSq68Bd0Ee-SDZ3U5sFKhw" name="Context" visibility="public" classifierBehavior="_6xVtsBd0Ee-SDZ3U5sFKhw" isActive="true">
       <ownedRule xmi:id="_uaw9IBd1Ee-SDZ3U5sFKhw" name="Req1">
         <specification xmi:type="uml:OpaqueExpression" xmi:id="_zILugBd1Ee-SDZ3U5sFKhw" name="">
+          <language>CIF</language>
           <body>robot_move_to_location2 needs robotLocation = Location1 and location2Prepared</body>
         </specification>
       </ownedRule>
       <ownedRule xmi:id="_4Di1QBd1Ee-SDZ3U5sFKhw" name="Req2">
         <specification xmi:type="uml:OpaqueExpression" xmi:id="_5MVpUBd1Ee-SDZ3U5sFKhw" name="">
+          <language>CIF</language>
           <body>robot_move_to_location1 needs robotLocation = Location2</body>
         </specification>
       </ownedRule>
       <ownedRule xmi:id="_9i9rUBd1Ee-SDZ3U5sFKhw" name="Req3">
         <specification xmi:type="uml:OpaqueExpression" xmi:id="_-nAiQBd1Ee-SDZ3U5sFKhw" name="">
+          <language>CIF</language>
           <body>robot_adjust_product needs robotLocation = Location2</body>
         </specification>
       </ownedRule>
@@ -76,6 +79,7 @@
       <ownedBehavior xmi:type="uml:Activity" xmi:id="_6xVtsBd0Ee-SDZ3U5sFKhw" name="mainActivity" isAbstract="true" postcondition="_lJXDMBd1Ee-SDZ3U5sFKhw">
         <ownedRule xmi:id="_lJXDMBd1Ee-SDZ3U5sFKhw" name="postcondition">
           <specification xmi:type="uml:OpaqueExpression" xmi:id="_m1ZuQBd1Ee-SDZ3U5sFKhw" name="">
+            <language>CIF</language>
             <body>not robotHasProduct and robotLocation = Location1 and location2HasProduct and productCorrectlyPlaced = True</body>
           </specification>
         </ownedRule>
@@ -161,4 +165,9 @@
     <effects>productCorrectlyPlaced := True</effects>
     <effects>productCorrectlyPlaced := False</effects>
   </SynthML:FormalElement>
+
+<SynthML:Requirement xmi:id="_EkPHOMoTXojvCxqrAZkPmk" base_Constraint="_uaw9IBd1Ee-SDZ3U5sFKhw"/>
+<SynthML:Requirement xmi:id="_suKuCMECBFAzrLDVwbrBVc" base_Constraint="_4Di1QBd1Ee-SDZ3U5sFKhw"/>
+<SynthML:Requirement xmi:id="_hDUyVlvolKhXRujGqBhQEa" base_Constraint="_9i9rUBd1Ee-SDZ3U5sFKhw"/>
+<SynthML:Postcondition xmi:id="_uczvqppDnMtDeKWjjGnGSY" base_Constraint="_lJXDMBd1Ee-SDZ3U5sFKhw"/>
 </xmi:XMI>
