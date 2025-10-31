@@ -154,7 +154,7 @@ public class PostProcessActivity {
                     }
                     case START_OPAQUE_BEHAVIOR -> {
                         // The action is the start of a non-merged non-atomic opaque behavior. Add its guards to the
-                        // opaque action. Set the atomicity variable to 'true'.
+                        // opaque action. Set the atomicity property to 'true'.
                         action.setName(umlElement.getName() + UmlToCifTranslator.START_ACTION_SUFFIX);
                         PokaYokeUmlProfileUtil.setAtomic(action, true);
                         PokaYokeUmlProfileUtil.setGuard(action, PokaYokeUmlProfileUtil.getGuard(umlElement));
@@ -191,8 +191,7 @@ public class PostProcessActivity {
                     case START_CALL_BEHAVIOR -> {
                         // The opaque action represents the start of a non-rewritten call behavior that calls a
                         // non-atomic opaque behavior. Add the guards of the called opaque behavior to the opaque
-                        // action. Set
-                        // the atomicity variable to 'true'.
+                        // action. Set the atomicity property to 'true'.
                         action.setName(action.getName() + UmlToCifTranslator.START_ACTION_SUFFIX);
                         PokaYokeUmlProfileUtil.setAtomic(action, true);
                         PokaYokeUmlProfileUtil.setGuard(action,
@@ -210,7 +209,7 @@ public class PostProcessActivity {
                     }
                     case COMPLETE_OPAQUE_ACTION -> {
                         // Atomic or rewritten opaque action. Add the original UML element's guard and effects to the
-                        // current action. Set the atomicity variable based on the UML element's one.
+                        // current action. Set the atomicity property based on the UML element's one.
                         PokaYokeUmlProfileUtil.setGuard(action, PokaYokeUmlProfileUtil.getGuard(umlElement));
                         PokaYokeUmlProfileUtil.setEffects(action, PokaYokeUmlProfileUtil.getEffects(umlElement));
                         PokaYokeUmlProfileUtil.setAtomic(action, PokaYokeUmlProfileUtil.isAtomic(umlElement));
@@ -223,7 +222,7 @@ public class PostProcessActivity {
                     }
                     case START_OPAQUE_ACTION -> {
                         // Non-atomic non-rewritten opaque action: this represents just the start of an opaque action.
-                        // Add the original UML element's guard. Set the atomicity variable to 'true'.
+                        // Add the original UML element's guard. Set the atomicity property to 'true'.
                         PokaYokeUmlProfileUtil.setGuard(action, PokaYokeUmlProfileUtil.getGuard(umlElement));
                         PokaYokeUmlProfileUtil.setAtomic(action, true);
                         action.setName(action.getName() + UmlToCifTranslator.START_ACTION_SUFFIX);
@@ -240,7 +239,7 @@ public class PostProcessActivity {
                     }
                     case COMPLETE_SHADOW -> {
                         // Atomic or rewritten shadowed call behavior. Add the original UML element's guard and effects
-                        // to the current action. Set the atomicity variable based on the UML element's one.
+                        // to the current action. Set the atomicity property based on the UML element's one.
                         PokaYokeUmlProfileUtil.setGuard(action, PokaYokeUmlProfileUtil.getGuard(umlElement));
                         PokaYokeUmlProfileUtil.setEffects(action, PokaYokeUmlProfileUtil.getEffects(umlElement));
                         PokaYokeUmlProfileUtil.setAtomic(action, PokaYokeUmlProfileUtil.isAtomic(umlElement));
@@ -253,7 +252,7 @@ public class PostProcessActivity {
                     }
                     case START_SHADOW -> {
                         // Non-atomic non-rewritten shadowed call behavior: this represents just the start of a shadowed
-                        // call. Add the original UML element's guard. Set the atomicity variable to 'true'.
+                        // call. Add the original UML element's guard. Set the atomicity property to 'true'.
                         PokaYokeUmlProfileUtil.setGuard(action, PokaYokeUmlProfileUtil.getGuard(umlElement));
                         PokaYokeUmlProfileUtil.setAtomic(action, true);
                         action.setName(action.getName() + UmlToCifTranslator.START_ACTION_SUFFIX);
@@ -274,7 +273,7 @@ public class PostProcessActivity {
                                 "End of non-atomic action name does not contain the non-atomic outcome suffix.");
 
                         // The action is the end of a non-merged non-atomic UML element. Rename the current action,
-                        // set the atomicity variable to 'true', set its guard to 'true', and retain the original
+                        // set the atomicity property to 'true', set its guard to 'true', and retain the original
                         // relevant effect.
                         int effectIdx = tracker.getEffectIdx(action);
                         action.setName(action.getName().replace(UmlToCifTranslator.NONATOMIC_OUTCOME_SUFFIX,
