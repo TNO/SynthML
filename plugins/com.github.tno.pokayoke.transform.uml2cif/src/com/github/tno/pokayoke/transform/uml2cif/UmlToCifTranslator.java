@@ -735,6 +735,47 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             }
         }
 
+        // If the UML activity node belongs to the synthesized activity, it may be part of a called concrete activity,
+        // where the initial node is translated as a decision node and the final node is translated as a merge node. If
+        // that is the case, add the related pre/post-conditions to the CIF event.
+        if (synthesisTracker.belongsToSynthesizedActivity(node)) {
+            RedefinableElement umlElement = synthesisTracker.getOriginalUmlElement(node);
+
+            // If the UML activity node refers to a called activity initial node, then add the activity preconditions as
+            // extra guards for performing the translated CIF start events for the node.
+            if (umlElement instanceof InitialNode) {
+                for (Entry<Event, Edge> entry: newEventEdges.entrySet()) {
+                    Event cifEvent = entry.getKey();
+                    Edge cifEdge = entry.getValue();
+
+                    // If the current CIF event is a start event, then add all preconditions to its edge as extra
+                    // guards.
+                    if (synthesisTracker.getEventTraceInfo(cifEvent).isStartEvent()) {
+                        for (Constraint precondition: ((ActivityNode)umlElement).getActivity().getPreconditions()) {
+                            cifEdge.getGuards().add(getStateInvariant(precondition));
+                        }
+                    }
+                }
+            }
+
+            // If the UML activity node refers to a called activity final node, then add the activity postconditions as
+            // extra guards for performing the translated CIF start events for the node.
+            if (umlElement instanceof FinalNode) {
+                for (Entry<Event, Edge> entry: newEventEdges.entrySet()) {
+                    Event cifEvent = entry.getKey();
+                    Edge cifEdge = entry.getValue();
+
+                    // If the current CIF event is a start event, then add all postconditions to its edge as extra
+                    // guards.
+                    if (synthesisTracker.getEventTraceInfo(cifEvent).isStartEvent()) {
+                        for (Constraint postcondition: ((ActivityNode)umlElement).getActivity().getPostconditions()) {
+                            cifEdge.getGuards().add(getStateInvariant(postcondition));
+                        }
+                    }
+                }
+            }
+        }
+
         return newEventEdges;
     }
 

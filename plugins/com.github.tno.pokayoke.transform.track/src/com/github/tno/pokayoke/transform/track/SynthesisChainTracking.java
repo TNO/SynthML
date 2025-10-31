@@ -1056,7 +1056,7 @@ public class SynthesisChainTracking {
      * @param umlElement The non-{@code null} UML element to check.
      * @return {@code true} if the input element belongs to the synthesized activity, {@code false} otherwise.
      */
-    private boolean belongsToSynthesizedActivity(RedefinableElement umlElement) {
+    public boolean belongsToSynthesizedActivity(RedefinableElement umlElement) {
         Verify.verifyNotNull(umlElement, "Element cannot be 'null'.");
 
         return cifEventTraceInfo.values().stream()
@@ -1079,6 +1079,22 @@ public class SynthesisChainTracking {
 
         OpaqueAction action = finalizedElementToAction.get(umlElement);
         return (action == null) ? null : getUmlElement(action);
+    }
+
+    /**
+     * Returns the original UML element for which the given activity node in the synthesized activity was created, or
+     * {@code null} if no such element exists.
+     *
+     * @param node The activity node in the synthesized activity.
+     * @return The related original UML element, or {@code null} if no such UML element exists.
+     */
+    public RedefinableElement getOriginalUmlElement(ActivityNode node) {
+        // Precondition check.
+        Verify.verify(belongsToSynthesizedActivity(node),
+                String.format("UML element '%s' does not belong to the synthesized activity.", node.getName()));
+
+        Transition transition = activityNodeToTransition.get(node);
+        return (transition == null) ? null : getUmlElement(transition);
     }
 
     /**
