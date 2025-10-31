@@ -46,6 +46,7 @@ import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.escet.common.java.Pair;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
+import org.eclipse.uml2.uml.ActivityFinalNode;
 import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.CallBehaviorAction;
@@ -73,6 +74,7 @@ import com.github.tno.pokayoke.transform.common.ValidationHelper;
 import com.github.tno.pokayoke.transform.flatten.FlattenUMLActivity;
 import com.github.tno.pokayoke.transform.track.SynthesisUmlElementTracking;
 import com.github.tno.pokayoke.transform.track.SynthesisUmlElementTracking.TranslationPurpose;
+import com.github.tno.pokayoke.transform.track.UmlElementInfo;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
 import com.github.tno.synthml.uml.profile.cif.CifParserHelper;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
@@ -785,6 +787,23 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             }
         }
 
+        // If the UML activity node refers to an initial node of a called activity, then add the activity preconditions
+        // as extra guards for performing the translated CIF start events for the node.
+        UmlElementInfo umlElementInfo = synthesisUmlElementsTracker.getUmlElementInfo(node);
+        if (umlElementInfo != null && umlElementInfo.getUmlElement() instanceof InitialNode initialNode) {
+            for (Entry<Event, Edge> entry: newEventEdges.entrySet()) {
+                Event cifEvent = entry.getKey();
+                Edge cifEdge = entry.getValue();
+
+                // If the current CIF event is a start event, then add all preconditions to its edge as extra guards.
+                if (synthesisUmlElementsTracker.isStartEvent(cifEvent, translationPurpose)) {
+                    for (Constraint precondition: initialNode.getActivity().getPreconditions()) {
+                        cifEdge.getGuards().add(getStateInvariant(precondition));
+                    }
+                }
+            }
+        }
+
         // If the UML activity node is final, then add the activity postconditions as extra guards for performing the
         // translated CIF start events for the final node.
         if (node instanceof FinalNode) {
@@ -795,6 +814,22 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 // If the current CIF event is a start event, then add all postconditions to its edge as extra guards.
                 if (synthesisUmlElementsTracker.isStartEvent(cifEvent, translationPurpose)) {
                     for (Constraint postcondition: node.getActivity().getPostconditions()) {
+                        cifEdge.getGuards().add(getStateInvariant(postcondition));
+                    }
+                }
+            }
+        }
+
+        // If the UML activity node refers to a final node of a called activity, then add the activity postconditions as
+        // extra guards for performing the translated CIF start events for the node.
+        if (umlElementInfo != null && umlElementInfo.getUmlElement() instanceof ActivityFinalNode finalNode) {
+            for (Entry<Event, Edge> entry: newEventEdges.entrySet()) {
+                Event cifEvent = entry.getKey();
+                Edge cifEdge = entry.getValue();
+
+                // If the current CIF event is a start event, then add all postconditions to its edge as extra guards.
+                if (synthesisUmlElementsTracker.isStartEvent(cifEvent, translationPurpose)) {
+                    for (Constraint postcondition: finalNode.getActivity().getPostconditions()) {
                         cifEdge.getGuards().add(getStateInvariant(postcondition));
                     }
                 }
