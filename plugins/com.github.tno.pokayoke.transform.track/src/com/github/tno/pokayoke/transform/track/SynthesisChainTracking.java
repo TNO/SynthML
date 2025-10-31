@@ -661,8 +661,7 @@ public class SynthesisChainTracking {
                 int umlElemEffectSize = PokaYokeUmlProfileUtil.getEffects(umlElement).size();
                 for (int i = 0; i < umlElemEffectSize; i++) {
                     Verify.verify(eventsEffectIdxs.contains(i),
-                            String.format("Effect index %d of UML element '%s' is missing.", i,
-                                    getEventTraceInfo(cifEvents.iterator().next()).getUmlElement().getName()));
+                            String.format("Effect index %d of UML element '%s' is missing.", i, umlElement.getName()));
                     eventsEffectIdxs.remove(i);
                 }
                 Verify.verify(eventsEffectIdxs.isEmpty(),
