@@ -181,22 +181,20 @@ public class PNML2UMLTranslator {
                 "Expected the given transition to have not yet been translated.");
 
         RedefinableElement umlElement = tracker.getUmlElement(transition);
-        ActivityNode node;
-
-        switch (umlElement) {
-            case ForkNode f -> node = UML_FACTORY.createForkNode();
-            case JoinNode j -> node = UML_FACTORY.createJoinNode();
-            case DecisionNode d -> node = UML_FACTORY.createDecisionNode();
-            case InitialNode i -> node = UML_FACTORY.createDecisionNode();
-            case MergeNode m -> node = UML_FACTORY.createMergeNode();
-            case ActivityFinalNode f -> node = UML_FACTORY.createMergeNode();
-            case OpaqueBehavior o -> node = UML_FACTORY.createOpaqueAction();
-            case CallBehaviorAction c -> node = UML_FACTORY.createOpaqueAction();
-            case OpaqueAction o -> node = UML_FACTORY.createOpaqueAction();
-            case null -> node = UML_FACTORY.createOpaqueAction();
-            default -> throw new IllegalArgumentException(
+        ActivityNode node = switch (umlElement) {
+            case ForkNode f -> UML_FACTORY.createForkNode();
+            case JoinNode j -> UML_FACTORY.createJoinNode();
+            case DecisionNode d -> UML_FACTORY.createDecisionNode();
+            case MergeNode m -> UML_FACTORY.createMergeNode();
+            case InitialNode i -> UML_FACTORY.createDecisionNode();
+            case ActivityFinalNode f -> UML_FACTORY.createMergeNode();
+            case OpaqueBehavior o -> UML_FACTORY.createOpaqueAction();
+            case CallBehaviorAction c -> UML_FACTORY.createOpaqueAction();
+            case OpaqueAction o -> UML_FACTORY.createOpaqueAction();
+            case null -> UML_FACTORY.createOpaqueAction();
+            default -> throw new AssertionError(
                     "Unexpected UML element class: " + umlElement.getClass().getSimpleName());
-        }
+        };
 
         node.setActivity(activity);
         node.setName(transition.getId());
