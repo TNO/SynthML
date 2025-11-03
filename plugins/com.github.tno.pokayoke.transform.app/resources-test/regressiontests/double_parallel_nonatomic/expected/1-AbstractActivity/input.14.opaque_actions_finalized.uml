@@ -96,6 +96,7 @@
             <ownedComment xmi:id="39">
               <body>Original-ID-Path:20</body>
             </ownedComment>
+            <language>CIF</language>
             <body>not a_executed and not b_executed and not c_executed and not d_executed</body>
           </specification>
         </ownedRule>
@@ -107,6 +108,7 @@
             <ownedComment xmi:id="43">
               <body>Original-ID-Path:22</body>
             </ownedComment>
+            <language>CIF</language>
             <body>a_executed = true and b_executed = true and c_executed = true and d_executed = true</body>
           </specification>
         </ownedRule>
@@ -199,19 +201,21 @@
       <appliedProfile href="platform:/plugin/com.github.tno.synthml.uml.profile.plugin/model/synthml.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
     </profileApplication>
   </uml:Model>
-  <SynthML:FormalElement xmi:id="90" guard="true" base_RedefinableElement="80">
+  <SynthML:SynthesisPrecondition xmi:id="90" base_Constraint="36"/>
+  <SynthML:Postcondition xmi:id="91" base_Constraint="40"/>
+  <SynthML:FormalElement xmi:id="92" guard="true" base_RedefinableElement="80">
     <effects>a_executed := true</effects>
     <effects>a_executed := true</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalElement xmi:id="91" guard="a_executed = true" base_RedefinableElement="82">
+  <SynthML:FormalElement xmi:id="93" guard="a_executed = true" base_RedefinableElement="82">
     <effects>b_executed := true</effects>
     <effects>b_executed := true</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalElement xmi:id="92" guard="true" base_RedefinableElement="84">
+  <SynthML:FormalElement xmi:id="94" guard="true" base_RedefinableElement="84">
     <effects>c_executed := true</effects>
     <effects>c_executed := true</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalElement xmi:id="93" guard="c_executed = true" base_RedefinableElement="86">
+  <SynthML:FormalElement xmi:id="95" guard="c_executed = true" base_RedefinableElement="86">
     <effects>d_executed := true</effects>
     <effects>d_executed := true</effects>
   </SynthML:FormalElement>

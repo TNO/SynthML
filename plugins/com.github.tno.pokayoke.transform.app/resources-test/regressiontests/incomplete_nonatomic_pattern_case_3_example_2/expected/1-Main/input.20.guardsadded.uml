@@ -90,6 +90,7 @@
             <ownedComment xmi:id="37">
               <body>Original-ID-Path:19</body>
             </ownedComment>
+            <language>CIF</language>
             <body>not done_a and not done_b and not done_c</body>
           </specification>
         </ownedRule>
@@ -101,6 +102,7 @@
             <ownedComment xmi:id="41">
               <body>Original-ID-Path:21</body>
             </ownedComment>
+            <language>CIF</language>
             <body>done_c</body>
           </specification>
         </ownedRule>
@@ -183,23 +185,25 @@
   <SynthML:FormalElement xmi:id="83" guard="not done_a and not done_b" base_RedefinableElement="30">
     <effects>done_b := true</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalControlFlow xmi:id="84" outgoingGuard="true" base_ControlFlow="46"/>
-  <SynthML:FormalControlFlow xmi:id="85" outgoingGuard="true" base_ControlFlow="48"/>
-  <SynthML:FormalControlFlow xmi:id="86" outgoingGuard="true" base_ControlFlow="50"/>
-  <SynthML:FormalControlFlow xmi:id="87" outgoingGuard="true" base_ControlFlow="51"/>
-  <SynthML:FormalControlFlow xmi:id="88" outgoingGuard="true" base_ControlFlow="53"/>
-  <SynthML:FormalControlFlow xmi:id="89" outgoingGuard="true" base_ControlFlow="54"/>
-  <SynthML:FormalControlFlow xmi:id="90" outgoingGuard="true" base_ControlFlow="55"/>
-  <SynthML:FormalControlFlow xmi:id="91" outgoingGuard="true" base_ControlFlow="56"/>
-  <SynthML:FormalControlFlow xmi:id="92" outgoingGuard="true" base_ControlFlow="57"/>
-  <SynthML:FormalControlFlow xmi:id="93" outgoingGuard="true" base_ControlFlow="59"/>
-  <SynthML:FormalControlFlow xmi:id="94" outgoingGuard="true" base_ControlFlow="60"/>
-  <SynthML:FormalControlFlow xmi:id="95" outgoingGuard="true" base_ControlFlow="61"/>
-  <SynthML:FormalElement xmi:id="96" guard="not done_a and not done_b" base_RedefinableElement="65" atomic="true"/>
-  <SynthML:FormalElement xmi:id="97" guard="true" base_RedefinableElement="66" atomic="true">
+  <SynthML:SynthesisPrecondition xmi:id="84" base_Constraint="34"/>
+  <SynthML:Postcondition xmi:id="85" base_Constraint="38"/>
+  <SynthML:FormalControlFlow xmi:id="86" outgoingGuard="true" base_ControlFlow="46"/>
+  <SynthML:FormalControlFlow xmi:id="87" outgoingGuard="true" base_ControlFlow="48"/>
+  <SynthML:FormalControlFlow xmi:id="88" outgoingGuard="true" base_ControlFlow="50"/>
+  <SynthML:FormalControlFlow xmi:id="89" outgoingGuard="true" base_ControlFlow="51"/>
+  <SynthML:FormalControlFlow xmi:id="90" outgoingGuard="true" base_ControlFlow="53"/>
+  <SynthML:FormalControlFlow xmi:id="91" outgoingGuard="true" base_ControlFlow="54"/>
+  <SynthML:FormalControlFlow xmi:id="92" outgoingGuard="true" base_ControlFlow="55"/>
+  <SynthML:FormalControlFlow xmi:id="93" outgoingGuard="true" base_ControlFlow="56"/>
+  <SynthML:FormalControlFlow xmi:id="94" outgoingGuard="true" base_ControlFlow="57"/>
+  <SynthML:FormalControlFlow xmi:id="95" outgoingGuard="true" base_ControlFlow="59"/>
+  <SynthML:FormalControlFlow xmi:id="96" outgoingGuard="true" base_ControlFlow="60"/>
+  <SynthML:FormalControlFlow xmi:id="97" outgoingGuard="true" base_ControlFlow="61"/>
+  <SynthML:FormalElement xmi:id="98" guard="not done_a and not done_b" base_RedefinableElement="65" atomic="true"/>
+  <SynthML:FormalElement xmi:id="99" guard="true" base_RedefinableElement="66" atomic="true">
     <effects>done_b := true</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalElement xmi:id="98" guard="done_a and not done_c" base_RedefinableElement="78" atomic="true">
+  <SynthML:FormalElement xmi:id="100" guard="done_a and not done_c" base_RedefinableElement="78" atomic="true">
     <effects>done_c := true</effects>
   </SynthML:FormalElement>
 </xmi:XMI>

@@ -54,6 +54,7 @@
             <ownedComment xmi:id="23">
               <body>Original-ID-Path:12</body>
             </ownedComment>
+            <language>CIF</language>
             <body>element = Second</body>
           </specification>
         </ownedRule>
@@ -65,6 +66,7 @@
             <ownedComment xmi:id="27">
               <body>Original-ID-Path:14</body>
             </ownedComment>
+            <language>CIF</language>
             <body>element = First</body>
           </specification>
         </ownedRule>
@@ -135,6 +137,8 @@
   <SynthML:FormalElement xmi:id="54" guard="element != Third" base_RedefinableElement="16" atomic="true">
     <effects>element := Second</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalControlFlow xmi:id="55" outgoingGuard="true" base_ControlFlow="32"/>
-  <SynthML:FormalControlFlow xmi:id="56" outgoingGuard="true" base_ControlFlow="33"/>
+  <SynthML:Postcondition xmi:id="55" base_Constraint="20"/>
+  <SynthML:SynthesisPrecondition xmi:id="56" base_Constraint="24"/>
+  <SynthML:FormalControlFlow xmi:id="57" outgoingGuard="true" base_ControlFlow="32"/>
+  <SynthML:FormalControlFlow xmi:id="58" outgoingGuard="true" base_ControlFlow="33"/>
 </xmi:XMI>

@@ -17,11 +17,13 @@
       <ownedBehavior xmi:type="uml:Activity" xmi:id="_baPdcCP1Ee-FSYGmPhs3xA" name="Main" isAbstract="true" postcondition="_gKRd8CP1Ee-FSYGmPhs3xA" precondition="_xYW6kCP1Ee-FSYGmPhs3xA">
         <ownedRule xmi:id="_gKRd8CP1Ee-FSYGmPhs3xA" name="postcond">
           <specification xmi:type="uml:OpaqueExpression" xmi:id="_iMaU0CP1Ee-FSYGmPhs3xA" name="">
+            <language>CIF</language>
             <body>element = Second</body>
           </specification>
         </ownedRule>
         <ownedRule xmi:id="_xYW6kCP1Ee-FSYGmPhs3xA" name="precond">
           <specification xmi:type="uml:OpaqueExpression" xmi:id="_1OyZkCP1Ee-FSYGmPhs3xA" name="">
+            <language>CIF</language>
             <body>element = First</body>
           </specification>
         </ownedRule>
@@ -51,4 +53,7 @@
   <SynthML:FormalElement xmi:id="_hzMmkGqhEe-qao499TBi1A" guard="element != Third" base_RedefinableElement="_UdMy0CP1Ee-FSYGmPhs3xA" atomic="true">
     <effects>element := Second</effects>
   </SynthML:FormalElement>
+
+<SynthML:SynthesisPrecondition xmi:id="_aRidzmdTIxfxvmDzUUDgxZ" base_Constraint="_xYW6kCP1Ee-FSYGmPhs3xA"/>
+<SynthML:Postcondition xmi:id="_YldfvUAqhtUxNtbmAGOdDM" base_Constraint="_gKRd8CP1Ee-FSYGmPhs3xA"/>
 </xmi:XMI>

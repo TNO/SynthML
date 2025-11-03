@@ -129,6 +129,7 @@
             <ownedComment xmi:id="49">
               <body>Original-ID-Path:25</body>
             </ownedComment>
+            <language>CIF</language>
             <body>field2 and flipped</body>
           </specification>
         </ownedRule>
@@ -202,11 +203,12 @@ flipped := true</effects>
     <effects>field1 := not field1,&#xD;
 flipped := true</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalControlFlow xmi:id="82" outgoingGuard="(mode or (field1 or field2)) and (not mode or (not field1 or field2))" base_ControlFlow="54"/>
-  <SynthML:FormalControlFlow xmi:id="83" outgoingGuard="true" base_ControlFlow="55"/>
-  <SynthML:FormalControlFlow xmi:id="84" outgoingGuard="true" base_ControlFlow="57"/>
-  <SynthML:FormalControlFlow xmi:id="85" outgoingGuard="true" base_ControlFlow="61"/>
-  <SynthML:FormalControlFlow xmi:id="86" outgoingGuard="true" base_ControlFlow="62"/>
-  <SynthML:FormalControlFlow xmi:id="87" outgoingGuard="true" base_ControlFlow="64"/>
-  <SynthML:FormalControlFlow xmi:id="88" outgoingGuard="true" base_ControlFlow="66"/>
+  <SynthML:Postcondition xmi:id="82" base_Constraint="46"/>
+  <SynthML:FormalControlFlow xmi:id="83" outgoingGuard="(mode or (field1 or field2)) and (not mode or (not field1 or field2))" base_ControlFlow="54"/>
+  <SynthML:FormalControlFlow xmi:id="84" outgoingGuard="true" base_ControlFlow="55"/>
+  <SynthML:FormalControlFlow xmi:id="85" outgoingGuard="true" base_ControlFlow="57"/>
+  <SynthML:FormalControlFlow xmi:id="86" outgoingGuard="true" base_ControlFlow="61"/>
+  <SynthML:FormalControlFlow xmi:id="87" outgoingGuard="true" base_ControlFlow="62"/>
+  <SynthML:FormalControlFlow xmi:id="88" outgoingGuard="true" base_ControlFlow="64"/>
+  <SynthML:FormalControlFlow xmi:id="89" outgoingGuard="true" base_ControlFlow="66"/>
 </xmi:XMI>

@@ -70,6 +70,7 @@
             <ownedComment xmi:id="27">
               <body>Original-ID-Path:14</body>
             </ownedComment>
+            <language>CIF</language>
             <body>field2</body>
           </specification>
         </ownedRule>
@@ -108,4 +109,5 @@
   <SynthML:FormalElement xmi:id="49" guard="field1" base_RedefinableElement="20" atomic="true">
     <effects>field2 := true</effects>
   </SynthML:FormalElement>
+  <SynthML:Postcondition xmi:id="50" base_Constraint="24"/>
 </xmi:XMI>

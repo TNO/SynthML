@@ -703,16 +703,19 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             throw new RuntimeException("Unsupported activity node: " + node);
         }
 
-        // If the UML activity node is initial, then add the activity preconditions as extra guards for performing the
-        // translated CIF start events for the initial node.
+        // If the UML activity node is initial, then add the usage preconditions of the activity as extra guards for
+        // performing the translated CIF start events for the initial node.
         if (node instanceof InitialNode) {
             for (Entry<Event, Edge> entry: newEventEdges.entrySet()) {
                 Event cifEvent = entry.getKey();
                 Edge cifEdge = entry.getValue();
 
-                // If the current CIF event is a start event, then add all preconditions to its edge as extra guards.
+                // If the current CIF event is a start event, then add all the usage preconditions to its edge as extra
+                // guards.
                 if (synthesisTracker.getEventTraceInfo(cifEvent).isStartEvent()) {
-                    for (Constraint precondition: node.getActivity().getPreconditions()) {
+                    List<Constraint> usagePreconditions = node.getActivity().getPreconditions().stream()
+                            .filter(p -> PokaYokeUmlProfileUtil.isUsagePrecondition(p)).toList();
+                    for (Constraint precondition: usagePreconditions) {
                         cifEdge.getGuards().add(getStateInvariant(precondition));
                     }
                 }
@@ -1293,15 +1296,17 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     }
 
     /**
-     * Translates the user-specified UML activity preconditions and any other required preconditions to CIF algebraic
-     * variables, combining them into a single algebraic precondition variable.
+     * Translates the user-specified UML synthesis preconditions of the activity and any other required preconditions to
+     * CIF algebraic variables, combining them into a single algebraic precondition variable.
      *
      * @return A pair consisting of auxiliary CIF algebraic variables that encode parts of the precondition, together
      *     with the CIF algebraic variable that encodes the entire precondition.
      */
     private Pair<List<AlgVariable>, AlgVariable> translatePreconditions() {
-        // Translate the user-specified activity preconditions.
-        List<AlgVariable> preconditionVars = translateUserSpecifiedPrePostconditions(activity.getPreconditions());
+        // Translate the user-specified synthesis preconditions of the activity.
+        List<Constraint> synthesisPreconditions = activity.getPreconditions().stream()
+                .filter(p -> PokaYokeUmlProfileUtil.isSynthesisPrecondition(p)).toList();
+        List<AlgVariable> preconditionVars = translateUserSpecifiedPrePostconditions(synthesisPreconditions);
 
         // Add the synthesized activity's initial node configuration.
         if (translationPurpose != UmlToCifTranslationPurpose.SYNTHESIS) {

@@ -27,6 +27,7 @@
       <ownedBehavior xmi:type="uml:Activity" xmi:id="_KTlU0CfiEe-Yd-UzBcvFKg" name="Main" isAbstract="true" postcondition="_MTy5ECfiEe-Yd-UzBcvFKg">
         <ownedRule xmi:id="_MTy5ECfiEe-Yd-UzBcvFKg" name="postcondition">
           <specification xmi:type="uml:OpaqueExpression" xmi:id="_NpikACfiEe-Yd-UzBcvFKg" name="">
+            <language>CIF</language>
             <body>field2</body>
           </specification>
         </ownedRule>
@@ -45,4 +46,6 @@
   <SynthML:FormalElement xmi:id="_uXjfAGqhEe-qao499TBi1A" guard="field1" base_RedefinableElement="_o-BaICfoEe-tYas_VaobtQ" atomic="true">
     <effects>field2 := true</effects>
   </SynthML:FormalElement>
+
+<SynthML:Postcondition xmi:id="_mSmdtxQkYFRBqLAhpoAuGq" base_Constraint="_MTy5ECfiEe-Yd-UzBcvFKg"/>
 </xmi:XMI>

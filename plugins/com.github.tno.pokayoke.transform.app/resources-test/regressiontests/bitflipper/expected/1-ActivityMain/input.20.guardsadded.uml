@@ -61,6 +61,7 @@
             <ownedComment xmi:id="25">
               <body>Original-ID-Path:13</body>
             </ownedComment>
+            <language>CIF</language>
             <body>not init</body>
           </specification>
         </ownedRule>
@@ -72,6 +73,7 @@
             <ownedComment xmi:id="29">
               <body>Original-ID-Path:15</body>
             </ownedComment>
+            <language>CIF</language>
             <body>bit and init</body>
           </specification>
         </ownedRule>
@@ -121,15 +123,17 @@
       <appliedProfile href="platform:/plugin/com.github.tno.synthml.uml.profile.plugin/model/synthml.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
     </profileApplication>
   </uml:Model>
-  <SynthML:FormalControlFlow xmi:id="51" outgoingGuard="true" base_ControlFlow="30"/>
-  <SynthML:FormalControlFlow xmi:id="52" outgoingGuard="true" base_ControlFlow="33"/>
-  <SynthML:FormalControlFlow xmi:id="53" outgoingGuard="true" base_ControlFlow="34"/>
-  <SynthML:FormalControlFlow xmi:id="54" outgoingGuard="true" base_ControlFlow="35"/>
-  <SynthML:FormalControlFlow xmi:id="55" outgoingGuard="true" base_ControlFlow="37"/>
-  <SynthML:FormalElement xmi:id="56" guard="init" base_RedefinableElement="45" atomic="true">
+  <SynthML:SynthesisPrecondition xmi:id="51" base_Constraint="22"/>
+  <SynthML:Postcondition xmi:id="52" base_Constraint="26"/>
+  <SynthML:FormalControlFlow xmi:id="53" outgoingGuard="true" base_ControlFlow="30"/>
+  <SynthML:FormalControlFlow xmi:id="54" outgoingGuard="true" base_ControlFlow="33"/>
+  <SynthML:FormalControlFlow xmi:id="55" outgoingGuard="true" base_ControlFlow="34"/>
+  <SynthML:FormalControlFlow xmi:id="56" outgoingGuard="true" base_ControlFlow="35"/>
+  <SynthML:FormalControlFlow xmi:id="57" outgoingGuard="true" base_ControlFlow="37"/>
+  <SynthML:FormalElement xmi:id="58" guard="init" base_RedefinableElement="45" atomic="true">
     <effects>bit := not bit</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalElement xmi:id="57" guard="not init" base_RedefinableElement="47" atomic="true">
+  <SynthML:FormalElement xmi:id="59" guard="not init" base_RedefinableElement="47" atomic="true">
     <effects>init := true, &#xD;
 bit := true</effects>
     <effects>init := true,&#xD;

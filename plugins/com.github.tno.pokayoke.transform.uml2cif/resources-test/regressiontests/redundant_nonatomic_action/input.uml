@@ -21,11 +21,13 @@
       <ownedBehavior xmi:type="uml:Activity" xmi:id="_9NyrMJFIEe-UOLvXYrTP9Q" name="mainActivity" isAbstract="true" postcondition="_ED3yMJFJEe-UOLvXYrTP9Q" precondition="__DAgYJFIEe-UOLvXYrTP9Q">
         <ownedRule xmi:id="__DAgYJFIEe-UOLvXYrTP9Q" name="precond">
           <specification xmi:type="uml:OpaqueExpression" xmi:id="_BRoUEJFJEe-UOLvXYrTP9Q" name="">
+            <language>CIF</language>
             <body>not done_a and not done_b</body>
           </specification>
         </ownedRule>
         <ownedRule xmi:id="_ED3yMJFJEe-UOLvXYrTP9Q" name="postcond">
           <specification xmi:type="uml:OpaqueExpression" xmi:id="_FcACwJFJEe-UOLvXYrTP9Q" name="">
+            <language>CIF</language>
             <body>done_a</body>
           </specification>
         </ownedRule>
@@ -49,4 +51,7 @@
   <SynthML:FormalElement xmi:id="_5SKjIJFIEe-UOLvXYrTP9Q" guard="not done_b" base_RedefinableElement="_3Xu2wJFIEe-UOLvXYrTP9Q">
     <effects>done_b := true</effects>
   </SynthML:FormalElement>
+
+<SynthML:SynthesisPrecondition xmi:id="_WSvpQoiHepIGPtfOfTvoNK" base_Constraint="__DAgYJFIEe-UOLvXYrTP9Q"/>
+<SynthML:Postcondition xmi:id="_YsKpsTkmsMdvhgXuGHDyel" base_Constraint="_ED3yMJFJEe-UOLvXYrTP9Q"/>
 </xmi:XMI>

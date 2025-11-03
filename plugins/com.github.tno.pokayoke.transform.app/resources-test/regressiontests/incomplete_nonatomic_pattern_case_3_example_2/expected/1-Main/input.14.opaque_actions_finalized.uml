@@ -90,6 +90,7 @@
             <ownedComment xmi:id="37">
               <body>Original-ID-Path:19</body>
             </ownedComment>
+            <language>CIF</language>
             <body>not done_a and not done_b and not done_c</body>
           </specification>
         </ownedRule>
@@ -101,6 +102,7 @@
             <ownedComment xmi:id="41">
               <body>Original-ID-Path:21</body>
             </ownedComment>
+            <language>CIF</language>
             <body>done_c</body>
           </specification>
         </ownedRule>
@@ -171,11 +173,13 @@
   <SynthML:FormalElement xmi:id="85" guard="not done_a and not done_b" base_RedefinableElement="30">
     <effects>done_b := true</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalElement xmi:id="86" guard="not done_a and not done_b" base_RedefinableElement="67" atomic="true"/>
-  <SynthML:FormalElement xmi:id="87" guard="true" base_RedefinableElement="68" atomic="true">
+  <SynthML:SynthesisPrecondition xmi:id="86" base_Constraint="34"/>
+  <SynthML:Postcondition xmi:id="87" base_Constraint="38"/>
+  <SynthML:FormalElement xmi:id="88" guard="not done_a and not done_b" base_RedefinableElement="67" atomic="true"/>
+  <SynthML:FormalElement xmi:id="89" guard="true" base_RedefinableElement="68" atomic="true">
     <effects>done_b := true</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalElement xmi:id="88" guard="done_a and not done_c" base_RedefinableElement="80" atomic="true">
+  <SynthML:FormalElement xmi:id="90" guard="done_a and not done_c" base_RedefinableElement="80" atomic="true">
     <effects>done_c := true</effects>
   </SynthML:FormalElement>
 </xmi:XMI>
