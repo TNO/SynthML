@@ -19,17 +19,25 @@ import org.apache.commons.io.FilenameUtils;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
+import org.eclipse.uml2.uml.ActivityFinalNode;
 import org.eclipse.uml2.uml.ActivityNode;
+import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.ControlFlow;
+import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.ForkNode;
+import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.JoinNode;
 import org.eclipse.uml2.uml.LiteralBoolean;
+import org.eclipse.uml2.uml.MergeNode;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.OpaqueAction;
+import org.eclipse.uml2.uml.OpaqueBehavior;
+import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.UMLFactory;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
+import com.github.tno.pokayoke.transform.track.SynthesisChainTracking;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Preconditions;
 
@@ -56,8 +64,8 @@ public class PNML2UMLTranslator {
     /** The mapping from Petri Net places to corresponding translated UML control flows. */
     private final Map<Place, ControlFlow> placeMapping = new LinkedHashMap<>();
 
-    /** The mapping from Petri Net transitions to corresponding translated UML action nodes. */
-    private final Map<Transition, Action> transitionMapping = new LinkedHashMap<>();
+    /** The mapping from Petri Net transitions to corresponding translated UML activity nodes. */
+    private final Map<Transition, ActivityNode> transitionMapping = new LinkedHashMap<>();
 
     /** The mapping from UML activity nodes to corresponding Petri Net nodes. */
     private final Map<ActivityNode, Node> nodeMapping = new LinkedHashMap<>();
@@ -105,7 +113,7 @@ public class PNML2UMLTranslator {
         return Collections.unmodifiableMap(placeMapping);
     }
 
-    public Map<Transition, Action> getTransitionMapping() {
+    public Map<Transition, ActivityNode> getTransitionMapping() {
         return Collections.unmodifiableMap(transitionMapping);
     }
 
@@ -120,7 +128,7 @@ public class PNML2UMLTranslator {
     public void translateFile(Path inputPath, Path outputPath) throws ImportException, InvalidIDException, IOException {
         // Translate the input Petri Net to a UML activity.
         PetriNet petriNet = PNMLUMLFileHelper.readPetriNet(inputPath.toString());
-        translate(petriNet);
+        translate(petriNet, null);
 
         // Find the internal actions, and remove them.
         List<ActivityNode> internalNodes = activity.getNodes().stream().filter(node -> node.getName().contains("__"))
@@ -135,21 +143,21 @@ public class PNML2UMLTranslator {
         FileHelper.storeModel(activity.getModel(), umlOutputFilePath.toString());
     }
 
-    public void translate(PetriNet petriNet) {
+    public void translate(PetriNet petriNet, SynthesisChainTracking tracker) {
         // According to PNML documents, each Petri Net needs to contain at least one page. Users can add multiple pages
         // to structure their Petri Net in various ways. In our transformation, we add only one page that is mandatory.
         // See more info in: https://dev.lip6.fr/trac/research/ISOIEC15909/wiki/English/User/Structure.
         Preconditions.checkArgument(petriNet.getPages().size() == 1,
                 "Expected the Petri Net to have exactly one page.");
 
-        translate(petriNet.getPages().get(0));
+        translate(petriNet.getPages().get(0), tracker);
     }
 
-    private void translate(Page page) {
+    private void translate(Page page, SynthesisChainTracking tracker) {
         // Transform all Petri Net transitions.
         List<Transition> transitions = sorted(
                 page.getObjects().stream().filter(Transition.class::isInstance).map(Transition.class::cast));
-        transitions.forEach(this::translate);
+        transitions.forEach(t -> translate(t, tracker));
 
         // Transform all Petri Net places and the arcs connected to them.
         List<Place> places = sorted(page.getObjects().stream().filter(Place.class::isInstance).map(Place.class::cast));
@@ -165,18 +173,44 @@ public class PNML2UMLTranslator {
         activity.setIsAbstract(false);
     }
 
-    private void translate(Transition transition) {
+    /**
+     * Translate the given Petri net transition into a UML activity node based on its tracking information. The
+     * synthesis tracker can be {@code null} for regression testing purposes: in that case, translate every transition
+     * as an opaque action.
+     *
+     * @param transition The Petri net transition.
+     * @param tracker The synthesis chain tracker, or {@code null} for testing.
+     */
+    private void translate(Transition transition, SynthesisChainTracking tracker) {
         Preconditions.checkArgument(!transitionMapping.containsKey(transition),
                 "Expected the given transition to have not yet been translated.");
 
-        // Create the UML action node.
-        Action action = UML_FACTORY.createOpaqueAction();
+        RedefinableElement umlElement = (tracker == null) ? null : tracker.getUmlElement(transition);
+        ActivityNode node = switch (umlElement) {
+            case ForkNode f -> UML_FACTORY.createForkNode();
+            case JoinNode j -> UML_FACTORY.createJoinNode();
+            case DecisionNode d -> UML_FACTORY.createDecisionNode();
+            case MergeNode m -> UML_FACTORY.createMergeNode();
+            case InitialNode i -> UML_FACTORY.createDecisionNode();
+            case ActivityFinalNode f -> UML_FACTORY.createMergeNode();
+            case OpaqueBehavior o -> UML_FACTORY.createOpaqueAction();
+            case CallBehaviorAction c -> UML_FACTORY.createOpaqueAction();
+            case OpaqueAction o -> UML_FACTORY.createOpaqueAction();
+            case null -> UML_FACTORY.createOpaqueAction();
+            default -> throw new AssertionError(
+                    "Unexpected UML element class: " + umlElement.getClass().getSimpleName());
+        };
 
-        action.setActivity(activity);
-        action.setName(transition.getId());
+        node.setActivity(activity);
+        node.setName(transition.getId());
 
-        nodeMapping.put(action, transition);
-        transitionMapping.put(transition, action);
+        nodeMapping.put(node, transition);
+        transitionMapping.put(transition, node);
+
+        // Add the newly generated activity node and its corresponding transition to the tracker.
+        if (tracker != null) {
+            tracker.addActivityNode(node, transition);
+        }
     }
 
     private void translate(Place place) {

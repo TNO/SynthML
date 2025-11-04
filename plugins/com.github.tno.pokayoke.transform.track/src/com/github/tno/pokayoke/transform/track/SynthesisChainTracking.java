@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.common.java.Pair;
 import org.eclipse.escet.common.java.Sets;
-import org.eclipse.uml2.uml.Action;
+import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.ControlNode;
 import org.eclipse.uml2.uml.OpaqueAction;
@@ -60,16 +60,18 @@ public class SynthesisChainTracking {
     private final Map<Transition, TransitionTraceInfo> transitionTraceInfo = new LinkedHashMap<>();
 
     /**
-     * The map from new (in the body of the abstract activity being synthesized) UML opaque actions to their
-     * corresponding Petri net transitions.
+     * The map from new (in the body of the abstract activity being synthesized) UML activity nodes (placeholder opaque
+     * actions, or control nodes from called concrete activities) to their corresponding Petri net transitions.
      */
-    private final Map<OpaqueAction, Transition> actionToTransition = new LinkedHashMap<>();
+    private final Map<ActivityNode, Transition> activityNodeToTransition = new LinkedHashMap<>();
 
     /** The map from the finalized UML elements to the non-finalized opaque actions they originate from. */
     private final Map<RedefinableElement, OpaqueAction> finalizedElementToAction = new LinkedHashMap<>();
 
     public static enum ActionKind {
-        START_OPAQUE_BEHAVIOR, END_OPAQUE_BEHAVIOR, COMPLETE_OPAQUE_BEHAVIOR, CONTROL_NODE;
+        START_OPAQUE_BEHAVIOR, END_OPAQUE_BEHAVIOR, COMPLETE_OPAQUE_BEHAVIOR, START_SHADOW, END_SHADOW, COMPLETE_SHADOW,
+        START_OPAQUE_ACTION, END_OPAQUE_ACTION, COMPLETE_OPAQUE_ACTION, START_CALL_BEHAVIOR, END_CALL_BEHAVIOR,
+        COMPLETE_CALL_BEHAVIOR, CONTROL_NODE;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -642,17 +644,24 @@ public class SynthesisChainTracking {
                                         .equals(UmlToCifTranslationPurpose.SYNTHESIS)),
                         "All events must have 'synthesis' translation purpose.");
 
+                // If the UML element is a non-shadowed call behavior action, consider the called opaque behavior.
+                RedefinableElement umlElement = getEventTraceInfo(cifEvents.iterator().next()).getUmlElement();
+                if (umlElement instanceof CallBehaviorAction cbAction
+                        && !PokaYokeUmlProfileUtil.isFormalElement(cbAction))
+                {
+                    umlElement = cbAction.getBehavior();
+                }
+
                 // Collect all effect indexes and the number of effects of the UML element. Check if the CIF events
                 // tracing info effect indexes are the same numbers as the UML element's effects. Verify that there are
                 // no additional effect indexes.
                 Set<Integer> eventsEffectIdxs = endEvents.stream().map(e -> getEventTraceInfo(e).getEffectIdx())
                         .collect(Collectors.toCollection(LinkedHashSet::new));
-                int umlElemEffectSize = PokaYokeUmlProfileUtil
-                        .getEffects(getEventTraceInfo(cifEvents.iterator().next()).getUmlElement()).size();
+
+                int umlElemEffectSize = PokaYokeUmlProfileUtil.getEffects(umlElement).size();
                 for (int i = 0; i < umlElemEffectSize; i++) {
                     Verify.verify(eventsEffectIdxs.contains(i),
-                            String.format("Effect index %d of UML element '%s' is missing.", i,
-                                    getEventTraceInfo(cifEvents.iterator().next()).getUmlElement().getName()));
+                            String.format("Effect index %d of UML element '%s' is missing.", i, umlElement.getName()));
                     eventsEffectIdxs.remove(i);
                 }
                 Verify.verify(eventsEffectIdxs.isEmpty(),
@@ -772,28 +781,48 @@ public class SynthesisChainTracking {
         }
     }
 
+    /**
+     * Return the UML element corresponding to the given Petri net transition. It can be {@code null} if the transition
+     * corresponds to no UML element.
+     *
+     * @param transition The Petri net transition.
+     * @return The corresponding UML element, or {@code null} (e.g. for temporary petrification actions).
+     */
+    public RedefinableElement getUmlElement(Transition transition) {
+        TransitionTraceInfo transitionInfo = transitionTraceInfo.get(transition);
+        Verify.verifyNotNull(transitionInfo,
+                String.format("Transition '%s' does not have any tracing info.", transition.getName()));
+        return transitionInfo.getUmlElement();
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Section dealing with newly generated opaque actions.
+    // Section dealing with intermediate UML nodes.
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * Stores the non-finalized UML opaque actions and the Petri net transitions they originate from. A non-finalized
-     * opaque action represents a 'placeholder' UML element, that will later be finalized in the synthesis chain. It has
-     * no guard nor effects. It can be finalized into an opaque action with guard and/or effects, or into a call
-     * behavior action. The synthesis tracker stores the non-finalized opaque actions even when they might be destroyed
-     * in the finalization synthesis chain step, and might no longer be present in the intermediate and final UML
-     * models.
+     * Stores an activity node of the synthesized activity (either an activity node of any called concrete activity or a
+     * non-finalized UML opaque action) and the Petri net transition it originates from.
+     * <p>
+     * A non-finalized opaque action represents a 'placeholder' UML element, that will later be finalized in the
+     * synthesis chain. It has no guard nor effects. It can be finalized into an opaque action with guard and/or
+     * effects, or into a call behavior action.
+     * </p>
+     * <p>
+     * The synthesis tracker stores the non-finalized opaque actions even when they might be destroyed in the
+     * finalization synthesis chain step, and might no longer be present in the intermediate and final UML models.
+     * </p>
      *
-     * @param transitionActionMap The map from Petri net transitions to UML actions.
+     * @param activityNode The activity node.
+     * @param transition The Petri net transition.
      */
-    public void addActions(Map<Transition, Action> transitionActionMap) {
-        // Sanity check: ensure that there are no duplicate actions before reversing the map.
-        Verify.verify(
-                transitionActionMap.values().stream().collect(Collectors.toSet()).size() == transitionActionMap.size(),
-                "Found duplicate actions in the transition-action map.");
+    public void addActivityNode(ActivityNode activityNode, Transition transition) {
+        // Sanity check: ensure that there are no duplications in the activity node to transition map.
+        Verify.verify(!activityNodeToTransition.containsValue(transition), String.format(
+                "Transition '%s' already present in the activity node to transition map.", transition.getName()));
+        Verify.verify(!activityNodeToTransition.containsKey(activityNode), String.format(
+                "Activity node '%s' already present in the activity node to transition map.", activityNode.getName()));
 
-        transitionActionMap.entrySet().stream()
-                .forEach(e -> actionToTransition.put((OpaqueAction)e.getValue(), e.getKey()));
+        activityNodeToTransition.put(activityNode, transition);
     }
 
     /**
@@ -803,7 +832,7 @@ public class SynthesisChainTracking {
      * @return The transition tracing info related to the opaque action.
      */
     private TransitionTraceInfo getTransitionTraceInfo(OpaqueAction action) {
-        Transition transition = actionToTransition.get(action);
+        Transition transition = activityNodeToTransition.get(action);
         Verify.verifyNotNull(transition, String
                 .format("Opaque action '%s' does not have a corresponding Petri net transition.", action.getName()));
         TransitionTraceInfo transitionInfo = transitionTraceInfo.get(transition);
@@ -822,7 +851,9 @@ public class SynthesisChainTracking {
     public ActionKind getActionKind(OpaqueAction action) {
         TransitionTraceInfo transitionInfo = getTransitionTraceInfo(action);
 
-        if (transitionInfo.getUmlElement() instanceof OpaqueBehavior) {
+        RedefinableElement umlElement = transitionInfo.getUmlElement();
+
+        if (umlElement instanceof OpaqueBehavior) {
             if (transitionInfo.isCompleteTransition()) {
                 return ActionKind.COMPLETE_OPAQUE_BEHAVIOR;
             } else if (transitionInfo.isStartOnlyTransition()) {
@@ -833,7 +864,41 @@ public class SynthesisChainTracking {
             }
         }
 
-        return ActionKind.CONTROL_NODE;
+        if (umlElement instanceof OpaqueAction) {
+            if (transitionInfo.isCompleteTransition()) {
+                return ActionKind.COMPLETE_OPAQUE_ACTION;
+            } else if (transitionInfo.isStartOnlyTransition()) {
+                return ActionKind.START_OPAQUE_ACTION;
+            } else {
+                Verify.verify(transitionInfo.isEndOnlyTransition(), "Expected an end-only event.");
+                return ActionKind.END_OPAQUE_ACTION;
+            }
+        }
+
+        if (umlElement instanceof CallBehaviorAction cbAction) {
+            if (PokaYokeUmlProfileUtil.isFormalElement(cbAction)) { // Shadowed call behavior.
+                if (transitionInfo.isCompleteTransition()) {
+                    return ActionKind.COMPLETE_SHADOW;
+                } else if (transitionInfo.isStartOnlyTransition()) {
+                    return ActionKind.START_SHADOW;
+                } else {
+                    Verify.verify(transitionInfo.isEndOnlyTransition(), "Expected an end-only event.");
+                    return ActionKind.END_SHADOW;
+                }
+            } else { // Non-shadowed call behavior.
+                if (transitionInfo.isCompleteTransition()) {
+                    return ActionKind.COMPLETE_CALL_BEHAVIOR;
+                } else if (transitionInfo.isStartOnlyTransition()) {
+                    return ActionKind.START_CALL_BEHAVIOR;
+                } else {
+                    Verify.verify(transitionInfo.isEndOnlyTransition(), "Expected an end-only event.");
+                    return ActionKind.END_CALL_BEHAVIOR;
+                }
+            }
+        }
+
+        throw new RuntimeException(
+                "A non-finalized opaque action can only be related to opaque behaviors, call behavior actions and opaque actions.");
     }
 
     /**
@@ -896,9 +961,9 @@ public class SynthesisChainTracking {
         // Removes temporary actions created for petrification. Store the related transitions.
         Set<OpaqueAction> actionsToRemove = new LinkedHashSet<>();
         Set<Transition> transitionsToRemove = new LinkedHashSet<>();
-        for (Entry<OpaqueAction, Transition> entry: actionToTransition.entrySet()) {
-            if (entry.getKey().getName().contains("__")) {
-                actionsToRemove.add(entry.getKey());
+        for (Entry<ActivityNode, Transition> entry: activityNodeToTransition.entrySet()) {
+            if (entry.getKey() instanceof OpaqueAction action && action.getName().contains("__")) {
+                actionsToRemove.add(action);
                 transitionsToRemove.add(entry.getValue());
             }
         }
@@ -915,7 +980,7 @@ public class SynthesisChainTracking {
                 "Expected temporary petrification actions to be present, and called '__start' and '__end'.");
 
         // Remove temporary actions.
-        actionToTransition.keySet().removeAll(actionsToRemove);
+        activityNodeToTransition.keySet().removeAll(actionsToRemove);
 
         // Remove the transitions corresponding to temporary actions. Store the corresponding CIF events.
         Set<Event> eventsToRemove = transitionsToRemove.stream()
@@ -943,8 +1008,41 @@ public class SynthesisChainTracking {
      * @return The set of temporary petrification actions.
      */
     public Set<OpaqueAction> getTemporaryPetrificationActions() {
-        return actionToTransition.keySet().stream().filter(a -> isTemporaryPetrificationAction(a))
-                .collect(Collectors.toCollection(LinkedHashSet::new));
+        return activityNodeToTransition.keySet().stream()
+                .filter(a -> a instanceof OpaqueAction action && isTemporaryPetrificationAction(action))
+                .map(OpaqueAction.class::cast).collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    /**
+     * Checks whether the given non-{@code null} UML element belongs to the elements contained in the synthesized UML
+     * activity.
+     *
+     * @param umlElement The non-{@code null} UML element to check.
+     * @return {@code true} if the input element belongs to the synthesized activity, {@code false} otherwise.
+     */
+    public boolean belongsToSynthesizedActivity(RedefinableElement umlElement) {
+        Verify.verifyNotNull(umlElement, "Element cannot be 'null'.");
+
+        return cifEventTraceInfo.values().stream()
+                .anyMatch(info -> !info.getTranslationPurpose().equals(UmlToCifTranslationPurpose.SYNTHESIS)
+                        && info.getUmlElement() instanceof RedefinableElement cifEventUmlElement
+                        && cifEventUmlElement.equals(umlElement));
+    }
+
+    /**
+     * Returns the original UML element for which the given activity node in the synthesized activity was created, or
+     * {@code null} if no such element exists.
+     *
+     * @param node The activity node in the synthesized activity.
+     * @return The related original UML element, or {@code null} if no such UML element exists.
+     */
+    public RedefinableElement getOriginalUmlElement(ActivityNode node) {
+        // Precondition check.
+        Verify.verify(belongsToSynthesizedActivity(node),
+                String.format("UML element '%s' does not belong to the synthesized activity.", node.getName()));
+
+        Transition transition = activityNodeToTransition.get(node);
+        return (transition == null) ? null : getUmlElement(transition);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -983,22 +1081,6 @@ public class SynthesisChainTracking {
      */
     private boolean isFinalizedUmlElement(RedefinableElement umlElement) {
         return finalizedElementToAction.containsKey(umlElement);
-    }
-
-    /**
-     * Checks whether the given non-{@code null} UML element belongs to the elements contained in the synthesized UML
-     * activity.
-     *
-     * @param umlElement The non-{@code null} UML element to check.
-     * @return {@code true} if the input element belongs to the synthesized activity, {@code false} otherwise.
-     */
-    private boolean belongsToSynthesizedActivity(RedefinableElement umlElement) {
-        Verify.verifyNotNull(umlElement, "Element cannot be 'null'.");
-
-        return cifEventTraceInfo.values().stream()
-                .anyMatch(info -> !info.getTranslationPurpose().equals(UmlToCifTranslationPurpose.SYNTHESIS)
-                        && info.getUmlElement() instanceof RedefinableElement cifEventUmlElement
-                        && cifEventUmlElement.equals(umlElement));
     }
 
     /**

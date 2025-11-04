@@ -1,1 +1,1 @@
-ERROR: Found unexpected action kind: CONTROL_NODE
+ERROR: Found non-temporary actions with double underscore in their name.
