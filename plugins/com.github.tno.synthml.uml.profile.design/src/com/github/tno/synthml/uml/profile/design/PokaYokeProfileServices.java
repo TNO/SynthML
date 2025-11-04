@@ -19,6 +19,7 @@ import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.ClassifierTemplateParameter;
+import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.DataType;
 import org.eclipse.uml2.uml.Element;
@@ -29,6 +30,7 @@ import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.RedefinableTemplateSignature;
+import org.eclipse.uml2.uml.Stereotype;
 import org.eclipse.uml2.uml.TemplateParameter;
 import org.eclipse.uml2.uml.TemplateSignature;
 import org.eclipse.uml2.uml.Type;
@@ -672,5 +674,34 @@ public class PokaYokeProfileServices {
             element.setName("");
             element.unsetName();
         }
+    }
+
+    public Stereotype getConstraintFirstStereotype(Constraint constraint) {
+        return PokaYokeUmlProfileUtil.getConstraintFirstStereotype(constraint);
+    }
+
+    public List<Stereotype> getSupportedConstraintStereotypes(Constraint constraint) {
+        return PokaYokeUmlProfileUtil.getSupportedConstraintStereotypes(constraint);
+    }
+
+    public void setConstraintStereotype(Constraint constraint, Stereotype stereotype) {
+        PokaYokeUmlProfileUtil.setConstraintStereotype(constraint, stereotype);
+
+        // Unapplying the stereotype does not refresh the viewer, not even when 'associated elements expression'
+        // is used in the odesign file. So we trigger a refresh here.
+        refresh(constraint);
+    }
+
+    public String getConstraintExpression(Constraint constraint) {
+        return PokaYokeUmlProfileUtil.getConstraintExpression(constraint);
+    }
+
+    public void setConstraintExpression(Constraint constraint, String newValue) {
+        PokaYokeUmlProfileUtil.applyPokaYokeProfile(constraint);
+        PokaYokeUmlProfileUtil.setConstraintExpression(constraint, Strings.emptyToNull(newValue));
+    }
+
+    public String getStereotypeName(Stereotype st) {
+        return PokaYokeUmlProfileUtil.getStereotypeName(st);
     }
 }

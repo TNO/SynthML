@@ -88,6 +88,7 @@
             <ownedComment xmi:id="37">
               <body>Original-ID-Path:19</body>
             </ownedComment>
+            <language>CIF</language>
             <body>not init and count = 0</body>
           </specification>
         </ownedRule>
@@ -99,6 +100,7 @@
             <ownedComment xmi:id="41">
               <body>Original-ID-Path:21</body>
             </ownedComment>
+            <language>CIF</language>
             <body>count = 3</body>
           </specification>
         </ownedRule>
@@ -153,6 +155,7 @@
             <ownedComment xmi:id="71">
               <body>Original-ID-Path:28</body>
             </ownedComment>
+            <language>CIF</language>
             <body>not init and count = 0</body>
           </specification>
         </ownedRule>
@@ -164,6 +167,7 @@
             <ownedComment xmi:id="75">
               <body>Original-ID-Path:30</body>
             </ownedComment>
+            <language>CIF</language>
             <body>count = 4</body>
           </specification>
         </ownedRule>
@@ -200,6 +204,7 @@
             <ownedComment xmi:id="89">
               <body>Original-ID-Path:37</body>
             </ownedComment>
+            <language>CIF</language>
             <body>not init and count = 0</body>
           </specification>
         </ownedRule>
@@ -211,6 +216,7 @@
             <ownedComment xmi:id="93">
               <body>Original-ID-Path:39</body>
             </ownedComment>
+            <language>CIF</language>
             <body>count = 5</body>
           </specification>
         </ownedRule>
@@ -283,4 +289,10 @@ count := 2</effects>
   <SynthML:FormalElement xmi:id="117" guard="init" base_RedefinableElement="30" atomic="true">
     <effects>count := count + 2</effects>
   </SynthML:FormalElement>
+  <SynthML:SynthesisPrecondition xmi:id="118" base_Constraint="34"/>
+  <SynthML:Postcondition xmi:id="119" base_Constraint="38"/>
+  <SynthML:SynthesisPrecondition xmi:id="120" base_Constraint="68"/>
+  <SynthML:Postcondition xmi:id="121" base_Constraint="72"/>
+  <SynthML:SynthesisPrecondition xmi:id="122" base_Constraint="86"/>
+  <SynthML:Postcondition xmi:id="123" base_Constraint="90"/>
 </xmi:XMI>

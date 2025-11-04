@@ -142,6 +142,7 @@
             <ownedComment xmi:id="55">
               <body>Original-ID-Path:36</body>
             </ownedComment>
+            <language>CIF</language>
             <body>not init and count = 0</body>
           </specification>
         </ownedRule>
@@ -159,6 +160,7 @@
             <ownedComment xmi:id="61">
               <body>Original-ID-Path:40</body>
             </ownedComment>
+            <language>CIF</language>
             <body>count = 3</body>
           </specification>
         </ownedRule>
@@ -313,6 +315,7 @@
             <ownedComment xmi:id="118">
               <body>Original-ID-Path:71</body>
             </ownedComment>
+            <language>CIF</language>
             <body>not init and count = 0</body>
           </specification>
         </ownedRule>
@@ -330,6 +333,7 @@
             <ownedComment xmi:id="124">
               <body>Original-ID-Path:75</body>
             </ownedComment>
+            <language>CIF</language>
             <body>count = 4</body>
           </specification>
         </ownedRule>
@@ -421,6 +425,7 @@
             <ownedComment xmi:id="175">
               <body>Original-ID-Path:89</body>
             </ownedComment>
+            <language>CIF</language>
             <body>not init and count = 0</body>
           </specification>
         </ownedRule>
@@ -438,6 +443,7 @@
             <ownedComment xmi:id="181">
               <body>Original-ID-Path:93</body>
             </ownedComment>
+            <language>CIF</language>
             <body>count = 5</body>
           </specification>
         </ownedRule>
@@ -537,10 +543,16 @@ count := 2</effects>
   <SynthML:FormalElement xmi:id="214" guard="init" base_RedefinableElement="44" atomic="true">
     <effects>count := count + 2</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalControlFlow xmi:id="215" outgoingGuard="true" base_ControlFlow="74"/>
-  <SynthML:FormalControlFlow xmi:id="216" outgoingGuard="true" base_ControlFlow="78"/>
-  <SynthML:FormalControlFlow xmi:id="217" outgoingGuard="true" base_ControlFlow="84"/>
-  <SynthML:FormalControlFlow xmi:id="218" outgoingGuard="true" base_ControlFlow="86"/>
-  <SynthML:FormalControlFlow xmi:id="219" outgoingGuard="true" base_ControlFlow="88"/>
-  <SynthML:FormalControlFlow xmi:id="220" outgoingGuard="true" base_ControlFlow="91"/>
+  <SynthML:SynthesisPrecondition xmi:id="215" base_Constraint="50"/>
+  <SynthML:Postcondition xmi:id="216" base_Constraint="56"/>
+  <SynthML:FormalControlFlow xmi:id="217" outgoingGuard="true" base_ControlFlow="74"/>
+  <SynthML:FormalControlFlow xmi:id="218" outgoingGuard="true" base_ControlFlow="78"/>
+  <SynthML:FormalControlFlow xmi:id="219" outgoingGuard="true" base_ControlFlow="84"/>
+  <SynthML:FormalControlFlow xmi:id="220" outgoingGuard="true" base_ControlFlow="86"/>
+  <SynthML:FormalControlFlow xmi:id="221" outgoingGuard="true" base_ControlFlow="88"/>
+  <SynthML:FormalControlFlow xmi:id="222" outgoingGuard="true" base_ControlFlow="91"/>
+  <SynthML:SynthesisPrecondition xmi:id="223" base_Constraint="113"/>
+  <SynthML:Postcondition xmi:id="224" base_Constraint="119"/>
+  <SynthML:SynthesisPrecondition xmi:id="225" base_Constraint="170"/>
+  <SynthML:Postcondition xmi:id="226" base_Constraint="176"/>
 </xmi:XMI>

@@ -59,6 +59,10 @@ public class SynthMLFactoryImpl extends EFactoryImpl implements SynthMLFactory {
 			case SynthMLPackage.FORMAL_ELEMENT: return createFormalElement();
 			case SynthMLPackage.FORMAL_CONTROL_FLOW: return createFormalControlFlow();
 			case SynthMLPackage.FORMAL_CALL_BEHAVIOR_ACTION: return createFormalCallBehaviorAction();
+			case SynthMLPackage.REQUIREMENT: return createRequirement();
+			case SynthMLPackage.SYNTHESIS_PRECONDITION: return createSynthesisPrecondition();
+			case SynthMLPackage.USAGE_PRECONDITION: return createUsagePrecondition();
+			case SynthMLPackage.POSTCONDITION: return createPostcondition();
 			default:
 				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -95,6 +99,50 @@ public class SynthMLFactoryImpl extends EFactoryImpl implements SynthMLFactory {
 	public FormalCallBehaviorAction createFormalCallBehaviorAction() {
 		FormalCallBehaviorActionImpl formalCallBehaviorAction = new FormalCallBehaviorActionImpl();
 		return formalCallBehaviorAction;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public Requirement createRequirement() {
+		RequirementImpl requirement = new RequirementImpl();
+		return requirement;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public SynthesisPrecondition createSynthesisPrecondition() {
+		SynthesisPreconditionImpl synthesisPrecondition = new SynthesisPreconditionImpl();
+		return synthesisPrecondition;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public UsagePrecondition createUsagePrecondition() {
+		UsagePreconditionImpl usagePrecondition = new UsagePreconditionImpl();
+		return usagePrecondition;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public Postcondition createPostcondition() {
+		PostconditionImpl postcondition = new PostconditionImpl();
+		return postcondition;
 	}
 
 	/**

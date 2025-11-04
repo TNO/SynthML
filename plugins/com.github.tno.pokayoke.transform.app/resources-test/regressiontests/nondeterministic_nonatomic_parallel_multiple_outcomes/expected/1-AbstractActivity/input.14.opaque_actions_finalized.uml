@@ -64,6 +64,7 @@
             <ownedComment xmi:id="27">
               <body>Original-ID-Path:14</body>
             </ownedComment>
+            <language>CIF</language>
             <body>not a_executed and not b_executed</body>
           </specification>
         </ownedRule>
@@ -75,6 +76,7 @@
             <ownedComment xmi:id="31">
               <body>Original-ID-Path:16</body>
             </ownedComment>
+            <language>CIF</language>
             <body>a_executed = true and b_executed = true</body>
           </specification>
         </ownedRule>
@@ -133,11 +135,13 @@
       <appliedProfile href="platform:/plugin/com.github.tno.synthml.uml.profile.plugin/model/synthml.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
     </profileApplication>
   </uml:Model>
-  <SynthML:FormalElement xmi:id="62" guard="true" base_RedefinableElement="56" atomic="true">
+  <SynthML:SynthesisPrecondition xmi:id="62" base_Constraint="24"/>
+  <SynthML:Postcondition xmi:id="63" base_Constraint="28"/>
+  <SynthML:FormalElement xmi:id="64" guard="true" base_RedefinableElement="56" atomic="true">
     <effects>a_executed := true</effects>
     <effects>a_executed := true</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalElement xmi:id="63" guard="true" base_RedefinableElement="58">
+  <SynthML:FormalElement xmi:id="65" guard="true" base_RedefinableElement="58">
     <effects>b_executed := true</effects>
     <effects>b_executed := true</effects>
   </SynthML:FormalElement>

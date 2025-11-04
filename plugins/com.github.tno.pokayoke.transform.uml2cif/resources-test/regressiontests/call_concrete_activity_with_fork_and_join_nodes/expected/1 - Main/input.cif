@@ -43,7 +43,7 @@ plant automaton Context:
     marked;
     edge initialize when not init, __activeAction = 0, not __nonAtomicActive__initialize do __nonAtomicActive__initialize := true;
     edge initialize__na_result_1 when __activeAction = 0, __nonAtomicActive__initialize do init := true, count := 1, __nonAtomicActive__initialize := false;
-    edge __node__InitialNode__62__0 when true, not __controlflow__48, init, __activeAction = 0 do __controlflow__48 := true;
+    edge __node__InitialNode__62__0 when true, not __controlflow__48, __activeAction = 0 do __controlflow__48 := true;
     edge __node__ActivityFinalNode__64__0 when true, __controlflow__59, __activeAction = 0 do __controlflow__59 := false;
     edge __node__OpaqueAction__66 when true, __controlflow__51, not __controlflow__55, __activeAction = 0 do __controlflow__51 := false, __activeAction := 1;
     edge __node__OpaqueAction__66__result_1 when not __controlflow__55, __activeAction = 1 do count := count + 1, __controlflow__55 := true, __activeAction := 0;

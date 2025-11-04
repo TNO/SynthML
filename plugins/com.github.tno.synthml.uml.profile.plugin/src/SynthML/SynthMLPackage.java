@@ -212,6 +212,191 @@ public interface SynthMLPackage extends EPackage {
 	 */
 	int FORMAL_CALL_BEHAVIOR_ACTION_OPERATION_COUNT = 0;
 
+	/**
+	 * The meta object id for the '{@link SynthML.impl.FormalConstraintImpl <em>Formal Constraint</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see SynthML.impl.FormalConstraintImpl
+	 * @see SynthML.impl.SynthMLPackageImpl#getFormalConstraint()
+	 * @generated
+	 */
+	int FORMAL_CONSTRAINT = 4;
+
+	/**
+	 * The feature id for the '<em><b>Base Constraint</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FORMAL_CONSTRAINT__BASE_CONSTRAINT = 0;
+
+	/**
+	 * The number of structural features of the '<em>Formal Constraint</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FORMAL_CONSTRAINT_FEATURE_COUNT = 1;
+
+	/**
+	 * The number of operations of the '<em>Formal Constraint</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FORMAL_CONSTRAINT_OPERATION_COUNT = 0;
+
+	/**
+	 * The meta object id for the '{@link SynthML.impl.RequirementImpl <em>Requirement</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see SynthML.impl.RequirementImpl
+	 * @see SynthML.impl.SynthMLPackageImpl#getRequirement()
+	 * @generated
+	 */
+	int REQUIREMENT = 3;
+
+	/**
+	 * The feature id for the '<em><b>Base Constraint</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int REQUIREMENT__BASE_CONSTRAINT = FORMAL_CONSTRAINT__BASE_CONSTRAINT;
+
+	/**
+	 * The number of structural features of the '<em>Requirement</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int REQUIREMENT_FEATURE_COUNT = FORMAL_CONSTRAINT_FEATURE_COUNT + 0;
+
+	/**
+	 * The number of operations of the '<em>Requirement</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int REQUIREMENT_OPERATION_COUNT = FORMAL_CONSTRAINT_OPERATION_COUNT + 0;
+
+	/**
+	 * The meta object id for the '{@link SynthML.impl.SynthesisPreconditionImpl <em>Synthesis Precondition</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see SynthML.impl.SynthesisPreconditionImpl
+	 * @see SynthML.impl.SynthMLPackageImpl#getSynthesisPrecondition()
+	 * @generated
+	 */
+	int SYNTHESIS_PRECONDITION = 5;
+
+	/**
+	 * The feature id for the '<em><b>Base Constraint</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int SYNTHESIS_PRECONDITION__BASE_CONSTRAINT = FORMAL_CONSTRAINT__BASE_CONSTRAINT;
+
+	/**
+	 * The number of structural features of the '<em>Synthesis Precondition</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int SYNTHESIS_PRECONDITION_FEATURE_COUNT = FORMAL_CONSTRAINT_FEATURE_COUNT + 0;
+
+	/**
+	 * The number of operations of the '<em>Synthesis Precondition</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int SYNTHESIS_PRECONDITION_OPERATION_COUNT = FORMAL_CONSTRAINT_OPERATION_COUNT + 0;
+
+	/**
+	 * The meta object id for the '{@link SynthML.impl.UsagePreconditionImpl <em>Usage Precondition</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see SynthML.impl.UsagePreconditionImpl
+	 * @see SynthML.impl.SynthMLPackageImpl#getUsagePrecondition()
+	 * @generated
+	 */
+	int USAGE_PRECONDITION = 6;
+
+	/**
+	 * The feature id for the '<em><b>Base Constraint</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int USAGE_PRECONDITION__BASE_CONSTRAINT = FORMAL_CONSTRAINT__BASE_CONSTRAINT;
+
+	/**
+	 * The number of structural features of the '<em>Usage Precondition</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int USAGE_PRECONDITION_FEATURE_COUNT = FORMAL_CONSTRAINT_FEATURE_COUNT + 0;
+
+	/**
+	 * The number of operations of the '<em>Usage Precondition</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int USAGE_PRECONDITION_OPERATION_COUNT = FORMAL_CONSTRAINT_OPERATION_COUNT + 0;
+
+	/**
+	 * The meta object id for the '{@link SynthML.impl.PostconditionImpl <em>Postcondition</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see SynthML.impl.PostconditionImpl
+	 * @see SynthML.impl.SynthMLPackageImpl#getPostcondition()
+	 * @generated
+	 */
+	int POSTCONDITION = 7;
+
+	/**
+	 * The feature id for the '<em><b>Base Constraint</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int POSTCONDITION__BASE_CONSTRAINT = FORMAL_CONSTRAINT__BASE_CONSTRAINT;
+
+	/**
+	 * The number of structural features of the '<em>Postcondition</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int POSTCONDITION_FEATURE_COUNT = FORMAL_CONSTRAINT_FEATURE_COUNT + 0;
+
+	/**
+	 * The number of operations of the '<em>Postcondition</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int POSTCONDITION_OPERATION_COUNT = FORMAL_CONSTRAINT_OPERATION_COUNT + 0;
+
 
 	/**
 	 * Returns the meta object for class '{@link SynthML.FormalElement <em>Formal Element</em>}'.
@@ -332,6 +517,67 @@ public interface SynthMLPackage extends EPackage {
 	EReference getFormalCallBehaviorAction_Base_CallBehaviorAction();
 
 	/**
+	 * Returns the meta object for class '{@link SynthML.Requirement <em>Requirement</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Requirement</em>'.
+	 * @see SynthML.Requirement
+	 * @generated
+	 */
+	EClass getRequirement();
+
+	/**
+	 * Returns the meta object for class '{@link SynthML.FormalConstraint <em>Formal Constraint</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Formal Constraint</em>'.
+	 * @see SynthML.FormalConstraint
+	 * @generated
+	 */
+	EClass getFormalConstraint();
+
+	/**
+	 * Returns the meta object for the reference '{@link SynthML.FormalConstraint#getBase_Constraint <em>Base Constraint</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Base Constraint</em>'.
+	 * @see SynthML.FormalConstraint#getBase_Constraint()
+	 * @see #getFormalConstraint()
+	 * @generated
+	 */
+	EReference getFormalConstraint_Base_Constraint();
+
+	/**
+	 * Returns the meta object for class '{@link SynthML.SynthesisPrecondition <em>Synthesis Precondition</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Synthesis Precondition</em>'.
+	 * @see SynthML.SynthesisPrecondition
+	 * @generated
+	 */
+	EClass getSynthesisPrecondition();
+
+	/**
+	 * Returns the meta object for class '{@link SynthML.UsagePrecondition <em>Usage Precondition</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Usage Precondition</em>'.
+	 * @see SynthML.UsagePrecondition
+	 * @generated
+	 */
+	EClass getUsagePrecondition();
+
+	/**
+	 * Returns the meta object for class '{@link SynthML.Postcondition <em>Postcondition</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Postcondition</em>'.
+	 * @see SynthML.Postcondition
+	 * @generated
+	 */
+	EClass getPostcondition();
+
+	/**
 	 * Returns the factory that creates the instances of the model.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -447,6 +693,64 @@ public interface SynthMLPackage extends EPackage {
 		 * @generated
 		 */
 		EReference FORMAL_CALL_BEHAVIOR_ACTION__BASE_CALL_BEHAVIOR_ACTION = eINSTANCE.getFormalCallBehaviorAction_Base_CallBehaviorAction();
+
+		/**
+		 * The meta object literal for the '{@link SynthML.impl.RequirementImpl <em>Requirement</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see SynthML.impl.RequirementImpl
+		 * @see SynthML.impl.SynthMLPackageImpl#getRequirement()
+		 * @generated
+		 */
+		EClass REQUIREMENT = eINSTANCE.getRequirement();
+
+		/**
+		 * The meta object literal for the '{@link SynthML.impl.FormalConstraintImpl <em>Formal Constraint</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see SynthML.impl.FormalConstraintImpl
+		 * @see SynthML.impl.SynthMLPackageImpl#getFormalConstraint()
+		 * @generated
+		 */
+		EClass FORMAL_CONSTRAINT = eINSTANCE.getFormalConstraint();
+
+		/**
+		 * The meta object literal for the '<em><b>Base Constraint</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference FORMAL_CONSTRAINT__BASE_CONSTRAINT = eINSTANCE.getFormalConstraint_Base_Constraint();
+
+		/**
+		 * The meta object literal for the '{@link SynthML.impl.SynthesisPreconditionImpl <em>Synthesis Precondition</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see SynthML.impl.SynthesisPreconditionImpl
+		 * @see SynthML.impl.SynthMLPackageImpl#getSynthesisPrecondition()
+		 * @generated
+		 */
+		EClass SYNTHESIS_PRECONDITION = eINSTANCE.getSynthesisPrecondition();
+
+		/**
+		 * The meta object literal for the '{@link SynthML.impl.UsagePreconditionImpl <em>Usage Precondition</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see SynthML.impl.UsagePreconditionImpl
+		 * @see SynthML.impl.SynthMLPackageImpl#getUsagePrecondition()
+		 * @generated
+		 */
+		EClass USAGE_PRECONDITION = eINSTANCE.getUsagePrecondition();
+
+		/**
+		 * The meta object literal for the '{@link SynthML.impl.PostconditionImpl <em>Postcondition</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see SynthML.impl.PostconditionImpl
+		 * @see SynthML.impl.SynthMLPackageImpl#getPostcondition()
+		 * @generated
+		 */
+		EClass POSTCONDITION = eINSTANCE.getPostcondition();
 
 	}
 

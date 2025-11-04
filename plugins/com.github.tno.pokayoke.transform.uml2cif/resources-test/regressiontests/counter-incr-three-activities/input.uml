@@ -23,11 +23,13 @@
       <ownedBehavior xmi:type="uml:Activity" xmi:id="_YhKF4IuPEe-jPL7JYLd1IA" name="goToThree" isAbstract="true" postcondition="_gD_lMIuPEe-jPL7JYLd1IA" precondition="_bjenYIuPEe-jPL7JYLd1IA">
         <ownedRule xmi:id="_bjenYIuPEe-jPL7JYLd1IA" name="pre_goToThree">
           <specification xmi:type="uml:OpaqueExpression" xmi:id="_dDzKoIuPEe-jPL7JYLd1IA" name="">
+            <language>CIF</language>
             <body>not init and count = 0</body>
           </specification>
         </ownedRule>
         <ownedRule xmi:id="_gD_lMIuPEe-jPL7JYLd1IA" name="post_goToThree">
           <specification xmi:type="uml:OpaqueExpression" xmi:id="_hc9jQIuPEe-jPL7JYLd1IA" name="">
+            <language>CIF</language>
             <body>count = 3</body>
           </specification>
         </ownedRule>
@@ -38,11 +40,13 @@
       <ownedBehavior xmi:type="uml:Activity" xmi:id="_wy6wMJtfEe-inb9VFxRZkw" name="goToFour" isAbstract="true" postcondition="_7K-JIJtfEe-inb9VFxRZkw" precondition="_0TabcJtfEe-inb9VFxRZkw">
         <ownedRule xmi:id="_0TabcJtfEe-inb9VFxRZkw" name="pre_goToFour">
           <specification xmi:type="uml:OpaqueExpression" xmi:id="_2a_L8JtfEe-inb9VFxRZkw" name="">
+            <language>CIF</language>
             <body>not init and count = 0</body>
           </specification>
         </ownedRule>
         <ownedRule xmi:id="_7K-JIJtfEe-inb9VFxRZkw" name="post_goToFour">
           <specification xmi:type="uml:OpaqueExpression" xmi:id="_8qjskJtfEe-inb9VFxRZkw" name="">
+            <language>CIF</language>
             <body>count = 4</body>
           </specification>
         </ownedRule>
@@ -53,11 +57,13 @@
       <ownedBehavior xmi:type="uml:Activity" xmi:id="_TigLUJt5Ee-1YIC4EDSKZg" name="goToFive" isAbstract="true" postcondition="_ZWRgwJt5Ee-1YIC4EDSKZg" precondition="_WNH-gJt5Ee-1YIC4EDSKZg">
         <ownedRule xmi:id="_WNH-gJt5Ee-1YIC4EDSKZg" name="pre_goToFive">
           <specification xmi:type="uml:OpaqueExpression" xmi:id="_XXxzwJt5Ee-1YIC4EDSKZg" name="">
+          <language>CIF</language>
             <body>not init and count = 0</body>
           </specification>
         </ownedRule>
         <ownedRule xmi:id="_ZWRgwJt5Ee-1YIC4EDSKZg" name="post_goToFive">
           <specification xmi:type="uml:OpaqueExpression" xmi:id="_aunzwJt5Ee-1YIC4EDSKZg" name="">
+            <language>CIF</language>
             <body>count = 5</body>
           </specification>
         </ownedRule>
@@ -96,4 +102,11 @@ count := 2</effects>
   <SynthML:FormalElement xmi:id="_VPikIIuPEe-jPL7JYLd1IA" guard="init" base_RedefinableElement="_UhP6wIuPEe-jPL7JYLd1IA" atomic="true">
     <effects>count := count + 2</effects>
   </SynthML:FormalElement>
+
+<SynthML:SynthesisPrecondition xmi:id="_drmqAWsQiEsWzSlkigWoIF" base_Constraint="_bjenYIuPEe-jPL7JYLd1IA"/>
+<SynthML:SynthesisPrecondition xmi:id="_bjiiaFKPuOcgaPRrIOtCiG" base_Constraint="_0TabcJtfEe-inb9VFxRZkw"/>
+<SynthML:SynthesisPrecondition xmi:id="_ssubDWITFTvMpWsnuHopYl" base_Constraint="_WNH-gJt5Ee-1YIC4EDSKZg"/>
+<SynthML:Postcondition xmi:id="_wImxRstmmpVKJBgDpXxpyk" base_Constraint="_gD_lMIuPEe-jPL7JYLd1IA"/>
+<SynthML:Postcondition xmi:id="_skErqFPAqStBdjtddDGRQu" base_Constraint="_7K-JIJtfEe-inb9VFxRZkw"/>
+<SynthML:Postcondition xmi:id="_QTQuHyvHEJkBjaGHPvUVAL" base_Constraint="_ZWRgwJt5Ee-1YIC4EDSKZg"/>
 </xmi:XMI>

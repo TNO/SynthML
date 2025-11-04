@@ -129,6 +129,7 @@
             <ownedComment xmi:id="49">
               <body>Original-ID-Path:25</body>
             </ownedComment>
+            <language>CIF</language>
             <body>field2 and flipped</body>
           </specification>
         </ownedRule>
@@ -186,4 +187,5 @@ flipped := true</effects>
     <effects>field1 := not field1,&#xD;
 flipped := true</effects>
   </SynthML:FormalElement>
+  <SynthML:Postcondition xmi:id="80" base_Constraint="46"/>
 </xmi:XMI>

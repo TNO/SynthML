@@ -49,6 +49,42 @@ public interface SynthMLFactory extends EFactory {
 	FormalCallBehaviorAction createFormalCallBehaviorAction();
 
 	/**
+	 * Returns a new object of class '<em>Requirement</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Requirement</em>'.
+	 * @generated
+	 */
+	Requirement createRequirement();
+
+	/**
+	 * Returns a new object of class '<em>Synthesis Precondition</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Synthesis Precondition</em>'.
+	 * @generated
+	 */
+	SynthesisPrecondition createSynthesisPrecondition();
+
+	/**
+	 * Returns a new object of class '<em>Usage Precondition</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Usage Precondition</em>'.
+	 * @generated
+	 */
+	UsagePrecondition createUsagePrecondition();
+
+	/**
+	 * Returns a new object of class '<em>Postcondition</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Postcondition</em>'.
+	 * @generated
+	 */
+	Postcondition createPostcondition();
+
+	/**
 	 * Returns the package supported by this factory.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

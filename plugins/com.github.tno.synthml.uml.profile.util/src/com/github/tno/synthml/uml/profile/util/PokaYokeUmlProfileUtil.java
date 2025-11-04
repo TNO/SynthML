@@ -11,8 +11,11 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.uml2.uml.Action;
+import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.CallBehaviorAction;
+import org.eclipse.uml2.uml.Classifier;
+import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.LiteralBoolean;
@@ -32,9 +35,14 @@ import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.google.common.base.Strings;
 
 import SynthML.FormalCallBehaviorAction;
+import SynthML.FormalConstraint;
 import SynthML.FormalControlFlow;
 import SynthML.FormalElement;
+import SynthML.Postcondition;
+import SynthML.Requirement;
 import SynthML.SynthMLPackage;
+import SynthML.SynthesisPrecondition;
+import SynthML.UsagePrecondition;
 
 public class PokaYokeUmlProfileUtil {
     private static final String ST_FORMAL_ELEMENT = SynthMLPackage.Literals.FORMAL_ELEMENT.getName();
@@ -56,6 +64,16 @@ public class PokaYokeUmlProfileUtil {
     private static final String PROP_FORMAL_CALL_BEHAVIOR_ACTION_ARGUMENTS = SynthMLPackage.Literals.FORMAL_CALL_BEHAVIOR_ACTION__ARGUMENTS
             .getName();
 
+    private static final String ST_FORMAL_CONSTRAINT = SynthMLPackage.Literals.FORMAL_CONSTRAINT.getName();
+
+    public static final String ST_CLASS_REQUIREMENT = SynthMLPackage.Literals.REQUIREMENT.getName();
+
+    public static final String ST_SYNTHESIS_PRECONDITION = SynthMLPackage.Literals.SYNTHESIS_PRECONDITION.getName();
+
+    public static final String ST_USAGE_PRECONDITION = SynthMLPackage.Literals.USAGE_PRECONDITION.getName();
+
+    public static final String ST_POSTCONDITION = SynthMLPackage.Literals.POSTCONDITION.getName();
+
     /** Qualified name for the {@link SynthMLPackage Poka Yoke} profile. */
     public static final String POKA_YOKE_PROFILE = SynthMLPackage.eNAME;
 
@@ -70,6 +88,25 @@ public class PokaYokeUmlProfileUtil {
     /** Qualified name for the {@link FormalControlFlow} stereotype. */
     public static final String FORMAL_CONTROL_FLOW_STEREOTYPE = POKA_YOKE_PROFILE + NamedElement.SEPARATOR
             + ST_FORMAL_CONTROL_FLOW;
+
+    /** Qualified name for the {@link FormalConstraint} stereotype. */
+    public static final String FORMAL_CONSTRAINT_STEREOTYPE = POKA_YOKE_PROFILE + NamedElement.SEPARATOR
+            + ST_FORMAL_CONSTRAINT;
+
+    /** Qualified name for the {@link Requirement} stereotype. */
+    public static final String REQUIREMENT_STEREOTYPE = POKA_YOKE_PROFILE + NamedElement.SEPARATOR
+            + ST_CLASS_REQUIREMENT;
+
+    /** Qualified name for the {@link SynthesisPrecondition} stereotype. */
+    public static final String SYNTHESIS_PRECONDITION_STEREOTYPE = POKA_YOKE_PROFILE + NamedElement.SEPARATOR
+            + ST_SYNTHESIS_PRECONDITION;
+
+    /** Qualified name for the {@link UsagePrecondition} stereotype. */
+    public static final String USAGE_PRECONDITION_STEREOTYPE = POKA_YOKE_PROFILE + NamedElement.SEPARATOR
+            + ST_USAGE_PRECONDITION;
+
+    /** Qualified name for the {@link Postcondition} stereotype. */
+    public static final String POSTCONDITION_STEREOTYPE = POKA_YOKE_PROFILE + NamedElement.SEPARATOR + ST_POSTCONDITION;
 
     private PokaYokeUmlProfileUtil() {
         // Empty for utility classes
@@ -451,5 +488,123 @@ public class PokaYokeUmlProfileUtil {
         expression.getLanguages().add("CIF");
         expression.getBodies().add(newValue);
         return expression;
+    }
+
+    public static Stereotype getConstraintFirstStereotype(Constraint constraint) {
+        List<Stereotype> constraintStereotypes = constraint.getAppliedStereotypes();
+        return constraintStereotypes.isEmpty() ? null : constraintStereotypes.get(0);
+    }
+
+    /**
+     * Returns the supported stereotypes for the given constraint.
+     *
+     * @param constraint The constraint.
+     * @return A list of supported stereotypes for the given constraint.
+     */
+    public static List<Stereotype> getSupportedConstraintStereotypes(Constraint constraint) {
+        if (isPreconditionConstraint(constraint)) {
+            return List.of(getStereotype(constraint, ST_SYNTHESIS_PRECONDITION),
+                    getStereotype(constraint, ST_USAGE_PRECONDITION));
+        } else if (isPostconditionConstraint(constraint)) {
+            return List.of(getStereotype(constraint, ST_POSTCONDITION));
+        } else if (isClassRequirement(constraint)) {
+            return List.of(getStereotype(constraint, ST_CLASS_REQUIREMENT));
+        } else {
+            return List.of();
+        }
+    }
+
+    private static boolean isPreconditionConstraint(Constraint constraint) {
+        return (constraint.eContainer() instanceof Activity activity)
+                && activity.getPreconditions().contains(constraint);
+    }
+
+    public static boolean isSynthesisPrecondition(Constraint constraint) {
+        List<Stereotype> appliedStereotypes = constraint.getAppliedStereotypes();
+
+        if (appliedStereotypes.isEmpty()) {
+            return false;
+        }
+
+        return appliedStereotypes.get(0).equals(getStereotype(constraint, ST_SYNTHESIS_PRECONDITION));
+    }
+
+    public static boolean isUsagePrecondition(Constraint constraint) {
+        List<Stereotype> appliedStereotypes = constraint.getAppliedStereotypes();
+
+        if (appliedStereotypes.isEmpty()) {
+            return false;
+        }
+
+        return appliedStereotypes.get(0).equals(getStereotype(constraint, ST_USAGE_PRECONDITION));
+    }
+
+    private static boolean isPostconditionConstraint(Constraint constraint) {
+        return (constraint.eContainer() instanceof Activity activity)
+                && activity.getPostconditions().contains(constraint);
+    }
+
+    private static boolean isClassRequirement(Constraint constraint) {
+        return (constraint.eContainer() instanceof Classifier clazz) && clazz.getOwnedRules().contains(constraint);
+    }
+
+    private static Stereotype getStereotype(Constraint constraint, String stereotypeName) {
+        return getPokaYokeProfile(constraint).getOwnedStereotype(stereotypeName);
+    }
+
+    /**
+     * Set the given stereotype to the given constraint.
+     *
+     * @param constraint The constraint.
+     * @param stereotype The stereotype.
+     */
+    public static void setConstraintStereotype(Constraint constraint, Stereotype stereotype) {
+        List<Stereotype> constraintStereotypes = constraint.getAppliedStereotypes();
+        PokaYokeUmlProfileUtil.applyPokaYokeProfile(constraint);
+
+        // Unapply all and only the formal constraint stereotypes.
+        constraintStereotypes.stream().map(s -> getQualifiedStereotypeName(s.getName()))
+                .filter(qualifiedName -> qualifiedName != null)
+                .forEach(qualifiedName -> PokaYokeUmlProfileUtil.unapplyStereotype(constraint, qualifiedName));
+
+        applyStereotype(constraint, stereotype);
+    }
+
+    private static String getQualifiedStereotypeName(String stereotypeName) {
+        if (ST_CLASS_REQUIREMENT.equals(stereotypeName)) {
+            return REQUIREMENT_STEREOTYPE;
+        } else if (ST_SYNTHESIS_PRECONDITION.equals(stereotypeName)) {
+            return SYNTHESIS_PRECONDITION_STEREOTYPE;
+        } else if (ST_USAGE_PRECONDITION.equals(stereotypeName)) {
+            return USAGE_PRECONDITION_STEREOTYPE;
+        } else if (ST_POSTCONDITION.equals(stereotypeName)) {
+            return POSTCONDITION_STEREOTYPE;
+        } else {
+            return null;
+        }
+    }
+
+    public static String getConstraintExpression(Constraint constraint) {
+        ValueSpecification expr = constraint.getSpecification();
+        return expr == null ? null : expr.stringValue();
+    }
+
+    public static void setConstraintExpression(Constraint constraint, String newValue) {
+        constraint.setSpecification(createCifExpression(newValue));
+    }
+
+    public static String getStereotypeName(Stereotype st) {
+        // Returns a slightly better formatted name for the preconditions.
+        if (st.getName().equals(ST_CLASS_REQUIREMENT)) {
+            return "Requirement";
+        } else if (st.getName().equals(ST_SYNTHESIS_PRECONDITION)) {
+            return "Synthesis precondition";
+        } else if (st.getName().equals(ST_USAGE_PRECONDITION)) {
+            return "Usage precondition";
+        } else if (st.getName().equals(ST_POSTCONDITION)) {
+            return "Postcondition";
+        } else {
+            throw new IllegalArgumentException("Unexpected stereotype : " + st.getName());
+        }
     }
 }

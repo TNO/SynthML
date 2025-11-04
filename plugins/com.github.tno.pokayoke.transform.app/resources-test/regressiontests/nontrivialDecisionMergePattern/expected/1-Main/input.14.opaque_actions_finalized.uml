@@ -129,6 +129,7 @@
             <ownedComment xmi:id="49">
               <body>Original-ID-Path:25</body>
             </ownedComment>
+            <language>CIF</language>
             <body>field2 and flipped</body>
           </specification>
         </ownedRule>
@@ -214,12 +215,13 @@ flipped := true</effects>
     <effects>field1 := not field1,&#xD;
 flipped := true</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalElement xmi:id="103" base_RedefinableElement="83" atomic="true"/>
-  <SynthML:FormalElement xmi:id="104" guard="true" base_RedefinableElement="84" atomic="true">
+  <SynthML:Postcondition xmi:id="103" base_Constraint="46"/>
+  <SynthML:FormalElement xmi:id="104" base_RedefinableElement="83" atomic="true"/>
+  <SynthML:FormalElement xmi:id="105" guard="true" base_RedefinableElement="84" atomic="true">
     <effects>field1 := not field1,&#xD;
 flipped := true</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalElement xmi:id="105" guard="true" base_RedefinableElement="85" atomic="true">
+  <SynthML:FormalElement xmi:id="106" guard="true" base_RedefinableElement="85" atomic="true">
     <effects>field1 := not field1,&#xD;
 flipped := true</effects>
   </SynthML:FormalElement>

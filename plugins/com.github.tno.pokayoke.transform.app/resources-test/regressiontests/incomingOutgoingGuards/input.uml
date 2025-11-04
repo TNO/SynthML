@@ -19,11 +19,13 @@
       <ownedBehavior xmi:type="uml:Activity" xmi:id="_MnjtIPT3Ee-tssS07o9Dtw" name="Activity1" isAbstract="true" postcondition="_U11WIPT3Ee-tssS07o9Dtw" precondition="_OBpFgPT3Ee-tssS07o9Dtw">
         <ownedRule xmi:id="_OBpFgPT3Ee-tssS07o9Dtw" name="prec">
           <specification xmi:type="uml:OpaqueExpression" xmi:id="_RShncPT3Ee-tssS07o9Dtw" name="">
+            <language>CIF</language>
             <body>not init</body>
           </specification>
         </ownedRule>
         <ownedRule xmi:id="_U11WIPT3Ee-tssS07o9Dtw" name="postc">
           <specification xmi:type="uml:OpaqueExpression" xmi:id="_WHADEPT3Ee-tssS07o9Dtw" name="">
+            <language>CIF</language>
             <body>init and val</body>
           </specification>
         </ownedRule>
@@ -92,4 +94,7 @@
     <effects>val := not val</effects>
   </SynthML:FormalElement>
   <SynthML:FormalControlFlow xmi:id="_T0_PIAoqEfCSDsA99P5Xxg" outgoingGuard="init = true" base_ControlFlow="_gn-rYAooEfCWMtQZRernoA"/>
+
+<SynthML:SynthesisPrecondition xmi:id="_PAKjpkGCynEWHIaClWSjrZ" base_Constraint="_OBpFgPT3Ee-tssS07o9Dtw"/>
+<SynthML:Postcondition xmi:id="_tpAvfwTLkNcGCNKVOjIJbg" base_Constraint="_U11WIPT3Ee-tssS07o9Dtw"/>
 </xmi:XMI>

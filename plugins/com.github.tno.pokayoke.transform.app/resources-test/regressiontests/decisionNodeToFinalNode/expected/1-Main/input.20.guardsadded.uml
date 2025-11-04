@@ -46,6 +46,7 @@
             <ownedComment xmi:id="19">
               <body>Original-ID-Path:10</body>
             </ownedComment>
+            <language>CIF</language>
             <body>not field</body>
           </specification>
         </ownedRule>
@@ -57,6 +58,7 @@
             <ownedComment xmi:id="23">
               <body>Original-ID-Path:12</body>
             </ownedComment>
+            <language>CIF</language>
             <body>field</body>
           </specification>
         </ownedRule>
@@ -98,8 +100,10 @@
     <effects>field := true</effects>
     <effects>field := false</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalControlFlow xmi:id="40" outgoingGuard="true" base_ControlFlow="24"/>
-  <SynthML:FormalControlFlow xmi:id="41" outgoingGuard="true" base_ControlFlow="27"/>
-  <SynthML:FormalControlFlow xmi:id="42" outgoingGuard="true" base_ControlFlow="29"/>
-  <SynthML:FormalControlFlow xmi:id="43" outgoingGuard="true" base_ControlFlow="31"/>
+  <SynthML:SynthesisPrecondition xmi:id="40" base_Constraint="16"/>
+  <SynthML:Postcondition xmi:id="41" base_Constraint="20"/>
+  <SynthML:FormalControlFlow xmi:id="42" outgoingGuard="true" base_ControlFlow="24"/>
+  <SynthML:FormalControlFlow xmi:id="43" outgoingGuard="true" base_ControlFlow="27"/>
+  <SynthML:FormalControlFlow xmi:id="44" outgoingGuard="true" base_ControlFlow="29"/>
+  <SynthML:FormalControlFlow xmi:id="45" outgoingGuard="true" base_ControlFlow="31"/>
 </xmi:XMI>

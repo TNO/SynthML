@@ -84,6 +84,40 @@ public class SynthMLSwitch<T> extends Switch<T> {
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
+			case SynthMLPackage.REQUIREMENT: {
+				Requirement requirement = (Requirement)theEObject;
+				T result = caseRequirement(requirement);
+				if (result == null) result = caseFormalConstraint(requirement);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case SynthMLPackage.FORMAL_CONSTRAINT: {
+				FormalConstraint formalConstraint = (FormalConstraint)theEObject;
+				T result = caseFormalConstraint(formalConstraint);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case SynthMLPackage.SYNTHESIS_PRECONDITION: {
+				SynthesisPrecondition synthesisPrecondition = (SynthesisPrecondition)theEObject;
+				T result = caseSynthesisPrecondition(synthesisPrecondition);
+				if (result == null) result = caseFormalConstraint(synthesisPrecondition);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case SynthMLPackage.USAGE_PRECONDITION: {
+				UsagePrecondition usagePrecondition = (UsagePrecondition)theEObject;
+				T result = caseUsagePrecondition(usagePrecondition);
+				if (result == null) result = caseFormalConstraint(usagePrecondition);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case SynthMLPackage.POSTCONDITION: {
+				Postcondition postcondition = (Postcondition)theEObject;
+				T result = casePostcondition(postcondition);
+				if (result == null) result = caseFormalConstraint(postcondition);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
 			default: return defaultCase(theEObject);
 		}
 	}
@@ -130,6 +164,81 @@ public class SynthMLSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseFormalCallBehaviorAction(FormalCallBehaviorAction object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Requirement</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Requirement</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseRequirement(Requirement object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Formal Constraint</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Formal Constraint</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseFormalConstraint(FormalConstraint object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Synthesis Precondition</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Synthesis Precondition</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseSynthesisPrecondition(SynthesisPrecondition object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Usage Precondition</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Usage Precondition</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseUsagePrecondition(UsagePrecondition object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Postcondition</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Postcondition</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T casePostcondition(Postcondition object) {
 		return null;
 	}
 

@@ -96,6 +96,7 @@
             <ownedComment xmi:id="39">
               <body>Original-ID-Path:20</body>
             </ownedComment>
+            <language>CIF</language>
             <body>not a_executed and not b_executed and not c_executed and not d_executed</body>
           </specification>
         </ownedRule>
@@ -107,6 +108,7 @@
             <ownedComment xmi:id="43">
               <body>Original-ID-Path:22</body>
             </ownedComment>
+            <language>CIF</language>
             <body>a_executed = true and b_executed = true and c_executed = true and d_executed = true</body>
           </specification>
         </ownedRule>
@@ -220,26 +222,28 @@
       <appliedProfile href="platform:/plugin/com.github.tno.synthml.uml.profile.plugin/model/synthml.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
     </profileApplication>
   </uml:Model>
-  <SynthML:FormalElement xmi:id="109" guard="true" base_RedefinableElement="82" atomic="true"/>
-  <SynthML:FormalElement xmi:id="110" guard="true" base_RedefinableElement="83" atomic="true">
+  <SynthML:SynthesisPrecondition xmi:id="109" base_Constraint="36"/>
+  <SynthML:Postcondition xmi:id="110" base_Constraint="40"/>
+  <SynthML:FormalElement xmi:id="111" guard="true" base_RedefinableElement="82" atomic="true"/>
+  <SynthML:FormalElement xmi:id="112" guard="true" base_RedefinableElement="83" atomic="true">
     <effects>a_executed := true</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalElement xmi:id="111" guard="true" base_RedefinableElement="84" atomic="true">
+  <SynthML:FormalElement xmi:id="113" guard="true" base_RedefinableElement="84" atomic="true">
     <effects>a_executed := true</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalElement xmi:id="112" guard="true" base_RedefinableElement="99">
+  <SynthML:FormalElement xmi:id="114" guard="true" base_RedefinableElement="99">
     <effects>a_executed := true</effects>
     <effects>a_executed := true</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalElement xmi:id="113" guard="a_executed = true" base_RedefinableElement="101" atomic="true">
+  <SynthML:FormalElement xmi:id="115" guard="a_executed = true" base_RedefinableElement="101" atomic="true">
     <effects>b_executed := true</effects>
     <effects>b_executed := true</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalElement xmi:id="114" guard="true" base_RedefinableElement="103">
+  <SynthML:FormalElement xmi:id="116" guard="true" base_RedefinableElement="103">
     <effects>c_executed := true</effects>
     <effects>c_executed := true</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalElement xmi:id="115" guard="a_executed = true" base_RedefinableElement="105" atomic="true">
+  <SynthML:FormalElement xmi:id="117" guard="a_executed = true" base_RedefinableElement="105" atomic="true">
     <effects>d_executed := true</effects>
     <effects>d_executed := true</effects>
   </SynthML:FormalElement>

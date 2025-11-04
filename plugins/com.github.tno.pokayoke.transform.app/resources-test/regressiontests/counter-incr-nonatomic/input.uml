@@ -21,11 +21,13 @@
       <ownedBehavior xmi:type="uml:Activity" xmi:id="_YhKF4IuPEe-jPL7JYLd1IA" name="Main" isAbstract="true" postcondition="_gD_lMIuPEe-jPL7JYLd1IA" precondition="_bjenYIuPEe-jPL7JYLd1IA">
         <ownedRule xmi:id="_bjenYIuPEe-jPL7JYLd1IA" name="Pre">
           <specification xmi:type="uml:OpaqueExpression" xmi:id="_dDzKoIuPEe-jPL7JYLd1IA" name="">
+            <language>CIF</language>
             <body>not init and count = 0</body>
           </specification>
         </ownedRule>
         <ownedRule xmi:id="_gD_lMIuPEe-jPL7JYLd1IA" name="Post">
           <specification xmi:type="uml:OpaqueExpression" xmi:id="_hc9jQIuPEe-jPL7JYLd1IA" name="">
+            <language>CIF</language>
             <body>count = 3</body>
           </specification>
         </ownedRule>
@@ -64,4 +66,7 @@ count := 2</effects>
   <SynthML:FormalElement xmi:id="_VPikIIuPEe-jPL7JYLd1IA" guard="init" base_RedefinableElement="_UhP6wIuPEe-jPL7JYLd1IA" atomic="true">
     <effects>count := count + 2</effects>
   </SynthML:FormalElement>
+
+<SynthML:SynthesisPrecondition xmi:id="_HMUrmPqGIdqOTDBtqIwgXx" base_Constraint="_bjenYIuPEe-jPL7JYLd1IA"/>
+<SynthML:Postcondition xmi:id="_RECZqtilkhVfnSGdRafINq" base_Constraint="_gD_lMIuPEe-jPL7JYLd1IA"/>
 </xmi:XMI>

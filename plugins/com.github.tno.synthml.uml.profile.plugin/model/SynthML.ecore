@@ -24,4 +24,12 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="base_CallBehaviorAction"
         ordered="false" lowerBound="1" eType="ecore:EClass ../../org.eclipse.uml2.uml/model/UML.ecore#//CallBehaviorAction"/>
   </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Requirement" eSuperTypes="#//FormalConstraint"/>
+  <eClassifiers xsi:type="ecore:EClass" name="FormalConstraint" abstract="true">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="base_Constraint" ordered="false"
+        lowerBound="1" eType="ecore:EClass ../../org.eclipse.uml2.uml/model/UML.ecore#//Constraint"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="SynthesisPrecondition" eSuperTypes="#//FormalConstraint"/>
+  <eClassifiers xsi:type="ecore:EClass" name="UsagePrecondition" eSuperTypes="#//FormalConstraint"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Postcondition" eSuperTypes="#//FormalConstraint"/>
 </ecore:EPackage>

@@ -4,6 +4,7 @@
     <packagedElement xmi:type="uml:Class" xmi:id="_VSntMCGrEe-thsBTFcKSEw" name="Context" visibility="public" classifierBehavior="_azQEMCGrEe-thsBTFcKSEw" isActive="true">
       <ownedRule xmi:id="_cmzFcCGrEe-thsBTFcKSEw" name="Requirement">
         <specification xmi:type="uml:OpaqueExpression" xmi:id="_epGUYCGrEe-thsBTFcKSEw" name="">
+          <language>CIF</language>
           <body>{act1, act2} needs true</body>
         </specification>
       </ownedRule>
@@ -20,4 +21,6 @@
   </uml:Model>
   <SynthML:FormalElement xmi:id="_VCpqMGt7Ee-gyPzfTb8kTw" base_RedefinableElement="_X3nZgCGrEe-thsBTFcKSEw" atomic="true"/>
   <SynthML:FormalElement xmi:id="_Vdw44Gt7Ee-gyPzfTb8kTw" base_RedefinableElement="_ZlhFwCGrEe-thsBTFcKSEw" atomic="true"/>
+
+<SynthML:Requirement xmi:id="_TuVeUNfoqZRTSQLyqHNmwX" base_Constraint="_cmzFcCGrEe-thsBTFcKSEw"/>
 </xmi:XMI>

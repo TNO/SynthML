@@ -21,11 +21,13 @@
       <ownedBehavior xmi:type="uml:Activity" xmi:id="_YhKF4IuPEe-jPL7JYLd1IA" name="Main" isAbstract="true" postcondition="_gD_lMIuPEe-jPL7JYLd1IA" precondition="_bjenYIuPEe-jPL7JYLd1IA">
         <ownedRule xmi:id="_bjenYIuPEe-jPL7JYLd1IA" name="pre_main">
           <specification xmi:type="uml:OpaqueExpression" xmi:id="_dDzKoIuPEe-jPL7JYLd1IA" name="">
+            <language>CIF</language>
             <body>not init and count = 0</body>
           </specification>
         </ownedRule>
         <ownedRule xmi:id="_gD_lMIuPEe-jPL7JYLd1IA" name="post_main">
           <specification xmi:type="uml:OpaqueExpression" xmi:id="_hc9jQIuPEe-jPL7JYLd1IA" name="">
+            <language>CIF</language>
             <body>count = 3</body>
           </specification>
         </ownedRule>
@@ -36,6 +38,7 @@
       <ownedBehavior xmi:type="uml:Activity" xmi:id="_an9pUKDjEe-ZkeNUwuHL1A" name="IncrByTwo" precondition="_p8gNoKKUEe-f0MvqZI_N9Q" node="_dmf3AKDjEe-ZkeNUwuHL1A _hOB-YKDjEe-ZkeNUwuHL1A _Ef8bgKGiEe-4B-ttiipdKw _HIBRAKGiEe-4B-ttiipdKw _p7mj0KKWEe-Zd4blZa-gjA _sX_twKKWEe-Zd4blZa-gjA">
         <ownedRule xmi:id="_p8gNoKKUEe-f0MvqZI_N9Q" name="pre_IncrByTwo">
           <specification xmi:type="uml:OpaqueExpression" xmi:id="_sONxkKKUEe-f0MvqZI_N9Q" name="">
+            <language>CIF</language>
             <body>init</body>
           </specification>
         </ownedRule>
@@ -84,4 +87,8 @@ count := 1</effects>
   <SynthML:FormalElement xmi:id="_PoQzwKGiEe-4B-ttiipdKw" base_RedefinableElement="_HIBRAKGiEe-4B-ttiipdKw">
     <effects>count := count + 1</effects>
   </SynthML:FormalElement>
+
+<SynthML:SynthesisPrecondition xmi:id="_AsYJnyaSmSXUWGgXKsiEAr" base_Constraint="_bjenYIuPEe-jPL7JYLd1IA"/>
+<SynthML:SynthesisPrecondition xmi:id="_wkZSeXHextxblMHWeLSfFE" base_Constraint="_p8gNoKKUEe-f0MvqZI_N9Q"/>
+<SynthML:Postcondition xmi:id="_zZFTPVBcjFwLIEpmmFzNQn" base_Constraint="_gD_lMIuPEe-jPL7JYLd1IA"/>
 </xmi:XMI>

@@ -46,6 +46,7 @@
       <ownedBehavior xmi:type="uml:Activity" xmi:id="_KTlU0CfiEe-Yd-UzBcvFKg" name="Main" isAbstract="true" postcondition="_MTy5ECfiEe-Yd-UzBcvFKg">
         <ownedRule xmi:id="_MTy5ECfiEe-Yd-UzBcvFKg" name="postcondition">
           <specification xmi:type="uml:OpaqueExpression" xmi:id="_NpikACfiEe-Yd-UzBcvFKg" name="">
+            <language>CIF</language>
             <body>field2 and flipped</body>
           </specification>
         </ownedRule>
@@ -73,4 +74,6 @@ flipped := true</effects>
     <effects>field1 := not field1,&#xD;
 flipped := true</effects>
   </SynthML:FormalElement>
+
+<SynthML:Postcondition xmi:id="_PfeMahOuXpYbMWlaDnBVOJ" base_Constraint="_MTy5ECfiEe-Yd-UzBcvFKg"/>
 </xmi:XMI>

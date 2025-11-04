@@ -28,6 +28,7 @@
           <ownedComment xmi:id="13">
             <body>Original-ID-Path:7</body>
           </ownedComment>
+          <language>CIF</language>
           <body>robot_move_to_location2 needs robotLocation = Location1 and location2Prepared</body>
         </specification>
       </ownedRule>
@@ -39,6 +40,7 @@
           <ownedComment xmi:id="17">
             <body>Original-ID-Path:9</body>
           </ownedComment>
+          <language>CIF</language>
           <body>robot_move_to_location1 needs robotLocation = Location2</body>
         </specification>
       </ownedRule>
@@ -50,6 +52,7 @@
           <ownedComment xmi:id="21">
             <body>Original-ID-Path:11</body>
           </ownedComment>
+          <language>CIF</language>
           <body>robot_adjust_product needs robotLocation = Location2</body>
         </specification>
       </ownedRule>
@@ -201,6 +204,7 @@
             <ownedComment xmi:id="75">
               <body>Original-ID-Path:38</body>
             </ownedComment>
+            <language>CIF</language>
             <body>not robotHasProduct and robotLocation = Location1 and location2HasProduct and productCorrectlyPlaced = True</body>
           </specification>
         </ownedRule>
@@ -380,36 +384,40 @@
       <appliedProfile href="platform:/plugin/com.github.tno.synthml.uml.profile.plugin/model/synthml.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
     </profileApplication>
   </uml:Model>
-  <SynthML:FormalControlFlow xmi:id="151" outgoingGuard="true" base_ControlFlow="80"/>
-  <SynthML:FormalControlFlow xmi:id="152" outgoingGuard="true" base_ControlFlow="81"/>
-  <SynthML:FormalControlFlow xmi:id="153" outgoingGuard="true" base_ControlFlow="84"/>
-  <SynthML:FormalControlFlow xmi:id="154" outgoingGuard="true" base_ControlFlow="85"/>
-  <SynthML:FormalControlFlow xmi:id="155" outgoingGuard="true" base_ControlFlow="86"/>
-  <SynthML:FormalControlFlow xmi:id="156" outgoingGuard="true" base_ControlFlow="87"/>
-  <SynthML:FormalControlFlow xmi:id="157" outgoingGuard="true" base_ControlFlow="88"/>
-  <SynthML:FormalControlFlow xmi:id="158" outgoingGuard="true" base_ControlFlow="90"/>
-  <SynthML:FormalControlFlow xmi:id="159" outgoingGuard="true" base_ControlFlow="93"/>
-  <SynthML:FormalControlFlow xmi:id="160" outgoingGuard="true" base_ControlFlow="95"/>
-  <SynthML:FormalControlFlow xmi:id="161" outgoingGuard="true" base_ControlFlow="96"/>
-  <SynthML:FormalElement xmi:id="162" guard="not robotPrepared" base_RedefinableElement="111" atomic="true">
+  <SynthML:Requirement xmi:id="151" base_Constraint="10"/>
+  <SynthML:Requirement xmi:id="152" base_Constraint="14"/>
+  <SynthML:Requirement xmi:id="153" base_Constraint="18"/>
+  <SynthML:Postcondition xmi:id="154" base_Constraint="72"/>
+  <SynthML:FormalControlFlow xmi:id="155" outgoingGuard="true" base_ControlFlow="80"/>
+  <SynthML:FormalControlFlow xmi:id="156" outgoingGuard="true" base_ControlFlow="81"/>
+  <SynthML:FormalControlFlow xmi:id="157" outgoingGuard="true" base_ControlFlow="84"/>
+  <SynthML:FormalControlFlow xmi:id="158" outgoingGuard="true" base_ControlFlow="85"/>
+  <SynthML:FormalControlFlow xmi:id="159" outgoingGuard="true" base_ControlFlow="86"/>
+  <SynthML:FormalControlFlow xmi:id="160" outgoingGuard="true" base_ControlFlow="87"/>
+  <SynthML:FormalControlFlow xmi:id="161" outgoingGuard="true" base_ControlFlow="88"/>
+  <SynthML:FormalControlFlow xmi:id="162" outgoingGuard="true" base_ControlFlow="90"/>
+  <SynthML:FormalControlFlow xmi:id="163" outgoingGuard="true" base_ControlFlow="93"/>
+  <SynthML:FormalControlFlow xmi:id="164" outgoingGuard="true" base_ControlFlow="95"/>
+  <SynthML:FormalControlFlow xmi:id="165" outgoingGuard="true" base_ControlFlow="96"/>
+  <SynthML:FormalElement xmi:id="166" guard="not robotPrepared" base_RedefinableElement="111" atomic="true">
     <effects>robotPrepared := true</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalElement xmi:id="163" guard="robotPrepared" base_RedefinableElement="113" atomic="true">
+  <SynthML:FormalElement xmi:id="167" guard="robotPrepared" base_RedefinableElement="113" atomic="true">
     <effects>robotLocation := Location1</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalElement xmi:id="164" guard="robotPrepared" base_RedefinableElement="115" atomic="true">
+  <SynthML:FormalElement xmi:id="168" guard="robotPrepared" base_RedefinableElement="115" atomic="true">
     <effects>robotLocation := Location2</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalElement xmi:id="165" guard="robotPrepared and productCorrectlyPlaced = False" base_RedefinableElement="117" atomic="true">
+  <SynthML:FormalElement xmi:id="169" guard="robotPrepared and productCorrectlyPlaced = False" base_RedefinableElement="117" atomic="true">
     <effects>productCorrectlyPlaced := Unknown</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalElement xmi:id="166" guard="robotPrepared and robotLocation = Location2" base_RedefinableElement="119" atomic="true">
+  <SynthML:FormalElement xmi:id="170" guard="robotPrepared and robotLocation = Location2" base_RedefinableElement="119" atomic="true">
     <effects>robotHasProduct := false, location2HasProduct := true</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalElement xmi:id="167" guard="not location2Prepared" base_RedefinableElement="121" atomic="true">
+  <SynthML:FormalElement xmi:id="171" guard="not location2Prepared" base_RedefinableElement="121" atomic="true">
     <effects>location2Prepared := true</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalElement xmi:id="168" guard="location2Prepared and location2HasProduct and productCorrectlyPlaced = Unknown" base_RedefinableElement="123" atomic="true">
+  <SynthML:FormalElement xmi:id="172" guard="location2Prepared and location2HasProduct and productCorrectlyPlaced = Unknown" base_RedefinableElement="123" atomic="true">
     <effects>productCorrectlyPlaced := True</effects>
     <effects>productCorrectlyPlaced := False</effects>
   </SynthML:FormalElement>
