@@ -56,6 +56,7 @@
             <ownedComment xmi:id="23">
               <body>Original-ID-Path:12</body>
             </ownedComment>
+            <language>CIF</language>
             <body>not init</body>
           </specification>
         </ownedRule>
@@ -67,6 +68,7 @@
             <ownedComment xmi:id="27">
               <body>Original-ID-Path:14</body>
             </ownedComment>
+            <language>CIF</language>
             <body>init and val</body>
           </specification>
         </ownedRule>
@@ -218,18 +220,20 @@
       <appliedProfile href="platform:/plugin/com.github.tno.synthml.uml.profile.plugin/model/synthml.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
     </profileApplication>
   </uml:Model>
-  <SynthML:FormalElement xmi:id="96" guard="init" base_RedefinableElement="48" atomic="true">
+  <SynthML:SynthesisPrecondition xmi:id="96" base_Constraint="20"/>
+  <SynthML:Postcondition xmi:id="97" base_Constraint="24"/>
+  <SynthML:FormalElement xmi:id="98" guard="init" base_RedefinableElement="48" atomic="true">
     <effects>val := not val</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalElement xmi:id="97" guard="not init" base_RedefinableElement="49" atomic="true">
+  <SynthML:FormalElement xmi:id="99" guard="not init" base_RedefinableElement="49" atomic="true">
     <effects>init := true, val := true</effects>
     <effects>init := true, val := false</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalControlFlow xmi:id="98" outgoingGuard="init = true" base_ControlFlow="61"/>
-  <SynthML:FormalElement xmi:id="99" guard="init" base_RedefinableElement="86" atomic="true">
+  <SynthML:FormalControlFlow xmi:id="100" outgoingGuard="init = true" base_ControlFlow="61"/>
+  <SynthML:FormalElement xmi:id="101" guard="init" base_RedefinableElement="86" atomic="true">
     <effects>val := not val</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalElement xmi:id="100" guard="not init" base_RedefinableElement="88" atomic="true">
+  <SynthML:FormalElement xmi:id="102" guard="not init" base_RedefinableElement="88" atomic="true">
     <effects>init := true, val := true</effects>
     <effects>init := true, val := false</effects>
   </SynthML:FormalElement>
