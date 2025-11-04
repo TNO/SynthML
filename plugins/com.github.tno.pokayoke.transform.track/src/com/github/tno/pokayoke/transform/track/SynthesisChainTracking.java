@@ -790,7 +790,9 @@ public class SynthesisChainTracking {
      */
     public RedefinableElement getUmlElement(Transition transition) {
         TransitionTraceInfo transitionInfo = transitionTraceInfo.get(transition);
-        return (transitionInfo == null) ? null : transitionInfo.getUmlElement();
+        Verify.verifyNotNull(transition,
+                String.format("Transition '%s' does not have any tracing info.", transition.getName()));
+        return transitionInfo.getUmlElement();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
