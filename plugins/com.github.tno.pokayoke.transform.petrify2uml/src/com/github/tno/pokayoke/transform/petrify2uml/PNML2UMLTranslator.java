@@ -179,7 +179,7 @@ public class PNML2UMLTranslator {
      * as an opaque action.
      *
      * @param transition The Petri net transition.
-     * @param tracker The synthesis chain tracker.
+     * @param tracker The synthesis chain tracker, or {@code null} for testing.
      */
     private void translate(Transition transition, SynthesisChainTracking tracker) {
         Preconditions.checkArgument(!transitionMapping.containsKey(transition),
