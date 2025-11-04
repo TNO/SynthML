@@ -126,12 +126,9 @@ public class PNML2UMLTranslator {
     }
 
     public void translateFile(Path inputPath, Path outputPath) throws ImportException, InvalidIDException, IOException {
-        // Create a synthesis tracker.
-        SynthesisChainTracking tracker = new SynthesisChainTracking();
-
         // Translate the input Petri Net to a UML activity.
         PetriNet petriNet = PNMLUMLFileHelper.readPetriNet(inputPath.toString());
-        translate(petriNet, tracker);
+        translate(petriNet, null);
 
         // Find the internal actions, and remove them.
         List<ActivityNode> internalNodes = activity.getNodes().stream().filter(node -> node.getName().contains("__"))
@@ -176,11 +173,19 @@ public class PNML2UMLTranslator {
         activity.setIsAbstract(false);
     }
 
+    /**
+     * Translate the given Petri net transition into a UML activity node based on its tracking information. The
+     * synthesis tracker can be {@code null} for regression testing purposes: in that case, translate every transition
+     * as an opaque action.
+     *
+     * @param transition The Petri net transition.
+     * @param tracker The synthesis chain tracker.
+     */
     private void translate(Transition transition, SynthesisChainTracking tracker) {
         Preconditions.checkArgument(!transitionMapping.containsKey(transition),
                 "Expected the given transition to have not yet been translated.");
 
-        RedefinableElement umlElement = tracker.getUmlElement(transition);
+        RedefinableElement umlElement = (tracker == null) ? null : tracker.getUmlElement(transition);
         ActivityNode node = switch (umlElement) {
             case ForkNode f -> UML_FACTORY.createForkNode();
             case JoinNode j -> UML_FACTORY.createJoinNode();
@@ -203,7 +208,9 @@ public class PNML2UMLTranslator {
         transitionMapping.put(transition, node);
 
         // Add the newly generated activity node and its corresponding transition to the tracker.
-        tracker.addActivityNode(node, transition);
+        if (tracker != null) {
+            tracker.addActivityNode(node, transition);
+        }
     }
 
     private void translate(Place place) {
