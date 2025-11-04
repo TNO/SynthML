@@ -45,6 +45,7 @@ import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.escet.common.java.Pair;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
+import org.eclipse.uml2.uml.ActivityFinalNode;
 import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.CallBehaviorAction;
@@ -53,7 +54,6 @@ import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.ControlNode;
 import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.Element;
-import org.eclipse.uml2.uml.FinalNode;
 import org.eclipse.uml2.uml.ForkNode;
 import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.Interval;
@@ -630,7 +630,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             // never 'execute' the initial node. Similarly, we end with a token on the control flow going into the final
             // node, and thus never 'execute' the final node.
             if (translationPurpose != UmlToCifTranslationPurpose.SYNTHESIS
-                    && (node instanceof InitialNode || node instanceof FinalNode))
+                    && (node instanceof InitialNode || node instanceof ActivityFinalNode))
             {
                 continue;
             }
@@ -672,7 +672,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
         if (node instanceof InitialNode) {
             newEventEdges = translateActivityOrNode(node, true, true);
-        } else if (node instanceof FinalNode || node instanceof DecisionNode || node instanceof MergeNode) {
+        } else if (node instanceof ActivityFinalNode || node instanceof DecisionNode || node instanceof MergeNode) {
             newEventEdges = translateActivityOrNode(node, true, false);
         } else if (node instanceof ForkNode || node instanceof JoinNode) {
             newEventEdges = translateActivityAndNode(node, true, false);
@@ -721,7 +721,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
         // If the UML activity node is final, then add the activity postconditions as extra guards for performing the
         // translated CIF start events for the final node.
-        if (node instanceof FinalNode) {
+        if (node instanceof ActivityFinalNode) {
             for (Entry<Event, Edge> entry: newEventEdges.entrySet()) {
                 Event cifEvent = entry.getKey();
                 Edge cifEdge = entry.getValue();
@@ -760,7 +760,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
             // If the UML activity node refers to a called activity's final node, then add the activity postconditions
             // as extra guards for performing the translated CIF start events for the node.
-            if (umlElement instanceof FinalNode) {
+            if (umlElement instanceof ActivityFinalNode) {
                 for (Entry<Event, Edge> entry: newEventEdges.entrySet()) {
                     Event cifEvent = entry.getKey();
                     Edge cifEdge = entry.getValue();
@@ -1516,7 +1516,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 // For synthesis, we don't want any tokens on control flows of called activities. For guard computation,
                 // we also want no tokens on control flows, except for the incoming control flow into the final node.
                 // That last case is handled later in this method, so that particular control flow is excluded here.
-                boolean isIncomingToFinalNode = entry.getKey().getTarget() instanceof FinalNode;
+                boolean isIncomingToFinalNode = entry.getKey().getTarget() instanceof ActivityFinalNode;
                 if (translationPurpose == UmlToCifTranslationPurpose.GUARD_COMPUTATION && isIncomingToFinalNode) {
                     continue;
                 }
@@ -1542,7 +1542,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         // control flow leading to the final node. For guard computation, this is part of the structure postcondition.
         if (translationPurpose != UmlToCifTranslationPurpose.SYNTHESIS && kind != PostConditionKind.WITHOUT_STRUCTURE) {
             for (ActivityNode node: activity.getNodes()) {
-                if (node instanceof FinalNode finalNode) {
+                if (node instanceof ActivityFinalNode finalNode) {
                     postconditionVars.addAll(createFinalNodeConfiguration(finalNode));
                 }
             }
@@ -1688,7 +1688,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
      * @param node The UML activity final node.
      * @return The list of CIF algebraic variables representing the final node token configuration.
      */
-    private List<AlgVariable> createFinalNodeConfiguration(FinalNode node) {
+    private List<AlgVariable> createFinalNodeConfiguration(ActivityFinalNode node) {
         List<AlgVariable> finalNodeConfig = new ArrayList<>();
 
         // Create a new algebraic variable out of the discrete one, for later use in the postconditions.
