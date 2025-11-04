@@ -739,9 +739,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
     /**
      * Add the usage preconditions or postconditions of the activity as extra guards for performing the translated CIF
-     * start events for the node.
+     * start events for the given node.
      *
-     * @param eventEdges The bimap containing CIF events and edges.
+     * @param eventEdges The bimap containing CIF events and corresponding edges.
      * @param node The activity node.
      * @param addPreconditions If {@code true} add the activity usage preconditions; otherwise, add the activity
      *     postconditions.
