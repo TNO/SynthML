@@ -741,8 +741,8 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         if (synthesisTracker.belongsToSynthesizedActivity(node)) {
             RedefinableElement umlElement = synthesisTracker.getOriginalUmlElement(node);
 
-            // If the UML activity node refers to a called activity's initial node, then add the usage preconditions of the activity as
-            // extra guards for performing the translated CIF start events for the node.
+            // If the UML activity node refers to a called activity's initial node, then add the usage preconditions of
+            // the activity as extra guards for performing the translated CIF start events for the node.
             if (umlElement instanceof InitialNode) {
                 for (Entry<Event, Edge> entry: newEventEdges.entrySet()) {
                     Event cifEvent = entry.getKey();
@@ -758,8 +758,8 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 }
             }
 
-            // If the UML activity node refers to a called activity's final node, then add the activity postconditions as
-            // extra guards for performing the translated CIF start events for the node.
+            // If the UML activity node refers to a called activity's final node, then add the activity postconditions
+            // as extra guards for performing the translated CIF start events for the node.
             if (umlElement instanceof FinalNode) {
                 for (Entry<Event, Edge> entry: newEventEdges.entrySet()) {
                     Event cifEvent = entry.getKey();
