@@ -1011,6 +1011,38 @@ public class SynthesisChainTracking {
                 .map(OpaqueAction.class::cast).collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
+    /**
+     * Checks whether the given non-{@code null} UML element belongs to the elements contained in the synthesized UML
+     * activity.
+     *
+     * @param umlElement The non-{@code null} UML element to check.
+     * @return {@code true} if the input element belongs to the synthesized activity, {@code false} otherwise.
+     */
+    public boolean belongsToSynthesizedActivity(RedefinableElement umlElement) {
+        Verify.verifyNotNull(umlElement, "Element cannot be 'null'.");
+
+        return cifEventTraceInfo.values().stream()
+                .anyMatch(info -> !info.getTranslationPurpose().equals(UmlToCifTranslationPurpose.SYNTHESIS)
+                        && info.getUmlElement() instanceof RedefinableElement cifEventUmlElement
+                        && cifEventUmlElement.equals(umlElement));
+    }
+
+    /**
+     * Returns the original UML element for which the given activity node in the synthesized activity was created, or
+     * {@code null} if no such element exists.
+     *
+     * @param node The activity node in the synthesized activity.
+     * @return The related original UML element, or {@code null} if no such UML element exists.
+     */
+    public RedefinableElement getOriginalUmlElement(ActivityNode node) {
+        // Precondition check.
+        Verify.verify(belongsToSynthesizedActivity(node),
+                String.format("UML element '%s' does not belong to the synthesized activity.", node.getName()));
+
+        Transition transition = activityNodeToTransition.get(node);
+        return (transition == null) ? null : getUmlElement(transition);
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Section dealing with finalized UML elements and synthesized UML elements.
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1050,22 +1082,6 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Checks whether the given non-{@code null} UML element belongs to the elements contained in the synthesized UML
-     * activity.
-     *
-     * @param umlElement The non-{@code null} UML element to check.
-     * @return {@code true} if the input element belongs to the synthesized activity, {@code false} otherwise.
-     */
-    public boolean belongsToSynthesizedActivity(RedefinableElement umlElement) {
-        Verify.verifyNotNull(umlElement, "Element cannot be 'null'.");
-
-        return cifEventTraceInfo.values().stream()
-                .anyMatch(info -> !info.getTranslationPurpose().equals(UmlToCifTranslationPurpose.SYNTHESIS)
-                        && info.getUmlElement() instanceof RedefinableElement cifEventUmlElement
-                        && cifEventUmlElement.equals(umlElement));
-    }
-
-    /**
      * Returns the original UML element for which the given UML element in the synthesized activity was created, or
      * {@code null} if no such element exists.
      *
@@ -1079,22 +1095,6 @@ public class SynthesisChainTracking {
 
         OpaqueAction action = finalizedElementToAction.get(umlElement);
         return (action == null) ? null : getUmlElement(action);
-    }
-
-    /**
-     * Returns the original UML element for which the given activity node in the synthesized activity was created, or
-     * {@code null} if no such element exists.
-     *
-     * @param node The activity node in the synthesized activity.
-     * @return The related original UML element, or {@code null} if no such UML element exists.
-     */
-    public RedefinableElement getOriginalUmlElement(ActivityNode node) {
-        // Precondition check.
-        Verify.verify(belongsToSynthesizedActivity(node),
-                String.format("UML element '%s' does not belong to the synthesized activity.", node.getName()));
-
-        Transition transition = activityNodeToTransition.get(node);
-        return (transition == null) ? null : getUmlElement(transition);
     }
 
     /**
