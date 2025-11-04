@@ -783,10 +783,10 @@ public class SynthesisChainTracking {
 
     /**
      * Return the UML element corresponding to the given Petri net transition. It can be {@code null} if the transition
-     * corresponds to no UML element or if the transition is not present in the tracing infos.
+     * corresponds to no UML element.
      *
      * @param transition The Petri net transition.
-     * @return The corresponding UML element, that can be {@code null} (e.g. for temporary petrification actions).
+     * @return The corresponding UML element, or {@code null} (e.g. for temporary petrification actions).
      */
     public RedefinableElement getUmlElement(Transition transition) {
         TransitionTraceInfo transitionInfo = transitionTraceInfo.get(transition);
