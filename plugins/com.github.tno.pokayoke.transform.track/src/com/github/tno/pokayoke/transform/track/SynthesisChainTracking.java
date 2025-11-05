@@ -49,6 +49,9 @@ public class SynthesisChainTracking {
      */
     private final Map<Event, EventTraceInfo> cifEventTraceInfo = new LinkedHashMap<>();
 
+    /** The map from the source and target nodes of a control flow to its incoming and outgoing guards. */
+    private Map<Pair<ActivityNode, ActivityNode>, Pair<String, String>> activityNodesToControlFlowGuards = new LinkedHashMap<>();
+
     /**
      * The map from the CIF start events related to an atomic non-deterministic behavior to the events and related event
      * tracing info created before the event-based projection step of the synthesis chain, where the start and end
@@ -94,6 +97,21 @@ public class SynthesisChainTracking {
             Integer effectIdx, boolean isStartEvent, boolean isEndEvent)
     {
         cifEventTraceInfo.put(cifEvent, new EventTraceInfo(purpose, umlElement, effectIdx, isStartEvent, isEndEvent));
+    }
+
+    /**
+     * Stores the given incoming and outgoing control flow guards for the given source and target activity nodes.
+     *
+     * @param sourceNode The source activity node.
+     * @param targetNode The target activity node.
+     * @param incomingGuard The control flow incoming guard.
+     * @param outgoingGuard The control flow outgoing guard.
+     */
+    public void addControlFlowGuards(ActivityNode sourceNode, ActivityNode targetNode, String incomingGuard,
+            String outgoingGuard)
+    {
+        activityNodesToControlFlowGuards.put(new Pair<>(sourceNode, targetNode),
+                new Pair<>(incomingGuard, outgoingGuard));
     }
 
     /**
