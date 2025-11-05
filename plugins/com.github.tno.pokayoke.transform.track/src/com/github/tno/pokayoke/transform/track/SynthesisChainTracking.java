@@ -143,6 +143,17 @@ public class SynthesisChainTracking {
     }
 
     /**
+     * Return the control flow incoming and outgoing guards for the given source and target nodes.
+     *
+     * @param sourceNode The source activity node.
+     * @param targetNode The target activity node.
+     * @return A pair containing incoming and outgoing guards.
+     */
+    public Pair<String, String> getControlFlowGuards(ActivityNode sourceNode, ActivityNode targetNode) {
+        return activityNodesToControlFlowGuards.get(new Pair<>(sourceNode, targetNode));
+    }
+
+    /**
      * Returns the events corresponding to the given set of UML elements, based on the indicated translation purpose.
      *
      * @param umlElements The set of UML elements, to find the related CIF events. Each UML element must be
