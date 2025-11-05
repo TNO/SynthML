@@ -617,6 +617,13 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             {
                 cifControlFlowVar.setValue(CifConstructors.newVariableValue(null, List.of(CifValueUtils.makeTrue())));
             }
+
+            if (translationPurpose == UmlToCifTranslationPurpose.SYNTHESIS) {
+                // Store the control flow guards in the synthesis tracker.
+                synthesisTracker.addControlFlowGuards(controlFlow.getSource(), controlFlow.getTarget(),
+                        PokaYokeUmlProfileUtil.getIncomingGuard(controlFlow),
+                        PokaYokeUmlProfileUtil.getOutgoingGuard(controlFlow));
+            }
         }
 
         // Translate all activity nodes.
