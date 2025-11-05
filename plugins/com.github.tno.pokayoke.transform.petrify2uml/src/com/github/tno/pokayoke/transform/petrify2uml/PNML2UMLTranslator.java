@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.io.FilenameUtils;
+import org.eclipse.escet.common.java.Pair;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
@@ -161,7 +162,7 @@ public class PNML2UMLTranslator {
 
         // Transform all Petri Net places and the arcs connected to them.
         List<Place> places = sorted(page.getObjects().stream().filter(Place.class::isInstance).map(Place.class::cast));
-        places.forEach(this::translate);
+        places.forEach(p -> translate(p, tracker));
 
         // Post-process the UML activity to introduce forks and joins where needed.
         introduceForksAndJoins();
@@ -213,7 +214,7 @@ public class PNML2UMLTranslator {
         }
     }
 
-    private void translate(Place place) {
+    private void translate(Place place, SynthesisChainTracking tracker) {
         Preconditions.checkArgument(!placeMapping.containsKey(place),
                 "Expected the given place to have not yet been translated.");
 
@@ -282,6 +283,20 @@ public class PNML2UMLTranslator {
         }
         if (place.getOutArcs().size() == 1) {
             arcMapping.put(place.getOutArcs().get(0), controlFlow);
+        }
+
+        // Get the guard of a control flow if the concrete activity had a control flow between the current source and
+        // target nodes.
+        RedefinableElement concreteSource = tracker.getOriginalUmlElement(sourceNode);
+        RedefinableElement concreteTarget = tracker.getOriginalUmlElement(targetNode);
+        if (concreteSource != null && concreteTarget != null) {
+            Pair<String, String> incomingOutgoingGuards = tracker.getControlFlowGuards((ActivityNode)concreteSource,
+                    (ActivityNode)concreteTarget);
+
+            if (incomingOutgoingGuards != null) {
+                PokaYokeUmlProfileUtil.setIncomingGuard(controlFlow, incomingOutgoingGuards.left);
+                PokaYokeUmlProfileUtil.setOutgoingGuard(controlFlow, incomingOutgoingGuards.right);
+            }
         }
     }
 
