@@ -1066,10 +1066,6 @@ public class SynthesisChainTracking {
      * @return The related original UML element, or {@code null} if no such UML element exists.
      */
     public RedefinableElement getOriginalUmlElement(ActivityNode node) {
-        // Precondition check.
-        Verify.verify(belongsToSynthesizedActivity(node),
-                String.format("UML element '%s' does not belong to the synthesized activity.", node.getName()));
-
         Transition transition = activityNodeToTransition.get(node);
         return (transition == null) ? null : getUmlElement(transition);
     }
