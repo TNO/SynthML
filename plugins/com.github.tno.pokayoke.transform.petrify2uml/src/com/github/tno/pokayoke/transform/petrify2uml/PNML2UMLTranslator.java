@@ -163,7 +163,7 @@ public class PNML2UMLTranslator {
         places.forEach(this::translate);
 
         // Post-process the UML activity to introduce forks and joins where needed.
-        introduceForksAndJoins();
+        introduceForksAndJoins(tracker);
 
         // Rename any duplication markers by means of action renaming.
         transitionMapping.values().forEach(act -> act.setName(getNameWithoutDuplicationPostfix(act.getName())));
@@ -284,23 +284,28 @@ public class PNML2UMLTranslator {
         }
     }
 
-    private void introduceForksAndJoins() {
+    private void introduceForksAndJoins(SynthesisChainTracking tracker) {
         // Collect all activity nodes in the given UML activity.
         List<ActivityNode> activityNodes = new ArrayList<>(activity.getNodes());
 
-        // Transform any fork or join pattern in any activity node.
+        // Transform any fork or join pattern in any relevant activity node.
         for (ActivityNode node: activityNodes) {
-            Preconditions.checkArgument(!node.getIncomings().isEmpty(), "Expected at least one incoming edge.");
-            Preconditions.checkArgument(!node.getOutgoings().isEmpty(), "Expected at least one outgoing edge.");
+            // Add join and fork only for opaque actions or control nodes that belong to a concrete activity.
+            if (node instanceof OpaqueAction || tracker.isConcreteControlNode(node)) {
+                Preconditions.checkArgument(!node.getIncomings().isEmpty(), "Expected at least one incoming edge.");
+                Preconditions.checkArgument(!node.getOutgoings().isEmpty(), "Expected at least one outgoing edge.");
 
-            // Introduce a join node in case there are multiple incoming control flows.
-            if (node.getIncomings().size() > 1) {
-                introduceJoinNode(node);
-            }
+                // Introduce a join node in case there are multiple incoming control flows, and the node is not a join
+                // node.
+                if (node.getIncomings().size() > 1 && !(node instanceof JoinNode)) {
+                    introduceJoinNode(node);
+                }
 
-            // Introduce a fork node in case there are multiple outgoing control flows.
-            if (node.getOutgoings().size() > 1) {
-                introduceForkNode(node);
+                // Introduce a fork node in case there are multiple outgoing control flows, and the node is not a fork
+                // node.
+                if (node.getOutgoings().size() > 1 && !(node instanceof ForkNode)) {
+                    introduceForkNode(node);
+                }
             }
         }
     }
