@@ -297,36 +297,44 @@ public class PNML2UMLTranslator {
 
             // Introduce a join node in case there are multiple incoming control flows.
             if (action.getIncomings().size() > 1) {
-                JoinNode join = UML_FACTORY.createJoinNode();
-                join.setActivity(activity);
-                join.setName("Join__" + action.getName());
-                nodeMapping.put(join, nodeMapping.get(action));
-
-                for (ActivityEdge controlFlow: new ArrayList<>(action.getIncomings())) {
-                    controlFlow.setName(concatenateNamesOf(controlFlow.getSource(), join));
-                    controlFlow.setTarget(join);
-                }
-
-                ControlFlow controlFlow = createControlFlow(activity, join, action);
-                controlFlowMapping.put(controlFlow, nodeMapping.get(action));
+                introduceJoinNode(action);
             }
 
             // Introduce a fork node in case there are multiple outgoing control flows.
             if (action.getOutgoings().size() > 1) {
-                ForkNode fork = UML_FACTORY.createForkNode();
-                fork.setActivity(activity);
-                fork.setName("Fork__" + action.getName());
-                nodeMapping.put(fork, nodeMapping.get(action));
-
-                for (ActivityEdge controlFlow: new ArrayList<>(action.getOutgoings())) {
-                    controlFlow.setName(concatenateNamesOf(fork, controlFlow.getTarget()));
-                    controlFlow.setSource(fork);
-                }
-
-                ControlFlow controlFlow = createControlFlow(activity, action, fork);
-                controlFlowMapping.put(controlFlow, nodeMapping.get(action));
+                introduceForkNode(action);
             }
         }
+    }
+
+    private void introduceJoinNode(ActivityNode node) {
+        JoinNode join = UML_FACTORY.createJoinNode();
+        join.setActivity(activity);
+        join.setName("Join__" + node.getName());
+        nodeMapping.put(join, nodeMapping.get(node));
+
+        for (ActivityEdge controlFlow: new ArrayList<>(node.getIncomings())) {
+            controlFlow.setName(concatenateNamesOf(controlFlow.getSource(), join));
+            controlFlow.setTarget(join);
+        }
+
+        ControlFlow controlFlow = createControlFlow(activity, join, node);
+        controlFlowMapping.put(controlFlow, nodeMapping.get(node));
+    }
+
+    private void introduceForkNode(ActivityNode node) {
+        ForkNode fork = UML_FACTORY.createForkNode();
+        fork.setActivity(activity);
+        fork.setName("Fork__" + node.getName());
+        nodeMapping.put(fork, nodeMapping.get(node));
+
+        for (ActivityEdge controlFlow: new ArrayList<>(node.getOutgoings())) {
+            controlFlow.setName(concatenateNamesOf(fork, controlFlow.getTarget()));
+            controlFlow.setSource(fork);
+        }
+
+        ControlFlow controlFlow = createControlFlow(activity, node, fork);
+        controlFlowMapping.put(controlFlow, nodeMapping.get(node));
     }
 
     static ControlFlow createControlFlow(Activity activity, ActivityNode source, ActivityNode target) {
