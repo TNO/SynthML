@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.io.FilenameUtils;
-import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityFinalNode;
@@ -286,23 +285,22 @@ public class PNML2UMLTranslator {
     }
 
     private void introduceForksAndJoins() {
-        // Collect all action nodes in the given UML activity.
-        List<Action> actions = activity.getNodes().stream().filter(Action.class::isInstance).map(Action.class::cast)
-                .toList();
+        // Collect all activity nodes in the given UML activity.
+        List<ActivityNode> activityNodes = new ArrayList<>(activity.getNodes());
 
-        // Transform any fork or join pattern in any action node.
-        for (Action action: actions) {
-            Preconditions.checkArgument(!action.getIncomings().isEmpty(), "Expected at least one incoming edge.");
-            Preconditions.checkArgument(!action.getOutgoings().isEmpty(), "Expected at least one outgoing edge.");
+        // Transform any fork or join pattern in any activity node.
+        for (ActivityNode node: activityNodes) {
+            Preconditions.checkArgument(!node.getIncomings().isEmpty(), "Expected at least one incoming edge.");
+            Preconditions.checkArgument(!node.getOutgoings().isEmpty(), "Expected at least one outgoing edge.");
 
             // Introduce a join node in case there are multiple incoming control flows.
-            if (action.getIncomings().size() > 1) {
-                introduceJoinNode(action);
+            if (node.getIncomings().size() > 1) {
+                introduceJoinNode(node);
             }
 
             // Introduce a fork node in case there are multiple outgoing control flows.
-            if (action.getOutgoings().size() > 1) {
-                introduceForkNode(action);
+            if (node.getOutgoings().size() > 1) {
+                introduceForkNode(node);
             }
         }
     }
