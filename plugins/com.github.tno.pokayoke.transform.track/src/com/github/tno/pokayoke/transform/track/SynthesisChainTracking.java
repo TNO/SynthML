@@ -1279,6 +1279,24 @@ public class SynthesisChainTracking {
         return filteredEvents;
     }
 
+    /**
+     * Return {@code true} if the given activity node can be traced to a control node contained in (another, not the
+     * synthesized) concrete activity. If the traced UML element is {@code null}, it is assumed that the given activity
+     * node is a new UML element created purposely for the synthesized activity, so returns {@code false}. Similarly, if
+     * the given activity node traces back to a non-control node, returns {@code false}. Return {@code true} otherwise.
+     *
+     * @param node The activity node.
+     * @return {@code true} if the given activity node can be traced to a concrete activity's control node.
+     */
+    public boolean isConcreteControlNode(ActivityNode node) {
+        RedefinableElement originalUmlElement = getOriginalUmlElement(node);
+
+        if (originalUmlElement == null || !(originalUmlElement instanceof ControlNode)) {
+            return false;
+        }
+        return true;
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Section dealing with language equivalence check preparation.
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
