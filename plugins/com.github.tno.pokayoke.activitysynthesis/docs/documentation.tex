@@ -75,7 +75,7 @@
 \newtheorem{example}{Example}[section]
 \newtheorem*{example*}{Example}
 
-\title{Synthesis of Poka Yoke Activity Diagrams}
+\title{Synthesis of SynthML Activity Diagrams}
 
 \begin{document}
 
@@ -84,7 +84,7 @@
 \section{Introduction}
 \label{sec:intro}
 
-This document describes the Poka Yoke activity synthesis algorithm and discusses its internal steps.
+This document describes the SynthML activity synthesis algorithm and discusses its internal steps.
 This document does not explain  what the code implementation of the algorithm is doing exactly in full detail.
 Instead, it explains more abstractly what the different steps are conceptually, why they are needed, and what they require and ensure.
 Therefore, the explanation may sometimes deviate slightly from how the code implementation is organized, and may sometimes be more abstract.
@@ -131,6 +131,8 @@ A high-level overview is presented below.
 		\item Any number of UML properties.
 		UML properties have a type and optionally a default value.
 		There are three supported types: Booleans, bounded integers, and enums.
+		In addition to these three data types, \emph{composite} data types are also supported.
+		Composite data types serve as structured containers for the three primitive types, allowing a user to group related properties together in a meaningful way, reflecting the logical structure of these properties.
 		Default property values are then expressions of the appropriate type.
 		\item Any number of UML opaque behaviors that have exactly one \emph{guard} and zero or more \emph{effects}.
 		These opaque behaviors model \emph{actions} to be performed in synthesized UML activities.
@@ -142,7 +144,7 @@ A high-level overview is presented below.
 			An action that is not deterministic is defined to be \emph{nondeterministic}.
 			The execution semantics of nondeterministic actions is that by executing the action, one of its effects is nondeterministically chosen and executed.
 			\item Any action is either atomic or nonatomic.
-			The atomicity of an action can be indicated in UML Designer via a checkbox in the Properties view.
+			The atomicity of an action can be indicated in SynthML via a checkbox in the Properties view.
 			If an action is indicated to be \emph{atomic}, then no other actions can be performed during the execution of the atomic action.
 			If an action is indicated to be \emph{nonatomic}, then other actions may be performed in-between the start and end of the nonatomic action.
 			A nonatomic action can only be started when its guard holds, and the effects of a nonatomic action are applied when the action ends.
@@ -166,6 +168,9 @@ A high-level overview is presented below.
 				\item \emph{Opaque action node}, which is essentially an `inlined' action consisting of a guard and zero or more effects.
 				So likewise to opaque behaviors, also opaque action nodes are either deterministic or nondeterministic, and either atomic or nonatomic.
 			\end{itemize}
+			Control flows support incoming and outgoing guards, which are conditions that restrict the token-based execution of an activity. 
+			An incoming guard specifies when a token can be placed on that control flow, whereas an outgoing guard specifies a condition for the removal of the token from the control flow. 
+			Both guards are state predicates over the model properties, similarly to opaque action guards.
 			Likewise to abstract activities, also concrete activities may contain preconditions, postconditions, and occurrence constraints.
 			In the case of abstract activities, these constraints are used as input for synthesizing a concrete activity that adheres to these constraints.
 			If an abstract activity is allowed to call a concrete activity by its occurrence constraints, then the preconditions and postconditions of that concrete activity are used by the synthesis algorithm to determine when the concrete activity can be called by the to-be-synthesized activity, and once called, when the concrete activity has finished its execution.
@@ -176,7 +181,7 @@ A high-level overview is presented below.
 	The activity synthesis algorithm takes UML models as input, containing any number of (concrete and abstract) UML activities.
 	The goal of activity synthesis is then to synthesize a concrete UML activity for every abstract UML activity, and update the UML model by replacing all abstract UML activities by the concrete synthesized ones.
 
-	We will only consider UML models that are \emph{valid} with respect to the Poka Yoke validator.
+	We will only consider UML models that are \emph{valid} with respect to the SynthML validator.
 	For example, UML models should not contain abstract UML activities that have nodes or control flows, and should not use double underscores `\_\_' in any names of UML elements.
 
 	\item[Petri Nets.]
@@ -235,10 +240,10 @@ The intermediate step of synthesizing a Petri Net is performed since Petri Nets 
 The field of Petri Net synthesis is developed around the \emph{theory of regions}.
 Intuitively, the idea is to find groups of locations in the input state machine that can be turned into single places in the output Petri Net.
 These groups are then called regions.
-Depending on the type of Petri Net you aim to synthesize (e.g., elementary or free-choice ones), there are slightly different requirements of what exactly constitutes a region.
+Depending on the type of Petri Net you aim to synthesize (e.g., elementary or free-choice ones), there are slightly different requirements for what exactly constitutes a region.
 Petrify is essentially an implementation of the theory of regions, and is able to synthesize both general and free-choice Petri Nets, among other kinds.
 
-We will not explain supervisory controller synthesis and Petri Net synthesis here.
+We will not explain supervisory controller synthesis and Petri Net synthesis in this document.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             .
 More information on these types of syntheses can be found on the webpages of Eclipse ESCET and Petrify linked above.
 
 \section{Activity Synthesis}
@@ -286,7 +291,7 @@ In case any cycles are detected in these dependencies, then the synthesis algori
 		\Return \var{umlActivity_{guards}}\;
 	}
 
-	\caption{Synthesis of Poka Yoke activity diagrams}
+	\caption{Synthesis of SynthML activity diagrams}
 	\label{alg:activity-synthesis}
 \end{algorithm}
 
@@ -295,19 +300,19 @@ The remainder of this section explains all operations in \synthSingle.
 A short explanation is given for every operation, followed by the motivation for having that operation, followed by its preconditions and postconditions.
 
 \begin{example*}[Running Example]
-Let us consider a simple UML model, named \texttt{BitFlipper}, where we aim at synthesizing an activity that flips a single nondeterministically initialized boolean value.
-The UML model is composed of a single class \texttt{ActiveClass}, which contains two properties: a boolean named \texttt{init}, initialized as \texttt{false}, denoting whether the system is initialized, and a boolean named \texttt{bit}, not initialized.
+Let us consider a simple UML model, named \texttt{BitFlipper}, where we aim at synthesizing an activity that flips a single nondeterministically initialized Boolean value.
+The UML model is composed of a single class \texttt{ActiveClass}, which contains two properties: a Boolean named \texttt{init}, initialized as \texttt{false}, denoting whether the system is initialized, and a Boolean named \texttt{bit}, not initialized.
 The class also contains an abstract activity called \texttt{ActivityMain}, and two atomic opaque behaviors named \texttt{flip} and \texttt{initialize}.
 The activity has precondition \texttt{not init}, and postcondition \texttt{bit and init}.
-The \texttt{flip} opaque behavior's effect is to flip the boolean \texttt{bit} after it is initialized: its guard is \texttt{init}, whilst its effects consist of a single assignment \texttt{bit := not bit}.
+The \texttt{flip} opaque behavior's effect is to flip the Boolean \texttt{bit} after it is initialized: its guard is \texttt{init}, whilst its effects consist of a single assignment \texttt{bit := not bit}.
 The opaque behavior \texttt{initialize} turns \texttt{init} from \texttt{false} to \texttt{true}, and sets \texttt{bit} either to \texttt{true} or \texttt{false} in a nondeterministic fashion.
-The model outline in the PokaYoke UML Designer environment is depicted in Fig.~\ref{fig:bitflipper-uml-designer}.
+The model outline in the SynthML environment is depicted in Fig.~\ref{fig:bitflipper-uml-designer}.
 \end{example*}
 
 \begin{figure}[t!]
     \centering
     \includegraphics[width=0.75\linewidth]{images/bitflipper_uml.png}
-    \caption{The \texttt{BitFlipper} model visualized within the PokaYoke UML Designer environment.}
+    \caption{The \texttt{BitFlipper} model visualized within the SynthML environment.}
     \label{fig:bitflipper-uml-designer}
 \end{figure}
 
@@ -335,6 +340,7 @@ This operation produces a CIF specification that:
 	\item Contains a CIF plant for the single UML class.
 	This plant is a flower automaton, containing one location that is initial and marked, and only self-loops.
 	\item Contains a discrete variable for every UML class property.
+	Composite data types are flattened, meaning that their internal structure is broken down so that all nested properties are extracted and translated into a discrete variable as stand-alone properties.
 	If a UML class property has a default value, then this value is translated as the default value of the CIF variable.
 	If not, then the corresponding CIF variable is specified to have any value initially, with the `in any' CIF construct.
 	\item Contains CIF event declarations corresponding to all defined UML opaque behaviors.
@@ -429,8 +435,8 @@ The translation of the UML \texttt{BitFlipper} model to CIF is shown in Listing~
 In the CIF model, first the events are defined, either controllable (denoting the start of an action) or uncontrollable (usually describing a nondeterministic or external event).
 The \texttt{BitFlipper} CIF model provides two controllable events, \texttt{flip} and \texttt{initialize} that relate to starting the opaque behaviors defined in the UML model.
 Two uncontrollable events denote the two nondeterministic results of the \texttt{bit} initialization.
-The boolean property \texttt{bit} is transformed into a discrete boolean (\texttt{disc bool}) variable, which is nondeterministically initialized (denoted \texttt{in any}), whereas \texttt{init} is initialized as \texttt{false}.
-The activity precondition and postcondition are translated into algebraic boolean variables.
+The Boolean property \texttt{bit} is transformed into a discrete Boolean (\texttt{disc bool}) variable, which is nondeterministically initialized (denoted \texttt{in any}), whereas \texttt{init} is initialized as \texttt{false}.
+The activity precondition and postcondition are translated into algebraic Boolean variables.
 Then we define the initial state predicate to be the algebraic \texttt{\_\_precondition} variable, to indicate the initial states for performing synthesis.
 Moreover, we define the marked state predicate to be the algebraic \texttt{\_\_postcondition} variable, to indicate that a postcondition state must always be reachable in the controlled system.
 The auxiliary variable \texttt{\_\_activeAction} is used to connect the start and end events of atomic nondeterministic actions, in this case \texttt{initialize}.
@@ -978,8 +984,6 @@ Let $\mathit{umlNode}$ be the UML activity node for which the CIF/BDD edge $\mat
 Then we can translate $\texttt{extra}(\mathit{edge})$ to incoming/outgoing guards of the incoming/outgoing control flows of $\mathit{umlNode}$.
 This translation is done by case distinction on the activity node type:
 \begin{itemize}
-	\item If $\mathit{umlNode}$ is a fork node, then $\texttt{extra}(\mathit{edge})$ will become the outgoing guard of the single incoming control flow of $\mathit{umlNode}$.
-	By doing so, $\mathit{umlNode}$ can only be executed if it can take a token from its single incoming control flow, to which we have added the extra guard.
 	\item If $\mathit{umlNode}$ is a fork node, then $\texttt{extra}(\mathit{edge})$ will become the outgoing guard of the single incoming control flow of $\mathit{umlNode}$.
 	Note that an execution of $\mathit{umlNode}$ is atomic and has no guards nor effects.
 	Therefore, $\mathit{umlNode}$ can only be executed if it can take a token from its single incoming control flow, to which we have added the extra guard.
