@@ -433,10 +433,6 @@ public class ActivityHelper {
      * @return The created lock handling activity.
      */
     public static Activity createLockHanderActivity(SignalEvent acquireEvent, CifContextManager ctxManager) {
-        // Create a Python list of all property names to record.
-        List<String> csvLogColumns = Stream.concat(Stream.of("call_stack"), ctxManager.getGlobalContext()
-                .getAllDeclaredProperties().stream().map(property -> property.getName()).sorted()).toList();
-
         Signal acquireSignal = acquireEvent.getSignal();
         Property acquireParameter = acquireSignal.getOwnedAttributes().get(0);
 
@@ -456,6 +452,10 @@ public class ActivityHelper {
         initToOuterMergeFlow.setActivity(activity);
         initToOuterMergeFlow.setSource(initNode);
         initToOuterMergeFlow.setTarget(outerMergeNode);
+
+        // Create a Python list of all property names to record.
+        List<String> csvLogColumns = Stream.concat(Stream.of("call_stack"), ctxManager.getGlobalContext()
+                .getAllDeclaredProperties().stream().map(property -> property.getName()).sorted()).toList();
 
         // Define the log file creator node.
         String collectStatePy = csvLogColumns.stream().map(name -> "str(globals()['" + name + "'])")
