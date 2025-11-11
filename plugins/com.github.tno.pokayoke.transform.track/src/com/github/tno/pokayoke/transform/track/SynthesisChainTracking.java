@@ -110,8 +110,11 @@ public class SynthesisChainTracking {
     public void addControlFlowGuards(ActivityNode sourceNode, ActivityNode targetNode, String incomingGuard,
             String outgoingGuard)
     {
-        activityNodesToControlFlowGuards.put(new Pair<>(sourceNode, targetNode),
+        Pair<String, String> oldValue = activityNodesToControlFlowGuards.put(new Pair<>(sourceNode, targetNode),
                 new Pair<>(incomingGuard, outgoingGuard));
+        Verify.verify(oldValue == null,
+                String.format("Nodes '%s' and '%s' have multiple control flows connecting them.", sourceNode.getName(),
+                        targetNode.getName()));
     }
 
     /**
