@@ -289,14 +289,10 @@ public class PNML2UMLTranslator {
         // target nodes.
         RedefinableElement concreteSource = tracker.getOriginalUmlElement(sourceNode);
         RedefinableElement concreteTarget = tracker.getOriginalUmlElement(targetNode);
-        if (concreteSource != null && concreteTarget != null) {
-            Pair<String, String> incomingOutgoingGuards = tracker.getControlFlowGuards((ActivityNode)concreteSource,
-                    (ActivityNode)concreteTarget);
-
-            if (incomingOutgoingGuards != null) {
-                PokaYokeUmlProfileUtil.setIncomingGuard(controlFlow, incomingOutgoingGuards.left);
-                PokaYokeUmlProfileUtil.setOutgoingGuard(controlFlow, incomingOutgoingGuards.right);
-            }
+        Pair<String, String> incomingOutgoingGuards = tracker.getControlFlowGuards(concreteSource, concreteTarget);
+        if (incomingOutgoingGuards != null) {
+            PokaYokeUmlProfileUtil.setIncomingGuard(controlFlow, incomingOutgoingGuards.left);
+            PokaYokeUmlProfileUtil.setOutgoingGuard(controlFlow, incomingOutgoingGuards.right);
         }
     }
 
