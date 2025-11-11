@@ -1281,20 +1281,17 @@ public class SynthesisChainTracking {
 
     /**
      * Return {@code true} if the given activity node can be traced to a control node contained in (another, not the
-     * synthesized) concrete activity. If the traced UML element is {@code null}, it is assumed that the given activity
-     * node is a new UML element created purposely for the synthesized activity, so returns {@code false}. Similarly, if
-     * the given activity node traces back to a non-control node, returns {@code false}. Return {@code true} otherwise.
+     * synthesized) concrete activity. Note that it returns {@code false} if the traced UML element is {@code null},
+     * since it is assumed that the given activity node is a new UML element created purposely for the synthesized
+     * activity.
      *
      * @param node The activity node.
-     * @return {@code true} if the given activity node can be traced to a concrete activity's control node.
+     * @return {@code true} if the given activity node can be traced to a concrete activity's control node;
+     *     {@code false} otherwise.
      */
     public boolean isConcreteControlNode(ActivityNode node) {
         RedefinableElement originalUmlElement = getOriginalUmlElement(node);
-
-        if (originalUmlElement == null || !(originalUmlElement instanceof ControlNode)) {
-            return false;
-        }
-        return true;
+        return originalUmlElement instanceof ControlNode;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
