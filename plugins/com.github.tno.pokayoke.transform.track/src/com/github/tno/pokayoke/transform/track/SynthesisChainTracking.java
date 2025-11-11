@@ -150,10 +150,17 @@ public class SynthesisChainTracking {
      *
      * @param sourceNode The source activity node.
      * @param targetNode The target activity node.
-     * @return A pair containing incoming and outgoing guards.
+     * @return A pair containing incoming and outgoing guards, or {@code null} if the pair (source node, target node) is
+     *     not present in the control flow guards map. The guards can be {@code null} if the control flow between the
+     *     source node and target node had no guard.
      */
-    public Pair<String, String> getControlFlowGuards(ActivityNode sourceNode, ActivityNode targetNode) {
-        return activityNodesToControlFlowGuards.get(new Pair<>(sourceNode, targetNode));
+    public Pair<String, String> getControlFlowGuards(RedefinableElement sourceNode, RedefinableElement targetNode) {
+        // If both input elements are activity nodes, look for their control flow in the map. Otherwise, return 'null'.
+        if (sourceNode instanceof ActivityNode && targetNode instanceof ActivityNode) {
+            return activityNodesToControlFlowGuards.get(new Pair<>((ActivityNode)sourceNode, (ActivityNode)targetNode));
+        } else {
+            return null;
+        }
     }
 
     /**
