@@ -121,7 +121,7 @@ branch = random.choice(branches) if len(branches) > 0 else -1
             <outputValue xmi:id="58" name="requester" outgoing="35">
               <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
             </outputValue>
-            <body>import uuid&#xD;
+            <body>import uuid
 requester = 'do1__start_' + str(uuid.uuid4())</body>
           </node>
           <node xmi:type="uml:ForkNode" xmi:id="59" incoming="35" outgoing="36 37"/>
@@ -144,17 +144,16 @@ requester = 'do1__start_' + str(uuid.uuid4())</body>
 pass
 active = ''
 isSuccessful = guard
-current_exec = [e for e in self.execution if e.refSession == _session_][0]&#xD;
-chain = []&#xD;
-while current_exec:&#xD;
-    s = str(current_exec)&#xD;
-    s = s[:s.rfind('@')] if '@' in s else s&#xD;
-    if s.endswith(&quot;(classifier behavior)&quot;):&#xD;
-        s = s[:-len(&quot;(classifier behavior)&quot;)]&#xD;
-    chain.insert(0, s)&#xD;
-    current_exec = current_exec.parentExecution&#xD;
-call_stack = &quot;->&quot;.join(chain)&#xD;
-</body>
+current_exec = [tmp__e for tmp__e in self.execution if tmp__e.refSession == _session_][0]
+tmp__chain = []
+while current_exec:
+    tmp__s = str(current_exec)
+    tmp__s = tmp__s[:tmp__s.rfind('@')] if '@' in tmp__s else tmp__s
+    if tmp__s.endswith(&quot;(classifier behavior)&quot;):
+        tmp__s = tmp__s[:-len(&quot;(classifier behavior)&quot;)]
+    tmp__chain.insert(0, tmp__s)
+    current_exec = current_exec.parentExecution
+call_stack = &quot;->&quot;.join(tmp__chain)</body>
           </node>
           <node xmi:type="uml:DecisionNode" xmi:id="67" incoming="44 45" outgoing="46 48"/>
           <node xmi:type="uml:ActivityFinalNode" xmi:id="68" incoming="46"/>
@@ -227,7 +226,7 @@ call_stack = &quot;->&quot;.join(chain)&#xD;
             <outputValue xmi:id="101" name="requester" outgoing="78">
               <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
             </outputValue>
-            <body>import uuid&#xD;
+            <body>import uuid
 requester = 'do1__end_' + str(uuid.uuid4())</body>
           </node>
           <node xmi:type="uml:ForkNode" xmi:id="102" incoming="78" outgoing="79 80"/>
@@ -250,17 +249,16 @@ requester = 'do1__end_' + str(uuid.uuid4())</body>
 pass
 active = ''
 isSuccessful = guard
-current_exec = [e for e in self.execution if e.refSession == _session_][0]&#xD;
-chain = []&#xD;
-while current_exec:&#xD;
-    s = str(current_exec)&#xD;
-    s = s[:s.rfind('@')] if '@' in s else s&#xD;
-    if s.endswith(&quot;(classifier behavior)&quot;):&#xD;
-        s = s[:-len(&quot;(classifier behavior)&quot;)]&#xD;
-    chain.insert(0, s)&#xD;
-    current_exec = current_exec.parentExecution&#xD;
-call_stack = &quot;->&quot;.join(chain)&#xD;
-</body>
+current_exec = [tmp__e for tmp__e in self.execution if tmp__e.refSession == _session_][0]
+tmp__chain = []
+while current_exec:
+    tmp__s = str(current_exec)
+    tmp__s = tmp__s[:tmp__s.rfind('@')] if '@' in tmp__s else tmp__s
+    if tmp__s.endswith(&quot;(classifier behavior)&quot;):
+        tmp__s = tmp__s[:-len(&quot;(classifier behavior)&quot;)]
+    tmp__chain.insert(0, tmp__s)
+    current_exec = current_exec.parentExecution
+call_stack = &quot;->&quot;.join(tmp__chain)</body>
           </node>
           <node xmi:type="uml:DecisionNode" xmi:id="110" incoming="87 88" outgoing="89 91"/>
           <node xmi:type="uml:ActivityFinalNode" xmi:id="111" incoming="89"/>
@@ -342,7 +340,7 @@ call_stack = &quot;->&quot;.join(chain)&#xD;
             <outputValue xmi:id="152" name="requester" outgoing="129">
               <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
             </outputValue>
-            <body>import uuid&#xD;
+            <body>import uuid
 requester = 'do2__start_' + str(uuid.uuid4())</body>
           </node>
           <node xmi:type="uml:ForkNode" xmi:id="153" incoming="129" outgoing="130 131"/>
@@ -365,17 +363,16 @@ requester = 'do2__start_' + str(uuid.uuid4())</body>
 pass
 active = ''
 isSuccessful = guard
-current_exec = [e for e in self.execution if e.refSession == _session_][0]&#xD;
-chain = []&#xD;
-while current_exec:&#xD;
-    s = str(current_exec)&#xD;
-    s = s[:s.rfind('@')] if '@' in s else s&#xD;
-    if s.endswith(&quot;(classifier behavior)&quot;):&#xD;
-        s = s[:-len(&quot;(classifier behavior)&quot;)]&#xD;
-    chain.insert(0, s)&#xD;
-    current_exec = current_exec.parentExecution&#xD;
-call_stack = &quot;->&quot;.join(chain)&#xD;
-</body>
+current_exec = [tmp__e for tmp__e in self.execution if tmp__e.refSession == _session_][0]
+tmp__chain = []
+while current_exec:
+    tmp__s = str(current_exec)
+    tmp__s = tmp__s[:tmp__s.rfind('@')] if '@' in tmp__s else tmp__s
+    if tmp__s.endswith(&quot;(classifier behavior)&quot;):
+        tmp__s = tmp__s[:-len(&quot;(classifier behavior)&quot;)]
+    tmp__chain.insert(0, tmp__s)
+    current_exec = current_exec.parentExecution
+call_stack = &quot;->&quot;.join(tmp__chain)</body>
           </node>
           <node xmi:type="uml:DecisionNode" xmi:id="161" incoming="138 139" outgoing="140 142"/>
           <node xmi:type="uml:ActivityFinalNode" xmi:id="162" incoming="140"/>
@@ -448,7 +445,7 @@ call_stack = &quot;->&quot;.join(chain)&#xD;
             <outputValue xmi:id="195" name="requester" outgoing="172">
               <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
             </outputValue>
-            <body>import uuid&#xD;
+            <body>import uuid
 requester = 'do2__end_' + str(uuid.uuid4())</body>
           </node>
           <node xmi:type="uml:ForkNode" xmi:id="196" incoming="172" outgoing="173 174"/>
@@ -471,17 +468,16 @@ requester = 'do2__end_' + str(uuid.uuid4())</body>
 pass
 active = ''
 isSuccessful = guard
-current_exec = [e for e in self.execution if e.refSession == _session_][0]&#xD;
-chain = []&#xD;
-while current_exec:&#xD;
-    s = str(current_exec)&#xD;
-    s = s[:s.rfind('@')] if '@' in s else s&#xD;
-    if s.endswith(&quot;(classifier behavior)&quot;):&#xD;
-        s = s[:-len(&quot;(classifier behavior)&quot;)]&#xD;
-    chain.insert(0, s)&#xD;
-    current_exec = current_exec.parentExecution&#xD;
-call_stack = &quot;->&quot;.join(chain)&#xD;
-</body>
+current_exec = [tmp__e for tmp__e in self.execution if tmp__e.refSession == _session_][0]
+tmp__chain = []
+while current_exec:
+    tmp__s = str(current_exec)
+    tmp__s = tmp__s[:tmp__s.rfind('@')] if '@' in tmp__s else tmp__s
+    if tmp__s.endswith(&quot;(classifier behavior)&quot;):
+        tmp__s = tmp__s[:-len(&quot;(classifier behavior)&quot;)]
+    tmp__chain.insert(0, tmp__s)
+    current_exec = current_exec.parentExecution
+call_stack = &quot;->&quot;.join(tmp__chain)</body>
           </node>
           <node xmi:type="uml:DecisionNode" xmi:id="204" incoming="181 182" outgoing="183 185"/>
           <node xmi:type="uml:ActivityFinalNode" xmi:id="205" incoming="183"/>
@@ -537,14 +533,14 @@ call_stack = &quot;->&quot;.join(chain)&#xD;
         <node xmi:type="uml:InitialNode" xmi:id="240" outgoing="238"/>
         <node xmi:type="uml:OpaqueAction" xmi:id="241" incoming="238" outgoing="239">
           <language>Python</language>
-          <body>import os&#xD;
-&#xD;
-if not os.path.exists('SynthML-Cameo-logs'):&#xD;
-	os.makedirs('SynthML-Cameo-logs')&#xD;
-from datetime import datetime&#xD;
-csv_export_location = &quot;SynthML-Cameo-logs\log &quot; + datetime.now().strftime(&quot;%Y-%m-%d %H-%M-%S.%f&quot;) + &quot;.csv&quot;&#xD;
-with open(csv_export_location, &quot;w&quot;) as f:&#xD;
-	f.write(&quot;,&quot;.join(['call_stack', ]) + &quot;\n&quot;)</body>
+          <body>import os
+from datetime import datetime
+if not os.path.exists('SynthML-Cameo-logs'):
+    os.makedirs('SynthML-Cameo-logs')
+csv_export_location = &quot;SynthML-Cameo-logs/log &quot; + datetime.now().strftime(&quot;%Y-%m-%d %H-%M-%S.%f&quot;) + &quot;.csv&quot;
+with open(csv_export_location, &quot;w&quot;) as f:
+    f.write(&quot;call_stack\n&quot;)
+    f.write(&quot;,&quot;.join([str(globals()['call_stack'])]) + &quot;\n&quot;)</body>
         </node>
         <node xmi:type="uml:ActivityFinalNode" xmi:id="242" incoming="239"/>
       </ownedBehavior>
@@ -554,8 +550,8 @@ with open(csv_export_location, &quot;w&quot;) as f:&#xD;
         <node xmi:type="uml:InitialNode" xmi:id="246" outgoing="244"/>
         <node xmi:type="uml:OpaqueAction" xmi:id="247" incoming="244" outgoing="245">
           <language>Python</language>
-          <body>with open(csv_export_location, &quot;a&quot;) as f:&#xD;
-	f.write(&quot;,&quot;.join([str(globals()[name]) for name in ['call_stack', ]]) + &quot;\n&quot;)</body>
+          <body>with open(csv_export_location, &quot;a&quot;) as f:
+	f.write(&quot;,&quot;.join([str(globals()['call_stack'])]) + &quot;\n&quot;)</body>
         </node>
         <node xmi:type="uml:ActivityFinalNode" xmi:id="248" incoming="245"/>
       </ownedBehavior>

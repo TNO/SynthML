@@ -112,7 +112,7 @@
           <outputValue xmi:id="62" name="requester" outgoing="39">
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
           </outputValue>
-          <body>import uuid&#xD;
+          <body>import uuid
 requester = 'operation_' + str(uuid.uuid4())</body>
         </node>
         <node xmi:type="uml:ForkNode" xmi:id="63" incoming="39" outgoing="40 41"/>
@@ -149,17 +149,16 @@ if guard:
 pass
 active = ''
 isSuccessful = guard
-current_exec = [e for e in self.execution if e.refSession == _session_][0]&#xD;
-chain = []&#xD;
-while current_exec:&#xD;
-    s = str(current_exec)&#xD;
-    s = s[:s.rfind('@')] if '@' in s else s&#xD;
-    if s.endswith(&quot;(classifier behavior)&quot;):&#xD;
-        s = s[:-len(&quot;(classifier behavior)&quot;)]&#xD;
-    chain.insert(0, s)&#xD;
-    current_exec = current_exec.parentExecution&#xD;
-call_stack = &quot;->&quot;.join(chain)&#xD;
-</body>
+current_exec = [tmp__e for tmp__e in self.execution if tmp__e.refSession == _session_][0]
+tmp__chain = []
+while current_exec:
+    tmp__s = str(current_exec)
+    tmp__s = tmp__s[:tmp__s.rfind('@')] if '@' in tmp__s else tmp__s
+    if tmp__s.endswith(&quot;(classifier behavior)&quot;):
+        tmp__s = tmp__s[:-len(&quot;(classifier behavior)&quot;)]
+    tmp__chain.insert(0, tmp__s)
+    current_exec = current_exec.parentExecution
+call_stack = &quot;->&quot;.join(tmp__chain)</body>
         </node>
         <node xmi:type="uml:DecisionNode" xmi:id="71" incoming="48 49" outgoing="50 52"/>
         <node xmi:type="uml:ActivityFinalNode" xmi:id="72" incoming="50"/>
@@ -185,14 +184,14 @@ call_stack = &quot;->&quot;.join(chain)&#xD;
         <node xmi:type="uml:InitialNode" xmi:id="88" outgoing="86"/>
         <node xmi:type="uml:OpaqueAction" xmi:id="89" incoming="86" outgoing="87">
           <language>Python</language>
-          <body>import os&#xD;
-&#xD;
-if not os.path.exists('SynthML-Cameo-logs'):&#xD;
-	os.makedirs('SynthML-Cameo-logs')&#xD;
-from datetime import datetime&#xD;
-csv_export_location = &quot;SynthML-Cameo-logs\log &quot; + datetime.now().strftime(&quot;%Y-%m-%d %H-%M-%S.%f&quot;) + &quot;.csv&quot;&#xD;
-with open(csv_export_location, &quot;w&quot;) as f:&#xD;
-	f.write(&quot;,&quot;.join(['call_stack', 'field1', 'field2', 'field3', 'field4', 'field5']) + &quot;\n&quot;)</body>
+          <body>import os
+from datetime import datetime
+if not os.path.exists('SynthML-Cameo-logs'):
+    os.makedirs('SynthML-Cameo-logs')
+csv_export_location = &quot;SynthML-Cameo-logs/log &quot; + datetime.now().strftime(&quot;%Y-%m-%d %H-%M-%S.%f&quot;) + &quot;.csv&quot;
+with open(csv_export_location, &quot;w&quot;) as f:
+    f.write(&quot;call_stack,field1,field2,field3,field4,field5\n&quot;)
+    f.write(&quot;,&quot;.join([str(globals()['call_stack']),str(globals()['field1']),str(globals()['field2']),str(globals()['field3']),str(globals()['field4']),str(globals()['field5'])]) + &quot;\n&quot;)</body>
         </node>
         <node xmi:type="uml:ActivityFinalNode" xmi:id="90" incoming="87"/>
       </ownedBehavior>
@@ -202,8 +201,8 @@ with open(csv_export_location, &quot;w&quot;) as f:&#xD;
         <node xmi:type="uml:InitialNode" xmi:id="94" outgoing="92"/>
         <node xmi:type="uml:OpaqueAction" xmi:id="95" incoming="92" outgoing="93">
           <language>Python</language>
-          <body>with open(csv_export_location, &quot;a&quot;) as f:&#xD;
-	f.write(&quot;,&quot;.join([str(globals()[name]) for name in ['call_stack', 'field1', 'field2', 'field3', 'field4', 'field5']]) + &quot;\n&quot;)</body>
+          <body>with open(csv_export_location, &quot;a&quot;) as f:
+	f.write(&quot;,&quot;.join([str(globals()['call_stack']),str(globals()['field1']),str(globals()['field2']),str(globals()['field3']),str(globals()['field4']),str(globals()['field5'])]) + &quot;\n&quot;)</body>
         </node>
         <node xmi:type="uml:ActivityFinalNode" xmi:id="96" incoming="93"/>
       </ownedBehavior>
