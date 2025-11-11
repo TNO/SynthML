@@ -39,6 +39,7 @@ import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.transform.track.SynthesisChainTracking;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Verify;
 
 import fr.lip6.move.pnml.framework.utils.exception.ImportException;
 import fr.lip6.move.pnml.framework.utils.exception.InvalidIDException;
@@ -306,6 +307,13 @@ public class PNML2UMLTranslator {
                 if (node.getOutgoings().size() > 1 && !(node instanceof ForkNode)) {
                     introduceForkNode(node);
                 }
+            } else {
+                // Sanity check: the node is a new node, created at this stage.
+                Verify.verify(!tracker.belongsToSynthesizedActivity(node),
+                        String.format(
+                                "Node '%s' belongs to the synthesized activity but it is not translated "
+                                        + "as an opaque action and it is not a control node of a concrete activity.",
+                                node.getName()));
             }
         }
     }
