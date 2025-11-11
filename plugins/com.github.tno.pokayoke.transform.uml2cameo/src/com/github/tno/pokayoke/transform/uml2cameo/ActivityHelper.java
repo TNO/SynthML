@@ -467,7 +467,7 @@ public class ActivityHelper {
                 .collect(Collectors.joining(","));
         String writeCSVHeaderPy = """
                 from datetime import datetime
-                csv_export_location = "SynthML-Cameo-logs\\\\log " + datetime.now().strftime("%%Y-%%m-%%d %%H-%%M-%%S.%%f") + ".csv"
+                csv_export_location = "SynthML-Cameo-logs/log " + datetime.now().strftime("%%Y-%%m-%%d %%H-%%M-%%S.%%f") + ".csv"
                 with open(csv_export_location, "w") as f:
                     f.write("%s\\n")
                     f.write(",".join([%s]) + "\\n")"""
