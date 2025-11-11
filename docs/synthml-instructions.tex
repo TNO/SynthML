@@ -159,10 +159,10 @@ This represents an idealized scenario.
 What happens if station B is not empty at the beginning of this activity? 
 Should the activity wait until station B is available (a clearly sub-optimal solution), or should it also support this case?
 This is where usage preconditions come into play.
-They allow the synthesized activity to operate under for a different set of initial condition then those assumed during the synthesis phase.
-These preconditions define a more common use of the activity: in this case, the usage precondition consider station B to be either empty or busy, while the synthesis preconditions assume an empty station B.
+They allow the synthesized activity to operate under for a different set of initial condition than those assumed during the synthesis phase, taking into account that this called activity may run concurrently with other activities.
+These preconditions define a more common use of the activity: in this case, the usage precondition considers station B to be either empty or busy, while the synthesis preconditions assume an empty station B.
 
-When preconditions or postconditions are not defined, they are evaluated as `true' by default.
+When preconditions or postconditions are not defined, they default to `true'.
 Additionally, users can specify constraints, (see \S\ref{subsec:constraints}), defining additional requirements, and occurrence constraints (see \S\ref{subsec:occurrence}), limiting the number of times an element can be called by the activity.
 Finally, the synthesis procedure employs opaque behaviors (see \S\ref{subsec:opaque-behavior}) as building blocks to synthesize an activity.
 
