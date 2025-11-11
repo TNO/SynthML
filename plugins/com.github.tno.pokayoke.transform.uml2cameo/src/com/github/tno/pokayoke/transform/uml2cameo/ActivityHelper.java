@@ -458,21 +458,19 @@ public class ActivityHelper {
         initToOuterMergeFlow.setTarget(outerMergeNode);
 
         // Define the log file creator node.
-        String createNewLogsFilePy = """
-                import os
-                if not os.path.exists('SynthML-Cameo-logs'):
-                    os.makedirs('SynthML-Cameo-logs')
-                """;
         String collectStatePy = csvLogColumns.stream().map(name -> "str(globals()['" + name + "'])")
                 .collect(Collectors.joining(","));
-        String writeCSVHeaderPy = """
+        String createNewLogsFilePy = """
+                import os
                 from datetime import datetime
+                if not os.path.exists('SynthML-Cameo-logs'):
+                    os.makedirs('SynthML-Cameo-logs')
                 csv_export_location = "SynthML-Cameo-logs/log " + datetime.now().strftime("%%Y-%%m-%%d %%H-%%M-%%S.%%f") + ".csv"
                 with open(csv_export_location, "w") as f:
                     f.write("%s\\n")
                     f.write(",".join([%s]) + "\\n")"""
                 .formatted(String.join(",", csvLogColumns), collectStatePy);
-        insertEffectsActivity(initToOuterMergeFlow, "init_logs", createNewLogsFilePy + writeCSVHeaderPy);
+        insertEffectsActivity(initToOuterMergeFlow, "init_logs", createNewLogsFilePy);
 
         // Define the node that accepts acquire signals.
         AcceptEventAction acceptAcquireNode = FileHelper.FACTORY.createAcceptEventAction();
