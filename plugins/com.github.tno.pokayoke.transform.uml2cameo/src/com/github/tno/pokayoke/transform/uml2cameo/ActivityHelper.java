@@ -250,16 +250,16 @@ public class ActivityHelper {
         guardAndEffectNode.getLanguages().add("Python");
         String randomImport = effects.size() > 1 ? "import random\n" : "";
         String updateCallStackPy = """
-                current_exec = [e for e in self.execution if e.refSession == _session_][0]
-                chain = []
+                current_exec = [tmp__e for tmp__e in self.execution if tmp__e.refSession == _session_][0]
+                tmp__chain = []
                 while current_exec:
-                    s = str(current_exec)
-                    s = s[:s.rfind('@')] if '@' in s else s
-                    if s.endswith("(classifier behavior)"):
-                        s = s[:-len("(classifier behavior)")]
-                    chain.insert(0, s)
+                    tmp__s = str(current_exec)
+                    tmp__s = tmp__s[:tmp__s.rfind('@')] if '@' in tmp__s else tmp__s
+                    if tmp__s.endswith("(classifier behavior)"):
+                        tmp__s = tmp__s[:-len("(classifier behavior)")]
+                    tmp__chain.insert(0, tmp__s)
                     current_exec = current_exec.parentExecution
-                call_stack = "->".join(chain)""";
+                call_stack = "->".join(tmp__chain)""";
         String guardAndEffectBody = String.format("%sguard = %s\n%s\nactive = ''\nisSuccessful = guard\n%s",
                 randomImport, guard, effectBody, updateCallStackPy);
         guardAndEffectNode.getBodies().add(guardAndEffectBody);
