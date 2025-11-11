@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.Range;
 import org.eclipse.uml2.uml.AcceptEventAction;
@@ -177,7 +178,7 @@ public class ActivityHelper {
         // Define the requester value specification node.
         OpaqueAction requesterValueNode = FileHelper.FACTORY.createOpaqueAction();
         requesterValueNode.setActivity(activity);
-        requesterValueNode.getBodies().add("import uuid\r\n" + "requester = \'" + name + "_\' + str(uuid.uuid4())");
+        requesterValueNode.getBodies().add("import uuid\n" + "requester = \'" + name + "_\' + str(uuid.uuid4())");
         requesterValueNode.getLanguages().add("Python");
         OutputPin requesterValueOutput = requesterValueNode.createOutputValue("requester",
                 UmlPrimitiveType.STRING.load(acquire));
@@ -248,12 +249,17 @@ public class ActivityHelper {
         guardAndEffectNode.setActivity(activity);
         guardAndEffectNode.getLanguages().add("Python");
         String randomImport = effects.size() > 1 ? "import random\n" : "";
-        String updateCallStackPy = "current_exec = [e for e in self.execution if e.refSession == _session_][0]\r\n"
-                + "chain = []\r\n" + "while current_exec:\r\n" + "    s = str(current_exec)\r\n"
-                + "    s = s[:s.rfind('@')] if '@' in s else s\r\n"
-                + "    if s.endswith(\"(classifier behavior)\"):\r\n"
-                + "        s = s[:-len(\"(classifier behavior)\")]\r\n" + "    chain.insert(0, s)\r\n"
-                + "    current_exec = current_exec.parentExecution\r\n" + "call_stack = \"->\".join(chain)\r\n";
+        String updateCallStackPy = """
+                current_exec = [e for e in self.execution if e.refSession == _session_][0]
+                chain = []
+                while current_exec:
+                    s = str(current_exec)
+                    s = s[:s.rfind('@')] if '@' in s else s
+                    if s.endswith("(classifier behavior)"):
+                        s = s[:-len("(classifier behavior)")]
+                    chain.insert(0, s)
+                    current_exec = current_exec.parentExecution
+                call_stack = "->".join(chain)""";
         String guardAndEffectBody = String.format("%sguard = %s\n%s\nactive = ''\nisSuccessful = guard\n%s",
                 randomImport, guard, effectBody, updateCallStackPy);
         guardAndEffectNode.getBodies().add(guardAndEffectBody);
@@ -428,10 +434,8 @@ public class ActivityHelper {
      */
     public static Activity createLockHanderActivity(SignalEvent acquireEvent, CifContextManager ctxManager) {
         // Create a Python list of all property names to record.
-        String csvLogColumnsPy = "[\'call_stack\', "
-                + ctxManager.getGlobalContext().getAllDeclaredProperties().stream()
-                        .map(property -> "'" + property.getName() + "'").sorted().collect(Collectors.joining(", "))
-                + "]";
+        List<String> csvLogColumns = Stream.concat(Stream.of("call_stack"), ctxManager.getGlobalContext()
+                .getAllDeclaredProperties().stream().map(property -> property.getName()).sorted()).toList();
 
         Signal acquireSignal = acquireEvent.getSignal();
         Property acquireParameter = acquireSignal.getOwnedAttributes().get(0);
@@ -454,12 +458,20 @@ public class ActivityHelper {
         initToOuterMergeFlow.setTarget(outerMergeNode);
 
         // Define the log file creator node.
-        String createNewLogsFilePy = "import os\r\n\r\nif not os.path.exists('SynthML-Cameo-logs'):\r\n\tos.makedirs('SynthML-Cameo-logs')\r\n";
-        String writeCSVHeaderPy = String.format(
-                "from datetime import datetime\r\ncsv_export_location = \"SynthML-Cameo-logs\\log \" + datetime.now()."
-                        + "strftime(\"%%Y-%%m-%%d %%H-%%M-%%S.%%f\") + \".csv\"\r\nwith "
-                        + "open(csv_export_location, \"w\") as f:\r\n\tf.write(\",\".join(%s) + \"\\n\")",
-                csvLogColumnsPy);
+        String createNewLogsFilePy = """
+                import os
+                if not os.path.exists('SynthML-Cameo-logs'):
+                    os.makedirs('SynthML-Cameo-logs')
+                """;
+        String collectStatePy = csvLogColumns.stream().map(name -> "str(globals()['" + name + "'])")
+                .collect(Collectors.joining(","));
+        String writeCSVHeaderPy = """
+                from datetime import datetime
+                csv_export_location = "SynthML-Cameo-logs\\\\log " + datetime.now().strftime("%%Y-%%m-%%d %%H-%%M-%%S.%%f") + ".csv"
+                with open(csv_export_location, "w") as f:
+                    f.write("%s\\n")
+                    f.write(",".join([%s]) + "\\n")"""
+                .formatted(String.join(",", csvLogColumns), collectStatePy);
         insertEffectsActivity(initToOuterMergeFlow, "init_logs", createNewLogsFilePy + writeCSVHeaderPy);
 
         // Define the node that accepts acquire signals.
@@ -558,9 +570,9 @@ public class ActivityHelper {
         decisionToWaitGuard.getLanguages().add("Python");
         decisionToOuterMergeFlow.setGuard(decisionToWaitGuard);
 
-        String appendStateToCSVPy = String
-                .format("with open(csv_export_location, \"a\") as f:\r\n\tf.write(\",\".join([str(globals()[name]) "
-                        + "for name in %s]) + \"\\n\")", csvLogColumnsPy);
+        String appendStateToCSVPy = """
+                with open(csv_export_location, "a") as f:
+                \tf.write(",".join([%s]) + "\\n")""".formatted(collectStatePy);
         insertEffectsActivity(decisionToOuterMergeFlow, "log_state", appendStateToCSVPy);
 
         // Define the control flow between the decision node and the inner merge node.
