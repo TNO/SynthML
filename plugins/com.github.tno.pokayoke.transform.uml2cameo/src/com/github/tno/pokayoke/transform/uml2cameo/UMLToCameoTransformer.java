@@ -280,15 +280,15 @@ public class UMLToCameoTransformer {
     }
 
     /**
-     * Adds a new static {@code String} property to the given UML class, with an empty-string default.
+     * Adds a new static {@code String}-typed property to the given UML class, with an empty-string default.
      *
      * <p>
      * Precondition: the class must not already define an attribute with the same name.
      * </p>
      *
-     * @param propertyName The UML attribute name to add. Must not already exist in {@code contextClass}
-     * @param contextClass The UML class to which the attribute is added
-     * @throws IllegalArgumentException If an attribute with {@code propertyName} already exists
+     * @param propertyName The UML property name to add. Must not already exist in {@code contextClass}.
+     * @param contextClass The UML class to which the property is added.
+     * @throws IllegalArgumentException If an attribute with {@code propertyName} already exists.
      */
     private void addNewStringProperty(String propertyName, Class contextClass) {
         // Verify the class does not already declare an attribute with the requested name.
