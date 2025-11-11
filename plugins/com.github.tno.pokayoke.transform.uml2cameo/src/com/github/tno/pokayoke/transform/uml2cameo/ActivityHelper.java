@@ -623,11 +623,11 @@ public class ActivityHelper {
         initToEvalFlow.setSource(initNode);
         initToEvalFlow.setTarget(effectsNode);
 
-        // Define the control flow between the evaluation node and the final node.
-        ControlFlow evalToFinalFlow = FileHelper.FACTORY.createControlFlow();
-        evalToFinalFlow.setActivity(effectsActivity);
-        evalToFinalFlow.setSource(effectsNode);
-        evalToFinalFlow.setTarget(finalNode);
+        // Define the control flow between the effects node and the final node.
+        ControlFlow effectsToFinalFlow = FileHelper.FACTORY.createControlFlow();
+        effectsToFinalFlow.setActivity(effectsActivity);
+        effectsToFinalFlow.setSource(effectsNode);
+        effectsToFinalFlow.setTarget(finalNode);
 
         // Create the call behavior node that calls the activity we just created.
         CallBehaviorAction callNode = FileHelper.FACTORY.createCallBehaviorAction();
