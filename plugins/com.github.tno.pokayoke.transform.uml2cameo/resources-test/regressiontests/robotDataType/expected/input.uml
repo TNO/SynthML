@@ -176,11 +176,11 @@ tmp__chain = []
 while current_exec:
     tmp__s = str(current_exec)
     tmp__s = tmp__s[:tmp__s.rfind('@')] if '@' in tmp__s else tmp__s
-    if tmp__s.endswith(&quot;(classifier behavior)&quot;):
-        tmp__s = tmp__s[:-len(&quot;(classifier behavior)&quot;)]
+    if tmp__s.endswith('(classifier behavior)'):
+        tmp__s = tmp__s[:-len('(classifier behavior)')]
     tmp__chain.insert(0, tmp__s)
     current_exec = current_exec.parentExecution
-call_stack = &quot;->&quot;.join(tmp__chain)</body>
+call_stack = '->'.join(tmp__chain)</body>
           </node>
           <node xmi:type="uml:DecisionNode" xmi:id="96" incoming="73 74" outgoing="75 77"/>
           <node xmi:type="uml:ActivityFinalNode" xmi:id="97" incoming="75"/>
@@ -286,11 +286,11 @@ tmp__chain = []
 while current_exec:
     tmp__s = str(current_exec)
     tmp__s = tmp__s[:tmp__s.rfind('@')] if '@' in tmp__s else tmp__s
-    if tmp__s.endswith(&quot;(classifier behavior)&quot;):
-        tmp__s = tmp__s[:-len(&quot;(classifier behavior)&quot;)]
+    if tmp__s.endswith('(classifier behavior)'):
+        tmp__s = tmp__s[:-len('(classifier behavior)')]
     tmp__chain.insert(0, tmp__s)
     current_exec = current_exec.parentExecution
-call_stack = &quot;->&quot;.join(tmp__chain)</body>
+call_stack = '->'.join(tmp__chain)</body>
           </node>
           <node xmi:type="uml:DecisionNode" xmi:id="139" incoming="116 117" outgoing="118 120"/>
           <node xmi:type="uml:ActivityFinalNode" xmi:id="140" incoming="118"/>
@@ -457,11 +457,11 @@ tmp__chain = []
 while current_exec:
     tmp__s = str(current_exec)
     tmp__s = tmp__s[:tmp__s.rfind('@')] if '@' in tmp__s else tmp__s
-    if tmp__s.endswith(&quot;(classifier behavior)&quot;):
-        tmp__s = tmp__s[:-len(&quot;(classifier behavior)&quot;)]
+    if tmp__s.endswith('(classifier behavior)'):
+        tmp__s = tmp__s[:-len('(classifier behavior)')]
     tmp__chain.insert(0, tmp__s)
     current_exec = current_exec.parentExecution
-call_stack = &quot;->&quot;.join(tmp__chain)</body>
+call_stack = '->'.join(tmp__chain)</body>
           </node>
           <node xmi:type="uml:DecisionNode" xmi:id="217" incoming="194 195" outgoing="196 198"/>
           <node xmi:type="uml:ActivityFinalNode" xmi:id="218" incoming="196"/>
@@ -564,11 +564,11 @@ tmp__chain = []
 while current_exec:
     tmp__s = str(current_exec)
     tmp__s = tmp__s[:tmp__s.rfind('@')] if '@' in tmp__s else tmp__s
-    if tmp__s.endswith(&quot;(classifier behavior)&quot;):
-        tmp__s = tmp__s[:-len(&quot;(classifier behavior)&quot;)]
+    if tmp__s.endswith('(classifier behavior)'):
+        tmp__s = tmp__s[:-len('(classifier behavior)')]
     tmp__chain.insert(0, tmp__s)
     current_exec = current_exec.parentExecution
-call_stack = &quot;->&quot;.join(tmp__chain)</body>
+call_stack = '->'.join(tmp__chain)</body>
           </node>
           <node xmi:type="uml:DecisionNode" xmi:id="260" incoming="237 238" outgoing="239 241"/>
           <node xmi:type="uml:ActivityFinalNode" xmi:id="261" incoming="239"/>
@@ -680,11 +680,11 @@ tmp__chain = []
 while current_exec:
     tmp__s = str(current_exec)
     tmp__s = tmp__s[:tmp__s.rfind('@')] if '@' in tmp__s else tmp__s
-    if tmp__s.endswith(&quot;(classifier behavior)&quot;):
-        tmp__s = tmp__s[:-len(&quot;(classifier behavior)&quot;)]
+    if tmp__s.endswith('(classifier behavior)'):
+        tmp__s = tmp__s[:-len('(classifier behavior)')]
     tmp__chain.insert(0, tmp__s)
     current_exec = current_exec.parentExecution
-call_stack = &quot;->&quot;.join(tmp__chain)</body>
+call_stack = '->'.join(tmp__chain)</body>
           </node>
           <node xmi:type="uml:DecisionNode" xmi:id="312" incoming="289 290" outgoing="291 293"/>
           <node xmi:type="uml:ActivityFinalNode" xmi:id="313" incoming="291"/>
@@ -790,11 +790,11 @@ tmp__chain = []
 while current_exec:
     tmp__s = str(current_exec)
     tmp__s = tmp__s[:tmp__s.rfind('@')] if '@' in tmp__s else tmp__s
-    if tmp__s.endswith(&quot;(classifier behavior)&quot;):
-        tmp__s = tmp__s[:-len(&quot;(classifier behavior)&quot;)]
+    if tmp__s.endswith('(classifier behavior)'):
+        tmp__s = tmp__s[:-len('(classifier behavior)')]
     tmp__chain.insert(0, tmp__s)
     current_exec = current_exec.parentExecution
-call_stack = &quot;->&quot;.join(tmp__chain)</body>
+call_stack = '->'.join(tmp__chain)</body>
           </node>
           <node xmi:type="uml:DecisionNode" xmi:id="355" incoming="332 333" outgoing="334 336"/>
           <node xmi:type="uml:ActivityFinalNode" xmi:id="356" incoming="334"/>
@@ -830,10 +830,10 @@ call_stack = &quot;->&quot;.join(tmp__chain)</body>
 from datetime import datetime
 if not os.path.exists('SynthML-Cameo-logs'):
     os.makedirs('SynthML-Cameo-logs')
-csv_export_location = &quot;SynthML-Cameo-logs/log &quot; + datetime.now().strftime(&quot;%Y-%m-%d %H-%M-%S.%f&quot;) + &quot;.csv&quot;
-with open(csv_export_location, &quot;w&quot;) as f:
-    f.write(&quot;call_stack,init,product1_position,product1_status,product2_position,product2_status,robot1_position,robot1_product_position,robot1_product_status,robot2_position,robot2_product_position,robot2_product_status\n&quot;)
-    f.write(&quot;,&quot;.join([str(globals()['call_stack']),str(globals()['init']),str(globals()['product1_position']),str(globals()['product1_status']),str(globals()['product2_position']),str(globals()['product2_status']),str(globals()['robot1_position']),str(globals()['robot1_product_position']),str(globals()['robot1_product_status']),str(globals()['robot2_position']),str(globals()['robot2_product_position']),str(globals()['robot2_product_status'])]) + &quot;\n&quot;)</body>
+csv_export_location = 'SynthML-Cameo-logs/log ' + datetime.now().strftime('%Y-%m-%d %H-%M-%S.%f') + '.csv'
+with open(csv_export_location, 'w') as f:
+    f.write('call_stack,init,product1_position,product1_status,product2_position,product2_status,robot1_position,robot1_product_position,robot1_product_status,robot2_position,robot2_product_position,robot2_product_status\n')
+    f.write(','.join([str(globals()['call_stack']),str(globals()['init']),str(globals()['product1_position']),str(globals()['product1_status']),str(globals()['product2_position']),str(globals()['product2_status']),str(globals()['robot1_position']),str(globals()['robot1_product_position']),str(globals()['robot1_product_status']),str(globals()['robot2_position']),str(globals()['robot2_product_position']),str(globals()['robot2_product_status'])]) + '\n')</body>
         </node>
         <node xmi:type="uml:ActivityFinalNode" xmi:id="378" incoming="375"/>
       </ownedBehavior>
@@ -843,8 +843,8 @@ with open(csv_export_location, &quot;w&quot;) as f:
         <node xmi:type="uml:InitialNode" xmi:id="382" outgoing="380"/>
         <node xmi:type="uml:OpaqueAction" xmi:id="383" incoming="380" outgoing="381">
           <language>Python</language>
-          <body>with open(csv_export_location, &quot;a&quot;) as f:
-	f.write(&quot;,&quot;.join([str(globals()['call_stack']),str(globals()['init']),str(globals()['product1_position']),str(globals()['product1_status']),str(globals()['product2_position']),str(globals()['product2_status']),str(globals()['robot1_position']),str(globals()['robot1_product_position']),str(globals()['robot1_product_status']),str(globals()['robot2_position']),str(globals()['robot2_product_position']),str(globals()['robot2_product_status'])]) + &quot;\n&quot;)</body>
+          <body>with open(csv_export_location, 'a') as f:
+    f.write(','.join([str(globals()['call_stack']),str(globals()['init']),str(globals()['product1_position']),str(globals()['product1_status']),str(globals()['product2_position']),str(globals()['product2_status']),str(globals()['robot1_position']),str(globals()['robot1_product_position']),str(globals()['robot1_product_status']),str(globals()['robot2_position']),str(globals()['robot2_product_position']),str(globals()['robot2_product_status'])]) + '\n')</body>
         </node>
         <node xmi:type="uml:ActivityFinalNode" xmi:id="384" incoming="381"/>
       </ownedBehavior>

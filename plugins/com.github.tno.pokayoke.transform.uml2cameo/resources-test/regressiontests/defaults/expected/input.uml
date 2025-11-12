@@ -146,11 +146,11 @@ tmp__chain = []
 while current_exec:
     tmp__s = str(current_exec)
     tmp__s = tmp__s[:tmp__s.rfind('@')] if '@' in tmp__s else tmp__s
-    if tmp__s.endswith(&quot;(classifier behavior)&quot;):
-        tmp__s = tmp__s[:-len(&quot;(classifier behavior)&quot;)]
+    if tmp__s.endswith('(classifier behavior)'):
+        tmp__s = tmp__s[:-len('(classifier behavior)')]
     tmp__chain.insert(0, tmp__s)
     current_exec = current_exec.parentExecution
-call_stack = &quot;->&quot;.join(tmp__chain)</body>
+call_stack = '->'.join(tmp__chain)</body>
         </node>
         <node xmi:type="uml:DecisionNode" xmi:id="71" incoming="48 49" outgoing="50 52"/>
         <node xmi:type="uml:ActivityFinalNode" xmi:id="72" incoming="50"/>
@@ -219,10 +219,10 @@ call_stack = &quot;->&quot;.join(tmp__chain)</body>
 from datetime import datetime
 if not os.path.exists('SynthML-Cameo-logs'):
     os.makedirs('SynthML-Cameo-logs')
-csv_export_location = &quot;SynthML-Cameo-logs/log &quot; + datetime.now().strftime(&quot;%Y-%m-%d %H-%M-%S.%f&quot;) + &quot;.csv&quot;
-with open(csv_export_location, &quot;w&quot;) as f:
-    f.write(&quot;call_stack,myBool,myChoice,myPercentage,myPositive,myRange\n&quot;)
-    f.write(&quot;,&quot;.join([str(globals()['call_stack']),str(globals()['myBool']),str(globals()['myChoice']),str(globals()['myPercentage']),str(globals()['myPositive']),str(globals()['myRange'])]) + &quot;\n&quot;)</body>
+csv_export_location = 'SynthML-Cameo-logs/log ' + datetime.now().strftime('%Y-%m-%d %H-%M-%S.%f') + '.csv'
+with open(csv_export_location, 'w') as f:
+    f.write('call_stack,myBool,myChoice,myPercentage,myPositive,myRange\n')
+    f.write(','.join([str(globals()['call_stack']),str(globals()['myBool']),str(globals()['myChoice']),str(globals()['myPercentage']),str(globals()['myPositive']),str(globals()['myRange'])]) + '\n')</body>
         </node>
         <node xmi:type="uml:ActivityFinalNode" xmi:id="112" incoming="109"/>
       </ownedBehavior>
@@ -232,8 +232,8 @@ with open(csv_export_location, &quot;w&quot;) as f:
         <node xmi:type="uml:InitialNode" xmi:id="116" outgoing="114"/>
         <node xmi:type="uml:OpaqueAction" xmi:id="117" incoming="114" outgoing="115">
           <language>Python</language>
-          <body>with open(csv_export_location, &quot;a&quot;) as f:
-	f.write(&quot;,&quot;.join([str(globals()['call_stack']),str(globals()['myBool']),str(globals()['myChoice']),str(globals()['myPercentage']),str(globals()['myPositive']),str(globals()['myRange'])]) + &quot;\n&quot;)</body>
+          <body>with open(csv_export_location, 'a') as f:
+    f.write(','.join([str(globals()['call_stack']),str(globals()['myBool']),str(globals()['myChoice']),str(globals()['myPercentage']),str(globals()['myPositive']),str(globals()['myRange'])]) + '\n')</body>
         </node>
         <node xmi:type="uml:ActivityFinalNode" xmi:id="118" incoming="115"/>
       </ownedBehavior>
