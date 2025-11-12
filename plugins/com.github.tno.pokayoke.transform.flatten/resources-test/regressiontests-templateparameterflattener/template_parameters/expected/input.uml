@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:SynthML="https://github.com/TNO/SynthML/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="1" name="Model">
+    <packagedElement xmi:type="uml:Class" xmi:id="2" name="System" classifierBehavior="10" isActive="true">
+      <ownedComment xmi:id="3">
+        <body>Original-ID-Path:_yZoBEL8fEfCf1ui-oImEfg</body>
+      </ownedComment>
+      <ownedAttribute xmi:id="4" name="decisionResult" visibility="public">
+        <ownedComment xmi:id="5">
+          <body>Original-ID-Path:_eFf1AL8pEfCf1ui-oImEfg</body>
+        </ownedComment>
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="6" value="1">
+          <ownedComment xmi:id="7">
+            <body>Original-ID-Path:_eFgcEL8pEfCf1ui-oImEfg</body>
+          </ownedComment>
+        </lowerValue>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="8" value="1">
+          <ownedComment xmi:id="9">
+            <body>Original-ID-Path:_eFgcEb8pEfCf1ui-oImEfg</body>
+          </ownedComment>
+        </upperValue>
+      </ownedAttribute>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="10" name="Entrypoint" node="26 28 30 31 32 33 34">
+        <ownedComment xmi:id="11">
+          <body>Original-ID-Path:_2grWAL8fEfCf1ui-oImEfg</body>
+        </ownedComment>
+        <edge xmi:type="uml:ControlFlow" xmi:id="12" name="ControlFlow_1" target="30" source="26">
+          <ownedComment xmi:id="13">
+            <body>Original-ID-Path:_8YdMQL8gEfCf1ui-oImEfg</body>
+          </ownedComment>
+          <ownedComment xmi:id="14">
+            <body>Original-Structure:3 Start</body>
+          </ownedComment>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="15" name="ControlFlow_2" target="28" source="31">
+          <ownedComment xmi:id="16">
+            <body>Original-ID-Path:_9zDiAL8gEfCf1ui-oImEfg</body>
+          </ownedComment>
+          <ownedComment xmi:id="17">
+            <body>Original-Structure:3 End</body>
+          </ownedComment>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="18" name="Nested__Nested__ControlFlow_1" target="32" source="30">
+          <ownedComment xmi:id="19">
+            <body>Original-ID-Path:_KzK-0L8gEfCf1ui-oImEfg _3OQNsL8fEfCf1ui-oImEfg _qPc_gL8gEfCf1ui-oImEfg</body>
+          </ownedComment>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="20" name="Nested__Nested__ControlFlow_2" target="31" source="33">
+          <ownedComment xmi:id="21">
+            <body>Original-ID-Path:_KzK-0L8gEfCf1ui-oImEfg _3OQNsL8fEfCf1ui-oImEfg _H7oUgL8hEfCf1ui-oImEfg</body>
+          </ownedComment>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="22" name="Nested__Nested__DoubleNested__DoubleNested__ControlFlow_1" target="34" source="32">
+          <ownedComment xmi:id="23">
+            <body>Original-ID-Path:_KzK-0L8gEfCf1ui-oImEfg _3OQNsL8fEfCf1ui-oImEfg _HKaS8L8hEfCf1ui-oImEfg _xNjPgL8fEfCf1ui-oImEfg _zc6NkL8gEfCf1ui-oImEfg</body>
+          </ownedComment>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="24" name="Nested__Nested__DoubleNested__DoubleNested__ControlFlow_2" target="33" source="34">
+          <ownedComment xmi:id="25">
+            <body>Original-ID-Path:_KzK-0L8gEfCf1ui-oImEfg _3OQNsL8fEfCf1ui-oImEfg _HKaS8L8hEfCf1ui-oImEfg _xNjPgL8fEfCf1ui-oImEfg _kZs-AL8pEfCf1ui-oImEfg</body>
+          </ownedComment>
+        </edge>
+        <node xmi:type="uml:InitialNode" xmi:id="26" name="InitialNode" outgoing="12">
+          <ownedComment xmi:id="27">
+            <body>Original-ID-Path:_HXCPIL8gEfCf1ui-oImEfg</body>
+          </ownedComment>
+        </node>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="28" name="ActivityFinalNode" incoming="15">
+          <ownedComment xmi:id="29">
+            <body>Original-ID-Path:_Ik_QAL8gEfCf1ui-oImEfg</body>
+          </ownedComment>
+        </node>
+        <node xmi:type="uml:DecisionNode" xmi:id="30" name="Nested__Nested__InitialNode" incoming="12" outgoing="18"/>
+        <node xmi:type="uml:MergeNode" xmi:id="31" name="Nested__Nested__ActivityFinalNode" incoming="20" outgoing="15"/>
+        <node xmi:type="uml:DecisionNode" xmi:id="32" name="Nested__Nested__DoubleNested__DoubleNested__InitialNode" incoming="18" outgoing="22"/>
+        <node xmi:type="uml:MergeNode" xmi:id="33" name="Nested__Nested__DoubleNested__DoubleNested__ActivityFinalNode" incoming="24" outgoing="20"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="34" name="Nested__Nested__DoubleNested__DoubleNested__OpaqueAction1" incoming="22" outgoing="24">
+          <ownedComment xmi:id="35">
+            <body>Original-ID-Path:_KzK-0L8gEfCf1ui-oImEfg _3OQNsL8fEfCf1ui-oImEfg _HKaS8L8hEfCf1ui-oImEfg _xNjPgL8fEfCf1ui-oImEfg _XxOakL8pEfCf1ui-oImEfg</body>
+          </ownedComment>
+          <body>// TODO body of OpaqueAction1</body>
+        </node>
+      </ownedBehavior>
+    </packagedElement>
+    <packagedElement xmi:type="uml:PrimitiveType" xmi:id="36" name="Identifier" visibility="public">
+      <ownedComment xmi:id="37">
+        <body>Original-ID-Path:_Rjk7oL8gEfCf1ui-oImEfg</body>
+      </ownedComment>
+      <ownedRule xmi:id="38" name="min">
+        <ownedComment xmi:id="39">
+          <body>Original-ID-Path:_b6j9kL8gEfCf1ui-oImEfg</body>
+        </ownedComment>
+        <specification xmi:type="uml:LiteralInteger" xmi:id="40">
+          <ownedComment xmi:id="41">
+            <body>Original-ID-Path:_b6j9kb8gEfCf1ui-oImEfg</body>
+          </ownedComment>
+        </specification>
+      </ownedRule>
+      <ownedRule xmi:id="42" name="max">
+        <ownedComment xmi:id="43">
+          <body>Original-ID-Path:_b-_xoL8gEfCf1ui-oImEfg</body>
+        </ownedComment>
+        <specification xmi:type="uml:LiteralInteger" xmi:id="44" value="5">
+          <ownedComment xmi:id="45">
+            <body>Original-ID-Path:_b-_xob8gEfCf1ui-oImEfg</body>
+          </ownedComment>
+        </specification>
+      </ownedRule>
+      <generalization xmi:id="46">
+        <general xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+      </generalization>
+    </packagedElement>
+    <profileApplication xmi:id="47">
+      <eAnnotations xmi:id="48" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/SynthML/#/"/>
+      </eAnnotations>
+      <appliedProfile href="platform:/plugin/com.github.tno.synthml.uml.profile.plugin/model/synthml.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+    </profileApplication>
+  </uml:Model>
+  <SynthML:FormalElement xmi:id="49" base_RedefinableElement="34">
+    <effects>decisionResult := true</effects>
+  </SynthML:FormalElement>
+</xmi:XMI>

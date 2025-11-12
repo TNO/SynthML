@@ -2,10 +2,12 @@
 package com.github.tno.pokayoke.transform.flatten;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.FilenameUtils;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil.Copier;
@@ -43,10 +45,12 @@ public class FlattenUMLActivity {
         this.structureInfoHelper = new StructureInfoHelper();
     }
 
-    public static void transformFile(String sourcePath, String targetPath) throws IOException, CoreException {
-        Model model = FileHelper.loadModel(sourcePath);
+    public static void transformFile(Path sourcePath, Path targetPath) throws IOException, CoreException {
+        String filePrefix = FilenameUtils.removeExtension(sourcePath.getFileName().toString());
+        Path umlOutputFilePath = targetPath.resolve(filePrefix + ".uml");
+        Model model = FileHelper.loadModel(sourcePath.toString());
         new FlattenUMLActivity(model).transform();
-        FileHelper.storeModel(model, targetPath);
+        FileHelper.storeModel(model, umlOutputFilePath.toString());
     }
 
     public void transform() throws CoreException {

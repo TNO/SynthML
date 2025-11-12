@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:SynthML="https://github.com/TNO/SynthML/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="_voevIL8fEfCf1ui-oImEfg" name="Model">
+    <packagedElement xmi:type="uml:Class" xmi:id="_yZoBEL8fEfCf1ui-oImEfg" name="System" classifierBehavior="_2grWAL8fEfCf1ui-oImEfg" isActive="true">
+      <ownedAttribute xmi:id="_eFf1AL8pEfCf1ui-oImEfg" name="decisionResult" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_eFgcEL8pEfCf1ui-oImEfg" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_eFgcEb8pEfCf1ui-oImEfg" value="1"/>
+      </ownedAttribute>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_xNjPgL8fEfCf1ui-oImEfg" name="DoubleNested" node="_xFmX8L8gEfCf1ui-oImEfg _ycboAL8gEfCf1ui-oImEfg _XxOakL8pEfCf1ui-oImEfg">
+        <ownedTemplateSignature xmi:type="uml:RedefinableTemplateSignature" xmi:id="_woPtkL8gEfCf1ui-oImEfg" parameter="_woPtkb8gEfCf1ui-oImEfg">
+          <ownedParameter xmi:type="uml:ClassifierTemplateParameter" xmi:id="_woPtkb8gEfCf1ui-oImEfg" default="_woPtkr8gEfCf1ui-oImEfg" parameteredElement="_woPtkr8gEfCf1ui-oImEfg">
+            <ownedDefault xmi:type="uml:Class" xmi:id="_woPtkr8gEfCf1ui-oImEfg" name="decision" templateParameter="_woPtkb8gEfCf1ui-oImEfg"/>
+            <constrainingClassifier xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+          </ownedParameter>
+        </ownedTemplateSignature>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_zc6NkL8gEfCf1ui-oImEfg" target="_XxOakL8pEfCf1ui-oImEfg" source="_xFmX8L8gEfCf1ui-oImEfg">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="_zc6Nkb8gEfCf1ui-oImEfg" name="_To__guard" value="true"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_zc6Nkr8gEfCf1ui-oImEfg" name="_To__weight"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_kZs-AL8pEfCf1ui-oImEfg" target="_ycboAL8gEfCf1ui-oImEfg" source="_XxOakL8pEfCf1ui-oImEfg">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="_kZs-Ab8pEfCf1ui-oImEfg" name="OpaqueAction1_To__guard" value="true"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_kZs-Ar8pEfCf1ui-oImEfg" name="OpaqueAction1_To__weight"/>
+        </edge>
+        <node xmi:type="uml:InitialNode" xmi:id="_xFmX8L8gEfCf1ui-oImEfg" name="" outgoing="_zc6NkL8gEfCf1ui-oImEfg"/>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="_ycboAL8gEfCf1ui-oImEfg" name="" incoming="_kZs-AL8pEfCf1ui-oImEfg"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="_XxOakL8pEfCf1ui-oImEfg" name="OpaqueAction1" incoming="_zc6NkL8gEfCf1ui-oImEfg" outgoing="_kZs-AL8pEfCf1ui-oImEfg">
+          <body>// TODO body of OpaqueAction1</body>
+        </node>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_2grWAL8fEfCf1ui-oImEfg" name="Entrypoint" node="_HXCPIL8gEfCf1ui-oImEfg _Ik_QAL8gEfCf1ui-oImEfg _KzK-0L8gEfCf1ui-oImEfg">
+        <edge xmi:type="uml:ControlFlow" xmi:id="_8YdMQL8gEfCf1ui-oImEfg" target="_KzK-0L8gEfCf1ui-oImEfg" source="_HXCPIL8gEfCf1ui-oImEfg">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="_8YdMQb8gEfCf1ui-oImEfg" name="_To_Fork1_guard" value="true"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_8YdMQr8gEfCf1ui-oImEfg" name="_To_Fork1_weight"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_9zDiAL8gEfCf1ui-oImEfg" target="_Ik_QAL8gEfCf1ui-oImEfg" source="_KzK-0L8gEfCf1ui-oImEfg">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="_9zDiAb8gEfCf1ui-oImEfg" name="Nested_To_Join1_guard" value="true"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_9zDiAr8gEfCf1ui-oImEfg" name="Nested_To_Join1_weight"/>
+        </edge>
+        <node xmi:type="uml:InitialNode" xmi:id="_HXCPIL8gEfCf1ui-oImEfg" name="" outgoing="_8YdMQL8gEfCf1ui-oImEfg"/>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="_Ik_QAL8gEfCf1ui-oImEfg" name="" incoming="_9zDiAL8gEfCf1ui-oImEfg"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="_KzK-0L8gEfCf1ui-oImEfg" name="Nested" incoming="_8YdMQL8gEfCf1ui-oImEfg" outgoing="_9zDiAL8gEfCf1ui-oImEfg" behavior="_3OQNsL8fEfCf1ui-oImEfg"/>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_3OQNsL8fEfCf1ui-oImEfg" name="Nested" node="_nZamgL8gEfCf1ui-oImEfg _oi9ogL8gEfCf1ui-oImEfg _HKaS8L8hEfCf1ui-oImEfg">
+        <ownedTemplateSignature xmi:type="uml:RedefinableTemplateSignature" xmi:id="_r1jaoL8gEfCf1ui-oImEfg" parameter="_r1jaob8gEfCf1ui-oImEfg _ukuWoL8gEfCf1ui-oImEfg">
+          <ownedParameter xmi:type="uml:ClassifierTemplateParameter" xmi:id="_r1jaob8gEfCf1ui-oImEfg" default="_r1jaor8gEfCf1ui-oImEfg" parameteredElement="_r1jaor8gEfCf1ui-oImEfg">
+            <ownedDefault xmi:type="uml:Class" xmi:id="_r1jaor8gEfCf1ui-oImEfg" name="decision" templateParameter="_r1jaob8gEfCf1ui-oImEfg"/>
+            <constrainingClassifier xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+          </ownedParameter>
+          <ownedParameter xmi:type="uml:ClassifierTemplateParameter" xmi:id="_ukuWoL8gEfCf1ui-oImEfg" default="_ukuWob8gEfCf1ui-oImEfg" parameteredElement="_ukuWob8gEfCf1ui-oImEfg" constrainingClassifier="_Rjk7oL8gEfCf1ui-oImEfg">
+            <ownedDefault xmi:type="uml:Class" xmi:id="_ukuWob8gEfCf1ui-oImEfg" name="identity" templateParameter="_ukuWoL8gEfCf1ui-oImEfg"/>
+          </ownedParameter>
+        </ownedTemplateSignature>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_qPc_gL8gEfCf1ui-oImEfg" target="_HKaS8L8hEfCf1ui-oImEfg" source="_nZamgL8gEfCf1ui-oImEfg">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="_qPc_gb8gEfCf1ui-oImEfg" name="_To__guard" value="true"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_qPdmkL8gEfCf1ui-oImEfg" name="_To__weight"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_H7oUgL8hEfCf1ui-oImEfg" target="_oi9ogL8gEfCf1ui-oImEfg" source="_HKaS8L8hEfCf1ui-oImEfg">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="_H7oUgb8hEfCf1ui-oImEfg" name="_To__guard" value="true"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_H7oUgr8hEfCf1ui-oImEfg" name="_To__weight"/>
+        </edge>
+        <node xmi:type="uml:InitialNode" xmi:id="_nZamgL8gEfCf1ui-oImEfg" name="" outgoing="_qPc_gL8gEfCf1ui-oImEfg"/>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="_oi9ogL8gEfCf1ui-oImEfg" name="" incoming="_H7oUgL8hEfCf1ui-oImEfg"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="_HKaS8L8hEfCf1ui-oImEfg" name="DoubleNested" incoming="_qPc_gL8gEfCf1ui-oImEfg" outgoing="_H7oUgL8hEfCf1ui-oImEfg" behavior="_xNjPgL8fEfCf1ui-oImEfg"/>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_5SwcEL8fEfCf1ui-oImEfg" name="Orphan" node="_fSF6EL8gEfCf1ui-oImEfg _gStCgL8gEfCf1ui-oImEfg">
+        <ownedTemplateSignature xmi:type="uml:RedefinableTemplateSignature" xmi:id="_lMh4ML8gEfCf1ui-oImEfg" parameter="_lMh4Mb8gEfCf1ui-oImEfg">
+          <ownedParameter xmi:type="uml:ClassifierTemplateParameter" xmi:id="_lMh4Mb8gEfCf1ui-oImEfg" default="_lMh4Mr8gEfCf1ui-oImEfg" parameteredElement="_lMh4Mr8gEfCf1ui-oImEfg">
+            <ownedDefault xmi:type="uml:Class" xmi:id="_lMh4Mr8gEfCf1ui-oImEfg" name="decision" templateParameter="_lMh4Mb8gEfCf1ui-oImEfg"/>
+            <constrainingClassifier xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+          </ownedParameter>
+        </ownedTemplateSignature>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_g_t5gL8gEfCf1ui-oImEfg" target="_gStCgL8gEfCf1ui-oImEfg" source="_fSF6EL8gEfCf1ui-oImEfg">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="_g_ugkL8gEfCf1ui-oImEfg" name="Initial1_To_ActivityFinal1_guard" value="true"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_g_ugkb8gEfCf1ui-oImEfg" name="Initial1_To_ActivityFinal1_weight"/>
+        </edge>
+        <node xmi:type="uml:InitialNode" xmi:id="_fSF6EL8gEfCf1ui-oImEfg" name="" outgoing="_g_t5gL8gEfCf1ui-oImEfg"/>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="_gStCgL8gEfCf1ui-oImEfg" name="" incoming="_g_t5gL8gEfCf1ui-oImEfg"/>
+      </ownedBehavior>
+    </packagedElement>
+    <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_Rjk7oL8gEfCf1ui-oImEfg" name="Identifier" visibility="public">
+      <ownedRule xmi:id="_b6j9kL8gEfCf1ui-oImEfg" name="min">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_b6j9kb8gEfCf1ui-oImEfg"/>
+      </ownedRule>
+      <ownedRule xmi:id="_b-_xoL8gEfCf1ui-oImEfg" name="max">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_b-_xob8gEfCf1ui-oImEfg" value="5"/>
+      </ownedRule>
+      <generalization xmi:id="_bkaucb8gEfCf1ui-oImEfg">
+        <general xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+      </generalization>
+    </packagedElement>
+    <profileApplication xmi:id="_bkY5QL8gEfCf1ui-oImEfg">
+      <eAnnotations xmi:id="_bkaucL8gEfCf1ui-oImEfg" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/SynthML/#/"/>
+      </eAnnotations>
+      <appliedProfile href="platform:/plugin/com.github.tno.synthml.uml.profile.plugin/model/synthml.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+    </profileApplication>
+  </uml:Model>
+  <SynthML:FormalCallBehaviorAction xmi:id="_2pgscL8gEfCf1ui-oImEfg" arguments="decision:=true,&#xA;identity:=1" base_CallBehaviorAction="_KzK-0L8gEfCf1ui-oImEfg"/>
+  <SynthML:FormalCallBehaviorAction xmi:id="_KJsukL8hEfCf1ui-oImEfg" arguments="decision:=decision" base_CallBehaviorAction="_HKaS8L8hEfCf1ui-oImEfg"/>
+  <SynthML:FormalElement xmi:id="_jdSZEL8pEfCf1ui-oImEfg" base_RedefinableElement="_XxOakL8pEfCf1ui-oImEfg">
+    <effects>decisionResult := decision</effects>
+  </SynthML:FormalElement>
+</xmi:XMI>
