@@ -27,7 +27,10 @@ import com.github.tno.pokayoke.transform.common.IDHelper;
 import com.github.tno.pokayoke.transform.common.NameHelper;
 import com.github.tno.pokayoke.transform.common.StructureInfoHelper;
 import com.github.tno.pokayoke.transform.common.ValidationHelper;
+import com.github.tno.synthml.uml.profile.cif.CifScopedContext;
 import com.github.tno.synthml.uml.profile.util.UMLActivityUtils;
+
+import SynthML.SynthMLPackage;
 
 /** Flattens nested UML activities. */
 public class FlattenUMLActivity {
@@ -63,6 +66,9 @@ public class FlattenUMLActivity {
         // Transform all elements within the model.
         transform(model);
 
+        // Destroy all parameterized activities.
+        destroyParameterizedActivities(model);
+
         // Add structure comments to the outgoing edges of the initial nodes and the incoming edges of the final nodes
         // in all outermost activities.
         structureInfoHelper.addStructureInfoInActivities(model);
@@ -75,6 +81,18 @@ public class FlattenUMLActivity {
             classElement.getOwnedMembers().forEach(this::transform);
         } else if (element instanceof Model modelElement) {
             modelElement.getOwnedMembers().forEach(this::transform);
+        }
+    }
+
+    private void destroyParameterizedActivities(Element element) {
+        if (element instanceof Activity activityElement
+                && !CifScopedContext.getClassifierTemplateParameters(activityElement).isEmpty())
+        {
+            element.destroy();
+        } else if (element instanceof Class classElement) {
+            classElement.getOwnedMembers().stream().toList().forEach(this::destroyParameterizedActivities);
+        } else if (element instanceof Model modelElement) {
+            modelElement.getOwnedMembers().stream().toList().forEach(this::destroyParameterizedActivities);
         }
     }
 
@@ -95,7 +113,10 @@ public class FlattenUMLActivity {
 
                 // Translate only non-shadowed call behavior actions. Shadowed (stereotyped) call behavior actions are
                 // considered leaves, as are call behavior actions that call opaque behaviors.
-                if (behavior instanceof Activity activity && action.getAppliedStereotypes().isEmpty()) {
+                if (behavior instanceof Activity activity && action.getAppliedStereotypes().stream()
+                        .filter(s -> !SynthMLPackage.Literals.FORMAL_CALL_BEHAVIOR_ACTION.getName().equals(s.getName()))
+                        .findAny().isEmpty())
+                {
                     transformActivity(activity, action);
                 }
             }
@@ -112,6 +133,9 @@ public class FlattenUMLActivity {
         if (callBehaviorActionToReplace != null) {
             // Increment the counter for structure info comments, for call behavior actions.
             structureInfoHelper.incrementCounter();
+
+            // Flatten the template parameters.
+            TemplateParameterFlattener.unfoldActivity(childBehavior, callBehaviorActionToReplace);
 
             Activity childBehaviorCopy = copyWithProfiles(childBehavior);
 
