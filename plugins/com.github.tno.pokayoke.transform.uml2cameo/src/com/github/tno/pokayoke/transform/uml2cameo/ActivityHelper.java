@@ -255,11 +255,11 @@ public class ActivityHelper {
                 while current_exec:
                     tmp__s = str(current_exec)
                     tmp__s = tmp__s[:tmp__s.rfind('@')] if '@' in tmp__s else tmp__s
-                    if tmp__s.endswith("(classifier behavior)"):
-                        tmp__s = tmp__s[:-len("(classifier behavior)")]
+                    if tmp__s.endswith('(classifier behavior)'):
+                        tmp__s = tmp__s[:-len('(classifier behavior)')]
                     tmp__chain.insert(0, tmp__s)
                     current_exec = current_exec.parentExecution
-                call_stack = "->".join(tmp__chain)""";
+                call_stack = '->'.join(tmp__chain)""";
         String guardAndEffectBody = String.format("%sguard = %s\n%s\nactive = ''\nisSuccessful = guard\n%s",
                 randomImport, guard, effectBody, updateCallStackPy);
         guardAndEffectNode.getBodies().add(guardAndEffectBody);
@@ -465,10 +465,10 @@ public class ActivityHelper {
                 from datetime import datetime
                 if not os.path.exists('SynthML-Cameo-logs'):
                     os.makedirs('SynthML-Cameo-logs')
-                csv_export_location = "SynthML-Cameo-logs/log " + datetime.now().strftime("%%Y-%%m-%%d %%H-%%M-%%S.%%f") + ".csv"
-                with open(csv_export_location, "w") as f:
-                    f.write("%s\\n")
-                    f.write(",".join([%s]) + "\\n")"""
+                csv_export_location = 'SynthML-Cameo-logs/log ' + datetime.now().strftime('%%Y-%%m-%%d %%H-%%M-%%S.%%f') + ".csv"
+                with open(csv_export_location, 'w') as f:
+                    f.write('%s\\n')
+                    f.write(','.join([%s]) + '\\n')"""
                 .formatted(String.join(",", csvLogColumns), collectStatePy);
         insertEffectsActivity(initToOuterMergeFlow, "init_logs", createNewLogFilePy);
 
@@ -569,8 +569,8 @@ public class ActivityHelper {
         decisionToOuterMergeFlow.setGuard(decisionToWaitGuard);
 
         String appendStateToCSVPy = """
-                with open(csv_export_location, "a") as f:
-                    f.write(",".join([%s]) + "\\n")""".formatted(collectStatePy);
+                with open(csv_export_location, 'a') as f:
+                    f.write(','.join([%s]) + '\\n')""".formatted(collectStatePy);
         insertEffectsActivity(decisionToOuterMergeFlow, "log_state", appendStateToCSVPy);
 
         // Define the control flow between the decision node and the inner merge node.
