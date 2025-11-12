@@ -16,7 +16,7 @@ import com.github.tno.pokayoke.transform.tests.common.RegressionTest;
 class CompositeDataTypeFlattenerRegressionTest extends RegressionTest {
     public static final String INPUT_FILE_EXTENSION = "uml";
 
-    public static final String REGRESSIONTESTS_NAME = "regressiontests";
+    public static final String REGRESSIONTESTS_NAME = "regressiontests-compositedatatypeflattener";
 
     public static Stream<? extends Arguments> provideArguments() throws Exception {
         return RegressionTest.provideArguments(INPUT_FILE_EXTENSION, REGRESSIONTESTS_NAME);
