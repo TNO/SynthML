@@ -722,9 +722,8 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             addActivityPrePostConditionsToEdgeGuards(newEventEdges, node, false);
         }
 
-        // If the UML activity node belongs to the synthesized activity, it may be part of a called concrete activity,
-        // where the initial node is translated as a decision node and the final node is translated as a merge node. If
-        // that is the case, add the related pre/post-conditions to the CIF event.
+        // If the node is related to the initial node or final node of (another) concrete activity, add the related
+        // pre/post-conditions to the CIF event. This is relevant only if the node belongs to the current activity.
         if (synthesisTracker.belongsToSynthesizedActivity(node)) {
             RedefinableElement umlElement = synthesisTracker.getOriginalUmlElement(node);
 

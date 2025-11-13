@@ -1061,19 +1061,14 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Checks whether the given non-{@code null} UML element belongs to the elements contained in the synthesized UML
-     * activity.
+     * Checks whether the given non-{@code null} UML element belongs to the UML activity.
      *
      * @param umlElement The non-{@code null} UML element to check.
-     * @return {@code true} if the input element belongs to the synthesized activity, {@code false} otherwise.
+     * @return {@code true} if the input element belongs to the activity, {@code false} otherwise.
      */
     public boolean belongsToSynthesizedActivity(RedefinableElement umlElement) {
         Verify.verifyNotNull(umlElement, "Element cannot be 'null'.");
-
-        return cifEventTraceInfo.values().stream()
-                .anyMatch(info -> !info.getTranslationPurpose().equals(UmlToCifTranslationPurpose.SYNTHESIS)
-                        && info.getUmlElement() instanceof RedefinableElement cifEventUmlElement
-                        && cifEventUmlElement.equals(umlElement));
+        return umlElement.eContainer().equals(activity);
     }
 
     /**
@@ -1084,6 +1079,10 @@ public class SynthesisChainTracking {
      * @return The related original UML element, or {@code null} if no such UML element exists.
      */
     public RedefinableElement getOriginalUmlElement(ActivityNode node) {
+        // Precondition check.
+        Verify.verify(belongsToSynthesizedActivity(node),
+                String.format("UML element '%s' does not belong to the synthesized activity.", node.getName()));
+
         Transition transition = activityNodeToTransition.get(node);
         return (transition == null) ? null : getUmlElement(transition);
     }
