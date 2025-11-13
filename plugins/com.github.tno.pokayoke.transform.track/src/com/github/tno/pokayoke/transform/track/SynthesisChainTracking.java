@@ -50,7 +50,7 @@ public class SynthesisChainTracking {
     private final Map<Event, EventTraceInfo> cifEventTraceInfo = new LinkedHashMap<>();
 
     /** The map from the source and target nodes of a control flow to its incoming and outgoing guards. */
-    private Map<Pair<ActivityNode, ActivityNode>, Pair<String, String>> activityNodesToControlFlowGuards = new LinkedHashMap<>();
+    private final Map<Pair<ActivityNode, ActivityNode>, Pair<String, String>> activityNodesToControlFlowGuards = new LinkedHashMap<>();
 
     /**
      * The map from the CIF start events related to an atomic non-deterministic behavior to the events and related event
