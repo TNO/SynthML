@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.common.java.Pair;
 import org.eclipse.escet.common.java.Sets;
+import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.ControlNode;
@@ -43,6 +44,9 @@ import fr.lip6.move.pnml.ptnet.Transition;
  * </p>
  */
 public class SynthesisChainTracking {
+    /** The to-be-synthesized UML activity. */
+    private Activity activity;
+
     /**
      * The map from CIF events to their tracing info. Gets updated as the activity synthesis chain rewrites, removes, or
      * add events.
@@ -75,6 +79,10 @@ public class SynthesisChainTracking {
         START_OPAQUE_BEHAVIOR, END_OPAQUE_BEHAVIOR, COMPLETE_OPAQUE_BEHAVIOR, START_SHADOW, END_SHADOW, COMPLETE_SHADOW,
         START_OPAQUE_ACTION, END_OPAQUE_ACTION, COMPLETE_OPAQUE_ACTION, START_CALL_BEHAVIOR, END_CALL_BEHAVIOR,
         COMPLETE_CALL_BEHAVIOR, CONTROL_NODE;
+    }
+
+    public SynthesisChainTracking(Activity activity) {
+        this.activity = activity;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

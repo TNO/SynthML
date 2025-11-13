@@ -113,7 +113,7 @@ public class FullSynthesisApp {
     {
         // Instantiate the tracker that indicates how results from intermediate steps of the activity synthesis chain
         // relate to the input UML.
-        SynthesisChainTracking tracker = new SynthesisChainTracking();
+        SynthesisChainTracking tracker = new SynthesisChainTracking(activity);
 
         // Translate the UML specification to a CIF specification.
         UmlToCifTranslator umlToCifTranslator = new UmlToCifTranslator(ctxManager.getGlobalContext(), activity,
