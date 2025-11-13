@@ -112,8 +112,8 @@ public class SynthesisChainTracking {
      *
      * @param sourceNode The source activity node.
      * @param targetNode The target activity node.
-     * @param incomingGuard The control flow incoming guard.
-     * @param outgoingGuard The control flow outgoing guard.
+     * @param incomingGuard The control flow incoming guard. Can be {@code null} if the control flow does not have it.
+     * @param outgoingGuard The control flow outgoing guard. Can be {@code null} if the control flow does not have it.
      */
     public void addControlFlowGuards(ActivityNode sourceNode, ActivityNode targetNode, String incomingGuard,
             String outgoingGuard)
@@ -154,18 +154,22 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Return the control flow incoming and outgoing guards for the given source and target nodes.
+     * Return the control flow incoming and outgoing guards for the given source and target UML elements. If source and
+     * target elements are not both activity nodes (e.g. opaque behaviors or {@code null}), returns {@code null}.
      *
-     * @param sourceNode The source activity node.
-     * @param targetNode The target activity node.
+     * @param sourceElement The source UML element.
+     * @param targetElement The target UML element.
      * @return A pair containing incoming and outgoing guards, or {@code null} if the pair (source node, target node) is
      *     not present in the control flow guards map. The guards can be {@code null} if the control flow between the
      *     source node and target node had no guard.
      */
-    public Pair<String, String> getControlFlowGuards(RedefinableElement sourceNode, RedefinableElement targetNode) {
+    public Pair<String, String> getControlFlowGuards(RedefinableElement sourceElement,
+            RedefinableElement targetElement)
+    {
         // If both input elements are activity nodes, look for their control flow in the map. Otherwise, return 'null'.
-        if (sourceNode instanceof ActivityNode && targetNode instanceof ActivityNode) {
-            return activityNodesToControlFlowGuards.get(new Pair<>((ActivityNode)sourceNode, (ActivityNode)targetNode));
+        if (sourceElement instanceof ActivityNode && targetElement instanceof ActivityNode) {
+            return activityNodesToControlFlowGuards
+                    .get(new Pair<>((ActivityNode)sourceElement, (ActivityNode)targetElement));
         } else {
             return null;
         }
