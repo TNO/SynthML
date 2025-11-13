@@ -164,6 +164,9 @@ public class PNML2UMLTranslator {
         List<Place> places = sorted(page.getObjects().stream().filter(Place.class::isInstance).map(Place.class::cast));
         places.forEach(p -> translate(p, tracker));
 
+        // Check that the stored control flow guards have been used correctly.
+        tracker.checkCorrectGuardUse();
+
         // Post-process the UML activity to introduce forks and joins where needed.
         introduceForksAndJoins();
 
@@ -293,6 +296,9 @@ public class PNML2UMLTranslator {
         if (incomingOutgoingGuards != null) {
             PokaYokeUmlProfileUtil.setIncomingGuard(controlFlow, incomingOutgoingGuards.left);
             PokaYokeUmlProfileUtil.setOutgoingGuard(controlFlow, incomingOutgoingGuards.right);
+
+            // Add the use of the current control flow guard.
+            tracker.addGuardUse(new Pair<>((ActivityNode)concreteSource, (ActivityNode)concreteTarget));
         }
     }
 

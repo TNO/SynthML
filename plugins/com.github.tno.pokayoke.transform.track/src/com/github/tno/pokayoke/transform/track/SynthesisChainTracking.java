@@ -56,6 +56,9 @@ public class SynthesisChainTracking {
     /** The map from the source and target nodes of a control flow to its incoming and outgoing guards. */
     private final Map<Pair<ActivityNode, ActivityNode>, Pair<String, String>> activityNodesToControlFlowGuards = new LinkedHashMap<>();
 
+    /** The map from a pair of source and target nodes to the use counter of the corresponding control flow guards. */
+    private final Map<Pair<ActivityNode, ActivityNode>, Integer> guardsUseCounter = new LinkedHashMap<>();
+
     /**
      * The map from the CIF start events related to an atomic non-deterministic behavior to the events and related event
      * tracing info created before the event-based projection step of the synthesis chain, where the start and end
@@ -364,6 +367,26 @@ public class SynthesisChainTracking {
                     .map(Map.Entry::getKey).toList();
         }
         return cifEvents;
+    }
+
+    /**
+     * Increases by 1 the use counter of the given source and target node pair.
+     *
+     * @param sourceTargetNodePair The source and target node pair.
+     */
+    public void addGuardUse(Pair<ActivityNode, ActivityNode> sourceTargetNodePair) {
+        Verify.verify(!activityNodesToControlFlowGuards.isEmpty(),
+                "The map from activity nodes to control flow guards is empty.");
+        guardsUseCounter.put(sourceTargetNodePair, guardsUseCounter.getOrDefault(sourceTargetNodePair, 0) + 1);
+    }
+
+    /** Checks that all stored control flow guards have been used the same number of times. */
+    public void checkCorrectGuardUse() {
+        if (!activityNodesToControlFlowGuards.isEmpty()) {
+            // Check that all used control flow guards have been used the same number of times.
+            Verify.verify(guardsUseCounter.isEmpty() || new LinkedHashSet<>(guardsUseCounter.values()).size() == 1,
+                    "The stored control flow guards have been used a different number of times.");
+        }
     }
 
     /**
