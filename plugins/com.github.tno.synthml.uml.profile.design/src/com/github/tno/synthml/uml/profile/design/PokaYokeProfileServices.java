@@ -47,6 +47,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 
+import SynthML.FormalActivity;
 import SynthML.FormalCallBehaviorAction;
 import SynthML.FormalControlFlow;
 import SynthML.FormalElement;
@@ -703,5 +704,36 @@ public class PokaYokeProfileServices {
 
     public String getStereotypeName(Stereotype st) {
         return PokaYokeUmlProfileUtil.getStereotypeName(st);
+    }
+
+    /**
+     * Returns the {@link FormalActivity#isInterface() interface} property value if {@code activity} is stereotyped,
+     * {@code false} otherwise.
+     *
+     * @param activity The activity to interrogate.
+     * @return The {@link FormalActivity#isInterface() interface} property value if {@code activity} is stereotyped,
+     *     {@code false} otherwise.
+     */
+    public boolean isInterface(Activity activity) {
+        return PokaYokeUmlProfileUtil.isInterface(activity);
+    }
+
+    /**
+     * Applies the {@link FormalActivity} stereotype and sets the {@link FormalActivity#setInterface(boolean) atomic}
+     * property for {@code activity}.
+     * <p>
+     * The {@link FormalActivity} stereotype is removed if {@code newValue} is {@code null} or {@code false}.
+     * </p>
+     *
+     * @param activity The activity to set the property on.
+     * @param newValue The new property value.
+     */
+    public void setInterface(Activity activity, Boolean newValue) {
+        PokaYokeUmlProfileUtil.applyPokaYokeProfile(activity);
+        PokaYokeUmlProfileUtil.setInterface(activity, newValue);
+
+        // Unapplying the stereotype does not refresh the viewer, not even when 'associated elements expression'
+        // is used in the odesign file. So we trigger the refresh here.
+        refresh(activity);
     }
 }
