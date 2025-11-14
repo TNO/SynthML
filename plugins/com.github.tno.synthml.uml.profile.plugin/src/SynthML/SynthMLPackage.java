@@ -397,6 +397,52 @@ public interface SynthMLPackage extends EPackage {
 	 */
 	int POSTCONDITION_OPERATION_COUNT = FORMAL_CONSTRAINT_OPERATION_COUNT + 0;
 
+	/**
+	 * The meta object id for the '{@link SynthML.impl.FormalActivityImpl <em>Formal Activity</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see SynthML.impl.FormalActivityImpl
+	 * @see SynthML.impl.SynthMLPackageImpl#getFormalActivity()
+	 * @generated
+	 */
+	int FORMAL_ACTIVITY = 8;
+
+	/**
+	 * The feature id for the '<em><b>Base Activity</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FORMAL_ACTIVITY__BASE_ACTIVITY = 0;
+
+	/**
+	 * The feature id for the '<em><b>Interface</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FORMAL_ACTIVITY__INTERFACE = 1;
+
+	/**
+	 * The number of structural features of the '<em>Formal Activity</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FORMAL_ACTIVITY_FEATURE_COUNT = 2;
+
+	/**
+	 * The number of operations of the '<em>Formal Activity</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FORMAL_ACTIVITY_OPERATION_COUNT = 0;
+
 
 	/**
 	 * Returns the meta object for class '{@link SynthML.FormalElement <em>Formal Element</em>}'.
@@ -578,6 +624,38 @@ public interface SynthMLPackage extends EPackage {
 	EClass getPostcondition();
 
 	/**
+	 * Returns the meta object for class '{@link SynthML.FormalActivity <em>Formal Activity</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Formal Activity</em>'.
+	 * @see SynthML.FormalActivity
+	 * @generated
+	 */
+	EClass getFormalActivity();
+
+	/**
+	 * Returns the meta object for the reference '{@link SynthML.FormalActivity#getBase_Activity <em>Base Activity</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Base Activity</em>'.
+	 * @see SynthML.FormalActivity#getBase_Activity()
+	 * @see #getFormalActivity()
+	 * @generated
+	 */
+	EReference getFormalActivity_Base_Activity();
+
+	/**
+	 * Returns the meta object for the attribute '{@link SynthML.FormalActivity#isInterface <em>Interface</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Interface</em>'.
+	 * @see SynthML.FormalActivity#isInterface()
+	 * @see #getFormalActivity()
+	 * @generated
+	 */
+	EAttribute getFormalActivity_Interface();
+
+	/**
 	 * Returns the factory that creates the instances of the model.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -751,6 +829,32 @@ public interface SynthMLPackage extends EPackage {
 		 * @generated
 		 */
 		EClass POSTCONDITION = eINSTANCE.getPostcondition();
+
+		/**
+		 * The meta object literal for the '{@link SynthML.impl.FormalActivityImpl <em>Formal Activity</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see SynthML.impl.FormalActivityImpl
+		 * @see SynthML.impl.SynthMLPackageImpl#getFormalActivity()
+		 * @generated
+		 */
+		EClass FORMAL_ACTIVITY = eINSTANCE.getFormalActivity();
+
+		/**
+		 * The meta object literal for the '<em><b>Base Activity</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference FORMAL_ACTIVITY__BASE_ACTIVITY = eINSTANCE.getFormalActivity_Base_Activity();
+
+		/**
+		 * The meta object literal for the '<em><b>Interface</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute FORMAL_ACTIVITY__INTERFACE = eINSTANCE.getFormalActivity_Interface();
 
 	}
 

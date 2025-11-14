@@ -32,4 +32,11 @@
   <eClassifiers xsi:type="ecore:EClass" name="SynthesisPrecondition" eSuperTypes="#//FormalConstraint"/>
   <eClassifiers xsi:type="ecore:EClass" name="UsagePrecondition" eSuperTypes="#//FormalConstraint"/>
   <eClassifiers xsi:type="ecore:EClass" name="Postcondition" eSuperTypes="#//FormalConstraint"/>
+  <eClassifiers xsi:type="ecore:EClass" name="FormalActivity">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="base_Activity" ordered="false"
+        lowerBound="1" eType="ecore:EClass ../../org.eclipse.uml2.uml/model/UML.ecore#//Activity"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="interface" ordered="false"
+        eType="ecore:EDataType ../../org.eclipse.uml2.types/model/Types.ecore#//Boolean"
+        defaultValueLiteral="false"/>
+  </eClassifiers>
 </ecore:EPackage>

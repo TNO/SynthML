@@ -2,7 +2,7 @@
 --><plugin>
 
    <extension point="org.eclipse.emf.ecore.generated_package">
-      <!-- @generated PokaYoke -->
+      <!-- @generated SynthML -->
       <package class="SynthML.SynthMLPackage" genModel="model/SynthML.genmodel" uri="https://github.com/TNO/SynthML/"/>
    </extension>
 
