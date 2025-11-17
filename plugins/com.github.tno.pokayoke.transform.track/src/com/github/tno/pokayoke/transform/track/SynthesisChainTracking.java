@@ -45,7 +45,7 @@ import fr.lip6.move.pnml.ptnet.Transition;
  */
 public class SynthesisChainTracking {
     /** The to-be-synthesized UML activity. */
-    private Activity activity;
+    private final Activity activity;
 
     /**
      * The map from CIF events to their tracing info. Gets updated as the activity synthesis chain rewrites, removes, or
@@ -170,9 +170,8 @@ public class SynthesisChainTracking {
             RedefinableElement targetElement)
     {
         // If both input elements are activity nodes, look for their control flow in the map. Otherwise, return 'null'.
-        if (sourceElement instanceof ActivityNode && targetElement instanceof ActivityNode) {
-            return activityNodesToControlFlowGuards
-                    .get(new Pair<>((ActivityNode)sourceElement, (ActivityNode)targetElement));
+        if (sourceElement instanceof ActivityNode sourceNode && targetElement instanceof ActivityNode targetNode) {
+            return activityNodesToControlFlowGuards.get(new Pair<>(sourceNode, targetNode));
         } else {
             return null;
         }
@@ -377,6 +376,9 @@ public class SynthesisChainTracking {
     public void addGuardUse(Pair<ActivityNode, ActivityNode> sourceTargetNodePair) {
         Verify.verify(!activityNodesToControlFlowGuards.isEmpty(),
                 "The map from activity nodes to control flow guards is empty.");
+        Verify.verify(activityNodesToControlFlowGuards.containsKey(sourceTargetNodePair), String.format(
+                "The node pair ('%s', '%s') does not belong to the map from activity nodes to control flow guards.",
+                sourceTargetNodePair.left.getName(), sourceTargetNodePair.right.getName()));
         guardsUseCounter.put(sourceTargetNodePair, guardsUseCounter.getOrDefault(sourceTargetNodePair, 0) + 1);
     }
 
@@ -1091,7 +1093,8 @@ public class SynthesisChainTracking {
      * Checks whether the given non-{@code null} UML element belongs to the UML activity that is being synthesized.
      *
      * @param umlElement The non-{@code null} UML element to check.
-     * @return {@code true} if the input element belongs to the activity that is being synthesized, {@code false} otherwise.
+     * @return {@code true} if the input element belongs to the activity that is being synthesized, {@code false}
+     *     otherwise.
      */
     public boolean belongsToSynthesizedActivity(RedefinableElement umlElement) {
         Verify.verifyNotNull(umlElement, "Element cannot be 'null'.");
