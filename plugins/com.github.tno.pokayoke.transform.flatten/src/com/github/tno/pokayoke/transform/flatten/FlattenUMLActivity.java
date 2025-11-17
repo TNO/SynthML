@@ -82,9 +82,9 @@ public class FlattenUMLActivity {
         if (element instanceof Activity activityElement) {
             transformActivity(activityElement, null);
         } else if (element instanceof Class classElement) {
-            classElement.getOwnedMembers().forEach(this::transform);
+            classElement.getOwnedMembers().stream().toList().forEach(this::transform);
         } else if (element instanceof Model modelElement) {
-            modelElement.getOwnedMembers().forEach(this::transform);
+            modelElement.getOwnedMembers().stream().toList().forEach(this::transform);
         }
     }
 
@@ -138,10 +138,12 @@ public class FlattenUMLActivity {
             // Increment the counter for structure info comments, for call behavior actions.
             structureInfoHelper.incrementCounter();
 
-            // Flatten the template parameters.
-            TemplateParameterFlattener.unfoldActivity(childBehavior, callBehaviorActionToReplace);
-
             Activity childBehaviorCopy = copyWithProfiles(childBehavior);
+
+            childBehaviorCopy.setPackage(childBehavior.getNearestPackage());
+
+            // Flatten the template parameters.
+            TemplateParameterFlattener.unfoldActivity(childBehaviorCopy, callBehaviorActionToReplace);
 
             // Construct the prefix name.
             String prefixName = callBehaviorActionToReplace.getName() + "__" + childBehaviorCopy.getName();
