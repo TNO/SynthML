@@ -1088,10 +1088,10 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Checks whether the given non-{@code null} UML element belongs to the UML activity.
+     * Checks whether the given non-{@code null} UML element belongs to the UML activity that is being synthesized.
      *
      * @param umlElement The non-{@code null} UML element to check.
-     * @return {@code true} if the input element belongs to the activity, {@code false} otherwise.
+     * @return {@code true} if the input element belongs to the activity that is being synthesized, {@code false} otherwise.
      */
     public boolean belongsToSynthesizedActivity(RedefinableElement umlElement) {
         Verify.verifyNotNull(umlElement, "Element cannot be 'null'.");
