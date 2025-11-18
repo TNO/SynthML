@@ -249,10 +249,6 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             ValidationHelper.validateModel(activity.getModel());
         }
 
-        if (context.hasParameterizedActivities()) {
-            throw new RuntimeException("Translating parameterized activities to CIF is unsupported.");
-        }
-
         // Flatten UML activities and normalize IDs.
         if (translationPurpose == UmlToCifTranslationPurpose.SYNTHESIS) {
             FlattenUMLActivity flattener = new FlattenUMLActivity(activity.getModel());
