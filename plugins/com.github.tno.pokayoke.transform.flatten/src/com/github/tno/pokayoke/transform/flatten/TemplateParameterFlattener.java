@@ -142,8 +142,8 @@ public class TemplateParameterFlattener {
             Map<String, AExpression> nameToArgument)
     {
         // Sanity check: 'addressable' must be a name expression which must not be a parameter.
-        Verify.verify(assignUpdate.addressable instanceof ANameExpression adressable
-                && !nameToArgument.containsKey(adressable.name.name));
+        Verify.verify(assignUpdate.addressable instanceof ANameExpression addressable
+                && !nameToArgument.containsKey(addressable.name.name));
 
         return List.of(new AAssignmentUpdate(assignUpdate.addressable,
                 unfoldAExpression(assignUpdate.value, nameToArgument), assignUpdate.position));
