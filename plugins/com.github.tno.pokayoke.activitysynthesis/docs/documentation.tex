@@ -188,19 +188,19 @@ A high-level overview is presented below.
 	We will only consider UML models that are \emph{valid} with respect to the SynthML validator.
 	For example, UML models should not contain abstract UML activities that have nodes or control flows, and should not use double underscores `\_\_' in any names of UML elements.
 
-	\item[Petri Nets.]
-	A Petri Net is a finite directed graph consisting of \emph{places}, \emph{transitions}, and \emph{arcs}.
-	We consider \emph{elementary Petri Nets}, where (by definition) any place holds at most one \emph{token}.
-	Transitions in a Petri Net can be \emph{fired} to move tokens around between adjacent places.
+	\item[Petri nets.]
+	A Petri net is a finite directed graph consisting of \emph{places}, \emph{transitions}, and \emph{arcs}.
+	We consider \emph{elementary Petri nets}, where (by definition) any place holds at most one \emph{token}.
+	Transitions in a Petri net can be \emph{fired} to move tokens around between adjacent places.
 	If some transition can fire, we say that it is \emph{enabled}.
-	Any arc in a Petri Net must be connected to one place and one transition.
+	Any arc in a Petri net must be connected to one place and one transition.
 	That is, there cannot be an arc from a place to some other place, or from a transition to some other transition.
-	Further details on Petri Nets and their semantics can be found in standard literature.
+	Further details on Petri nets and their semantics can be found in standard literature.
 
-	The activity synthesis algorithm uses a particular category of Petri Nets where possible, namely \emph{free-choice Petri Nets}.
-	This is because we have observed that free-choice Petri Nets can be translated to concrete UML activities that are more intuitive for users to understand than general Petri Nets.
+	The activity synthesis algorithm uses a particular category of Petri nets where possible, namely \emph{free-choice Petri nets}.
+	This is because we have observed that free-choice Petri nets can be translated to concrete UML activities that are more intuitive for users to understand than general Petri nets.
 	Intuitively, free-choice means that all choices (i.e., places with multiple outgoing arcs) can be made without additional constraints (i.e., the target transitions of these outgoing arcs do not have additional token requirements).
-	Free-choice Petri Nets thus have simpler choice patterns compared to general Petri Nets, which may translate to more intuitive UML activities.
+	Free-choice Petri nets thus have simpler choice patterns compared to general Petri nets, which may translate to more intuitive UML activities.
 \end{description}
 
 \subsection{Standard and tooling}
@@ -215,17 +215,17 @@ A brief overview is given below.
 	CIF is part of the Eclipse ESCET toolkit, see \url{https://eclipse.dev/escet} (accessed 2025-08-21) for further details.
 	We use the CIF data-based synthesis tool to do supervisory controller synthesis, and the CIF explorer tool for state space generation.
 	\item[Petrify.]
-	Petrify is a tool for Petri Net synthesis.
-	Given some state machine (or finite automaton), the goal of Petri Net synthesis is to synthesize a (minimal) Petri Net that is trace-equivalent to the input state machine.
+	Petrify is a tool for Petri net synthesis.
+	Given some state machine (or finite automaton), the goal of Petri net synthesis is to synthesize a (minimal) Petri net that is trace-equivalent to the input state machine.
 	Petrify has its own input and output specification language.
-	We use Petrify to synthesize a Petri Net from a state machine, as a stepping stone for synthesizing UML activities.
-	This is because Petri Nets can more compactly represent concurrency, by forking/joining from a Petri Net transition.
+	We use Petrify to synthesize a Petri net from a state machine, as a stepping stone for synthesizing UML activities.
+	This is because Petri nets can more compactly represent concurrency, by forking/joining from a Petri net transition.
 	In contrast, in state machines, concurrency is represented by explicit interleaving, i.e., as diamond patterns.
-	Petri Net synthesis can automatically turn such diamond patterns in the input state machine to more compact fork/join patterns in the resulting Petri Net.
+	Petri net synthesis can automatically turn such diamond patterns in the input state machine to more compact fork/join patterns in the resulting Petri net.
 	Further information on Petrify can be found here: \url{https://www.cs.upc.edu/~jordicf/petrify} (accessed 2025-08-21).
 	\item[PNML.]
-	PNML stands for Petri Net Markup Language, and is an XML-based syntax for representing Petri Nets.
-	We use the PNML metamodel to represent Petri Nets internally in the code implementation.
+	PNML stands for Petri net Markup Language, and is an XML-based syntax for representing Petri nets.
+	We use the PNML metamodel to represent Petri nets internally in the code implementation.
 	Further information can be found here: \url{https://pnml.lip6.fr} (accessed 2025-08-21).
 	\item[UML.]
 	We use the UML2 metamodel to represent UML models and UML activities in the code implementation.
@@ -235,19 +235,19 @@ A brief overview is given below.
 \subsection{Algorithms for synthesis}
 \label{sec:prelims:synthesis}
 
-The activity synthesis procedure internally uses two types of synthesis algorithms, namely supervisory controller synthesis (currently using CIF), and Petri Net synthesis (currently using Petrify).
+The activity synthesis procedure internally uses two types of synthesis algorithms, namely supervisory controller synthesis (currently using CIF), and Petri net synthesis (currently using Petrify).
 
 Supervisory controller synthesis is used to compute a minimally restrictive supervisor, which is essentially a state machine that describes all safe system behavior.
-After that, Petri Net synthesis is used to synthesize a (free-choice, if possible) Petri Net from this state machine, which is then transformed to a concrete UML activity.
-The intermediate step of synthesizing a Petri Net is performed since Petri Nets are structurally much closer to UML activities than state machines, and thus easier to translate.
+After that, Petri net synthesis is used to synthesize a (free-choice, if possible) Petri net from this state machine, which is then transformed to a concrete UML activity.
+The intermediate step of synthesizing a Petri net is performed since Petri nets are structurally much closer to UML activities than state machines, and thus easier to translate.
 
-The field of Petri Net synthesis is developed around the \emph{theory of regions}.
-Intuitively, the idea is to find groups of locations in the input state machine that can be turned into single places in the output Petri Net.
+The field of Petri net synthesis is developed around the \emph{theory of regions}.
+Intuitively, the idea is to find groups of locations in the input state machine that can be turned into single places in the output Petri net.
 These groups are then called regions.
-Depending on the type of Petri Net you aim to synthesize (e.g., elementary or free-choice ones), there are slightly different requirements for what exactly constitutes a region.
-Petrify is essentially an implementation of the theory of regions, and is able to synthesize both general and free-choice Petri Nets, among other kinds.
+Depending on the type of Petri net you aim to synthesize (e.g., elementary or free-choice ones), there are slightly different requirements for what exactly constitutes a region.
+Petrify is essentially an implementation of the theory of regions, and is able to synthesize both general and free-choice Petri nets, among other kinds.
 
-We will not explain supervisory controller synthesis and Petri Net synthesis in this document.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             .
+We will not explain supervisory controller synthesis and Petri net synthesis in this document.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             .
 More information on these types of syntheses can be found on the webpages of Eclipse ESCET and Petrify linked above.
 
 \section{Activity Synthesis}
@@ -285,10 +285,10 @@ In case any cycles are detected in these dependencies, then the synthesis algori
 		\var{cifStatespace} := \ensureSingleSourceAndSink{\var{cifStatespace}}\;
 		\var{cifStatespace_{proj}} := \eventBasedProjection{\var{cifStatespace}}\;
 		\var{cifStatespace_{min}} := \dfaMinimization{\var{cifStatespace_{proj}}}\;
-		\tcp{Synthesize a minimal Petri Net.}
+		\tcp{Synthesize a minimal Petri net.}
 		\var{petriNet} := \petrinetSynthesis{\var{cifStatespace_{min}}}\;
 		\var{petriNet_{red}} := \reduceNonAtomicPatterns{\var{petriNet}}\;
-		\tcp{Transform the Petri Net to an activity without control flow guards.}
+		\tcp{Transform the Petri net to an activity without control flow guards.}
 		\var{umlActivity_{concr}} := \transformToActivity{\var{petriNet_{red}}}\;
 		\tcp{Compute the control flow guards for the synthesized activity.}
 		\var{umlActivity_{guards}} := \computeGuards{\var{umlActivity_{concr}}}\;
@@ -469,7 +469,7 @@ We still need to properly investigate the best reachability strategy, which is p
 \paragraph{Motivation.}
 Our goal of performing data-based synthesis is to compute all extra restrictions on the execution of actions and the calls to activities that must be considered by the to-be-synthesized activity to never violate specified requirements.
 Data-based synthesis computes a minimally restrictive supervisor for going from a state that satisfies the activity preconditions, to a state that satisfies the postconditions, without violating requirements, running into blocking situations, etc.
-We will later make the behavior of this supervisor explicit (\autoref{sec:state-space-generation}), to be able to synthesize a compact Petri Net for it (\autoref{sec:petrinet-synthesis}) that is then transformed to a concrete activity (\autoref{sec:transform-petrinet-to-activity}).
+We will later make the behavior of this supervisor explicit (\autoref{sec:state-space-generation}), to be able to synthesize a compact Petri net for it (\autoref{sec:petrinet-synthesis}) that is then transformed to a concrete activity (\autoref{sec:transform-petrinet-to-activity}).
 After this transformation, we need to separately compute the incoming and outgoing guards of the control flows (\autoref{sec:compute-control-flow-guards}).
 
 \paragraph{Preconditions.}
@@ -484,17 +484,17 @@ All guarantees of the CIF data-based synthesis tool apply.
 The operation \generateStatespace{\var{cifSupervisor}} executes the CIF explorer tool, which unfolds the state space of the given CIF specification, \var{cifSupervisor}.
 
 \paragraph{Motivation.}
-We need to explicitly unfold the (safe) state space of the synthesized supervisor \var{cifSupervisor} to be able to construct input for Petri Net synthesis, in order to later synthesize a concrete UML activity.
+We need to explicitly unfold the (safe) state space of the synthesized supervisor \var{cifSupervisor} to be able to construct input for Petri net synthesis, in order to later synthesize a concrete UML activity.
 With `explicitly unfold' we mean that all data (e.g., discrete variables) is eliminated, leading to a state space that is a DFA/NFA.
-The reason is that Petrify does not have symbolic Petri Net synthesis algorithms, i.e., it cannot handle data.
+The reason is that Petrify does not have symbolic Petri net synthesis algorithms, i.e., it cannot handle data.
 Therefore, as input Petrify requires a DFA or NFA (i.e., a traditional supervisor in the form of a single DFA/NFA), rather than an EFA.
 Petrify does not support variables.
 
 The state space that is generated by $\generateStatespaceLabel$ from the synthesized supervisor expresses all possible orderings of events, taking into account the extra synthesized guards and the original action guards as specified in the original input UML model.
-The goal of Petri Net synthesis is then to find a compact Petri Net representation of all these possible orderings, whose structure can then be translated to a concrete UML activity.
+The goal of Petri net synthesis is then to find a compact Petri net representation of all these possible orderings, whose structure can then be translated to a concrete UML activity.
 
 As a side remark; state space generation could later become a performance bottleneck, e.g., in case there are many initial states or large diamond patterns.
-If this problem materializes, we could consider symbolic state space generation instead of explicit state space generation, and possibly adapting the Petri Net synthesis algorithms to directly use these symbolic specifications.
+If this problem materializes, we could consider symbolic state space generation instead of explicit state space generation, and possibly adapting the Petri net synthesis algorithms to directly use these symbolic specifications.
 
 \paragraph{Preconditions.}
 All preconditions of the CIF explorer tool apply.
@@ -573,14 +573,14 @@ This means that all uncontrollable end events of atomic nondeterministic actions
 Recall that uncontrollable CIF events were created for atomic nondeterministic actions (in \autoref{sec:transform-uml-to-cif}), to model the nondeterministic yet atomic execution of their effects.
 However, these uncontrollable events and their corresponding edges are an internal, intermediate step that should not be visible in the synthesized UML activity.
 So at some point, these uncontrollable events have to be eliminated.
-This elimination should be done before Petri Net synthesis due to the atomicity constraint.
-To clarify this further, recall that the goal of Petri Net synthesis is to find a minimal Petri Net whose behavior is trace-equivalent to the CIF state space that was given as input to Petri Net synthesis.
-While doing so, Petri Net synthesis aims to reduce diamond patterns in the state space to fork/join constructs in Petri Nets as much as possible.
+This elimination should be done before Petri net synthesis due to the atomicity constraint.
+To clarify this further, recall that the goal of Petri net synthesis is to find a minimal Petri net whose behavior is trace-equivalent to the CIF state space that was given as input to Petri net synthesis.
+While doing so, Petri net synthesis aims to reduce diamond patterns in the state space to fork/join constructs in Petri nets as much as possible.
 However, due to the atomicity constraint, the uncontrollable events of atomic nondeterministic actions do not give perfect diamond patterns, since whenever some atomic nondeterministic action is being executed, the atomicity constraint enforces that no other action can be performed, thus impacting interleaving.
-Therefore, we perform event-based projection on the CIF state space, to restore the diamond patterns that got disrupted by the atomicity constraint, before performing Petri Net synthesis.
+Therefore, we perform event-based projection on the CIF state space, to restore the diamond patterns that got disrupted by the atomicity constraint, before performing Petri net synthesis.
 We do not eliminate the uncontrollable end events of nonatomic actions since no atomicity constraints are imposed on such actions, i.e., their diamond patterns are still intact.
 
-Note that Petrify, which is the tool we use for Petri Net synthesis, also has a built-in option \texttt{--hide} to hide a list of given events.
+Note that Petrify, which is the tool we use for Petri net synthesis, also has a built-in option \texttt{--hide} to hide a list of given events.
 We used this option in earlier versions of our SynthML implementation instead of doing event-based projection on the level of CIF.
 However, Petrify's hiding option seems broken, in the sense that we observed that Petrify does not always hide all events in the specified list.
 This further motivates doing hiding/projection on the level of CIF instead.
@@ -603,8 +603,8 @@ We will minimize it in the next step.
 The \dfaMinimization{\var{cifStatespace_{proj}}} operation minimizes the single deterministic automaton in the given CIF specification, \var{cifStatespace_{proj}}.
 
 \paragraph{Motivation.}
-We use DFA minimization to minimize the input for Petri Net synthesis.
-Minimizing the DFA is not strictly required to be able to apply Petrify, but might help the Petri Net synthesis algorithm so that it does not have to reason about nondistinguishable DFA states.
+We use DFA minimization to minimize the input for Petri net synthesis.
+Minimizing the DFA is not strictly required to be able to apply Petrify, but might help the Petri net synthesis algorithm so that it does not have to reason about nondistinguishable DFA states.
 Note that Petrify also has a built-in option \texttt{--mints} to minimize the input graph modulo trace equivalence, as a pre-processing step.
 From the documentation of Petrify\footnote{Which is included in the distribution that can be downloaded from the Petrify webpage.} this option seems to have some interaction with the \texttt{--hide} option.
 However, as explained in \autoref{sec:event-based-projection}, \texttt{--hide} does not seem to always work.
@@ -640,23 +640,23 @@ The CIF automaton is composed of five locations:
     \item location \texttt{s4} has two outgoing edges towards \texttt{s3}, after event \texttt{\_\_end} (in case \texttt{bit} is initialized as \texttt{true}), and towards \texttt{s5} after event \texttt{flip} (otherwise);
     \item location \texttt{s5} has one outgoing edge towards \texttt{s3}, after event \texttt{\_\_end}.
 \end{itemize}
-This state space is the input to Petrify, that synthesizes a Petri Net from it.
+This state space is the input to Petrify, that synthesizes a Petri net from it.
 \end{example*}
 
 \ciffile{images/bitflipper_synthesized_minimized.cif}{Minimized \texttt{BitFlipper} CIF model.}{lst:bitflipper-minimized-cif}
 
-\subsection{Petri Net synthesis}
+\subsection{Petri net synthesis}
 \label{sec:petrinet-synthesis}
 
-The operation \petrinetSynthesis{\var{cifStatespace_{min}}} performs Petri Net synthesis to compute a minimal Petri Net whose behavior is trace-equivalent to the single automaton in the given CIF specification, \var{cifStatespace_{min}}.
-This operation attempts to synthesize a free-choice Petri Net, and if that fails, it synthesizes an ordinary Petri Net instead.
+The operation \petrinetSynthesis{\var{cifStatespace_{min}}} performs Petri net synthesis to compute a minimal Petri net whose behavior is trace-equivalent to the single automaton in the given CIF specification, \var{cifStatespace_{min}}.
+This operation attempts to synthesize a free-choice Petri net, and if that fails, it synthesizes an ordinary Petri net instead.
 
-We use the Petrify tool for performing Petri Net synthesis.
-We thereby use the following options of Petrify: \texttt{-opt} to try to find the best possible result; \texttt{-fc} to synthesize a free-choice Petri Net;
-\texttt{-ip} to produce a Petri Net with intermediate places (otherwise certain places could be omitted to make the result a bit smaller for visualization purposes); and \texttt{-log} to generate a log file.
+We use the Petrify tool for performing Petri net synthesis.
+We thereby use the following options of Petrify: \texttt{-opt} to try to find the best possible result; \texttt{-fc} to synthesize a free-choice Petri net;
+\texttt{-ip} to produce a Petri net with intermediate places (otherwise certain places could be omitted to make the result a bit smaller for visualization purposes); and \texttt{-log} to generate a log file.
 If synthesis fails with the \texttt{-fc} option, Petrify will be invoked again without \texttt{-fc}.
 
-In our activity synthesis algorithm, we use PNML as the intermediate format for representing Petri Nets.
+In our activity synthesis algorithm, we use PNML as the intermediate format for representing Petri nets.
 Therefore, part of the \petrinetSynthesisLabel{} operation is to translate \var{cifStatespace_{min}} to the input language of Petrify, and transforming the output of Petrify to PNML.
 
 \paragraph{Motivation.}
@@ -664,22 +664,22 @@ By having computed a (projected and minimal) CIF state space, \var{cifStatespace
 The main reason is that concurrency can more concisely be represented in UML activities, via their fork and join nodes, compared to state machines and automata.
 In contrast, \var{cifStatespace_{min}} has all concurrent interleaving explicitly unfolded as diamond patterns.
 We now somehow have to detect all diamond patterns of concurrent interleaving in \var{cifStatespace_{min}} and translate those to fork/join patterns in the to-be-synthesized UML activity.
-This is done by means of Petri Net synthesis, which is a field of research aiming to do exactly that, but then on Petri Nets rather than UML activities.
-Nevertheless, Petri Nets and activities are quite closely related, in the sense that the semantics of activities is usually defined as a token-based semantics.
-Our main strategy is therefore to synthesize a minimal Petri Net from \var{cifStatespace_{min}} (in this section), and translate that to a UML activity (in \autoref{sec:transform-petrinet-to-activity}).
-We thus use Petri Nets as an intermediate formalism in our activity synthesis algorithm.
+This is done by means of Petri net synthesis, which is a field of research aiming to do exactly that, but then on Petri nets rather than UML activities.
+Nevertheless, Petri nets and activities are quite closely related, in the sense that the semantics of activities is usually defined as a token-based semantics.
+Our main strategy is therefore to synthesize a minimal Petri net from \var{cifStatespace_{min}} (in this section), and translate that to a UML activity (in \autoref{sec:transform-petrinet-to-activity}).
+We thus use Petri nets as an intermediate formalism in our activity synthesis algorithm.
 
-Moreover, there are particular classes of Petri Nets, like \emph{free-choice} Petri Nets, that are likely to lead to more intuitive UML activities.
+Moreover, there are particular classes of Petri nets, like \emph{free-choice} Petri nets, that are likely to lead to more intuitive UML activities.
 (This is based on our observations from earlier experiments.
 We haven't yet done an extensive study or comparison to see whether this is always the case.)
-Therefore we attempt to synthesize a free-choice Petri Net whenever possible.
+Therefore we attempt to synthesize a free-choice Petri net whenever possible.
 
-However, just translating a Petri Net to a UML activity structure is not yet sufficient: we then still need to account for the data which had been eliminated in the CIF state space generation step (\autoref{sec:state-space-generation}).
+However, just translating a Petri net to a UML activity structure is not yet sufficient: we then still need to account for the data which had been eliminated in the CIF state space generation step (\autoref{sec:state-space-generation}).
 In particular, (incoming and outgoing) control flow guards are needed, for example for the decision nodes of the synthesized UML activity, since without such guards, any control flow could freely be taken, leading to executions that would not be allowed by the synthesized CIF supervisor.
-This step is done separately (in \autoref{sec:compute-control-flow-guards}) since to the best of our knowledge, Petri Net synthesis with data/state is an open research field for which tooling is not available.
+This step is done separately (in \autoref{sec:compute-control-flow-guards}) since to the best of our knowledge, Petri net synthesis with data/state is an open research field for which tooling is not available.
 
 \paragraph{Preconditions.}
-Since Petrify is used for Petri Net synthesis, all preconditions from that tool apply.
+Since Petrify is used for Petri net synthesis, all preconditions from that tool apply.
 However, these preconditions do not seem to be well-documented.
 In any case the input CIF specification should not contain identifiers which are reserved keywords in the input formalism of Petrify.
 But since all Petrify reserved keywords seem to start with a dot, e.g., \texttt{.inputs} and \texttt{.graph}, this is (probably) already ensured as valid UML models do not contain identifiers containing a dot.
@@ -690,41 +690,41 @@ This automaton must have an explicit alphabet that contains no duplicate events.
 Furthermore, the event name \loopLabel{} must not be in the automaton alphabet.
 This is because \petrinetSynthesisLabel{} will create an auxiliary self-loop edge named \loopLabel{} before Petrify is invoked, which is removed later from the output of Petrify.
 This auxiliary self-loop is added to make Petrify work.
-This is because Petrify seems unable to do Petri Net synthesis in case the input automaton has deadlock locations, i.e., locations without outgoing edges.
+This is because Petrify seems unable to do Petri net synthesis in case the input automaton has deadlock locations, i.e., locations without outgoing edges.
 And recall that \var{cifStatespace_{min}} has a single marked location which is a sink location, and thus when you get into this location during some execution, the execution deadlocks.
 Hence, to resolve this, we add an extra self-loop edge that connects the single marked location to itself, to still allow `progress' from this sink location.
-After having invoked Petrify, the synthesized Petri Net will contain exactly one transition for \loopLabel{} (since the input automaton has exactly one marked location and we added exactly one \loopLabel{} edge), so it's easy to remove it again.
+After having invoked Petrify, the synthesized Petri net will contain exactly one transition for \loopLabel{} (since the input automaton has exactly one marked location and we added exactly one \loopLabel{} edge), so it's easy to remove it again.
 
 Finally, the string \toLabel{} must not occur in any event name in the input automaton.
 This is later needed for transforming Petrify output to PNML, where \toLabel{} will be used as part of PNML arc identifiers.
 
 \paragraph{Postconditions.}
 All guarantees from Petrify apply.
-In particular, the output is an optimal (possibly free-choice) Petri Net that is trace-equivalent to the input automaton.
-The synthesized Petri Net is returned in PNML format.
+In particular, the output is an optimal (possibly free-choice) Petri net that is trace-equivalent to the input automaton.
+The synthesized Petri net is returned in PNML format.
 
-As explained above, the \loopLabel{} event has been removed from this Petri Net.
-The synthesized Petri Net contains exactly one place that initially holds a token.
+As explained above, the \loopLabel{} event has been removed from this Petri net.
+The synthesized Petri net contains exactly one place that initially holds a token.
 This place has no incoming arcs and exactly one outgoing arc to a transition named \startLabel{}.
-The returned Petri Net also contains exactly one sink place with no outgoing arcs and at least one incoming arc from a transition named \stopLabel{} (there could be multiple such arcs, in contrast to the initial place).
+The returned Petri net also contains exactly one sink place with no outgoing arcs and at least one incoming arc from a transition named \stopLabel{} (there could be multiple such arcs, in contrast to the initial place).
 These two places will later become the initial and final node of the synthesized activity.
 
 Petrify may have performed \emph{label splitting}.
 This means that Petrify may have chosen to split up certain events $e$ in \var{cifStatespace_{min}} into events that are named $e/1$, $e/2$, etc.
-This is done by Petrify for technical reasons that are not explained further here, but which are needed to enable Petri Net synthesis.
-The consequence of label splitting is that the synthesized Petri Net may have multiple transitions for some CIF events $e$ that are then labeled incrementally, as $e/1$, $e/2$, etc.
+This is done by Petrify for technical reasons that are not explained further here, but which are needed to enable Petri net synthesis.
+The consequence of label splitting is that the synthesized Petri net may have multiple transitions for some CIF events $e$ that are then labeled incrementally, as $e/1$, $e/2$, etc.
 We can later easily detect such duplication and remove these `duplication markers'.
 
-Moreover, as an internal step, the synthesized Petri Net has been normalized (i.e., all its places have been relabeled).
+Moreover, as an internal step, the synthesized Petri net has been normalized (i.e., all its places have been relabeled).
 This is needed since Petrify seems able to produce nondeterministic results in the sense that running Petrify multiple times on the same input model may give different results.
 But these different results are the same modulo names of places.
-We therefore normalize synthesized Petri Nets, for example to allow proper regression testing.
+We therefore normalize synthesized Petri nets, for example to allow proper regression testing.
 
 \begin{example*}
 The Petrify output is depicted in \autoref{fig:petrify-out}.
 Notice that the end event \texttt{\_\_end} has been split into two separate transitions due to label splitting.
 These two transitions will be merged together in the conversion step to a UML activity, and be turned into a UML merge node.
-Further, the `final' place \texttt{p4} is equipped with a self-loop, which will be removed when converting this Petri Net to PNML format.
+Further, the `final' place \texttt{p4} is equipped with a self-loop, which will be removed when converting this Petri net to PNML format.
 \end{example*}
 
 \begin{figure}[t!]
@@ -755,8 +755,8 @@ Further, the `final' place \texttt{p4} is equipped with a self-loop, which will 
 	\label{fig:nonatomic-pattern}
 \end{figure}
 
-The \rewriteNonAtomicPatternsLabel{} operation rewrites any nonatomic patterns in the Petri Net that can be merged.
-A \emph{nonatomic pattern} in a Petri Net is defined as shown in \autoref{fig:nonatomic-pattern-left}, consisting of:
+The \rewriteNonAtomicPatternsLabel{} operation rewrites any nonatomic patterns in the Petri net that can be merged.
+A \emph{nonatomic pattern} in a Petri net is defined as shown in \autoref{fig:nonatomic-pattern-left}, consisting of:
 \begin{itemize}
 	\item A `start' transition, corresponding to a start event of an nonatomic (possibly nondeterministic) action.
 	In the figure, the \textsf{A} transition is the start transition.
@@ -772,57 +772,57 @@ A \emph{nonatomic pattern} in a Petri Net is defined as shown in \autoref{fig:no
 This pattern definition is strict, in the sense that no other places, transitions, and arcs can be part of the pattern.
 That is, the start transition cannot have other outgoing arcs, the intermediate place cannot have other incoming/outgoing arcs other than the ones from/to the start and end transitions as shown in \autoref{fig:nonatomic-pattern-left}, the end transitions cannot have other incoming and outgoing arcs, and the end places cannot have other incoming arcs.
 
-Every such nonatomic pattern in the Petri Net is rewritten, by replacing the start and end transitions in the pattern by a single transition for executing the nonatomic action.
+Every such nonatomic pattern in the Petri net is rewritten, by replacing the start and end transitions in the pattern by a single transition for executing the nonatomic action.
 \autoref{fig:nonatomic-pattern-right} shows the rewritten pattern shown in \autoref{fig:nonatomic-pattern-left}.
 
 \paragraph{Motivation.}
 Recall that in the UML-to-CIF transformation (\autoref{sec:transform-uml-to-cif}) we created separate controllable start events and uncontrollable end events for nonatomic and atomic nondeterministic actions.
 Then, in the earlier event-based projection step (\autoref{sec:event-based-projection}) we got rid of the end events of the atomic nondeterministic actions, by projecting those out.
-However, the end events of nonatomic actions are still in the CIF specifications, and thus also in the Petri Net specifications.
-The \rewriteNonAtomicPatternsLabel{} operation will attempt to merge the starts and ends of nonatomic actions into single transitions, on the intermediate Petri Net representation.
+However, the end events of nonatomic actions are still in the CIF specifications, and thus also in the Petri net specifications.
+The \rewriteNonAtomicPatternsLabel{} operation will attempt to merge the starts and ends of nonatomic actions into single transitions, on the intermediate Petri net representation.
 By doing so, these merged transitions will be turned into single UML action nodes in later steps of the synthesis chain.
 
-Note that, instead of rewriting nonatomic patterns on Petri Net level, it would also be possible to rewrite them on UML activity level.
-Rewriting at the Petri Net level offers an advantage because Petri Nets have a simpler structure compared to UML activity diagrams. Unlike UML diagrams, they lack fork, join, decision, and merge nodes, which makes identifying and replacing structural patterns much easier.
+Note that, instead of rewriting nonatomic patterns on Petri net level, it would also be possible to rewrite them on UML activity level.
+Rewriting at the Petri net level offers an advantage because Petri nets have a simpler structure compared to UML activity diagrams. Unlike UML diagrams, they lack fork, join, decision, and merge nodes, which makes identifying and replacing structural patterns much easier.
 
 Finally, merging these patterns is not always possible since the nonatomic pattern may not always apply.
 This may, e.g., happen in case of imperfect concurrent interleaving.
 For example, consider a nonatomic action \textsf{A} and an  action \textsf{B} such that, after data-based synthesis, the resulting supervisor permits \textsf{B} to occur before \textsf{A} and even during \textsf{A} (i.e., between its start and end events), but not after \textsf{A}. 
-In this scenario, there is no complete diamond pattern in the interleavings of \textsf{A} and \textsf{B} that can be reduced by the introduction of a fork node through Petri Net synthesis. 
+In this scenario, there is no complete diamond pattern in the interleavings of \textsf{A} and \textsf{B} that can be reduced by the introduction of a fork node through Petri net synthesis. 
 Consequently, the intermediate place in \autoref{fig:nonatomic-pattern-left} will include an additional outgoing arc to \textsf{B}, disrupting the nonatomic pattern. Therefore, the start and end transitions of \textsf{A} cannot be not merged.
 These transitions are later translated to separate UML action nodes, to be further handled during activity post-processing (\autoref{sec:activity-post-processing}).
 
 \paragraph{Preconditions.}
-This operation requires a Petri Net resulting from the previous step.
-Moreover, this operation needs to know what Petri Net transitions start a nonatomic action, and what the corresponding end transitions are for ending these actions.
+This operation requires a Petri net resulting from the previous step.
+Moreover, this operation needs to know what Petri net transitions start a nonatomic action, and what the corresponding end transitions are for ending these actions.
 
 \paragraph{Postconditions.}
-This operation returns the input Petri Net, where all nonatomic patterns have been rewritten as shown by \autoref{fig:nonatomic-pattern}.
+This operation returns the input Petri net, where all nonatomic patterns have been rewritten as shown by \autoref{fig:nonatomic-pattern}.
 Any starts and ends of nonatomic actions whose occurrences do not fit the nonatomic pattern will not have been rewritten, and are later handled on the UML activity level, during activity post-processing.
 
-\subsection{Transforming the Petri Net to an activity}
+\subsection{Transforming the Petri net to an activity}
 \label{sec:transform-petrinet-to-activity}
 
-The operation \transformToActivity{\var{petriNet}} transforms the given Petri Net \var{petriNet} in PNML format to a concrete UML activity.
+The operation \transformToActivity{\var{petriNet}} transforms the given Petri net \var{petriNet} in PNML format to a concrete UML activity.
 This operation takes care of unmerged nonatomic patterns, i.e., ones that were not rewritten by \rewriteNonAtomicPatternsLabel{}, by translating their start and end transitions to UML opaque actions with the proper guards and effects.
 Furthermore, this operation performs some post-processing: (1) it removes any internal actions, notably \startLabel{} and \stopLabel{}, (2) it further simplifies the synthesized activity, and (3) it removes some names from UML control nodes and control flows, for better readability. 
 
 \paragraph{Motivation.}
 The overall aim of the activity synthesis chain is to synthesize concrete UML activities.
-Since activities are reasonably close to Petri Nets, we do this by first synthesizing a Petri Net using known techniques, and transforming this Petri Net to a concrete UML activity using \transformToActivityLabel{}.
+Since activities are reasonably close to Petri nets, we do this by first synthesizing a Petri net using known techniques, and transforming this Petri net to a concrete UML activity using \transformToActivityLabel{}.
 This activity is then post-processed to improve its readability.
 Internal actions are removed since they were only needed to be able to synthesize the activity.
 Then the activity is further simplified.
-This is done for two reasons: (1) we know that translating a minimal Petri Net to a UML activity does not imply that the translated activity is minimal, and (2) the removal of internal actions may lead to patterns in the activity that may further be reduced.
+This is done for two reasons: (1) we know that translating a minimal Petri net to a UML activity does not imply that the translated activity is minimal, and (2) the removal of internal actions may lead to patterns in the activity that may further be reduced.
 This simplification step searches for several predefined patterns in the UML activity, and rewrites any found instances of these patterns.
 Finally, activity post-processing gives the opportunity to do some other minor improvements, e.g., to improve readability a bit by removing some names.
 
 \paragraph{Preconditions.}
 The input \var{petriNet} must be in PNML format.
-This Petri Net may be, but does not have to be, free-choice.
+This Petri net may be, but does not have to be, free-choice.
 It must have exactly one place that has an initial token, which must additionally have no incoming arcs and exactly one outgoing arc to a transition named \startLabel{}.
 It must have exactly one (sink) place that does not have any outgoing arcs, which must additionally have at least one incoming arc from a transition named \stopLabel{}.
-Finally, the Petri Net must not contain transitions corresponding to control nodes of any concrete activities that are called by the to-be-synthesized activity.
+Finally, the Petri net must not contain transitions corresponding to control nodes of any concrete activities that are called by the to-be-synthesized activity.
 Adding support for synthesizing hierarhical activities is planned as future work.
 
 \paragraph{Postconditions.}
@@ -842,7 +842,7 @@ The returned concrete UML activity contains:
 	The name of this opaque action node will be the nonatomic action name, followed by ``\texttt{\_end}'', followed by the effect index.
 	For example, \texttt{A\_end\_1} and \texttt{A\_end\_2}.
 	\item Fork/join/decision/merge control nodes, as translated from similar patterns in \var{petriNet}.
-	For example, a Petri Net place with multiple incoming arcs and one outgoing arc is translated to a UML merge node.
+	For example, a Petri net place with multiple incoming arcs and one outgoing arc is translated to a UML merge node.
 	The only UML control nodes that can have multiple incoming control flows are join and merge nodes.
 	The only UML control nodes that can have multiple outgoing control flows are fork and decision nodes.
 	\item No guards on any control flows.
@@ -850,8 +850,8 @@ The returned concrete UML activity contains:
 \end{itemize}
 
 Furthermore, \transformToActivityLabel{} ensures that every control flow that goes out of a decision node will end in either some action node, or in the final node (in which case there was also an action, but it was the auxiliary internal $\stopLabel$ action).
-This is a consequence of the structure of the Petri Nets that are synthesized by Petrify, and the patterns that they could have.
-To give another example of a pattern that cannot occur: it is not possible for the concrete UML activity to have a control flow that goes from some decision node to some other decision node, because in the Petri Net there cannot be an arc from a place to another place.
+This is a consequence of the structure of the Petri nets that are synthesized by Petrify, and the patterns that they could have.
+To give another example of a pattern that cannot occur: it is not possible for the concrete UML activity to have a control flow that goes from some decision node to some other decision node, because in the Petri net there cannot be an arc from a place to another place.
 
 Finally, \transformToActivityLabel{} ensures that the translated UML activity no longer contains internal actions and is simplified.
 Moreover, all names of control nodes (initial/final/fork/join/decision/merge nodes) and control flow have been removed for better readability.
@@ -868,7 +868,7 @@ This is further elaborated upon below.
 
 \paragraph{Motivation.}
 At this point in the activity synthesis algorithm we managed to synthesize the structure of the concrete UML activity.
-However, this activity does not contain any data (other than the guards and effects of actions), since Petri Net synthesis is unable to deal with data.
+However, this activity does not contain any data (other than the guards and effects of actions), since Petri net synthesis is unable to deal with data.
 As a result, the (incoming and outgoing) guards that determine which control flow should be followed are missing at this point.
 Without control flow guards, the synthesized activity may have more behavior than allowed by the requirements, including potentially wrong or deadlocking behavior.
 Hence, we must compute the control flow guards and add them to the activity, which is what \computeGuardsLabel{} does. 
