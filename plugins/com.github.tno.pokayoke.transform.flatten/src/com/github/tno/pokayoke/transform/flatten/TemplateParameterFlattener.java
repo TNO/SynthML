@@ -215,7 +215,7 @@ public class TemplateParameterFlattener {
             } else if (ownedElement instanceof OpaqueAction internalAction) {
                 unfoldRedefinableElement(internalAction, argumentMap);
             } else if (ownedElement instanceof Constraint) {
-                // Constraints cannot be parameterized
+                // Constraints cannot be parameterized.
                 continue;
             } else if (ownedElement instanceof ActivityNode) {
                 // Nodes in activities should not refer to properties.
