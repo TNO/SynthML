@@ -227,6 +227,7 @@ public class PNML2UMLTranslator {
 
         // Find or create the source node of the control flow.
         ActivityNode sourceNode;
+        boolean newSourceNode = false;
 
         if (place.getInArcs().isEmpty()) {
             Preconditions.checkNotNull(place.getInitialMarking(), "Expected initial tokens but found none.");
@@ -237,6 +238,7 @@ public class PNML2UMLTranslator {
         } else if (place.getInArcs().size() == 1) {
             sourceNode = transitionMapping.get(place.getInArcs().get(0).getSource());
         } else {
+            newSourceNode = true;
             sourceNode = UML_FACTORY.createMergeNode();
             sourceNode.setActivity(activity);
             sourceNode.setName("Merge__" + place.getId());
@@ -251,6 +253,7 @@ public class PNML2UMLTranslator {
 
         // Find or create the target node of the control flow.
         ActivityNode targetNode;
+        boolean newTargetNode = false;
 
         if (place.getOutArcs().isEmpty()) {
             targetNode = UML_FACTORY.createActivityFinalNode();
@@ -260,6 +263,7 @@ public class PNML2UMLTranslator {
         } else if (place.getOutArcs().size() == 1) {
             targetNode = transitionMapping.get(place.getOutArcs().get(0).getTarget());
         } else {
+            newTargetNode = true;
             targetNode = UML_FACTORY.createDecisionNode();
             targetNode.setActivity(activity);
             targetNode.setName("Decision__" + place.getId());
@@ -288,10 +292,42 @@ public class PNML2UMLTranslator {
             arcMapping.put(place.getOutArcs().get(0), controlFlow);
         }
 
-        // Get the guard of a control flow if the concrete activity had a control flow between the current source and
-        // target nodes.
+        // If both source and target nodes originate from a concrete activity, get the guards of the concrete control
+        // flow connecting them.
+
+        // Track the source node.
         RedefinableElement concreteSource = tracker.getOriginalUmlElement(sourceNode);
+        if (newSourceNode) {
+            // If the place has multiple incoming edges (hence the source node is a newly created merge node), check
+            // if it originates from a concrete merge node. Namely, all the incoming nodes must be tracked to the same
+            // merge node. If so, consider it as the source of the current control flow to add the relevant guards.
+            Set<RedefinableElement> originalIncomingNodes = place.getInArcs().stream()
+                    .map(i -> tracker.getOriginalUmlElement(transitionMapping.get(i.getSource())))
+                    .collect(Collectors.toSet());
+            if (originalIncomingNodes.size() == 1
+                    && originalIncomingNodes.iterator().next() instanceof MergeNode originalMergeNode)
+            {
+                concreteSource = originalMergeNode;
+            }
+        }
+
+        // Track the target node.
         RedefinableElement concreteTarget = tracker.getOriginalUmlElement(targetNode);
+        if (newTargetNode) {
+            // If the place has multiple outgoing edges (hence the target node is a newly created decision node), check
+            // if it originates from a concrete decision node. Namely, all the outgoing nodes must be tracked to the
+            // same decision node. If so, consider it as the target of the current control flow to add the relevant
+            // guards.
+            Set<RedefinableElement> originalOutgoingNodes = place.getOutArcs().stream()
+                    .map(i -> tracker.getOriginalUmlElement(transitionMapping.get(i.getTarget())))
+                    .collect(Collectors.toSet());
+            if (originalOutgoingNodes.size() == 1
+                    && originalOutgoingNodes.iterator().next() instanceof DecisionNode originalDecisionNode)
+            {
+                concreteTarget = originalDecisionNode;
+            }
+        }
+
         Pair<String, String> incomingOutgoingGuards = tracker.getControlFlowGuards(concreteSource, concreteTarget);
         if (incomingOutgoingGuards != null) {
             PokaYokeUmlProfileUtil.setIncomingGuard(controlFlow, incomingOutgoingGuards.left);
