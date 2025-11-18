@@ -783,14 +783,13 @@ The \rewriteNonAtomicPatternsLabel{} operation will attempt to merge the starts 
 By doing so, these merged transitions will be turned into single UML action nodes in later steps of the synthesis chain.
 
 Note that, instead of rewriting nonatomic patterns on Petri Net level, it would also be possible to rewrite them on UML activity level.
-The advantage of rewriting on the level of Petri Nets, is that Petri Nets have a nicer structure than UML activities since they do not have fork/join/decision/merge nodes, making it easier to find and replace structural patterns in them.
+Rewriting at the Petri Net level offers an advantage because Petri Nets have a simpler structure compared to UML activity diagrams. Unlike UML diagrams, they lack fork, join, decision, and merge nodes, which makes identifying and replacing structural patterns much easier.
 
-Finally, merging nonatomic starts and ends is not always possible since the nonatomic pattern may not always apply.
+Finally, merging these patterns is not always possible since the nonatomic pattern may not always apply.
 This may, e.g., happen in case of imperfect concurrent interleaving.
-For example, consider some nonatomic action \textsf{A} and atomic action \textsf{B} such that, after data-based synthesis, the synthesized supervisor allows \textsf{B} to happen before \textsf{A}, during \textsf{A} (i.e., in between its start and end events), but not after \textsf{A}.
-Then there is no full diamond pattern with respect to the interleavings of \textsf{A} and \textsf{B} that can be reduced to a forking construct by Petri Net synthesis.
-As a result, the intermediate place in \autoref{fig:nonatomic-pattern-left} will have an extra outgoing arc to \textsf{B}, breaking the nonatomic pattern.
-In such cases, we do not merge the start and end transitions of nonatomic actions, but keep them separated.
+For example, consider a nonatomic action \textsf{A} and an  action \textsf{B} such that, after data-based synthesis, the resulting supervisor permits \textsf{B} to occur before \textsf{A} and even during \textsf{A} (i.e., between its start and end events), but not after \textsf{A}. 
+In this scenario, there is no complete diamond pattern in the interleavings of \textsf{A} and \textsf{B} that can be reduced by the introduction of a fork node through Petri Net synthesis. 
+Consequently, the intermediate place in \autoref{fig:nonatomic-pattern-left} will include an additional outgoing arc to \textsf{B}, disrupting the nonatomic pattern. Therefore, the start and end transitions of \textsf{A} cannot be not merged.
 These transitions are later translated to separate UML action nodes, to be further handled during activity post-processing (\autoref{sec:activity-post-processing}).
 
 \paragraph{Preconditions.}
@@ -862,15 +861,14 @@ Moreover, all names of control nodes (initial/final/fork/join/decision/merge nod
 
 The \computeGuards{\var{umlActivity_{concr}}} operation computes incoming and outgoing guards for the control flows of the given concrete activity \var{umlActivity_{concr}}.
 These guards are computed by first translating \var{umlActivity_{concr}} to a CIF specification, and then using CIF data-based synthesis to compute extra guards for the controllable events of that specification, which are the start events for executing the nodes of \var{umlActivity_{concr}}.
-Thus by doing so, for every activity node, we compute the extra guard that must hold to be able to safely execute that node. 
+By doing so, for every activity node, we compute the extra guard that must hold to be able to safely execute that node. 
 These extra guards are then translated to incoming and/or outgoing guards of the incoming and/or outgoing control flows of the activity nodes.
-Whether an incoming or outgoing guard is computed, or whether this computed guard is put on an incoming or outgoing control flow of an activity node, is dependent on the type of the activity node.
+The computation of a guard, as well as whether it is applied to an incoming or outgoing control flow of an activity node, depends on the node's type.
 This is further elaborated upon below.
 
 \paragraph{Motivation.}
 At this point in the activity synthesis algorithm we managed to synthesize the structure of the concrete UML activity.
-However, this activity does not contain any data (other than the guards and effects of actions).
-This is primarily because Petri Net synthesis is unable to deal with data.
+However, this activity does not contain any data (other than the guards and effects of actions), since Petri Net synthesis is unable to deal with data.
 As a result, the (incoming and outgoing) guards that determine which control flow should be followed are missing at this point.
 Without control flow guards, the synthesized activity may have more behavior than allowed by the requirements, including potentially wrong or deadlocking behavior.
 Hence, we must compute the control flow guards and add them to the activity, which is what \computeGuardsLabel{} does. 
@@ -882,10 +880,10 @@ In fact, the same transformation \transformUmlToCifLabel{} is used for this, wit
 	So instead of translating the UML opaque behaviors in the input model, we now translate the nodes and control flows of \var{umlActivity_{concr}} (as described already in \autoref{sec:transform-uml-to-cif} for activities that are being called).
 	However, we do not translate the initial node and final node, since execution of these nodes only has meaning when \var{umlActivity_{concr}} is being called from some other activity, which is not the case here as \var{umlActivity_{concr}} is considered in isolation.
 	The UML-to-CIF translation ensures that there is a token on the single initial control flow---the one that goes out of the initial node of \var{umlActivity_{concr}}---by letting the corresponding CIF variable have \texttt{true} as the default value.
-	Moreover, we do not translate any other concrete activities that might be in the input model, since \var{umlActivity_{concr}} will not call any other activities since it is flattened.
-	\item Two variants of the activity postcondition are now translated to CIF: one ``without structure'' and one ``with structure''.
-	The ``without structure'' variant is the same as the postcondition translation as explained in \autoref{sec:transform-uml-to-cif}.
-	The ``with structure'' variant is extra, and is equivalent to the ``without structure'' variant plus the extra condition that only the final control flow---the one that goes into the final UML node of \var{umlActivity_{concr}}---holds a token.
+	Moreover, we do not translate any other concrete activities present in the input model, because \var{umlActivity_{concr}} is flattened and therefore does not invoke any other activities.
+	\item The activity postconditions are split and translated to CIF as two separate variants: \emph{without structure} and \emph{with structure}. 
+	The without structure translation follows the approach described in \autoref{sec:transform-uml-to-cif}. 
+	The with structure translation adds an extra condition: only the final control flow, the one leading to the last UML node of \var{umlActivity_{concr}}, holds a token.
 	Both postcondition variants are translated to Boolean-typed algebraic variables in CIF.
 	The algebraic variable for the ``with structure'' variant is used to indicate the marked states of the CIF specification.
 	\item Extra CIF requirements are generated expressing that, whenever the activity postcondition holds, no further action nodes can be executed.
@@ -894,9 +892,10 @@ In fact, the same transformation \transformUmlToCifLabel{} is used for this, wit
 	To achieve that, we require that the start events of all action nodes are disabled whenever the ``without structure'' variant of the activity postcondition holds, and that the start events of all control nodes are disabled whenever the stronger ``with structure'' variant of the postcondition holds.
 	\item Every CIF event for starting the execution of some node in \var{umlActivity_{concr}} is translated as a controllable event.
 	This is different from before: \autoref{sec:transform-uml-to-cif} describes that, when calling a concrete activity from a to-be-synthesized activity, only the start events of initial nodes are controllable, and the others are all uncontrollable.
-	However, \var{umlActivity_{concr}} does not call other activities, as it is flattened.
-	Our goal now is computing the extra conditions needed to safely execute the nodes of \var{umlActivity_{concr}}, hence we make all their start events controllable.
-	By doing so, we are able to compute control flow guards as locally as possible.
+	Note that, differently from the previous translation, \var{umlActivity_{concr}} does not call other activities, as all concrete activities are flattened.
+	Our goal now is to determine the extra conditions required for the safe execution of the nodes in \var{umlActivity_{concr}}. 
+	To this end, we make all their start events controllable.
+	This allows us to compute control flow guards as locally as possible.
 	\item The translation of occurrence constraints is slightly different, to be able to correctly handle unmerged nonatomic patterns.
 	In particular, for every nonatomic action that is subject to an occurrence constraint, the translated CIF requirement automaton for the constraint should consider: (1) the CIF events created for the call behavior nodes in \var{umlActivity_{concr}} that call the UML opaque behavior of that action, as well as (2) the CIF start events of the unmerged nonatomic patterns involving that action.
 \end{itemize}
@@ -963,10 +962,9 @@ Such a thing can be ensured because there might be multiple valid ways to \textt
 In other words, a correct simplification result is not necessarily unique.
 In practice it might happen that multiple extra guards exist for $\mathit{edge}$ that are all correct, some of which are expressed over internal CIF variables and some of which are not.
 And as a result of the $\texttt{simplify}$ operation, it might happen that $\texttt{extra}(\mathit{edge})$ becomes a predicate that does depend in internal state.
-We could have avoided that, by eliminating all internal CIF variables from the BDD representations of $S$ and $S'$ using existential quantification.
-By doing so, $\texttt{extra}(\mathit{edge})$ is guaranteed not to depend on internal state.
-However, as a downside to this, it might then not always be possible to compute extra guards.
-Sometimes the only way of expressing the extra guard of $\mathit{edge}$ is via internal state.
+This could have been avoided by removing all internal CIF variables from the BDD representations of $S$ and $S'$ through existential quantification. 
+Doing so ensures that $\texttt{extra}(\mathit{edge})$ does not depend on internal state. 
+However, the drawback is that extra guards may not always be computable, as in some cases the only way to express the extra guard for $\mathit{edge}$ relies on internal state.
 The code implementation checks for such internal state dependencies.
 The activity synthesis algorithm terminates exceptionally when such a case is detected, resulting in an error message for the user.
 With the addition of existential quantification, the full definition of $\texttt{extra}(\mathit{edge})$ now becomes:
