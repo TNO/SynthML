@@ -140,6 +140,7 @@ public class FlattenUMLActivity {
 
             Activity childBehaviorCopy = copyWithProfiles(childBehavior);
 
+            // Updating guards and effects in the copied activity requires the copy to be assigned a package.
             childBehaviorCopy.setPackage(childBehavior.getNearestPackage());
 
             // Flatten the template parameters.
