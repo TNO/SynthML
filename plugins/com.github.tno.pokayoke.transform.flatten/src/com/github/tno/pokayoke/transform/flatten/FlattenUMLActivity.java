@@ -30,9 +30,8 @@ import com.github.tno.pokayoke.transform.common.NameHelper;
 import com.github.tno.pokayoke.transform.common.StructureInfoHelper;
 import com.github.tno.pokayoke.transform.common.ValidationHelper;
 import com.github.tno.synthml.uml.profile.cif.CifScopedContext;
+import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.github.tno.synthml.uml.profile.util.UMLActivityUtils;
-
-import SynthML.SynthMLPackage;
 
 /** Flattens nested UML activities. */
 public class FlattenUMLActivity {
@@ -118,7 +117,8 @@ public class FlattenUMLActivity {
                 // Translate only non-shadowed call behavior actions. Shadowed (stereotyped) call behavior actions are
                 // considered leaves, as are call behavior actions that call opaque behaviors.
                 if (behavior instanceof Activity activity && action.getAppliedStereotypes().stream()
-                        .filter(s -> !SynthMLPackage.Literals.FORMAL_CALL_BEHAVIOR_ACTION.getName().equals(s.getName()))
+                        .filter(s -> !PokaYokeUmlProfileUtil.FORMAL_CALL_BEHAVIOR_ACTION_STEREOTYPE
+                                .equals(s.getQualifiedName()))
                         .findAny().isEmpty())
                 {
                     transformActivity(activity, action);
