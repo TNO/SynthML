@@ -290,8 +290,16 @@ public class PNML2UMLTranslator {
         }
 
         // If both source and target nodes originate from a concrete activity, get the guards of the concrete control
-        // flow connecting them.
+        // flow connecting them. Avoid calling when the tracker is 'null', e.g. for some regression tests.
+        if (tracker != null) {
+            addConcreteControlFlowGuards(tracker, place, sourceNode, targetNode, newSourceNode, newTargetNode,
+                    controlFlow);
+        }
+    }
 
+    private void addConcreteControlFlowGuards(SynthesisChainTracking tracker, Place place, ActivityNode sourceNode,
+            ActivityNode targetNode, boolean newSourceNode, boolean newTargetNode, ControlFlow controlFlow)
+    {
         // Track the source node.
         RedefinableElement concreteSource = tracker.getOriginalUmlElement(sourceNode);
         if (newSourceNode) {
