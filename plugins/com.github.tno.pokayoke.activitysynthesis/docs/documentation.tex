@@ -85,7 +85,7 @@
 \label{sec:intro}
 
 This document describes the SynthML activity synthesis algorithm and discusses its internal steps.
-This document does not explain  what the code implementation of the algorithm is doing exactly in full detail.
+This document does not explain what the code implementation of the algorithm is doing exactly in full detail.
 Instead, it explains more abstractly what the different steps are conceptually, why they are needed, and what they require and ensure.
 Therefore, the explanation may sometimes deviate slightly from how the code implementation is organized, and may sometimes be more abstract.
 This document is intended to be a living document, to be extended continuously while further developing the synthesis algorithm.
@@ -174,7 +174,7 @@ A high-level overview is presented below.
 			\end{itemize}
 			Control flows support incoming and outgoing guards, which are conditions that restrict the token-based execution of an activity. 
 			An incoming guard specifies when a token can be placed on that control flow, whereas an outgoing guard specifies a condition for the removal of the token from the control flow. 
-			Both guards are state predicates over the model properties, similarly to opaque action guards.
+			Both guards are state predicates over the properties in the UML model, similarly to opaque action guards.
 			Likewise to abstract activities, also concrete activities may contain preconditions, postconditions, and occurrence constraints.
 			In the case of abstract activities, these constraints are used as input for synthesizing a concrete activity that adheres to these constraints.
 			If an abstract activity is allowed to call a concrete activity by its occurrence constraints, then the preconditions and postconditions of that concrete activity are used by the synthesis algorithm to determine when the concrete activity can be called by the to-be-synthesized activity, and once called, when the concrete activity has finished its execution.
@@ -247,7 +247,7 @@ These groups are then called regions.
 Depending on the type of Petri net you aim to synthesize (e.g., elementary or free-choice ones), there are slightly different requirements for what exactly constitutes a region.
 Petrify is essentially an implementation of the theory of regions, and is able to synthesize both general and free-choice Petri nets, among other kinds.
 
-We will not explain supervisory controller synthesis and Petri net synthesis in this document.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             .
+We will not explain supervisory controller synthesis and Petri net synthesis in this document.
 More information on these types of syntheses can be found on the webpages of Eclipse ESCET and Petrify linked above.
 
 \section{Activity Synthesis}
@@ -794,12 +794,12 @@ By doing so, these merged transitions will be turned into single UML action node
 Note that, instead of rewriting nonatomic patterns on Petri net level, it would also be possible to rewrite them on UML activity level.
 Rewriting at the Petri net level offers an advantage because Petri nets have a simpler structure compared to UML activity diagrams. Unlike UML diagrams, they lack fork, join, decision, and merge nodes, which makes identifying and replacing structural patterns much easier.
 
-Finally, merging these patterns is not always possible since the nonatomic pattern may not always apply.
+Finally, merging nonatomic starts and ends is not always possible since the nonatomic pattern may not always apply.
 This may, e.g., happen in case of imperfect concurrent interleaving.
-For example, consider a nonatomic action \textsf{A} and an  action \textsf{B} such that, after data-based synthesis, the resulting supervisor permits \textsf{B} to occur before \textsf{A} and even during \textsf{A} (i.e., between its start and end events), but not after \textsf{A}. 
+For example, consider a nonatomic action \textsf{A} and an action \textsf{B} such that, after data-based synthesis, the resulting supervisor permits \textsf{B} to occur before \textsf{A} and even during \textsf{A} (i.e., between its start and end events), but not after \textsf{A}. 
 In this scenario, there is no complete diamond pattern in the interleavings of \textsf{A} and \textsf{B} that can be reduced by the introduction of a fork node through Petri net synthesis. 
 Consequently, the intermediate place in \autoref{fig:nonatomic-pattern-left} will include an additional outgoing arc to \textsf{B}, disrupting the nonatomic pattern. Therefore, the start and end transitions of \textsf{A} cannot be not merged.
-These transitions are later translated to separate UML action nodes, to be further handled during activity post-processing (\autoref{sec:activity-post-processing}).
+These transitions are later translated to separate UML action nodes, to be further handled during activity post-processing.
 
 \paragraph{Preconditions.}
 This operation requires a Petri net resulting from the previous step.
@@ -907,7 +907,7 @@ In fact, the same transformation \transformUmlToCifLabel{} is used for this, wit
 	Note that, differently from the previous translation, \var{umlActivity_{concr}} does not call other activities, as all concrete activities are flattened.
 	Our goal now is to determine the extra conditions required for the safe execution of the nodes in \var{umlActivity_{concr}}. 
 	To this end, we make all their start events controllable.
-	This allows us to compute control flow guards as locally as possible.
+	This allows computing control flow guards as locally as possible.
 	\item The translation of occurrence constraints is slightly different, to be able to correctly handle unmerged nonatomic patterns.
 	In particular, for every nonatomic action that is subject to an occurrence constraint, the translated CIF requirement automaton for the constraint should consider: (1) the CIF events created for the call behavior nodes in \var{umlActivity_{concr}} that call the UML opaque behavior of that action, as well as (2) the CIF start events of the unmerged nonatomic patterns involving that action.
 \end{itemize}
