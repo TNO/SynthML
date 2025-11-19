@@ -53,9 +53,6 @@ public class SynthesisChainTracking {
      */
     private final Map<Event, EventTraceInfo> cifEventTraceInfo = new LinkedHashMap<>();
 
-    /** The map from the source and target nodes of a control flow to its incoming and outgoing guards. */
-    private final Map<Pair<ActivityNode, ActivityNode>, Pair<String, String>> activityNodesToControlFlowGuards = new LinkedHashMap<>();
-
     /**
      * The map from the CIF start events related to an atomic non-deterministic behavior to the events and related event
      * tracing info created before the event-based projection step of the synthesis chain, where the start and end
@@ -100,29 +97,13 @@ public class SynthesisChainTracking {
      *     as for start-only events. End-only events must have a non-negative integer effect index.
      * @param isStartEvent {@code true} if the event represents a start event, {@code false} otherwise.
      * @param isEndEvent {@code true} if the event represents an end event, {@code false} otherwise.
+     * @param incomingOutgoingGuard The pair of semantically relevant control flow guards.
      */
     public void addCifEvent(Event cifEvent, UmlToCifTranslationPurpose purpose, RedefinableElement umlElement,
-            Integer effectIdx, boolean isStartEvent, boolean isEndEvent)
+            Integer effectIdx, boolean isStartEvent, boolean isEndEvent, Pair<String, String> incomingOutgoingGuard)
     {
-        cifEventTraceInfo.put(cifEvent, new EventTraceInfo(purpose, umlElement, effectIdx, isStartEvent, isEndEvent));
-    }
-
-    /**
-     * Stores the given incoming and outgoing control flow guards for the given source and target activity nodes.
-     *
-     * @param sourceNode The source activity node.
-     * @param targetNode The target activity node.
-     * @param incomingGuard The control flow incoming guard. Can be {@code null} if the control flow does not have it.
-     * @param outgoingGuard The control flow outgoing guard. Can be {@code null} if the control flow does not have it.
-     */
-    public void addControlFlowGuards(ActivityNode sourceNode, ActivityNode targetNode, String incomingGuard,
-            String outgoingGuard)
-    {
-        Pair<String, String> oldValue = activityNodesToControlFlowGuards.put(new Pair<>(sourceNode, targetNode),
-                new Pair<>(incomingGuard, outgoingGuard));
-        Verify.verify(oldValue == null,
-                String.format("Nodes '%s' and '%s' have multiple control flows connecting them.", sourceNode.getName(),
-                        targetNode.getName()));
+        cifEventTraceInfo.put(cifEvent,
+                new EventTraceInfo(purpose, umlElement, effectIdx, isStartEvent, isEndEvent, incomingOutgoingGuard));
     }
 
     /**
@@ -151,27 +132,6 @@ public class SynthesisChainTracking {
         EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
         Verify.verifyNotNull(eventInfo, "CIF event '" + cifEvent.getName() + "' does not have any tracing info.");
         return eventInfo;
-    }
-
-    /**
-     * Return the control flow incoming and outgoing guards for the given source and target UML elements. If source and
-     * target elements are not both activity nodes (e.g. opaque behaviors or {@code null}), returns {@code null}.
-     *
-     * @param sourceElement The source UML element.
-     * @param targetElement The target UML element.
-     * @return A pair containing incoming and outgoing guards, or {@code null} if the pair (source node, target node) is
-     *     not present in the control flow guards map. The guards can be {@code null} if the control flow between the
-     *     source node and target node had no guard.
-     */
-    public Pair<String, String> getControlFlowGuards(RedefinableElement sourceElement,
-            RedefinableElement targetElement)
-    {
-        // If both input elements are activity nodes, look for their control flow in the map. Otherwise, return 'null'.
-        if (sourceElement instanceof ActivityNode sourceNode && targetElement instanceof ActivityNode targetNode) {
-            return activityNodesToControlFlowGuards.get(new Pair<>(sourceNode, targetNode));
-        } else {
-            return null;
-        }
     }
 
     /**
@@ -433,7 +393,8 @@ public class SynthesisChainTracking {
                 // Create a new 'EventTraceInfo' with 'isEndEvent' set to 'true' and overwrite the info in the map.
                 EventTraceInfo oldEventTraceInfo = getEventTraceInfo(startEvent);
                 EventTraceInfo newEventTraceInfo = new EventTraceInfo(oldEventTraceInfo.getTranslationPurpose(),
-                        oldEventTraceInfo.getUmlElement(), oldEventTraceInfo.getEffectIdx(), true, true);
+                        oldEventTraceInfo.getUmlElement(), oldEventTraceInfo.getEffectIdx(), true, true,
+                        oldEventTraceInfo.getGuards());
                 cifEventTraceInfo.put(startEvent, newEventTraceInfo);
             }
         }
@@ -460,6 +421,14 @@ public class SynthesisChainTracking {
         private final boolean isEndEvent;
 
         /**
+         * The pair of semantically relevant control flow guards of its corresponding concrete activity node. Namely,
+         * these are the outgoing guard of the node's incoming edge and the incoming guard of the node's outgoing edge.
+         * Can be {@code null} for CIF events that do not originate from any concrete activity node, e.g. opaque
+         * behaviors.
+         */
+        private final Pair<String, String> incomingOutgoingGuards;
+
+        /**
          * Constructs a new {@link EventTraceInfo}.
          *
          * @param purpose The translation purpose.
@@ -468,9 +437,10 @@ public class SynthesisChainTracking {
          *     as for start-only events. End-only events must have a non-negative integer effect index.
          * @param isStartEvent {@code true} if the event represents a start event, {@code false} otherwise.
          * @param isEndEvent {@code true} if the event represents an end event, {@code false} otherwise.
+         * @param incomingOutgoingGuards The pair of semantically relevant control flow guards.
          */
         private EventTraceInfo(UmlToCifTranslationPurpose purpose, RedefinableElement umlElement, Integer effectIdx,
-                boolean isStartEvent, boolean isEndEvent)
+                boolean isStartEvent, boolean isEndEvent, Pair<String, String> incomingOutgoingGuards)
         {
             Verify.verify(isStartEvent || isEndEvent, "Event must be a either start event, or an end event, or both.");
             Verify.verify((effectIdx != null) == (!isStartEvent && isEndEvent),
@@ -479,12 +449,15 @@ public class SynthesisChainTracking {
             Verify.verify(effectIdx == null || effectIdx >= 0, "Effect index must not be negative.");
             Verify.verify(effectIdx == null || umlElement != null,
                     "UML element must be non-null if effect index is non-null.");
+            Verify.verify(incomingOutgoingGuards == null || umlElement instanceof ActivityNode,
+                    "Only activity nodes must have non-null incoming and outgoing guards.");
 
             this.purpose = purpose;
             this.umlElement = umlElement;
             this.effectIdx = effectIdx;
             this.isStartEvent = isStartEvent;
             this.isEndEvent = isEndEvent;
+            this.incomingOutgoingGuards = incomingOutgoingGuards;
         }
 
         /**
@@ -531,6 +504,16 @@ public class SynthesisChainTracking {
          */
         private boolean isEndEvent() {
             return isEndEvent;
+        }
+
+        /**
+         * Returns the semantically relevant control flow guards. The left field contains the incoming edge's outgoing
+         * guard, and the right field contains the outgoing guard's incoming guard.
+         *
+         * @return The semantically relevant control flow guards.
+         */
+        public Pair<String, String> getGuards() {
+            return incomingOutgoingGuards;
         }
 
         /**
