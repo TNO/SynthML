@@ -41,6 +41,7 @@ import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.transform.track.SynthesisChainTracking;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Verify;
 
 import fr.lip6.move.pnml.framework.utils.exception.ImportException;
 import fr.lip6.move.pnml.framework.utils.exception.InvalidIDException;
@@ -404,16 +405,157 @@ public class PNML2UMLTranslator {
         }
     }
 
+    /**
+     * Repair duplicate decision nodes when: 1) All nodes can be traced back to the same decision node in a called
+     * concrete activity; 2) Each node has exactly one incoming edge; 3) That edge comes from the extra decision node
+     * created as a translation of a Petri net place with multiple outgoing arcs.
+     *
+     * In practice, keep the first duplicate node, redirect outgoing edges of the other nodes to start from it, then
+     * delete the remaining nodes and their incoming edges.
+     *
+     * @param extraDecisionNode The decision node introduced as translation of a Petri net place.
+     * @param concreteDecisionNode The decision node belonging to a called concrete activity.
+     * @param duplicateNodes The list of duplicate decision nodes.
+     */
     private void repairDuplicateDecisionNodes(DecisionNode extraDecisionNode, ActivityNode concreteDecisionNode,
             List<ActivityNode> duplicateNodes)
     {
-        // TODO
+        // If all duplicate decision nodes have only one incoming edge and the edge is coming from the newly created
+        // decision node, we can unify them.
+        boolean unifyable = duplicateNodes.stream().allMatch(
+                m -> m.getIncomings().size() == 1 && m.getIncomings().get(0).getSource().equals(extraDecisionNode));
+
+        if (!unifyable) {
+            return;
+        }
+
+        // Sanity check: all the duplicate decision nodes have the outgoing guard of the incoming edge equal to the
+        // outgoing guard of the incoming edge of the concrete decision node (from which they are derived).
+        String concreteOutgoingGuard = PokaYokeUmlProfileUtil
+                .getOutgoingGuard(concreteDecisionNode.getIncomings().get(0));
+        boolean equalOutgoingGuard = duplicateNodes.stream().allMatch(m -> java.util.Objects.equals(
+                // Correctly handle 'null' values.
+                PokaYokeUmlProfileUtil.getOutgoingGuard(m.getIncomings().get(0)), concreteOutgoingGuard));
+        Verify.verify(equalOutgoingGuard, String.format(
+                "The derived decision nodes from node '%s' have a different outgoing guard on their incoming edges.",
+                concreteDecisionNode.getName()));
+
+        // Sanity check: the number of duplicate decision nodes must be equal to the number of outgoing edges of the
+        // concrete decision node.
+        Verify.verify(concreteDecisionNode.getOutgoings().size() == duplicateNodes.size(), String.format(
+                "The concrete decision node '%s' has %s outgoing edges, but found %s corresponding duplicate decision nodes.",
+                concreteDecisionNode.getName(), String.valueOf(concreteDecisionNode.getOutgoings().size()),
+                String.valueOf(duplicateNodes.size())));
+
+        // Redirect all outgoing control flows to start from the first duplicate decision node in the list. Mark the
+        // other duplicate decision nodes and their incoming edges to be deleted.
+        List<ActivityNode> nodesToDelete = duplicateNodes.subList(1, duplicateNodes.size());
+        List<ActivityEdge> edgesToDelete = nodesToDelete.stream().map(n -> n.getIncomings().get(0)).toList();
+        for (ActivityNode node: new ArrayList<>(nodesToDelete)) { // Avoid concurrent duplication error.
+            for (ActivityEdge edge: new ArrayList<>(node.getOutgoings())) {
+                edge.setSource(duplicateNodes.get(0));
+            }
+        }
+
+        // Update the internal maps, and finally destroy the duplicate nodes and edges.
+        List<Arc> arcsToRemap = controlFlowMapping.entrySet().stream().filter(e -> edgesToDelete.contains(e.getKey()))
+                .map(e -> e.getValue()).map(Arc.class::cast).toList();
+        controlFlowMapping.keySet().removeAll(edgesToDelete);
+        arcsToRemap.stream()
+                // Now multiple arcs refer to the same incoming control flow of the first duplicate decision node.
+                .forEach(a -> arcMapping.put(a, (ControlFlow)duplicateNodes.get(0).getIncomings().get(0)));
+
+        List<Transition> transitionsToRemap = nodeMapping.entrySet().stream()
+                .filter(e -> nodesToDelete.contains(e.getKey())).map(e -> e.getValue()).map(Transition.class::cast)
+                .toList();
+        nodeMapping.keySet().removeAll(nodesToDelete);
+        transitionsToRemap.stream()
+                // Now multiple transitions refer to the same node, i.e. the first duplicate merge node.
+                .forEach(t -> transitionMapping.put(t, duplicateNodes.get(0)));
+
+        for (ActivityEdge edge: new ArrayList<>(edgesToDelete)) {
+            edge.destroy();
+        }
+
+        for (ActivityNode node: new ArrayList<>(nodesToDelete)) {
+            node.destroy();
+        }
     }
 
+    /**
+     * Repair duplicate merge nodes when: 1) All nodes can be traced back to the same merge node in a called concrete
+     * activity; 2) Each node has exactly one outgoing edge; 3) That edge points to the extra merge node created as a
+     * translation of a Petri net place with multiple incoming arcs.
+     *
+     * In practice, keep the first duplicate node, redirect incoming edges from other nodes to it, then delete the
+     * remaining nodes and their outgoing edges.
+     *
+     * @param extraMergeNode The merge node introduced as translation of a Petri net place.
+     * @param concreteMergeNode The merge node belonging to a called concrete activity.
+     * @param duplicateNodes The list of duplicate merge nodes.
+     */
     private void repairDuplicateMergeNodes(MergeNode extraMergeNode, ActivityNode concreteMergeNode,
             List<ActivityNode> duplicateNodes)
     {
-        // TODO
+        // If all duplicate merge nodes have only one outgoing edge and the edge is towards the newly created merge
+        // node, we can unify them.
+        boolean unifyable = duplicateNodes.stream().allMatch(
+                m -> m.getOutgoings().size() == 1 && m.getOutgoings().get(0).getTarget().equals(extraMergeNode));
+
+        if (!unifyable) {
+            return;
+        }
+
+        // Sanity check: all the duplicate merge nodes have the incoming guard of the outgoing edge equal to the
+        // incoming guard of the outgoing edge of the concrete merge node (from which they are derived).
+        String concreteIncomingGuard = PokaYokeUmlProfileUtil.getIncomingGuard(concreteMergeNode.getOutgoings().get(0));
+        boolean equalIncomingGuard = duplicateNodes.stream().allMatch(m -> java.util.Objects.equals(
+                // Correctly handle 'null' values.
+                PokaYokeUmlProfileUtil.getIncomingGuard(m.getOutgoings().get(0)), concreteIncomingGuard));
+        Verify.verify(equalIncomingGuard, String.format(
+                "The derived merge nodes from node '%s' have a different incoming guard on their outgoing edges.",
+                concreteMergeNode.getName()));
+
+        // Sanity check: the number of duplicate merge nodes must be equal to the number of incoming edges of the
+        // concrete merge node.
+        Verify.verify(concreteMergeNode.getIncomings().size() == duplicateNodes.size(), String.format(
+                "The concrete merge node '%s' has %s incoming edges, but found %s corresponding duplicate merge nodes.",
+                concreteMergeNode.getName(), String.valueOf(concreteMergeNode.getIncomings().size()),
+                String.valueOf(duplicateNodes.size())));
+
+        // Redirect all incoming control flows towards the first duplicate merge node in the list. Mark the other
+        // duplicate merge nodes and their outgoing edges to be deleted.
+        List<ActivityNode> nodesToDelete = duplicateNodes.subList(1, duplicateNodes.size());
+        List<ActivityEdge> edgesToDelete = nodesToDelete.stream().map(n -> n.getOutgoings().get(0)).toList();
+        for (ActivityNode node: new ArrayList<>(nodesToDelete)) { // Avoid concurrent duplication error.
+            for (ActivityEdge edge: new ArrayList<>(node.getIncomings())) {
+                edge.setTarget(duplicateNodes.get(0));
+            }
+        }
+
+        // Update the internal maps, and finally destroy the duplicate nodes and edges.
+        List<Arc> arcsToRemap = controlFlowMapping.entrySet().stream().filter(e -> edgesToDelete.contains(e.getKey()))
+                .map(e -> e.getValue()).map(Arc.class::cast).toList();
+        controlFlowMapping.keySet().removeAll(edgesToDelete);
+        arcsToRemap.stream()
+                // Now multiple arcs refer to the same outgoing control flow of the first duplicate merge node.
+                .forEach(a -> arcMapping.put(a, (ControlFlow)duplicateNodes.get(0).getOutgoings().get(0)));
+
+        List<Transition> transitionsToRemap = nodeMapping.entrySet().stream()
+                .filter(e -> nodesToDelete.contains(e.getKey())).map(e -> e.getValue()).map(Transition.class::cast)
+                .toList();
+        nodeMapping.keySet().removeAll(nodesToDelete);
+        transitionsToRemap.stream()
+                // Now multiple transitions refer to the same node, i.e. the first duplicate merge node.
+                .forEach(t -> transitionMapping.put(t, duplicateNodes.get(0)));
+
+        for (ActivityEdge edge: new ArrayList<>(edgesToDelete)) {
+            edge.destroy();
+        }
+
+        for (ActivityNode node: new ArrayList<>(nodesToDelete)) {
+            node.destroy();
+        }
     }
 
     private void introduceForksAndJoins() {
