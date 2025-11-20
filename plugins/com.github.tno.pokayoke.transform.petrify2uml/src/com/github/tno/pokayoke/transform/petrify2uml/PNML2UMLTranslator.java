@@ -29,7 +29,6 @@ import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.ForkNode;
 import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.JoinNode;
-import org.eclipse.uml2.uml.LiteralBoolean;
 import org.eclipse.uml2.uml.MergeNode;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.OpaqueAction;
@@ -39,7 +38,6 @@ import org.eclipse.uml2.uml.UMLFactory;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.transform.track.SynthesisChainTracking;
-import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Preconditions;
 
 import fr.lip6.move.pnml.framework.utils.exception.ImportException;
@@ -73,6 +71,12 @@ public class PNML2UMLTranslator {
 
     /** The mapping from UML activity control flows to corresponding Petri Net objects. */
     private final Map<ControlFlow, PnObject> controlFlowMapping = new LinkedHashMap<>();
+
+    /**
+     * The mapping from an extra decision/merge node introduced as the Petri net translation of a place to a pair
+     * containing: the called concrete decision/merge node and the duplicate decision/merge nodes that derive from it.
+     */
+    Map<ActivityNode, Pair<ActivityNode, List<ActivityNode>>> extraNodeToPair = new LinkedHashMap<>();
 
     public PNML2UMLTranslator() {
         this(createEmptyUMLModelWithActivity());
@@ -224,7 +228,6 @@ public class PNML2UMLTranslator {
 
         // Find or create the source node of the control flow.
         ActivityNode sourceNode;
-        boolean newSourceNode = false;
 
         if (place.getInArcs().isEmpty()) {
             Preconditions.checkNotNull(place.getInitialMarking(), "Expected initial tokens but found none.");
@@ -235,22 +238,43 @@ public class PNML2UMLTranslator {
         } else if (place.getInArcs().size() == 1) {
             sourceNode = transitionMapping.get(place.getInArcs().get(0).getSource());
         } else {
-            newSourceNode = true;
             sourceNode = UML_FACTORY.createMergeNode();
             sourceNode.setActivity(activity);
             sourceNode.setName("Merge__" + place.getId());
             nodeMapping.put(sourceNode, place);
 
+            // Store the concrete merge node and its corresponding duplicate merge nodes, if relevant, for later repair.
+            ActivityNode concreteMergeNode = null;
+            List<ActivityNode> duplicateMergeNodes = new ArrayList<>();
+
             for (Arc arc: sorted(place.getInArcs())) {
-                ControlFlow flow = createControlFlow(activity, transitionMapping.get(arc.getSource()), sourceNode);
+                Transition sourceTransition = (Transition)arc.getSource();
+                ControlFlow flow = createControlFlow(activity, transitionMapping.get(sourceTransition), sourceNode);
                 arcMapping.put(arc, flow);
                 controlFlowMapping.put(flow, arc);
+
+                // Restore the guards of the concrete control flow connecting the source and target nodes. Avoid calling
+                // when the tracker is 'null', e.g. for some regression tests. Further, if the source transition can be
+                // tracked to a concrete merge node, store it together with the corresponding duplicate merge nodes that
+                // derive from it.
+                if (tracker != null) {
+                    addConcreteControlFlowGuards(tracker, transitionMapping.get(sourceTransition), sourceNode, flow);
+
+                    if (tracker.getUmlElement(sourceTransition) instanceof MergeNode originalMergeNode) {
+                        concreteMergeNode = (concreteMergeNode == null) ? originalMergeNode : concreteMergeNode;
+                        duplicateMergeNodes.add(transitionMapping.get(sourceTransition));
+                    }
+                }
+            }
+
+            // Put the concrete ndoe and duplicate nodes into the global map for later repair.
+            if (!duplicateMergeNodes.isEmpty()) {
+                extraNodeToPair.put(sourceNode, new Pair<>(concreteMergeNode, duplicateMergeNodes));
             }
         }
 
         // Find or create the target node of the control flow.
         ActivityNode targetNode;
-        boolean newTargetNode = false;
 
         if (place.getOutArcs().isEmpty()) {
             targetNode = UML_FACTORY.createActivityFinalNode();
@@ -260,20 +284,40 @@ public class PNML2UMLTranslator {
         } else if (place.getOutArcs().size() == 1) {
             targetNode = transitionMapping.get(place.getOutArcs().get(0).getTarget());
         } else {
-            newTargetNode = true;
             targetNode = UML_FACTORY.createDecisionNode();
             targetNode.setActivity(activity);
             targetNode.setName("Decision__" + place.getId());
             nodeMapping.put(targetNode, place);
 
+            // Store the concrete decision node and its corresponding duplicate decision nodes, if relevant, for later
+            // repair.
+            ActivityNode concreteDecisionNode = null;
+            List<ActivityNode> duplicateDecisionNodes = new ArrayList<>();
+
             for (Arc arc: sorted(place.getOutArcs())) {
-                ControlFlow flow = createControlFlow(activity, targetNode, transitionMapping.get(arc.getTarget()));
+                Transition targetTransition = (Transition)arc.getTarget();
+                ControlFlow flow = createControlFlow(activity, targetNode, transitionMapping.get(targetTransition));
                 arcMapping.put(arc, flow);
                 controlFlowMapping.put(flow, arc);
 
-                LiteralBoolean guard = UML_FACTORY.createLiteralBoolean();
-                guard.setValue(true);
-                PokaYokeUmlProfileUtil.setIncomingGuard(flow, guard);
+                // Restore the guards of the concrete control flow connecting the source and target nodes. Avoid calling
+                // when the tracker is 'null', e.g. for some regression tests. Further, if the source transition can be
+                // tracked to a concrete decision node, store it together with the corresponding duplicate decision
+                // nodes that derive from it.
+                if (tracker != null) {
+                    addConcreteControlFlowGuards(tracker, targetNode, transitionMapping.get(targetTransition), flow);
+
+                    if (tracker.getUmlElement(targetTransition) instanceof DecisionNode originalDecisionNode) {
+                        concreteDecisionNode = (concreteDecisionNode == null) ? originalDecisionNode
+                                : concreteDecisionNode;
+                        duplicateDecisionNodes.add(transitionMapping.get(targetTransition));
+                    }
+                }
+            }
+
+            // Put the concrete and duplicate decision node into the global map for later repair.
+            if (!duplicateDecisionNodes.isEmpty()) {
+                extraNodeToPair.put(targetNode, new Pair<>(concreteDecisionNode, duplicateDecisionNodes));
             }
         }
 
@@ -289,55 +333,26 @@ public class PNML2UMLTranslator {
             arcMapping.put(place.getOutArcs().get(0), controlFlow);
         }
 
-        // If both source and target nodes originate from a concrete activity, get the guards of the concrete control
-        // flow connecting them. Avoid calling when the tracker is 'null', e.g. for some regression tests.
+        // Restore the guards of the concrete control flow connecting the source and target nodes, if relevant.
+        // Avoid calling when the tracker is 'null', e.g. for some regression tests.
         if (tracker != null) {
-            addConcreteControlFlowGuards(tracker, place, sourceNode, targetNode, newSourceNode, newTargetNode,
-                    controlFlow);
+            addConcreteControlFlowGuards(tracker, sourceNode, targetNode, controlFlow);
         }
     }
 
-    private void addConcreteControlFlowGuards(SynthesisChainTracking tracker, Place place, ActivityNode sourceNode,
-            ActivityNode targetNode, boolean newSourceNode, boolean newTargetNode, ControlFlow controlFlow)
+    /**
+     * Adds the source node's incoming guard of the outgoing edge and the target node's outgoing guard of the incoming
+     * edge to the given control flow.
+     *
+     * @param tracker The synthesis tracker.
+     * @param sourceNode The source node.
+     * @param targetNode The target node.
+     * @param controlFlow The control flow where to add the guards.
+     */
+    private void addConcreteControlFlowGuards(SynthesisChainTracking tracker, ActivityNode sourceNode,
+            ActivityNode targetNode, ControlFlow controlFlow)
     {
-        // Track the source node.
-        RedefinableElement concreteSource = tracker.getOriginalUmlElement(sourceNode);
-        if (newSourceNode) {
-            // If the place has multiple incoming edges (hence the source node is a newly created merge node), check
-            // if it originates from a concrete merge node. Namely, all the incoming nodes must be tracked to the same
-            // merge node. If so, consider it as the source of the current control flow to add the relevant guards.
-            Set<RedefinableElement> originalIncomingNodes = place.getInArcs().stream()
-                    .map(i -> tracker.getOriginalUmlElement(transitionMapping.get(i.getSource())))
-                    .collect(Collectors.toSet());
-            if (originalIncomingNodes.size() == 1
-                    && originalIncomingNodes.iterator().next() instanceof MergeNode originalMergeNode)
-            {
-                concreteSource = originalMergeNode;
-            }
-        }
-
-        // Track the target node.
-        RedefinableElement concreteTarget = tracker.getOriginalUmlElement(targetNode);
-        if (newTargetNode) {
-            // If the place has multiple outgoing edges (hence the target node is a newly created decision node), check
-            // if it originates from a concrete decision node. Namely, all the outgoing nodes must be tracked to the
-            // same decision node. If so, consider it as the target of the current control flow to add the relevant
-            // guards.
-            Set<RedefinableElement> originalOutgoingNodes = place.getOutArcs().stream()
-                    .map(i -> tracker.getOriginalUmlElement(transitionMapping.get(i.getTarget())))
-                    .collect(Collectors.toSet());
-            if (originalOutgoingNodes.size() == 1
-                    && originalOutgoingNodes.iterator().next() instanceof DecisionNode originalDecisionNode)
-            {
-                concreteTarget = originalDecisionNode;
-            }
-        }
-
-        Pair<String, String> incomingOutgoingGuards = tracker.getControlFlowGuards(concreteSource, concreteTarget);
-        if (incomingOutgoingGuards != null) {
-            PokaYokeUmlProfileUtil.setIncomingGuard(controlFlow, incomingOutgoingGuards.left);
-            PokaYokeUmlProfileUtil.setOutgoingGuard(controlFlow, incomingOutgoingGuards.right);
-        }
+        // TODO
     }
 
     private void introduceForksAndJoins() {
