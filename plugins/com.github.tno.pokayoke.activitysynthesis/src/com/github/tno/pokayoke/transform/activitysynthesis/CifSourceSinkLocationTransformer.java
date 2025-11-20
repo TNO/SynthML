@@ -168,7 +168,7 @@ public class CifSourceSinkLocationTransformer {
         }
 
         // Update the synthesis tracker with the new start and end events.
-        tracker.addCifEvent(startEvent, UmlToCifTranslationPurpose.SYNTHESIS, null, null, true, false);
-        tracker.addCifEvent(endEvent, UmlToCifTranslationPurpose.SYNTHESIS, null, null, true, false);
+        tracker.addCifEvent(startEvent, UmlToCifTranslationPurpose.SYNTHESIS, null, null, true, false, null);
+        tracker.addCifEvent(endEvent, UmlToCifTranslationPurpose.SYNTHESIS, null, null, true, false, null);
     }
 }

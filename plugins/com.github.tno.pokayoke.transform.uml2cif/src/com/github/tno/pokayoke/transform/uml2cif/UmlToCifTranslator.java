@@ -395,7 +395,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
         for (OpaqueBehavior umlBehavior: context.getAllOpaqueBehaviors()) {
             ActionTranslationResult translationResult = translateAsAction(umlBehavior, umlBehavior.getName(),
-                    PokaYokeUmlProfileUtil.isAtomic(umlBehavior), true);
+                    PokaYokeUmlProfileUtil.isAtomic(umlBehavior), true, null);
             eventEdges.putAll(translationResult.eventEdges);
         }
 
@@ -429,10 +429,11 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
      * @param name The name of the action to create.
      * @param isAtomic Whether the UML element should be translated as an atomic action.
      * @param controllableStartEvent Whether the created CIF start event should be controllable.
+     * @param incomingOutgoingGuards The semantically relevant control flow guards.
      * @return An action translation result.
      */
     private ActionTranslationResult translateAsAction(RedefinableElement umlElement, String name, boolean isAtomic,
-            boolean controllableStartEvent)
+            boolean controllableStartEvent, Pair<String, String> incomingOutgoingGuards)
     {
         // For guard computation, force all start events to be controllable, as the structure of the synthesized UML
         // activity is already fixed, and we just want to re-compute the guards as locally as possible.
@@ -512,11 +513,13 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
             // Store the CIF event into the synthesis tracker as a start and end event with all its effects, hence set
             // the effect index to 'null'.
-            synthesisTracker.addCifEvent(cifStartEvent, translationPurpose, umlElement, null, true, true);
+            synthesisTracker.addCifEvent(cifStartEvent, translationPurpose, umlElement, null, true, true,
+                    incomingOutgoingGuards);
         } else {
             // Store the CIF event into the synthesis tracker as a start event without effects, hence set the effect
             // index to 'null'.
-            synthesisTracker.addCifEvent(cifStartEvent, translationPurpose, umlElement, null, true, false);
+            synthesisTracker.addCifEvent(cifStartEvent, translationPurpose, umlElement, null, true, false,
+                    (incomingOutgoingGuards == null) ? null : new Pair<>(incomingOutgoingGuards.left, null));
 
             // In all other cases, add uncontrollable events and edges to end the action. Make an uncontrollable event
             // and corresponding edge for every effect (there is at least one).
@@ -541,7 +544,8 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 newEventEdges.put(cifEndEvent, cifEndEdge);
 
                 // Store the CIF event into the synthesis tracker.
-                synthesisTracker.addCifEvent(cifEndEvent, translationPurpose, umlElement, i, false, true);
+                synthesisTracker.addCifEvent(cifEndEvent, translationPurpose, umlElement, i, false, true,
+                        (incomingOutgoingGuards == null) ? null : new Pair<>(null, incomingOutgoingGuards.right));
             }
         }
 
@@ -616,13 +620,6 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                     && controlFlow.getSource() instanceof InitialNode)
             {
                 cifControlFlowVar.setValue(CifConstructors.newVariableValue(null, List.of(CifValueUtils.makeTrue())));
-            }
-
-            if (translationPurpose == UmlToCifTranslationPurpose.SYNTHESIS) {
-                // Store the control flow guards in the synthesis tracker.
-                synthesisTracker.addControlFlowGuards(controlFlow.getSource(), controlFlow.getTarget(),
-                        PokaYokeUmlProfileUtil.getIncomingGuard(controlFlow),
-                        PokaYokeUmlProfileUtil.getOutgoingGuard(controlFlow));
             }
         }
 
@@ -788,10 +785,32 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     private BiMap<Event, Edge> translateActivityAndNode(ActivityNode node, boolean isAtomic,
             boolean controllableStartEvents)
     {
+        // Get the node's relevant control flow guards.
+        Pair<String, String> incomingOutgoingGuards;
+        if (node instanceof ForkNode forkNode) {
+            // Construct a conjunction of the fork node's incoming guards of all outgoing edges.
+            String outgoingEdgesGuardConjunction = forkNode.getOutgoings().stream()
+                    .map(e -> PokaYokeUmlProfileUtil.getIncomingGuard(e)).collect(Collectors.joining(" and "));
+            incomingOutgoingGuards = new Pair<>(PokaYokeUmlProfileUtil.getOutgoingGuard(forkNode.getIncomings().get(0)),
+                    outgoingEdgesGuardConjunction);
+        } else if (node instanceof JoinNode joinNode) {
+            // Construct a conjunction of the fork node's outgoing guards of all incoming edges.
+            String incomingEdgesGuardConjunction = joinNode.getIncomings().stream()
+                    .map(e -> PokaYokeUmlProfileUtil.getOutgoingGuard(e)).collect(Collectors.joining(" and "));
+            incomingOutgoingGuards = new Pair<>(incomingEdgesGuardConjunction,
+                    PokaYokeUmlProfileUtil.getIncomingGuard(joinNode.getOutgoings().get(0)));
+        } else if (node instanceof OpaqueAction || node instanceof CallBehaviorAction) {
+            // Only one incoming edge and one outgoing edge.
+            incomingOutgoingGuards = new Pair<>(PokaYokeUmlProfileUtil.getOutgoingGuard(node.getIncomings().get(0)),
+                    PokaYokeUmlProfileUtil.getIncomingGuard(node.getOutgoings().get(0)));
+        } else {
+            throw new IllegalArgumentException("Unexpected node class: " + node.getClass());
+        }
+
         // Translate the UML activity node as an action.
         String actionName = getActionNameForActivityNode(node);
         ActionTranslationResult translationResult = translateAsAction(node, actionName, isAtomic,
-                controllableStartEvents);
+                controllableStartEvents, incomingOutgoingGuards);
 
         // Collect the CIF start and end events of the translated UML activity node.
         Event startEvent = translationResult.startEvent;
@@ -848,10 +867,15 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             ActivityEdge incoming = pair.left;
             ActivityEdge outgoing = pair.right;
 
+            // Create the relevant guards for the CIF event.
+            Pair<String, String> incomingOutgoingGuards = new Pair<>(
+                    (incoming == null) ? null : PokaYokeUmlProfileUtil.getOutgoingGuard(incoming),
+                    (outgoing == null) ? null : PokaYokeUmlProfileUtil.getIncomingGuard(outgoing));
+
             // Translate the UML activity node for the current control flow pair, as an action.
             String actionName = String.format("%s__%d", getActionNameForActivityNode(node), count);
             ActionTranslationResult translationResult = translateAsAction(node, actionName, isAtomic,
-                    controllableStartEvents);
+                    controllableStartEvents, incomingOutgoingGuards);
             count++;
 
             // Collect the CIF start and end events of the translated UML activity node.
