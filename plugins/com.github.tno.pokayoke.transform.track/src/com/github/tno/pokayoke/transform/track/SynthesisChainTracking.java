@@ -957,6 +957,47 @@ public class SynthesisChainTracking {
     }
 
     /**
+     * Return the outgoing guard of the incoming edge of the given node. Return {@code null} if there is no such guard.
+     *
+     * @param node The activity node.
+     * @return The outgoing guard of the incoming edge of the given node.
+     */
+    public String getIncomingEdgeOutgoingGuard(ActivityNode node) {
+        // Find the CIF events related to the given node.
+        Set<Event> cifEvents = getTransitionTraceInfo(node).getCifEvents();
+
+        // Find the start event, and get the outgoing guard of the incoming edge.
+        List<String> outgoingGuards = cifEvents.stream()
+                .filter(e -> getEventTraceInfo(e).isStartEvent() && getEventTraceInfo(e).getGuards() != null)
+                .map(e -> getEventTraceInfo(e).getGuards().left).toList();
+        Verify.verify(outgoingGuards.size() <= 1,
+                String.format("Found multiple outgoing guards for incoming edges of node '%s'.", node.getName()));
+
+        return (outgoingGuards.isEmpty()) ? null : outgoingGuards.get(0);
+    }
+
+    /**
+     * Return the incoming guard of the outgoing edge of the given node. Return {@code null} if there is no such guard.
+     * If the node derives from a merged non-atomic pattern, all the CIF end events must have the same guard.
+     *
+     * @param node The activity node.
+     * @return The incoming guard of the outgoing edge of the given node.
+     */
+    public String getOutgoingEdgeIncomingGuard(ActivityNode node) {
+        // Find the CIF events related to the given node.
+        Set<Event> cifEvents = getTransitionTraceInfo(node).getCifEvents();
+
+        // Find the end events, and get the incoming guard of the outgoing edges.
+        Set<String> incomingGuards = cifEvents.stream()
+                .filter(e -> getEventTraceInfo(e).isEndEvent() && getEventTraceInfo(e).getGuards() != null)
+                .map(e -> getEventTraceInfo(e).getGuards().right).collect(Collectors.toSet());
+        Verify.verify(incomingGuards.size() <= 1,
+                String.format("Found multiple incoming guards for outgoing edges of node '%s'.", node.getName()));
+
+        return (incomingGuards.isEmpty()) ? null : incomingGuards.iterator().next();
+    }
+
+    /**
      * Returns {@code true} if the Petri net transition related to the opaque action is a start-only transition.
      *
      * @param action The opaque action.
