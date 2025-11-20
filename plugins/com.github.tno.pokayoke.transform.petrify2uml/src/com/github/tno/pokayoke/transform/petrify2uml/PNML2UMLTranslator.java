@@ -11,6 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -168,6 +169,10 @@ public class PNML2UMLTranslator {
         // Transform all Petri Net places and the arcs connected to them.
         List<Place> places = sorted(page.getObjects().stream().filter(Place.class::isInstance).map(Place.class::cast));
         places.forEach(p -> translate(p, tracker));
+
+        // Repair the duplicate decision (and merge) nodes that originate from decision (and merge) nodes of called
+        // concrete activities.
+        repairDuplicateNodes();
 
         // Post-process the UML activity to introduce forks and joins where needed.
         introduceForksAndJoins();
@@ -376,6 +381,39 @@ public class PNML2UMLTranslator {
         // Set the guards on the given control flow.
         PokaYokeUmlProfileUtil.setIncomingGuard(controlFlow, incomingGuard);
         PokaYokeUmlProfileUtil.setOutgoingGuard(controlFlow, outgoingGuard);
+    }
+
+    /**
+     * Repair the duplicate decision (and merge) nodes that are created as a result of the translation a decision (and
+     * merge) node in a called concrete activity.
+     */
+    private void repairDuplicateNodes() {
+        for (Entry<ActivityNode, Pair<ActivityNode, List<ActivityNode>>> extraNodeToMap: extraNodeToPair.entrySet()) {
+            ActivityNode extraNode = extraNodeToMap.getKey();
+            Pair<ActivityNode, List<ActivityNode>> concreteToDuplicateMap = extraNodeToMap.getValue();
+
+            if (extraNode instanceof DecisionNode extraDecisionNode) {
+                repairDuplicateDecisionNodes(extraDecisionNode, concreteToDuplicateMap.left,
+                        concreteToDuplicateMap.right);
+            } else if (extraNode instanceof MergeNode extraMergeNode) {
+                repairDuplicateMergeNodes(extraMergeNode, concreteToDuplicateMap.left, concreteToDuplicateMap.right);
+            } else {
+                throw new RuntimeException(String.format("Activity node '%s' is neither a decision nor a merge node.",
+                        extraNode.getName()));
+            }
+        }
+    }
+
+    private void repairDuplicateDecisionNodes(DecisionNode extraDecisionNode, ActivityNode concreteDecisionNode,
+            List<ActivityNode> duplicateNodes)
+    {
+        // TODO
+    }
+
+    private void repairDuplicateMergeNodes(MergeNode extraMergeNode, ActivityNode concreteMergeNode,
+            List<ActivityNode> duplicateNodes)
+    {
+        // TODO
     }
 
     private void introduceForksAndJoins() {
