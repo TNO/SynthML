@@ -38,6 +38,7 @@ import org.eclipse.uml2.uml.UMLFactory;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.transform.track.SynthesisChainTracking;
+import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Preconditions;
 
 import fr.lip6.move.pnml.framework.utils.exception.ImportException;
@@ -352,7 +353,29 @@ public class PNML2UMLTranslator {
     private void addConcreteControlFlowGuards(SynthesisChainTracking tracker, ActivityNode sourceNode,
             ActivityNode targetNode, ControlFlow controlFlow)
     {
-        // TODO
+        // Track the incoming guard to the outgoing edge of the source node. If the node does not derive form a concrete
+        // activity node, use 'null' guard.
+        RedefinableElement originalSourceElement = tracker.getOriginalUmlElement(sourceNode);
+        String incomingGuard;
+        if (originalSourceElement == null || tracker.belongsToSynthesizedActivity(originalSourceElement)) {
+            incomingGuard = null;
+        } else {
+            incomingGuard = tracker.getOutgoingEdgeIncomingGuard(sourceNode);
+        }
+
+        // Track the outgoing guard to the incoming edge of the target node. If the node does not derive form a concrete
+        // activity node, use 'null' guard.
+        RedefinableElement originalTargetElement = tracker.getOriginalUmlElement(targetNode);
+        String outgoingGuard;
+        if (originalTargetElement == null || tracker.belongsToSynthesizedActivity(originalTargetElement)) {
+            outgoingGuard = null;
+        } else {
+            outgoingGuard = tracker.getIncomingEdgeOutgoingGuard(targetNode);
+        }
+
+        // Set the guards on the given control flow.
+        PokaYokeUmlProfileUtil.setIncomingGuard(controlFlow, incomingGuard);
+        PokaYokeUmlProfileUtil.setOutgoingGuard(controlFlow, outgoingGuard);
     }
 
     private void introduceForksAndJoins() {
