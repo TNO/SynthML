@@ -68,6 +68,7 @@ import org.eclipse.uml2.uml.ValueSpecification;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.transform.common.IDHelper;
+import com.github.tno.pokayoke.transform.common.NameHelper;
 import com.github.tno.pokayoke.transform.common.ValidationHelper;
 import com.github.tno.pokayoke.transform.flatten.FlattenUMLActivity;
 import com.github.tno.pokayoke.transform.track.SynthesisChainTracking;
@@ -996,12 +997,13 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 update.setValue(CifValueUtils.makeTrue());
                 endEdge.getUpdates().add(update);
 
-                // If the current control flow has an incoming guard, then add it as an extra guard for ending node
-                // execution. Moreover, in that case, we require that the UML activity node has been translated as an
-                // atomic deterministic action and it has no defined effects, which is needed to adhere to the execution
-                // semantics of activities. In practice, the UML activity node is likely a UML decision node and thus
-                // is atomic, deterministic, and has no effects. There are some validation checks just to be sure.
-                if (PokaYokeUmlProfileUtil.getIncomingGuard(outgoing) != null) {
+                // If the current control flow has a non-trivial incoming guard, then add it as an extra guard for
+                // ending node execution. Moreover, in that case, we require that the UML activity node has been
+                // translated as an atomic deterministic action and it has no defined effects, which is needed to adhere
+                // to the execution semantics of activities. In practice, the UML activity node is likely a UML decision
+                // node and thus is atomic, deterministic, and has no effects. There are some validation checks just to
+                // be sure.
+                if (!NameHelper.isNullOrTriviallyTrue(PokaYokeUmlProfileUtil.getIncomingGuard(outgoing))) {
                     Verify.verify(endEdge.equals(startEdge),
                             "Expected the activity node to have been translated as an atomic deterministic action.");
                     Verify.verify(!PokaYokeUmlProfileUtil.isSetEffects(outgoing.getSource()),
