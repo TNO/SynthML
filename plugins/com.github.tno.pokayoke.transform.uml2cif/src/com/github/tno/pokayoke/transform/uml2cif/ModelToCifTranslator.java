@@ -51,9 +51,6 @@ public abstract class ModelToCifTranslator {
     /** The mapping from UML properties to corresponding translated CIF discrete variables. */
     protected final BiMap<Property, DiscVariable> variableMap = HashBiMap.create();
 
-    /** The context for querying the input UML model. */
-    protected final CifContext context;
-
     /** The translator for UML annotations (guards, updates, invariants, etc.). */
     protected final UmlAnnotationsToCif translator;
 
@@ -65,6 +62,9 @@ public abstract class ModelToCifTranslator {
      * input UML.
      */
     protected final SynthesisChainTracking synthesisTracker;
+
+    /** The context for querying the input UML model. */
+    protected CifContext context;
 
     /**
      * Constructs a new {@link ModelToCifTranslator}.

@@ -2,10 +2,12 @@
 package com.github.tno.pokayoke.transform.flatten;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.FilenameUtils;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil.Copier;
@@ -27,6 +29,8 @@ import com.github.tno.pokayoke.transform.common.IDHelper;
 import com.github.tno.pokayoke.transform.common.NameHelper;
 import com.github.tno.pokayoke.transform.common.StructureInfoHelper;
 import com.github.tno.pokayoke.transform.common.ValidationHelper;
+import com.github.tno.synthml.uml.profile.cif.CifScopedContext;
+import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.github.tno.synthml.uml.profile.util.UMLActivityUtils;
 
 /** Flattens nested UML activities. */
@@ -40,10 +44,12 @@ public class FlattenUMLActivity {
         this.structureInfoHelper = new StructureInfoHelper();
     }
 
-    public static void transformFile(String sourcePath, String targetPath) throws IOException, CoreException {
-        Model model = FileHelper.loadModel(sourcePath);
+    public static void transformFile(Path sourcePath, Path targetPath) throws IOException, CoreException {
+        String filePrefix = FilenameUtils.removeExtension(sourcePath.getFileName().toString());
+        Path umlOutputFilePath = targetPath.resolve(filePrefix + ".uml");
+        Model model = FileHelper.loadModel(sourcePath.toString());
         new FlattenUMLActivity(model).transform();
-        FileHelper.storeModel(model, targetPath);
+        FileHelper.storeModel(model, umlOutputFilePath.toString());
     }
 
     public void transform() throws CoreException {
@@ -63,6 +69,9 @@ public class FlattenUMLActivity {
         // Transform all elements within the model.
         transform(model);
 
+        // Destroy all parameterized activities.
+        destroyParameterizedActivities(model);
+
         // Add structure comments to the outgoing edges of the initial nodes and the incoming edges of the final nodes
         // in all outermost activities.
         structureInfoHelper.addStructureInfoInActivities(model);
@@ -72,9 +81,21 @@ public class FlattenUMLActivity {
         if (element instanceof Activity activityElement) {
             transformActivity(activityElement, null);
         } else if (element instanceof Class classElement) {
-            classElement.getOwnedMembers().forEach(this::transform);
+            classElement.getOwnedMembers().stream().toList().forEach(this::transform);
         } else if (element instanceof Model modelElement) {
-            modelElement.getOwnedMembers().forEach(this::transform);
+            modelElement.getOwnedMembers().stream().toList().forEach(this::transform);
+        }
+    }
+
+    private void destroyParameterizedActivities(Element element) {
+        if (element instanceof Activity activityElement
+                && !CifScopedContext.getClassifierTemplateParameters(activityElement).isEmpty())
+        {
+            element.destroy();
+        } else if (element instanceof Class classElement) {
+            classElement.getOwnedMembers().stream().toList().forEach(this::destroyParameterizedActivities);
+        } else if (element instanceof Model modelElement) {
+            modelElement.getOwnedMembers().stream().toList().forEach(this::destroyParameterizedActivities);
         }
     }
 
@@ -95,7 +116,11 @@ public class FlattenUMLActivity {
 
                 // Translate only non-shadowed call behavior actions. Shadowed (stereotyped) call behavior actions are
                 // considered leaves, as are call behavior actions that call opaque behaviors.
-                if (behavior instanceof Activity activity && action.getAppliedStereotypes().isEmpty()) {
+                if (behavior instanceof Activity activity && action.getAppliedStereotypes().stream()
+                        .filter(s -> !PokaYokeUmlProfileUtil.FORMAL_CALL_BEHAVIOR_ACTION_STEREOTYPE
+                                .equals(s.getQualifiedName()))
+                        .findAny().isEmpty())
+                {
                     transformActivity(activity, action);
                 }
             }
@@ -114,6 +139,12 @@ public class FlattenUMLActivity {
             structureInfoHelper.incrementCounter();
 
             Activity childBehaviorCopy = copyWithProfiles(childBehavior);
+
+            // Updating guards and effects in the copied activity requires the copy to be assigned a package.
+            childBehaviorCopy.setPackage(childBehavior.getNearestPackage());
+
+            // Flatten the template parameters.
+            TemplateParameterFlattener.unfoldActivity(childBehaviorCopy, callBehaviorActionToReplace);
 
             // Construct the prefix name.
             String prefixName = callBehaviorActionToReplace.getName() + "__" + childBehaviorCopy.getName();

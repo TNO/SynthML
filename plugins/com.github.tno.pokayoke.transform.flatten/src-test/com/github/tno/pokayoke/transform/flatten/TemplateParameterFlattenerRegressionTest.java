@@ -12,11 +12,11 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import com.github.tno.pokayoke.transform.tests.common.RegressionTest;
 
-/** Regression tests for the composite data type flattener. */
-class CompositeDataTypeFlattenerRegressionTest extends RegressionTest {
+/** Regression tests for the template parameter flattener. */
+class TemplateParameterFlattenerRegressionTest extends RegressionTest {
     public static final String INPUT_FILE_EXTENSION = "uml";
 
-    public static final String REGRESSIONTESTS_NAME = "regressiontests-compositedatatypeflattener";
+    public static final String REGRESSIONTESTS_NAME = "regressiontests-templateparameterflattener";
 
     public static Stream<? extends Arguments> provideArguments() throws Exception {
         return RegressionTest.provideArguments(INPUT_FILE_EXTENSION, REGRESSIONTESTS_NAME);
@@ -31,6 +31,6 @@ class CompositeDataTypeFlattenerRegressionTest extends RegressionTest {
 
     @Override
     protected void actTest(Path inputPath, Path outputPath) throws IOException, CoreException {
-        CompositeDataTypeFlattener.transformFile(inputPath, outputPath);
+        FlattenUMLActivity.transformFile(inputPath, outputPath);
     }
 }

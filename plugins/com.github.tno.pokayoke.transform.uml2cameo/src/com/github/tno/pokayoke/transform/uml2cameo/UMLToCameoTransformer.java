@@ -525,12 +525,12 @@ public class UMLToCameoTransformer {
         List<String> arguments = new ArrayList<>();
         List<String> translatedAssignments = new ArrayList<>();
         for (NamedTemplateParameter parameter: parameters) {
-            String adressable = parameter.getName();
-            AAssignmentUpdate argument = argumentMap.get(adressable);
+            String addressable = parameter.getName();
+            AAssignmentUpdate argument = argumentMap.get(addressable);
             String value = translator.translateExpression(argument.value, ctxManager.getScopedContext(callAction));
 
-            translatedAssignments.add(ARGUMENT_PREFIX + adressable + "=" + value);
-            arguments.add(adressable);
+            translatedAssignments.add(ARGUMENT_PREFIX + addressable + "=" + value);
+            arguments.add(addressable);
         }
 
         String pythonBody = CifToPythonTranslator.mergeAll(translatedAssignments, "\n").get();

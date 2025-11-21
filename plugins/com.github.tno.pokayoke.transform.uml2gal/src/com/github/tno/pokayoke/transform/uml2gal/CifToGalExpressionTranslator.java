@@ -78,7 +78,7 @@ public class CifToGalExpressionTranslator extends ACifObjectWalker<Object> {
             assignment.setType(AssignType.ASSIGN);
             return assignment;
         } else {
-            throw new IllegalArgumentException("Unexpected adressable type:" + addressable);
+            throw new IllegalArgumentException("Unexpected addressable type:" + addressable);
         }
     }
 

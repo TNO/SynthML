@@ -73,6 +73,7 @@ import com.github.tno.pokayoke.transform.flatten.FlattenUMLActivity;
 import com.github.tno.pokayoke.transform.track.SynthesisChainTracking;
 import com.github.tno.pokayoke.transform.track.UmlToCifTranslationPurpose;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
+import com.github.tno.synthml.uml.profile.cif.CifContextManager;
 import com.github.tno.synthml.uml.profile.cif.CifParserHelper;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Preconditions;
@@ -248,15 +249,12 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             ValidationHelper.validateModel(activity.getModel());
         }
 
-        if (context.hasParameterizedActivities()) {
-            throw new RuntimeException("Translating parameterized activities to CIF is unsupported.");
-        }
-
         // Flatten UML activities and normalize IDs.
         if (translationPurpose == UmlToCifTranslationPurpose.SYNTHESIS) {
             FlattenUMLActivity flattener = new FlattenUMLActivity(activity.getModel());
             flattener.transform();
             FileHelper.normalizeIds(activity.getModel());
+            context = new CifContextManager(activity.getModel()).getGlobalContext();
         }
 
         // Create the CIF specification to which the input UML model will be translated.
