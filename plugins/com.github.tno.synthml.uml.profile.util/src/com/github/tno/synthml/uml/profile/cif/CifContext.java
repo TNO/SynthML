@@ -272,7 +272,7 @@ public interface CifContext {
     }
 
     default boolean hasParameterizedActivities() {
-        return getDeclaredElements().stream()
-                .anyMatch(e -> e instanceof Activity a && !a.getOwnedParameters().isEmpty());
+        return getDeclaredElements().stream().anyMatch(
+                e -> e instanceof Activity a && !CifScopedContext.getClassifierTemplateParameters(a).isEmpty());
     }
 }
