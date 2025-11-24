@@ -971,6 +971,44 @@ public class SynthesisChainTracking {
     }
 
     /**
+     * Return the entry guard of the given node, or {@code null} if there is no such guard.
+     *
+     * @param node The activity node.
+     * @return The entry guard of the given node, or {@code null} if there is no such guard.
+     */
+    public String getEntryGuard(ActivityNode node) {
+        // Find the CIF events related to the given node.
+        Set<Event> cifEvents = getTransitionTraceInfo(node).getCifEvents();
+
+        // Find the start event, and get the entry guard.
+        Set<String> entryGuards = cifEvents.stream().map(e -> getEventTraceInfo(e))
+                .filter(e -> e != null && e.isStartEvent()).map(e -> e.getEntryGuard()).collect(Collectors.toSet());
+        Verify.verify(entryGuards.size() <= 1,
+                String.format("Found multiple entry guards of node '%s'.", node.getName()));
+
+        return entryGuards.isEmpty() ? null : entryGuards.iterator().next();
+    }
+
+    /**
+     * Return the exit guard of the given node, or {@code null} if there is no such guard.
+     *
+     * @param node The activity node.
+     * @return The exit guard of the given node, or {@code null} if there is no such guard.
+     */
+    public String getExitGuard(ActivityNode node) {
+        // Find the CIF events related to the given node.
+        Set<Event> cifEvents = getTransitionTraceInfo(node).getCifEvents();
+
+        // Find the end events, and get the exit guards.
+        Set<String> exitGuards = cifEvents.stream().map(e -> getEventTraceInfo(e))
+                .filter(e -> e != null && e.isStartEvent()).map(e -> e.getExitGuard()).collect(Collectors.toSet());
+        Verify.verify(exitGuards.size() <= 1,
+                String.format("Found multiple exit guards of node '%s'.", node.getName()));
+
+        return exitGuards.isEmpty() ? null : exitGuards.iterator().next();
+    }
+
+    /**
      * Returns {@code true} if the Petri net transition related to the opaque action is a start-only transition.
      *
      * @param action The opaque action.
