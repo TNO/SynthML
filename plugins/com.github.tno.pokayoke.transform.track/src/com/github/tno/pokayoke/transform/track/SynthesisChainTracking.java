@@ -89,11 +89,14 @@ public class SynthesisChainTracking {
      *     as for start-only events. End-only events must have a non-negative integer effect index.
      * @param isStartEvent {@code true} if the event represents a start event, {@code false} otherwise.
      * @param isEndEvent {@code true} if the event represents an end event, {@code false} otherwise.
+     * @param entryGuard The entry guard, or {@code null} if no such guard exists.
+     * @param exitGuard The exit guard, or {@code null} if no such guard exists.
      */
     public void addCifEvent(Event cifEvent, UmlToCifTranslationPurpose purpose, RedefinableElement umlElement,
-            Integer effectIdx, boolean isStartEvent, boolean isEndEvent)
+            Integer effectIdx, boolean isStartEvent, boolean isEndEvent, String entryGuard, String exitGuard)
     {
-        cifEventTraceInfo.put(cifEvent, new EventTraceInfo(purpose, umlElement, effectIdx, isStartEvent, isEndEvent));
+        cifEventTraceInfo.put(cifEvent,
+                new EventTraceInfo(purpose, umlElement, effectIdx, isStartEvent, isEndEvent, entryGuard, exitGuard));
     }
 
     /**
@@ -372,21 +375,29 @@ public class SynthesisChainTracking {
             }
         }
 
-        // Remove the CIF event trace info for the events that are to be removed.
-        cifEventTraceInfo.keySet().removeAll(eventsToRemove);
-
         // Handle the start events to be updated: if all the corresponding end events have been removed, update its CIF
         // event trace info to also make it an end event.
         for (Event startEvent: startEventsToUpdate) {
             // If all end events have been removed, update the CIF event trace info.
             if (startEndEventsMap.get(startEvent).stream().allMatch(e -> eventsToRemove.contains(e))) {
-                // Create a new 'EventTraceInfo' with 'isEndEvent' set to 'true' and overwrite the info in the map.
+                // Get the exit guard for all end events.
+                Set<String> exitGuards = startEndEventsMap.get(startEvent).stream()
+                        .map(e -> getEventTraceInfo(e).getExitGuard()).collect(Collectors.toSet());
+                Verify.verify(exitGuards.size() == 1,
+                        String.format("Found more than one exit guard for start event '%s'.", startEvent.getName()));
+
+                // Create a new 'EventTraceInfo' with 'isEndEvent' set to 'true', the exit guard is derived from the end
+                // events, and overwrite the info in the map.
                 EventTraceInfo oldEventTraceInfo = getEventTraceInfo(startEvent);
                 EventTraceInfo newEventTraceInfo = new EventTraceInfo(oldEventTraceInfo.getTranslationPurpose(),
-                        oldEventTraceInfo.getUmlElement(), oldEventTraceInfo.getEffectIdx(), true, true);
+                        oldEventTraceInfo.getUmlElement(), oldEventTraceInfo.getEffectIdx(), true, true,
+                        oldEventTraceInfo.getEntryGuard(), exitGuards.iterator().next());
                 cifEventTraceInfo.put(startEvent, newEventTraceInfo);
             }
         }
+
+        // Remove the CIF event trace info for the events that are to be removed.
+        cifEventTraceInfo.keySet().removeAll(eventsToRemove);
     }
 
     /** Tracing information related to a CIF event. */
@@ -410,6 +421,20 @@ public class SynthesisChainTracking {
         private final boolean isEndEvent;
 
         /**
+         * The entry guard of a CIF event represents the outgoing guard of the incoming edge of the activity node
+         * related to the CIF event. Can be {@code null} if there is no such guard and for CIF events that do not derive
+         * from any concrete activity node, e.g. opaque behaviors.
+         */
+        private final String entryGuard;
+
+        /**
+         * The exit guard of a CIF event represents the incoming guard of the outgoing edge of the activity node related
+         * to the CIF event. Can be {@code null} if there is no such guard and for CIF events that do not derive from
+         * any concrete activity node, e.g. opaque behaviors.
+         */
+        private final String exitGuard;
+
+        /**
          * Constructs a new {@link EventTraceInfo}.
          *
          * @param purpose The translation purpose.
@@ -418,9 +443,11 @@ public class SynthesisChainTracking {
          *     as for start-only events. End-only events must have a non-negative integer effect index.
          * @param isStartEvent {@code true} if the event represents a start event, {@code false} otherwise.
          * @param isEndEvent {@code true} if the event represents an end event, {@code false} otherwise.
+         * @param entryGuard The entry guard, or {@code null} if no such guard exists.
+         * @param exitGuard The exit guard, or {@code null} if no such guard exists.
          */
         private EventTraceInfo(UmlToCifTranslationPurpose purpose, RedefinableElement umlElement, Integer effectIdx,
-                boolean isStartEvent, boolean isEndEvent)
+                boolean isStartEvent, boolean isEndEvent, String entryGuard, String exitGuard)
         {
             Verify.verify(isStartEvent || isEndEvent, "Event must be a either start event, or an end event, or both.");
             Verify.verify((effectIdx != null) == (!isStartEvent && isEndEvent),
@@ -435,6 +462,8 @@ public class SynthesisChainTracking {
             this.effectIdx = effectIdx;
             this.isStartEvent = isStartEvent;
             this.isEndEvent = isEndEvent;
+            this.entryGuard = entryGuard;
+            this.exitGuard = exitGuard;
         }
 
         /**
@@ -481,6 +510,24 @@ public class SynthesisChainTracking {
          */
         private boolean isEndEvent() {
             return isEndEvent;
+        }
+
+        /**
+         * Returns the entry guard, or {@code null} if no such guard exists.
+         *
+         * @return The entry guard, or {@code null}.
+         */
+        public String getEntryGuard() {
+            return entryGuard;
+        }
+
+        /**
+         * Returns the exit guard, or {@code null} if no such guard exists.
+         *
+         * @return The exit guard, or {code null}.
+         */
+        public String getExitGuard() {
+            return exitGuard;
         }
 
         /**
