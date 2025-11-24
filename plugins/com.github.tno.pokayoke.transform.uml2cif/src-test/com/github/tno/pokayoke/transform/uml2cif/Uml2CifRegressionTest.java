@@ -69,7 +69,7 @@ public class Uml2CifRegressionTest extends RegressionTest {
 
             // Translate the current UML activity to a CIF specification.
             Specification cifSpecification = new UmlToCifTranslator(context, activity,
-                    UmlToCifTranslationPurpose.SYNTHESIS, new SynthesisChainTracking()).translate();
+                    UmlToCifTranslationPurpose.SYNTHESIS, new SynthesisChainTracking(activity)).translate();
 
             // Store the translated CIF specification.
             try {
