@@ -873,15 +873,15 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Returns the Petri net transition tracing info corresponding to the input opaque action.
+     * Returns the Petri net transition tracing info corresponding to the input activity node.
      *
-     * @param action The opaque action.
-     * @return The transition tracing info related to the opaque action.
+     * @param node The activity node.
+     * @return The transition tracing info related to the activity node.
      */
-    private TransitionTraceInfo getTransitionTraceInfo(OpaqueAction action) {
-        Transition transition = activityNodeToTransition.get(action);
+    private TransitionTraceInfo getTransitionTraceInfo(ActivityNode node) {
+        Transition transition = activityNodeToTransition.get(node);
         Verify.verifyNotNull(transition, String
-                .format("Opaque action '%s' does not have a corresponding Petri net transition.", action.getName()));
+                .format("Opaque action '%s' does not have a corresponding Petri net transition.", node.getName()));
         TransitionTraceInfo transitionInfo = transitionTraceInfo.get(transition);
         Verify.verifyNotNull(transitionInfo,
                 String.format("Transition '%s' does not have any tracing info.", transition.getName().getText()));
