@@ -3,6 +3,8 @@ package com.github.tno.pokayoke.transform.uml2cif;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.escet.cif.common.CifValueUtils;
 import org.eclipse.escet.cif.metamodel.cif.InvKind;
@@ -21,6 +23,7 @@ import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.Enumeration;
 import org.eclipse.uml2.uml.EnumerationLiteral;
+import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.ValueSpecification;
@@ -284,8 +287,27 @@ public abstract class ModelToCifTranslator {
      * @return The translated CIF invariant.
      */
     private List<Invariant> translateInvariant(AInvariant invariant) {
-        List<Invariant> result = translator.translate(invariant);
-        Verify.verify(!result.isEmpty(), "Expected at least one translated invariant but got none.");
+        boolean translateInvariant = true;
+        if (translationPurpose == UmlToCifTranslationPurpose.GUARD_COMPUTATION && invariant.invKind != null) {
+            // If the invariant is of 'needs' or 'disables' kind, and refers to opaque behaviors that are not used in
+            // the synthesized activity (e.g. due to an occurrence constraint or their guard), do not translate the
+            // invariant, and return an empty list.
+            Set<OpaqueBehavior> invOpaqueBehaviors = invariant.events.stream()
+                    .map(e -> context.getOpaqueBehavior(e.name)).collect(Collectors.toSet());
+            Set<Event> cifStartEvents = invOpaqueBehaviors.stream()
+                    .flatMap(ob -> synthesisTracker
+                            .getStartEventsCorrespondingToOriginalUmlElement(ob, translationPurpose).stream())
+                    .collect(Collectors.toSet());
+            if (cifStartEvents.isEmpty()) {
+                translateInvariant = false;
+            }
+        }
+
+        List<Invariant> result = new ArrayList<>();
+        if (translateInvariant) {
+            result = translator.translate(invariant);
+            Verify.verify(!result.isEmpty(), "Expected at least one translated invariant but got none.");
+        }
         return result;
     }
 
