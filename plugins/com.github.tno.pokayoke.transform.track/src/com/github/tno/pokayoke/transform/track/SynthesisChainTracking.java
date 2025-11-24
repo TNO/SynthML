@@ -65,6 +65,9 @@ public class SynthesisChainTracking {
      */
     private final Map<ActivityNode, Transition> activityNodeToTransition = new LinkedHashMap<>();
 
+    /** The map from a new decision (merge) node created from a Petri net place, to its children (parent) nodes. */
+    private final Map<ActivityNode, Set<ActivityNode>> newDecisionMergeNodeToChildrenOrParentNodes = new LinkedHashMap<>();
+
     /** The map from the finalized UML elements to the non-finalized opaque actions they originate from. */
     private final Map<RedefinableElement, OpaqueAction> finalizedElementToAction = new LinkedHashMap<>();
 
@@ -1128,6 +1131,18 @@ public class SynthesisChainTracking {
 
         Transition transition = activityNodeToTransition.get(node);
         return (transition == null) ? null : getUmlElement(transition);
+    }
+
+    /**
+     * Stores the new decision (or merge) node created as the translation of a Petri net place, and its children
+     * (parent) node, for later handling.
+     *
+     * @param newNode The new decision or merge node introduced as a translation of a Petri net place.
+     * @param activityNode The child or parent node of newNode, if newNode is a decision or merge node, respectively.
+     */
+    public void addDecisionOrMergePatternNodes(ActivityNode newNode, ActivityNode activityNode) {
+        newDecisionMergeNodeToChildrenOrParentNodes.computeIfAbsent(newNode, k -> new LinkedHashSet<>())
+                .add(activityNode);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
