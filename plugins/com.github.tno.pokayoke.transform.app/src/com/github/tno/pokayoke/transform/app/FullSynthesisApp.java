@@ -276,13 +276,13 @@ public class FullSynthesisApp {
         // correspond to atomic opaque behaviors or non-atomic ones that have been re-written in the previous step. For
         // non-atomic ones that couldn't be rewritten, add guards (for start action) and effects (for end actions).
         Path opaqueActionsFinalizedOutputPath = outputFolderPath
-                .resolve(filePrefix + ".14.opaque_actions_finalized.uml");
+                .resolve(filePrefix + ".15.opaque_actions_finalized.uml");
         PostProcessActivity.finalizeOpaqueActions(activity, tracker, warnings);
         FileHelper.storeModel(activity.getModel(), opaqueActionsFinalizedOutputPath.toString());
 
         // Remove the temporary actions that were added to the CIF specification for petrification.
         Path temporaryActionsRemovedUMLOutputPath = outputFolderPath
-                .resolve(filePrefix + ".15.petrifyactionsremoved.uml");
+                .resolve(filePrefix + ".16.petrifyactionsremoved.uml");
         PostProcessActivity.removeOpaqueActions(activity, tracker.getTemporaryPetrificationActions());
         FileHelper.storeModel(activity.getModel(), temporaryActionsRemovedUMLOutputPath.toString());
 
@@ -290,17 +290,17 @@ public class FullSynthesisApp {
         tracker.removeTemporaryPetrificationActions();
 
         // Post-process the activity to simplify it.
-        Path umlSimplifiedOutputPath = outputFolderPath.resolve(filePrefix + ".16.simplified.uml");
+        Path umlSimplifiedOutputPath = outputFolderPath.resolve(filePrefix + ".17.simplified.uml");
         PostProcessActivity.simplify(activity);
         FileHelper.storeModel(activity.getModel(), umlSimplifiedOutputPath.toString());
 
         // Post-process the activity to remove the names of edges and nodes.
-        Path umlLabelsRemovedOutputPath = outputFolderPath.resolve(filePrefix + ".17.labelsremoved.uml");
+        Path umlLabelsRemovedOutputPath = outputFolderPath.resolve(filePrefix + ".18.labelsremoved.uml");
         PostProcessActivity.removeNodesEdgesNames(activity);
         FileHelper.storeModel(activity.getModel(), umlLabelsRemovedOutputPath.toString());
 
         // Translating synthesized activity to CIF, for guard computation.
-        Path umlActivityToCifPath = outputFolderPath.resolve(filePrefix + ".18.guardcomputation.cif");
+        Path umlActivityToCifPath = outputFolderPath.resolve(filePrefix + ".19.guardcomputation.cif");
         UmlToCifTranslator umlActivityToCifTranslator = new UmlToCifTranslator(ctxManager.getGlobalContext(), activity,
                 UmlToCifTranslationPurpose.GUARD_COMPUTATION, tracker);
         Specification cifTranslatedActivity = umlActivityToCifTranslator.translate();
@@ -316,7 +316,7 @@ public class FullSynthesisApp {
         ElimIfUpdates elimIfUpdatesGuardComputation = new ElimIfUpdates();
         elimIfUpdatesGuardComputation.transform(cifTranslatedActivity);
         Path cifPostProcessedGuardComputation = outputFolderPath
-                .resolve(filePrefix + ".19.guardcomputation.postprocessed.cif");
+                .resolve(filePrefix + ".20.guardcomputation.postprocessed.cif");
         try {
             AppEnv.registerSimple();
             CifWriter.writeCifSpec(cifTranslatedActivity, makePathPair(cifPostProcessedGuardComputation),
@@ -328,7 +328,7 @@ public class FullSynthesisApp {
         // Computing guards.
         new GuardComputation(umlActivityToCifTranslator, tracker).computeGuards(cifTranslatedActivity,
                 umlActivityToCifPath);
-        Path umlGuardsOutputPath = outputFolderPath.resolve(filePrefix + ".20.guardsadded.uml");
+        Path umlGuardsOutputPath = outputFolderPath.resolve(filePrefix + ".21.guardsadded.uml");
         FileHelper.storeModel(umlActivityToCifTranslator.getActivity().getModel(), umlGuardsOutputPath.toString());
 
         // Check the activity for non-deterministic choices.
