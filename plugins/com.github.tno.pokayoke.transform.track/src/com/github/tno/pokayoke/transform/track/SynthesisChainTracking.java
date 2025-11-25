@@ -1148,6 +1148,16 @@ public class SynthesisChainTracking {
                 .add(activityNode);
     }
 
+    /**
+     * Returns the map from the new decision (or merge) node created as the translation of a Petri net place, and its
+     * children (parent) node.
+     *
+     * @return The map from new decision (merge) node to their children (parent) nodes.
+     */
+    public Map<ActivityNode, Set<ActivityNode>> getDecisionOrMergePatternNodes() {
+        return newDecisionMergeNodeToChildrenOrParentNodes;
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Section dealing with finalized UML elements and synthesized UML elements.
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
