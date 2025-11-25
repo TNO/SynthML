@@ -48,6 +48,7 @@ import com.github.tno.pokayoke.transform.cif2petrify.CifFileHelper;
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.transform.flatten.CompositeDataTypeFlattener;
 import com.github.tno.pokayoke.transform.petrify.PetrifyHelper;
+import com.github.tno.pokayoke.transform.petrify2uml.ConcreteActivityRestorer;
 import com.github.tno.pokayoke.transform.petrify2uml.PNML2UMLTranslator;
 import com.github.tno.pokayoke.transform.petrify2uml.PNMLUMLFileHelper;
 import com.github.tno.pokayoke.transform.petrify2uml.PetrifyOutput2PNMLTranslator;
@@ -263,6 +264,13 @@ public class FullSynthesisApp {
         PNML2UMLTranslator petriNet2Activity = new PNML2UMLTranslator(activity);
         petriNet2Activity.translate(petriNet, tracker);
         FileHelper.storeModel(activity.getModel(), umlOutputPath.toString());
+
+        // Restore the control flow guards of a called concrete activity and the decision or merge patterns deriving
+        // from the translation of a decision or merge node located in a called concrete activity.
+        Path restoredActivityOutputPath = outputFolderPath.resolve(filePrefix + ".14.concrete_activity_restored.uml");
+        ConcreteActivityRestorer restorer = new ConcreteActivityRestorer(activity, tracker);
+        restorer.restore();
+        FileHelper.storeModel(activity.getModel(), restoredActivityOutputPath.toString());
 
         // Finalize the opaque actions of the activity. Transform opaque actions into call behaviors when they
         // correspond to atomic opaque behaviors or non-atomic ones that have been re-written in the previous step. For
