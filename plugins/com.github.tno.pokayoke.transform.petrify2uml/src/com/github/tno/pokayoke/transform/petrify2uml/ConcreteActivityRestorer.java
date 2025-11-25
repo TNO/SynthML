@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.eclipse.escet.common.java.Pair;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityNode;
@@ -21,7 +22,11 @@ import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Verify;
 
 public class ConcreteActivityRestorer {
-    /** The synthesized UML activity where to add control flow guards coming from any called concrete activity. */
+    /**
+     * The synthesized UML activity where to add control flow guards coming from any called concrete activity and where
+     * to restore the decision and merge node patterns derived from the translation of decision and merge nodes located
+     * in a called concrete activity.
+     */
     private final Activity activity;
 
     /**
@@ -37,7 +42,7 @@ public class ConcreteActivityRestorer {
 
     /**
      * Restores the control flow guards from called concrete activities, and the decision (merge) node patterns deriving
-     * from decision (merge) nodes located in called concrete activities..
+     * from decision (merge) nodes located in called concrete activities.
      */
     public void restore() {
         restoreConcreteControlFlowGuards();
@@ -80,16 +85,42 @@ public class ConcreteActivityRestorer {
      * outgoing (incoming) arcs.
      */
     private void restoreConcreteDecisionMergeNodes() {
+        // Initialize nodes and edge to delete.
+        List<ActivityNode> nodesToDelete = new ArrayList<>();
+        List<ActivityEdge> edgesToDelete = new ArrayList<>();
+
+        // Restore decision and merge node patterns.
         for (Entry<ActivityNode, Set<ActivityNode>> pattern: tracker.getDecisionOrMergePatternNodes().entrySet()) {
             ActivityNode newNode = pattern.getKey();
             if (newNode instanceof DecisionNode decisionNode) {
-                restoreConcreteDecisionNodePattern(decisionNode, pattern.getValue());
+                Pair<List<ActivityNode>, List<ActivityEdge>> elementsToDelete = restoreConcreteDecisionNodePattern(
+                        decisionNode, pattern.getValue());
+                nodesToDelete.addAll(elementsToDelete.left);
+                edgesToDelete.addAll(elementsToDelete.right);
             } else if (newNode instanceof MergeNode mergeNode) {
-                restoreConcreteMergeNodePattern(mergeNode, pattern.getValue());
+                Pair<List<ActivityNode>, List<ActivityEdge>> elementsToDelete = restoreConcreteMergeNodePattern(
+                        mergeNode, pattern.getValue());
+                nodesToDelete.addAll(elementsToDelete.left);
+                edgesToDelete.addAll(elementsToDelete.right);
             } else {
                 throw new RuntimeException(
                         String.format("Node '%s' must be either a decision or a merge node.", newNode.getName()));
             }
+        }
+
+        // Sanity check: exactly one edge per node to remove.
+        Verify.verify(nodesToDelete.size() == edgesToDelete.size(),
+                "Expected the same number of nodes and edges to remove after restoring decision/merge patterns.");
+
+        // Update the tracker and destroy the other decision and merge nodes and their edges.
+        tracker.removeNodes(nodesToDelete);
+
+        for (ActivityEdge edge: new ArrayList<>(edgesToDelete)) {
+            edge.destroy();
+        }
+
+        for (ActivityNode node: new ArrayList<>(nodesToDelete)) {
+            node.destroy();
         }
     }
 
@@ -99,13 +130,15 @@ public class ConcreteActivityRestorer {
      * decision node when: 1) All nodes can be traced back to the same decision node in a called concrete activity; 2)
      * Each node has exactly one incoming edge; 3) That edge comes from the new decision node created as a translation
      * of a Petri net place with multiple outgoing arcs. In practice, keep the first decision node, redirect the
-     * outgoing edge of the other decision nodes to start from it, then delete the other decision nodes and their
-     * outgoing edge.
+     * outgoing edge of the other decision nodes to start from it.
      *
      * @param decisionNode The decision node created as the translation of a Petri net place.
      * @param childrenNodes The children nodes of the decision node.
+     * @return A pair containing the other decision nodes and their outgoing edges to remove.
      */
-    private void restoreConcreteDecisionNodePattern(DecisionNode decisionNode, Set<ActivityNode> childrenNodes) {
+    private Pair<List<ActivityNode>, List<ActivityEdge>> restoreConcreteDecisionNodePattern(DecisionNode decisionNode,
+            Set<ActivityNode> childrenNodes)
+    {
         // Find the children node who refer to the same original decision node and group them by their original UML
         // element.
         Map<DecisionNode, List<DecisionNode>> originalDecisionNodeToPatternNodes = new LinkedHashMap<>();
@@ -116,9 +149,14 @@ public class ConcreteActivityRestorer {
             }
         }
 
+        // If no children nodes are translation of a decision node, there is no pattern to restore.
+        if (originalDecisionNodeToPatternNodes.isEmpty()) {
+            return new Pair<>(new ArrayList<>(), new ArrayList<>());
+        }
+
         // Sanity check: there must be only one original decision node to which all pattern nodes refer to.
         Verify.verify(originalDecisionNodeToPatternNodes.size() == 1,
-                "Found more than one original decision node while restoring a concrete cativity decision node pattern.");
+                "Found more than one original decision node while restoring a concrete activity decision node pattern.");
 
         // Get the original decision node and the decision nodes derived from it.
         ActivityNode originalDecisionNode = originalDecisionNodeToPatternNodes.keySet().iterator().next();
@@ -130,7 +168,7 @@ public class ConcreteActivityRestorer {
                 m -> m.getIncomings().size() == 1 && m.getIncomings().get(0).getSource().equals(decisionNode));
 
         if (!unifyable) {
-            return;
+            return new Pair<>(new ArrayList<>(), new ArrayList<>());
         }
 
         // Sanity check: all the pattern decision nodes have the entry guard equal to the entry guard of the
@@ -161,16 +199,7 @@ public class ConcreteActivityRestorer {
             }
         }
 
-        // Update the tracker and destroy the other decision nodes and edges.
-        tracker.removeNodes(nodesToDelete);
-
-        for (ActivityEdge edge: new ArrayList<>(edgesToDelete)) {
-            edge.destroy();
-        }
-
-        for (ActivityNode node: new ArrayList<>(nodesToDelete)) {
-            node.destroy();
-        }
+        return new Pair<>(nodesToDelete, edgesToDelete);
     }
 
     /**
@@ -179,12 +208,15 @@ public class ConcreteActivityRestorer {
      * node when: 1) All nodes can be traced back to the same merge node in a called concrete activity; 2) Each node has
      * exactly one outgoing edge; 3) That edge is directed to the new merge node created as a translation of a Petri net
      * place with multiple incoming arcs. In practice, keep the first merge node, redirect the incoming edge of the
-     * other merge nodes to it, then delete the other merge nodes and their incoming edge.
+     * other merge nodes to it.
      *
      * @param mergeNode The merge node created as the translation of a Petri net place.
      * @param parentNodes The parent nodes of the merge node.
+     * @return A pair containing the other merge nodes and their incoming edges to remove.
      */
-    private void restoreConcreteMergeNodePattern(MergeNode mergeNode, Set<ActivityNode> parentNodes) {
+    private Pair<List<ActivityNode>, List<ActivityEdge>> restoreConcreteMergeNodePattern(MergeNode mergeNode,
+            Set<ActivityNode> parentNodes)
+    {
         // Find the parent nodes who refer to the same original merge node and group them by their original UML element.
         Map<MergeNode, List<MergeNode>> originalMergeNodeToPatternNodes = new LinkedHashMap<>();
         for (ActivityNode parent: parentNodes) {
@@ -194,9 +226,14 @@ public class ConcreteActivityRestorer {
             }
         }
 
+        // If no parent nodes are translation of a merge node, there is no pattern to restore.
+        if (originalMergeNodeToPatternNodes.isEmpty()) {
+            return new Pair<>(new ArrayList<>(), new ArrayList<>());
+        }
+
         // Sanity check: there must be only one original merge node to which all pattern nodes refer to.
         Verify.verify(originalMergeNodeToPatternNodes.size() == 1,
-                "Found more than one original decision node while restoring a concrete cativity decision node pattern.");
+                "Found more than one original merge node while restoring a concrete activity merge node pattern.");
 
         // Get the original merge node and the merge nodes derived from it.
         ActivityNode originalMergeNode = originalMergeNodeToPatternNodes.keySet().iterator().next();
@@ -208,7 +245,7 @@ public class ConcreteActivityRestorer {
                 .allMatch(m -> m.getOutgoings().size() == 1 && m.getOutgoings().get(0).getTarget().equals(mergeNode));
 
         if (!unifyable) {
-            return;
+            return new Pair<>(new ArrayList<>(), new ArrayList<>());
         }
 
         // Sanity check: all the pattern merge nodes have the exit guard equal to the exit guard of the original
@@ -238,15 +275,6 @@ public class ConcreteActivityRestorer {
             }
         }
 
-        // Update the tracker and destroy the other merge nodes and edges.
-        tracker.removeNodes(nodesToDelete);
-
-        for (ActivityEdge edge: new ArrayList<>(edgesToDelete)) {
-            edge.destroy();
-        }
-
-        for (ActivityNode node: new ArrayList<>(nodesToDelete)) {
-            node.destroy();
-        }
+        return new Pair<>(nodesToDelete, edgesToDelete);
     }
 }
