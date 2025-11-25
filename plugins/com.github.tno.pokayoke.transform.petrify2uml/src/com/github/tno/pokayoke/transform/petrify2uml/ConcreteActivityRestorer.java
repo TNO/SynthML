@@ -1,10 +1,15 @@
 
 package com.github.tno.pokayoke.transform.petrify2uml;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
 import org.eclipse.uml2.uml.Activity;
+import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.MergeNode;
@@ -88,8 +93,84 @@ public class ConcreteActivityRestorer {
         }
     }
 
+    /**
+     * Analyze the children of a newly created decision node, and look for the ones who are the translation of a single
+     * decision node located in a called concrete activity. These children decision nodes can be united into a single
+     * decision node when: 1) All nodes can be traced back to the same decision node in a called concrete activity; 2)
+     * Each node has exactly one incoming edge; 3) That edge comes from the new decision node created as a translation
+     * of a Petri net place with multiple outgoing arcs. In practice, keep the first decision node, redirect the
+     * outgoing edge of the other decision nodes to start from it, then delete the other decision nodes and their
+     * outgoing edge.
+     *
+     * @param decisionNode The decision node created as the translation of a Petri net place.
+     * @param childrenNodes The children nodes of the decision node.
+     */
     private void restoreConcreteDecisionNodePattern(DecisionNode decisionNode, Set<ActivityNode> childrenNodes) {
-        // TODO
+        // Find the children node who refer to the same original decision node and group them by their original UML
+        // element.
+        Map<DecisionNode, List<DecisionNode>> originalDecisionNodeToPatternNodes = new LinkedHashMap<>();
+        for (ActivityNode child: childrenNodes) {
+            if (tracker.getOriginalUmlElement(child) instanceof DecisionNode originalDecisionNode) {
+                originalDecisionNodeToPatternNodes.computeIfAbsent(originalDecisionNode, k -> new ArrayList<>())
+                        .add((DecisionNode)child);
+            }
+        }
+
+        // Sanity check: there must be only one original decision node to which all pattern nodes refer to.
+        Verify.verify(originalDecisionNodeToPatternNodes.size() == 1,
+                "Found more than one original decision node while restoring a concrete cativity decision node pattern.");
+
+        // Get the original decision node and the decision nodes derived from it.
+        ActivityNode originalDecisionNode = originalDecisionNodeToPatternNodes.keySet().iterator().next();
+        List<DecisionNode> patternNodes = originalDecisionNodeToPatternNodes.values().iterator().next();
+
+        // If all pattern decision nodes have only one incoming edge and the edge is coming from the newly created
+        // decision node, we can unify them.
+        boolean unifyable = patternNodes.stream().allMatch(
+                m -> m.getIncomings().size() == 1 && m.getIncomings().get(0).getSource().equals(decisionNode));
+
+        if (!unifyable) {
+            return;
+        }
+
+        // Sanity check: all the pattern decision nodes have the entry guard equal to the entry guard of the
+        // original decision node (from which they are derived).
+        String originalEntryGuard = PokaYokeUmlProfileUtil.getOutgoingGuard(originalDecisionNode.getIncomings().get(0));
+        boolean equalEntryGuard = patternNodes.stream().allMatch(m -> java.util.Objects.equals(
+                // Correctly handle 'null' values.
+                PokaYokeUmlProfileUtil.getOutgoingGuard(m.getIncomings().get(0)), originalEntryGuard));
+        Verify.verify(equalEntryGuard,
+                String.format("The derived decision nodes from node '%s' have a different entry guard.",
+                        originalDecisionNode.getName()));
+
+        // Sanity check: the number of pattern decision nodes must be equal to the number of outgoing edges of the
+        // original decision node.
+        Verify.verify(originalDecisionNode.getOutgoings().size() == patternNodes.size(), String.format(
+                "The concrete decision node '%s' has %s outgoing edges, but found %s corresponding pattern decision nodes.",
+                originalDecisionNode.getName(), String.valueOf(originalDecisionNode.getOutgoings().size()),
+                String.valueOf(patternNodes.size())));
+
+        // Redirect all outgoing control flows to start from the first pattern decision node in the list. Mark the
+        // other pattern decision nodes and their incoming edges to be deleted.
+        List<ActivityNode> nodesToDelete = patternNodes.subList(1, patternNodes.size()).stream()
+                .map(ActivityNode.class::cast).toList();
+        List<ActivityEdge> edgesToDelete = nodesToDelete.stream().map(n -> n.getIncomings().get(0)).toList();
+        for (ActivityNode node: new ArrayList<>(nodesToDelete)) { // Avoid concurrent duplication error.
+            for (ActivityEdge edge: new ArrayList<>(node.getOutgoings())) {
+                edge.setSource(patternNodes.get(0));
+            }
+        }
+
+        // Update the tracker and destroy the other decision nodes and edges.
+        tracker.removeNodes(nodesToDelete);
+
+        for (ActivityEdge edge: new ArrayList<>(edgesToDelete)) {
+            edge.destroy();
+        }
+
+        for (ActivityNode node: new ArrayList<>(nodesToDelete)) {
+            node.destroy();
+        }
     }
 
     private void restoreConcreteMergeNodePattern(MergeNode mergeNode, Set<ActivityNode> parentNodes) {
