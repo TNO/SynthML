@@ -173,7 +173,80 @@ public class ConcreteActivityRestorer {
         }
     }
 
+    /**
+     * Analyze the parents of a newly created merge node, and look for the ones who are the translation of a single
+     * merge node located in a called concrete activity. These children merge nodes can be united into a single merge
+     * node when: 1) All nodes can be traced back to the same merge node in a called concrete activity; 2) Each node has
+     * exactly one outgoing edge; 3) That edge is directed to the new merge node created as a translation of a Petri net
+     * place with multiple incoming arcs. In practice, keep the first merge node, redirect the incoming edge of the
+     * other merge nodes to it, then delete the other merge nodes and their incoming edge.
+     *
+     * @param mergeNode The merge node created as the translation of a Petri net place.
+     * @param parentNodes The parent nodes of the merge node.
+     */
     private void restoreConcreteMergeNodePattern(MergeNode mergeNode, Set<ActivityNode> parentNodes) {
-        // TODO
+        // Find the parent nodes who refer to the same original merge node and group them by their original UML element.
+        Map<MergeNode, List<MergeNode>> originalMergeNodeToPatternNodes = new LinkedHashMap<>();
+        for (ActivityNode parent: parentNodes) {
+            if (tracker.getOriginalUmlElement(parent) instanceof MergeNode originalMergeNode) {
+                originalMergeNodeToPatternNodes.computeIfAbsent(originalMergeNode, k -> new ArrayList<>())
+                        .add((MergeNode)parent);
+            }
+        }
+
+        // Sanity check: there must be only one original merge node to which all pattern nodes refer to.
+        Verify.verify(originalMergeNodeToPatternNodes.size() == 1,
+                "Found more than one original decision node while restoring a concrete cativity decision node pattern.");
+
+        // Get the original merge node and the merge nodes derived from it.
+        ActivityNode originalMergeNode = originalMergeNodeToPatternNodes.keySet().iterator().next();
+        List<MergeNode> patternNodes = originalMergeNodeToPatternNodes.values().iterator().next();
+
+        // If all pattern merge nodes have only one outgoing edge and the edge is directed to the newly created merge
+        // node, we can unify them.
+        boolean unifyable = patternNodes.stream()
+                .allMatch(m -> m.getOutgoings().size() == 1 && m.getOutgoings().get(0).getTarget().equals(mergeNode));
+
+        if (!unifyable) {
+            return;
+        }
+
+        // Sanity check: all the pattern merge nodes have the exit guard equal to the exit guard of the original
+        // merge node (from which they are derived).
+        String originalExitGuard = PokaYokeUmlProfileUtil.getIncomingGuard(originalMergeNode.getOutgoings().get(0));
+        boolean equalExitGuard = patternNodes.stream().allMatch(m -> java.util.Objects.equals(
+                // Correctly handle 'null' values.
+                PokaYokeUmlProfileUtil.getIncomingGuard(m.getOutgoings().get(0)), originalExitGuard));
+        Verify.verify(equalExitGuard, String.format(
+                "The derived merge nodes from node '%s' have a different exit guard.", originalMergeNode.getName()));
+
+        // Sanity check: the number of pattern merge nodes must be equal to the number of incoming edges of the
+        // original merge node.
+        Verify.verify(originalMergeNode.getIncomings().size() == patternNodes.size(), String.format(
+                "The original merge node '%s' has %s incoming edges, but found %s corresponding pattern merge nodes.",
+                originalMergeNode.getName(), String.valueOf(originalMergeNode.getOutgoings().size()),
+                String.valueOf(patternNodes.size())));
+
+        // Redirect all incoming control flows to reach the first pattern merge node in the list. Mark the other
+        // pattern merge nodes and their outgoing edge to be deleted.
+        List<ActivityNode> nodesToDelete = patternNodes.subList(1, patternNodes.size()).stream()
+                .map(ActivityNode.class::cast).toList();
+        List<ActivityEdge> edgesToDelete = nodesToDelete.stream().map(n -> n.getOutgoings().get(0)).toList();
+        for (ActivityNode node: new ArrayList<>(nodesToDelete)) { // Avoid concurrent duplication error.
+            for (ActivityEdge edge: new ArrayList<>(node.getIncomings())) {
+                edge.setTarget(patternNodes.get(0));
+            }
+        }
+
+        // Update the tracker and destroy the other merge nodes and edges.
+        tracker.removeNodes(nodesToDelete);
+
+        for (ActivityEdge edge: new ArrayList<>(edgesToDelete)) {
+            edge.destroy();
+        }
+
+        for (ActivityNode node: new ArrayList<>(nodesToDelete)) {
+            node.destroy();
+        }
     }
 }
