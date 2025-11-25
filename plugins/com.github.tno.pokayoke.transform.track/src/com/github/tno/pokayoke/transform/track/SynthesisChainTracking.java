@@ -1158,6 +1158,22 @@ public class SynthesisChainTracking {
         return newDecisionMergeNodeToChildrenOrParentNodes;
     }
 
+    /**
+     * Removes the given activity nodes along with the related Petri net transition and CIF events.
+     *
+     * @param nodesToRemove The set of activity nodes to be removed.
+     */
+    public void removeNodes(List<ActivityNode> nodesToRemove) {
+        // Remove activity nodes from the internal map and the corresponding transition and CIF event tracing info.
+        Set<Transition> transitionToRemove = nodesToRemove.stream().map(n -> activityNodeToTransition.get(n))
+                .collect(Collectors.toSet());
+        Set<Event> eventsToRemove = transitionToRemove.stream()
+                .flatMap(t -> transitionTraceInfo.get(t).getCifEvents().stream()).collect(Collectors.toSet());
+        activityNodeToTransition.keySet().removeAll(nodesToRemove);
+        transitionTraceInfo.keySet().removeAll(transitionToRemove);
+        cifEventTraceInfo.keySet().removeAll(eventsToRemove);
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Section dealing with finalized UML elements and synthesized UML elements.
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
