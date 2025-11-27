@@ -1201,6 +1201,12 @@ public class SynthesisChainTracking {
         activityNodeToTransition.keySet().removeAll(nodesToRemove);
         transitionTraceInfo.keySet().removeAll(transitionToRemove);
         cifEventTraceInfo.keySet().removeAll(eventsToRemove);
+        newDecisionNodeToChildNodes.keySet().removeAll(nodesToRemove);
+        newDecisionNodeToChildNodes.values().forEach(v -> v.removeAll(nodesToRemove));
+        newMergeNodeToParentNodes.keySet().removeAll(nodesToRemove);
+        newMergeNodeToParentNodes.values().forEach(v -> v.removeAll(nodesToRemove));
+        atomicNonDeterministicEventTraceInfoMap.keySet().removeAll(eventsToRemove);
+        atomicNonDeterministicEventTraceInfoMap.values().stream().forEach(v -> v.keySet().removeAll(eventsToRemove));
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
