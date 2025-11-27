@@ -125,21 +125,21 @@ public class ConcreteActivityRestorer {
     }
 
     /**
-     * Analyze the children of a newly created decision node, and look for the ones who are the translation of a single
-     * decision node located in a called concrete activity. These children decision nodes can be united into a single
+     * Analyze the children of a newly created decision node, and look for the ones that are the translation of a single
+     * decision node located in a called concrete activity. These child decision nodes can be united into a single
      * decision node when: 1) All nodes can be traced back to the same decision node in a called concrete activity; 2)
      * Each node has exactly one incoming edge; 3) That edge comes from the new decision node created as a translation
      * of a Petri net place with multiple outgoing arcs. In practice, keep the first decision node, redirect the
      * outgoing edge of the other decision nodes to start from it.
      *
      * @param decisionNode The decision node created as the translation of a Petri net place.
-     * @param childrenNodes The children nodes of the decision node.
+     * @param childNodes The child nodes of the decision node.
      * @return A pair containing the other decision nodes and their outgoing edges to remove.
      */
     private Pair<List<ActivityNode>, List<ActivityEdge>> restoreConcreteDecisionNodePattern(DecisionNode decisionNode,
             Set<ActivityNode> childrenNodes)
     {
-        // Find the children node who refer to the same original decision node and group them by their original UML
+        // Find the child nodes that refer to the same original decision node and group them by their original UML
         // element.
         Map<DecisionNode, List<DecisionNode>> originalDecisionNodeToPatternNodes = new LinkedHashMap<>();
         for (ActivityNode child: childrenNodes) {
@@ -149,7 +149,7 @@ public class ConcreteActivityRestorer {
             }
         }
 
-        // If no children nodes are translation of a decision node, there is no pattern to restore.
+        // If no child nodes are a translation of a decision node, there are no patterns to restore.
         if (originalDecisionNodeToPatternNodes.isEmpty()) {
             return new Pair<>(new ArrayList<>(), new ArrayList<>());
         }
@@ -164,7 +164,7 @@ public class ConcreteActivityRestorer {
 
         // If all pattern decision nodes have only one incoming edge and the edge is coming from the newly created
         // decision node, we can unify them.
-        boolean unifyable = patternNodes.stream().allMatch(
+        boolean unifiable = patternNodes.stream().allMatch(
                 m -> m.getIncomings().size() == 1 && m.getIncomings().get(0).getSource().equals(decisionNode));
 
         if (!unifyable) {
@@ -174,7 +174,7 @@ public class ConcreteActivityRestorer {
         // Sanity check: all the pattern decision nodes have the entry guard equal to the entry guard of the
         // original decision node (from which they are derived).
         String originalEntryGuard = PokaYokeUmlProfileUtil.getOutgoingGuard(originalDecisionNode.getIncomings().get(0));
-        boolean equalEntryGuard = patternNodes.stream().allMatch(m -> java.util.Objects.equals(
+        boolean equalEntryGuard = patternNodes.stream().allMatch(m -> Objects.equals(
                 // Correctly handle 'null' values.
                 PokaYokeUmlProfileUtil.getOutgoingGuard(m.getIncomings().get(0)), originalEntryGuard));
         Verify.verify(equalEntryGuard,

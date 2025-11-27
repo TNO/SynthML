@@ -44,7 +44,7 @@ import fr.lip6.move.pnml.ptnet.Transition;
  * </p>
  */
 public class SynthesisChainTracking {
-    /** The activity to track through the synthesis chain. */
+    /** The activity being synthesized. */
     private final Activity activity;
 
     /**
@@ -892,7 +892,7 @@ public class SynthesisChainTracking {
     private TransitionTraceInfo getTransitionTraceInfo(ActivityNode node) {
         Transition transition = activityNodeToTransition.get(node);
         Verify.verifyNotNull(transition, String
-                .format("Opaque action '%s' does not have a corresponding Petri net transition.", node.getName()));
+                .format("Activity node '%s' does not have a corresponding Petri net transition.", node.getName()));
         TransitionTraceInfo transitionInfo = transitionTraceInfo.get(transition);
         Verify.verifyNotNull(transitionInfo,
                 String.format("Transition '%s' does not have any tracing info.", transition.getName().getText()));
@@ -1110,10 +1110,10 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Checks whether the given non-{@code null} UML element belongs to the UML activity.
+     * Checks whether the given non-{@code null} UML element belongs to the UML activity being synthesized.
      *
      * @param umlElement The non-{@code null} UML element to check.
-     * @return {@code true} if the input element belongs to the activity, {@code false} otherwise.
+     * @return {@code true} if the input element belongs to the UML activity being synthesized, {@code false} otherwise.
      */
     public boolean belongsToSynthesizedActivity(RedefinableElement umlElement) {
         Verify.verifyNotNull(umlElement, "Element cannot be 'null'.");
@@ -1141,7 +1141,7 @@ public class SynthesisChainTracking {
      * (parent) node, for later handling.
      *
      * @param newNode The new decision or merge node introduced as a translation of a Petri net place.
-     * @param activityNode The child or parent node of newNode, if newNode is a decision or merge node, respectively.
+     * @param activityNode The child or parent node of {@code newNode}, if {@code newNode} is a decision or merge node, respectively.
      */
     public void addDecisionOrMergePatternNodes(ActivityNode newNode, ActivityNode activityNode) {
         newDecisionMergeNodeToChildrenOrParentNodes.computeIfAbsent(newNode, k -> new LinkedHashSet<>())
@@ -1150,7 +1150,7 @@ public class SynthesisChainTracking {
 
     /**
      * Returns the map from the new decision (or merge) node created as the translation of a Petri net place, and its
-     * children (parent) node.
+     * child (parent) nodes.
      *
      * @return The map from new decision (merge) node to their children (parent) nodes.
      */
@@ -1165,7 +1165,7 @@ public class SynthesisChainTracking {
      */
     public void removeNodes(List<ActivityNode> nodesToRemove) {
         // Remove activity nodes from the internal map and the corresponding transition and CIF event tracing info.
-        Set<Transition> transitionToRemove = nodesToRemove.stream().map(n -> activityNodeToTransition.get(n))
+        Set<Transition> transitionToRemove = nodesToRemove.stream().map(activityNodeToTransition::get)
                 .collect(Collectors.toSet());
         Set<Event> eventsToRemove = transitionToRemove.stream()
                 .flatMap(t -> transitionTraceInfo.get(t).getCifEvents().stream()).collect(Collectors.toSet());

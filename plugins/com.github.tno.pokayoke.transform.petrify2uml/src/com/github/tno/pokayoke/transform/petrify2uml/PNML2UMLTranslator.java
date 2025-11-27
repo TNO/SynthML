@@ -267,7 +267,7 @@ public class PNML2UMLTranslator {
                 arcMapping.put(arc, flow);
                 controlFlowMapping.put(flow, arc);
 
-                // Add the new decision node and its children nodes to the tracker, for later repair.
+                // Add the new decision node and its child nodes to the tracker, for later repair.
                 tracker.addDecisionOrMergePatternNodes(targetNode, transitionMapping.get(arc.getTarget()));
             }
         }
