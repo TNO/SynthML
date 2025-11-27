@@ -87,23 +87,20 @@ public class ConcreteActivityRestorer {
         List<ActivityNode> nodesToDelete = new ArrayList<>();
         List<ActivityEdge> edgesToDelete = new ArrayList<>();
 
-        // Restore decision and merge node patterns.
-        for (Entry<ActivityNode, Set<ActivityNode>> pattern: tracker.getDecisionOrMergePatternNodes().entrySet()) {
-            ActivityNode newNode = pattern.getKey();
-            if (newNode instanceof DecisionNode decisionNode) {
-                Pair<List<ActivityNode>, List<ActivityEdge>> elementsToDelete = restoreConcreteDecisionNodePattern(
-                        decisionNode, pattern.getValue());
-                nodesToDelete.addAll(elementsToDelete.left);
-                edgesToDelete.addAll(elementsToDelete.right);
-            } else if (newNode instanceof MergeNode mergeNode) {
-                Pair<List<ActivityNode>, List<ActivityEdge>> elementsToDelete = restoreConcreteMergeNodePattern(
-                        mergeNode, pattern.getValue());
-                nodesToDelete.addAll(elementsToDelete.left);
-                edgesToDelete.addAll(elementsToDelete.right);
-            } else {
-                throw new RuntimeException(
-                        String.format("Node '%s' must be either a decision or a merge node.", newNode.getName()));
-            }
+        // Restore the decision node patterns.
+        for (Entry<DecisionNode, Set<ActivityNode>> pattern: tracker.getDecisionChildNodes().entrySet()) {
+            Pair<List<ActivityNode>, List<ActivityEdge>> elementsToDelete = restoreConcreteDecisionNodePattern(
+                    pattern.getKey(), pattern.getValue());
+            nodesToDelete.addAll(elementsToDelete.left);
+            edgesToDelete.addAll(elementsToDelete.right);
+        }
+
+        // Restore the merge node patterns.
+        for (Entry<MergeNode, Set<ActivityNode>> pattern: tracker.getMergeParentNodes().entrySet()) {
+            Pair<List<ActivityNode>, List<ActivityEdge>> elementsToDelete = restoreConcreteMergeNodePattern(
+                    pattern.getKey(), pattern.getValue());
+            nodesToDelete.addAll(elementsToDelete.left);
+            edgesToDelete.addAll(elementsToDelete.right);
         }
 
         // Sanity check: exactly one edge per node to remove.
@@ -112,14 +109,8 @@ public class ConcreteActivityRestorer {
 
         // Update the tracker and destroy the other decision and merge nodes and their edges.
         tracker.removeNodes(nodesToDelete);
-
-        for (ActivityEdge edge: new ArrayList<>(edgesToDelete)) {
-            edge.destroy();
-        }
-
-        for (ActivityNode node: new ArrayList<>(nodesToDelete)) {
-            node.destroy();
-        }
+        edgesToDelete.forEach(e -> e.destroy());
+        nodesToDelete.forEach(n -> n.destroy());
     }
 
     /**
@@ -239,10 +230,10 @@ public class ConcreteActivityRestorer {
 
         // If all pattern merge nodes have only one outgoing edge and the edge is directed to the newly created merge
         // node, we can unify them.
-        boolean unifyable = patternNodes.stream()
+        boolean unifiable = patternNodes.stream()
                 .allMatch(m -> m.getOutgoings().size() == 1 && m.getOutgoings().get(0).getTarget().equals(mergeNode));
 
-        if (!unifyable) {
+        if (!unifiable) {
             return new Pair<>(new ArrayList<>(), new ArrayList<>());
         }
 
