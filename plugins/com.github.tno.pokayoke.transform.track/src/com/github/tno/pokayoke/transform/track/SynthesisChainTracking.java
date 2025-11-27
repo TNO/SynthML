@@ -397,11 +397,19 @@ public class SynthesisChainTracking {
         for (Event startEvent: startEventsToUpdate) {
             // If all end events have been removed, update the CIF event trace info.
             if (startEndEventsMap.get(startEvent).stream().allMatch(e -> eventsToRemove.contains(e))) {
+                // Sanity check: start event should have a 'null' exit guard.
+                Verify.verify(getEventTraceInfo(startEvent).getExitGuard() == null,
+                        String.format("Start event '%s' has non-'null' exit guard.", startEvent.getName()));
+
                 // Get the exit guard for all end events.
                 Set<String> exitGuards = startEndEventsMap.get(startEvent).stream()
                         .map(e -> getEventTraceInfo(e).getExitGuard()).collect(Collectors.toSet());
                 Verify.verify(exitGuards.size() == 1,
                         String.format("Found more than one exit guard for start event '%s'.", startEvent.getName()));
+                Verify.verify(
+                        startEndEventsMap.get(startEvent).stream().map(e -> getEventTraceInfo(e).getEntryGuard())
+                                .allMatch(g -> g == null),
+                        String.format("The end events of '%s' have nonn-'null' entry guard.", startEvent.getName()));
 
                 // Create a new 'EventTraceInfo' with 'isEndEvent' set to 'true', the exit guard is derived from the end
                 // events, and overwrite the info in the map.
