@@ -82,6 +82,7 @@ public class SynthesisChainTracking {
     }
 
     public SynthesisChainTracking(Activity activity) {
+        Verify.verify(activity != null, "Activity to track cannot be 'null'.");
         this.activity = activity;
     }
 
@@ -1141,7 +1142,8 @@ public class SynthesisChainTracking {
      * (parent) node, for later handling.
      *
      * @param newNode The new decision or merge node introduced as a translation of a Petri net place.
-     * @param activityNode The child or parent node of {@code newNode}, if {@code newNode} is a decision or merge node, respectively.
+     * @param activityNode The child or parent node of {@code newNode}, if {@code newNode} is a decision or merge node,
+     *     respectively.
      */
     public void addDecisionOrMergePatternNodes(ActivityNode newNode, ActivityNode activityNode) {
         newDecisionMergeNodeToChildrenOrParentNodes.computeIfAbsent(newNode, k -> new LinkedHashSet<>())

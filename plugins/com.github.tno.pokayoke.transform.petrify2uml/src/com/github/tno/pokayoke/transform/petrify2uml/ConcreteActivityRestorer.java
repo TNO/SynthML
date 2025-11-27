@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.escet.common.java.Pair;
@@ -137,12 +138,12 @@ public class ConcreteActivityRestorer {
      * @return A pair containing the other decision nodes and their outgoing edges to remove.
      */
     private Pair<List<ActivityNode>, List<ActivityEdge>> restoreConcreteDecisionNodePattern(DecisionNode decisionNode,
-            Set<ActivityNode> childrenNodes)
+            Set<ActivityNode> childNodes)
     {
         // Find the child nodes that refer to the same original decision node and group them by their original UML
         // element.
         Map<DecisionNode, List<DecisionNode>> originalDecisionNodeToPatternNodes = new LinkedHashMap<>();
-        for (ActivityNode child: childrenNodes) {
+        for (ActivityNode child: childNodes) {
             if (tracker.getOriginalUmlElement(child) instanceof DecisionNode originalDecisionNode) {
                 originalDecisionNodeToPatternNodes.computeIfAbsent(originalDecisionNode, k -> new ArrayList<>())
                         .add((DecisionNode)child);
@@ -167,7 +168,7 @@ public class ConcreteActivityRestorer {
         boolean unifiable = patternNodes.stream().allMatch(
                 m -> m.getIncomings().size() == 1 && m.getIncomings().get(0).getSource().equals(decisionNode));
 
-        if (!unifyable) {
+        if (!unifiable) {
             return new Pair<>(new ArrayList<>(), new ArrayList<>());
         }
 

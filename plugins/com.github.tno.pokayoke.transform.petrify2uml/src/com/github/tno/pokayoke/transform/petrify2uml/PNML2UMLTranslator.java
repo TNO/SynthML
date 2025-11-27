@@ -241,7 +241,7 @@ public class PNML2UMLTranslator {
                 arcMapping.put(arc, flow);
                 controlFlowMapping.put(flow, arc);
 
-                // Add the new merge node and its parent nodes to the tracker, for later repair.
+                // Add the new merge node and its parent node to the tracker, for later repair.
                 tracker.addDecisionOrMergePatternNodes(sourceNode, transitionMapping.get(arc.getSource()));
             }
         }
@@ -267,7 +267,7 @@ public class PNML2UMLTranslator {
                 arcMapping.put(arc, flow);
                 controlFlowMapping.put(flow, arc);
 
-                // Add the new decision node and its child nodes to the tracker, for later repair.
+                // Add the new decision node and its child node to the tracker, for later repair.
                 tracker.addDecisionOrMergePatternNodes(targetNode, transitionMapping.get(arc.getTarget()));
             }
         }
