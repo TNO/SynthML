@@ -19,6 +19,8 @@ import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.ControlNode;
+import org.eclipse.uml2.uml.DecisionNode;
+import org.eclipse.uml2.uml.MergeNode;
 import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.RedefinableElement;
@@ -69,8 +71,11 @@ public class SynthesisChainTracking {
      */
     private final Map<ActivityNode, Transition> activityNodeToTransition = new LinkedHashMap<>();
 
-    /** The map from a new decision (merge) node created from a Petri net place, to its children (parent) nodes. */
-    private final Map<ActivityNode, Set<ActivityNode>> newDecisionMergeNodeToChildrenOrParentNodes = new LinkedHashMap<>();
+    /** The map from a new decision node created from a Petri net place, to its child nodes. */
+    private final Map<DecisionNode, Set<ActivityNode>> newDecisionNodeToChildNodes = new LinkedHashMap<>();
+
+    /** The map from a new merge node created from a Petri net place, to its parent nodes. */
+    private final Map<MergeNode, Set<ActivityNode>> newMergeNodeToParentNodes = new LinkedHashMap<>();
 
     /** The map from the finalized UML elements to the non-finalized opaque actions they originate from. */
     private final Map<RedefinableElement, OpaqueAction> finalizedElementToAction = new LinkedHashMap<>();
@@ -1013,7 +1018,7 @@ public class SynthesisChainTracking {
 
         // Find the end events, and get the exit guards.
         Set<String> exitGuards = cifEvents.stream().map(e -> getEventTraceInfo(e))
-                .filter(e -> e != null && e.isStartEvent()).map(e -> e.getExitGuard()).collect(Collectors.toSet());
+                .filter(e -> e != null && e.isEndEvent()).map(e -> e.getExitGuard()).collect(Collectors.toSet());
         Verify.verify(exitGuards.size() <= 1,
                 String.format("Found multiple exit guards of node '%s'.", node.getName()));
 
@@ -1146,18 +1151,32 @@ public class SynthesisChainTracking {
      *     respectively.
      */
     public void addDecisionOrMergePatternNodes(ActivityNode newNode, ActivityNode activityNode) {
-        newDecisionMergeNodeToChildrenOrParentNodes.computeIfAbsent(newNode, k -> new LinkedHashSet<>())
-                .add(activityNode);
+        if (newNode instanceof DecisionNode decisionNode) {
+            newDecisionNodeToChildNodes.computeIfAbsent(decisionNode, k -> new LinkedHashSet<>()).add(activityNode);
+        } else if (newNode instanceof MergeNode mergeNode) {
+            newMergeNodeToParentNodes.computeIfAbsent(mergeNode, k -> new LinkedHashSet<>()).add(activityNode);
+        } else {
+            throw new RuntimeException(
+                    String.format("Node '%s' is neither a decision nor a merge node.", newNode.getName()));
+        }
     }
 
     /**
-     * Returns the map from the new decision (or merge) node created as the translation of a Petri net place, and its
-     * child (parent) nodes.
+     * Returns the map from the new decision node created as the translation of a Petri net place, and its child nodes.
      *
-     * @return The map from new decision (merge) node to their children (parent) nodes.
+     * @return The map from new decision node to their child nodes.
      */
-    public Map<ActivityNode, Set<ActivityNode>> getDecisionOrMergePatternNodes() {
-        return newDecisionMergeNodeToChildrenOrParentNodes;
+    public Map<DecisionNode, Set<ActivityNode>> getDecisionChildNodes() {
+        return newDecisionNodeToChildNodes;
+    }
+
+    /**
+     * Returns the map from the new merge node created as the translation of a Petri net place, and its parent nodes.
+     *
+     * @return The map from new merge node to their parent nodes.
+     */
+    public Map<MergeNode, Set<ActivityNode>> getMergeParentNodes() {
+        return newMergeNodeToParentNodes;
     }
 
     /**
