@@ -23,11 +23,7 @@ import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Verify;
 
 public class ConcreteActivityRestorer {
-    /**
-     * The synthesized UML activity where to add control flow guards coming from any called concrete activity and where
-     * to restore the decision and merge node patterns derived from the translation of decision and merge nodes located
-     * in a called concrete activity.
-     */
+    /** The synthesized UML activity where to perform restoration for elements originating from concrete activities. */
     private final Activity activity;
 
     /**
@@ -63,15 +59,16 @@ public class ConcreteActivityRestorer {
             String entryGuard = tracker.getEntryGuard(node);
             String exitGuard = tracker.getExitGuard(node);
 
-            // Sanity check: the node's incoming and outgoing edges must have no guards.
-            Verify.verify(
-                    node.getOutgoings().stream().allMatch(
-                            e -> NameHelper.isNullOrTriviallyTrue(PokaYokeUmlProfileUtil.getIncomingGuard(e))),
-                    String.format("Node '%s' has non-'null' incoming guards on its outgoing edges.", node.getName()));
+            // Sanity check: the outgoing guard of the node's incoming edge and the incoming guard of the node's
+            // outgoing edge must have no guards.
             Verify.verify(
                     node.getIncomings().stream().allMatch(
                             e -> NameHelper.isNullOrTriviallyTrue(PokaYokeUmlProfileUtil.getOutgoingGuard(e))),
                     String.format("Node '%s' has non-'null' outgoing guards on its incoming edges.", node.getName()));
+            Verify.verify(
+                    node.getOutgoings().stream().allMatch(
+                            e -> NameHelper.isNullOrTriviallyTrue(PokaYokeUmlProfileUtil.getIncomingGuard(e))),
+                    String.format("Node '%s' has non-'null' incoming guards on its outgoing edges.", node.getName()));
 
             // Add the entry and exit guards to its incoming and outgoing edges, respectively.
             node.getIncomings().stream().forEach(e -> PokaYokeUmlProfileUtil.setOutgoingGuard(e, entryGuard));
