@@ -116,14 +116,19 @@ public class ConcreteActivityRestorer {
     /**
      * Analyze the children of a newly created decision node, and look for the ones that are the translation of a single
      * decision node located in a called concrete activity. These child decision nodes can be united into a single
-     * decision node when: 1) All nodes can be traced back to the same decision node in a called concrete activity; 2)
-     * Each node has exactly one incoming edge; 3) That edge comes from the new decision node created as a translation
-     * of a Petri net place with multiple outgoing arcs. In practice, keep the first decision node, redirect the
-     * outgoing edge of the other decision nodes to start from it.
+     * decision node when:
+     * <ol>
+     * <li>All decision nodes can be traced back to the same decision node in a called concrete activity;</li>
+     * <li>Each node has exactly one incoming edge;</li>
+     * <li>That edge comes from the new decision node created as a translation of a Petri net place with multiple
+     * outgoing arcs.</li>
+     * </ol>
+     * In practice, keep the first decision node, redirect the outgoing edge of the other decision nodes to start from
+     * it.
      *
      * @param decisionNode The decision node created as the translation of a Petri net place.
      * @param childNodes The child nodes of the decision node.
-     * @return A pair containing the other decision nodes and their outgoing edges to remove.
+     * @return A pair containing the other decision nodes and their incoming edges to remove.
      */
     private Pair<List<ActivityNode>, List<ActivityEdge>> restoreConcreteDecisionNodePattern(DecisionNode decisionNode,
             Set<ActivityNode> childNodes)
@@ -194,14 +199,18 @@ public class ConcreteActivityRestorer {
     /**
      * Analyze the parents of a newly created merge node, and look for the ones who are the translation of a single
      * merge node located in a called concrete activity. These children merge nodes can be united into a single merge
-     * node when: 1) All nodes can be traced back to the same merge node in a called concrete activity; 2) Each node has
-     * exactly one outgoing edge; 3) That edge is directed to the new merge node created as a translation of a Petri net
-     * place with multiple incoming arcs. In practice, keep the first merge node, redirect the incoming edge of the
-     * other merge nodes to it.
+     * node when:
+     * <ol>
+     * <li>All merge nodes can be traced back to the same merge node in a called concrete activity;</li>
+     * <li>Each node has exactly one outgoing edge;</li>
+     * <li>That edge is directed to the new merge node created as a translation of a Petri net place with multiple
+     * incoming arcs.</li>
+     * </ol>
+     * In practice, keep the first merge node, redirect the incoming edge of the other merge nodes to it.
      *
      * @param mergeNode The merge node created as the translation of a Petri net place.
      * @param parentNodes The parent nodes of the merge node.
-     * @return A pair containing the other merge nodes and their incoming edges to remove.
+     * @return A pair containing the other merge nodes and their outgoing edges to remove.
      */
     private Pair<List<ActivityNode>, List<ActivityEdge>> restoreConcreteMergeNodePattern(MergeNode mergeNode,
             Set<ActivityNode> parentNodes)
