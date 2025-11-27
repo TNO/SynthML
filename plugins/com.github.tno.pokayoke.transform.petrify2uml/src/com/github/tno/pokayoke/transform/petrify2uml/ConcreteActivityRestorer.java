@@ -76,12 +76,6 @@ public class ConcreteActivityRestorer {
         }
     }
 
-    /**
-     * Restore the patterns of decision (and merge) nodes when: 1) All nodes can be traced back to the same decision
-     * (merge) node in a called concrete activity; 2) Each node has exactly one outgoing (incoming) edge; 3) That edge's
-     * source (target) is the new decision (merge) node created as a translation of a Petri net place with multiple
-     * outgoing (incoming) arcs.
-     */
     private void restoreConcreteDecisionMergeNodes() {
         // Initialize nodes and edge to delete.
         List<ActivityNode> nodesToDelete = new ArrayList<>();
@@ -168,26 +162,24 @@ public class ConcreteActivityRestorer {
         // Sanity check: all the pattern decision nodes have the entry guard equal to the entry guard of the
         // original decision node (from which they are derived).
         String originalEntryGuard = PokaYokeUmlProfileUtil.getOutgoingGuard(originalDecisionNode.getIncomings().get(0));
-        boolean equalEntryGuard = patternNodes.stream().allMatch(m -> Objects.equals(
-                // Correctly handle 'null' values.
-                PokaYokeUmlProfileUtil.getOutgoingGuard(m.getIncomings().get(0)), originalEntryGuard));
+        boolean equalEntryGuard = patternNodes.stream().allMatch(m -> Objects
+                .equals(PokaYokeUmlProfileUtil.getOutgoingGuard(m.getIncomings().get(0)), originalEntryGuard));
         Verify.verify(equalEntryGuard,
-                String.format("The derived decision nodes from node '%s' have a different entry guard.",
+                String.format("The decision nodes derived from node '%s' have a different entry guard.",
                         originalDecisionNode.getName()));
 
         // Sanity check: the number of pattern decision nodes must be equal to the number of outgoing edges of the
         // original decision node.
         Verify.verify(originalDecisionNode.getOutgoings().size() == patternNodes.size(), String.format(
                 "The concrete decision node '%s' has %s outgoing edges, but found %s corresponding pattern decision nodes.",
-                originalDecisionNode.getName(), String.valueOf(originalDecisionNode.getOutgoings().size()),
-                String.valueOf(patternNodes.size())));
+                originalDecisionNode.getName(), originalDecisionNode.getOutgoings().size(), patternNodes.size()));
 
         // Redirect all outgoing control flows to start from the first pattern decision node in the list. Mark the
         // other pattern decision nodes and their incoming edges to be deleted.
         List<ActivityNode> nodesToDelete = patternNodes.subList(1, patternNodes.size()).stream()
                 .map(ActivityNode.class::cast).toList();
         List<ActivityEdge> edgesToDelete = nodesToDelete.stream().map(n -> n.getIncomings().get(0)).toList();
-        for (ActivityNode node: new ArrayList<>(nodesToDelete)) { // Avoid concurrent duplication error.
+        for (ActivityNode node: nodesToDelete) {
             for (ActivityEdge edge: new ArrayList<>(node.getOutgoings())) {
                 edge.setSource(patternNodes.get(0));
             }
@@ -249,25 +241,23 @@ public class ConcreteActivityRestorer {
         // Sanity check: all the pattern merge nodes have the exit guard equal to the exit guard of the original
         // merge node (from which they are derived).
         String originalExitGuard = PokaYokeUmlProfileUtil.getIncomingGuard(originalMergeNode.getOutgoings().get(0));
-        boolean equalExitGuard = patternNodes.stream().allMatch(m -> java.util.Objects.equals(
-                // Correctly handle 'null' values.
-                PokaYokeUmlProfileUtil.getIncomingGuard(m.getOutgoings().get(0)), originalExitGuard));
+        boolean equalExitGuard = patternNodes.stream().allMatch(m -> java.util.Objects
+                .equals(PokaYokeUmlProfileUtil.getIncomingGuard(m.getOutgoings().get(0)), originalExitGuard));
         Verify.verify(equalExitGuard, String.format(
-                "The derived merge nodes from node '%s' have a different exit guard.", originalMergeNode.getName()));
+                "The merge nodes derived from node '%s' have a different exit guard.", originalMergeNode.getName()));
 
         // Sanity check: the number of pattern merge nodes must be equal to the number of incoming edges of the
         // original merge node.
         Verify.verify(originalMergeNode.getIncomings().size() == patternNodes.size(), String.format(
                 "The original merge node '%s' has %s incoming edges, but found %s corresponding pattern merge nodes.",
-                originalMergeNode.getName(), String.valueOf(originalMergeNode.getOutgoings().size()),
-                String.valueOf(patternNodes.size())));
+                originalMergeNode.getName(), originalMergeNode.getOutgoings().size(), patternNodes.size()));
 
         // Redirect all incoming control flows to reach the first pattern merge node in the list. Mark the other
         // pattern merge nodes and their outgoing edge to be deleted.
         List<ActivityNode> nodesToDelete = patternNodes.subList(1, patternNodes.size()).stream()
                 .map(ActivityNode.class::cast).toList();
         List<ActivityEdge> edgesToDelete = nodesToDelete.stream().map(n -> n.getOutgoings().get(0)).toList();
-        for (ActivityNode node: new ArrayList<>(nodesToDelete)) { // Avoid concurrent duplication error.
+        for (ActivityNode node: nodesToDelete) {
             for (ActivityEdge edge: new ArrayList<>(node.getIncomings())) {
                 edge.setTarget(patternNodes.get(0));
             }
