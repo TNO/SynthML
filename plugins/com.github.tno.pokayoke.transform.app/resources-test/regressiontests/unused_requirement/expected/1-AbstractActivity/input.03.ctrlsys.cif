@@ -1,0 +1,27 @@
+controllable flip;
+controllable ImpossibleBehavior;
+plant automaton Class1:
+  disc bool flipped = false;
+  alg bool precondition = not flipped;
+  alg bool __precondition = precondition;
+  alg bool postcondition = flipped;
+  alg bool __postcondition = postcondition;
+  initial __precondition;
+  marked __postcondition;
+  supervisor invariant Requirement: ImpossibleBehavior needs flipped;
+  location:
+    initial;
+    marked;
+    edge flip when not flipped do flipped := true;
+    edge ImpossibleBehavior when flipped do flipped := false;
+end
+supervisor automaton sup:
+  alphabet flip, ImpossibleBehavior;
+  location:
+    initial;
+    marked;
+    edge flip when true;
+    edge ImpossibleBehavior when true;
+end
+supervisor invariant Class1.__postcondition disables flip;
+supervisor invariant Class1.__postcondition disables ImpossibleBehavior;
