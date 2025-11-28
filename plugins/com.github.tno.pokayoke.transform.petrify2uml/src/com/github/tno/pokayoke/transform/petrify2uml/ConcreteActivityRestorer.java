@@ -15,6 +15,7 @@ import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.MergeNode;
+import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.RedefinableElement;
 
 import com.github.tno.pokayoke.transform.common.NameHelper;
@@ -50,10 +51,9 @@ public class ConcreteActivityRestorer {
     private void restoreConcreteControlFlowGuards() {
         for (ActivityNode node: activity.getNodes()) {
             // Track the original UML element related to the current node. If the original UML element is 'null', or if
-            // the original UML element belongs to the activity (e.g., the current node is a call behavior and the
-            // original UML element is an opaque behavior), the node is newly created. Do not add guards to these nodes.
+            // the original UML is an opaque behavior, the node is newly created. Do not add guards to these nodes.
             RedefinableElement originalSourceElement = tracker.getOriginalUmlElement(node);
-            if (originalSourceElement == null || tracker.belongsToSynthesizedActivity(originalSourceElement)) {
+            if (originalSourceElement == null || originalSourceElement instanceof OpaqueBehavior) {
                 continue;
             }
             String entryGuard = tracker.getEntryGuard(node);
