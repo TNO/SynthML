@@ -150,10 +150,11 @@ public class ConcreteActivityRestorer {
         ActivityNode originalDecisionNode = originalDecisionNodeToPatternNodes.keySet().iterator().next();
         List<DecisionNode> patternNodes = originalDecisionNodeToPatternNodes.values().iterator().next();
 
-        // If all pattern decision nodes have only one incoming edge and the edge is coming from the newly created
-        // decision node, we can unify them.
-        boolean unifiable = patternNodes.stream().allMatch(
-                m -> m.getIncomings().size() == 1 && m.getIncomings().get(0).getSource().equals(decisionNode));
+        // If all pattern decision nodes have only one incoming edge, the edge has a trivial incoming guard and it is
+        // coming from the newly created decision node, and we can unify them.
+        boolean unifiable = patternNodes.stream().allMatch(m -> m.getIncomings().size() == 1
+                && m.getIncomings().get(0).getSource().equals(decisionNode)
+                && NameHelper.isNullOrTriviallyTrue(PokaYokeUmlProfileUtil.getIncomingGuard(m.getIncomings().get(0))));
 
         if (!unifiable) {
             return new Pair<>(new ArrayList<>(), new ArrayList<>());
@@ -229,10 +230,13 @@ public class ConcreteActivityRestorer {
         ActivityNode originalMergeNode = originalMergeNodeToPatternNodes.keySet().iterator().next();
         List<MergeNode> patternNodes = originalMergeNodeToPatternNodes.values().iterator().next();
 
-        // If all pattern merge nodes have only one outgoing edge and the edge is directed to the newly created merge
-        // node, we can unify them.
-        boolean unifiable = patternNodes.stream()
-                .allMatch(m -> m.getOutgoings().size() == 1 && m.getOutgoings().get(0).getTarget().equals(mergeNode));
+        // If all pattern merge nodes have only one outgoing edge, the edge has a trivial guard and it is directed to
+        // the newly created merge node, we can unify them.
+        boolean unifiable = patternNodes.stream().allMatch(m -> m.getOutgoings().size() == 1
+                && m.getOutgoings().get(0).getTarget().equals(mergeNode)
+                && NameHelper.isNullOrTriviallyTrue(PokaYokeUmlProfileUtil.getOutgoingGuard(m.getOutgoings().get(0)))
+
+        );
 
         if (!unifiable) {
             return new Pair<>(new ArrayList<>(), new ArrayList<>());
