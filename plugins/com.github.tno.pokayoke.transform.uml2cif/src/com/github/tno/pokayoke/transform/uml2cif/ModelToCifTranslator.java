@@ -67,7 +67,7 @@ public abstract class ModelToCifTranslator {
     protected final SynthesisChainTracking synthesisTracker;
 
     /** A list of warnings to notify the user of, which is modified in-place. */
-    protected List<String> warnings;
+    protected final List<String> warnings;
 
     /**
      * Constructs a new {@link ModelToCifTranslator}.
@@ -282,7 +282,7 @@ public abstract class ModelToCifTranslator {
         List<Invariant> result = translateInvariant(CifParserHelper.parseInvariant(constraint));
         if (result.isEmpty()) {
             warnings.add(String.format(
-                    "Constraint '%s' was not translated, since its events are not used in the synthesized activity.",
+                    "Constraint '%s' was not translated, since its constrained events are not used in the synthesized activity.",
                     constraint.getName()));
         }
         return result;
