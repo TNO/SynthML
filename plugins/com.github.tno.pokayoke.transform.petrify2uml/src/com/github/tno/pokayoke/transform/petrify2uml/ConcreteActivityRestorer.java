@@ -39,8 +39,8 @@ public class ConcreteActivityRestorer {
     }
 
     /**
-     * Restores the control flow guards from called concrete activities, and the decision (or merge) node patterns deriving
-     * from decision (or merge) nodes located in called concrete activities.
+     * Restores the control flow guards from called concrete activities, and the decision (or merge) node patterns
+     * deriving from decision (or merge) nodes located in called concrete activities.
      */
     public void restore() {
         restoreConcreteControlFlowGuards();

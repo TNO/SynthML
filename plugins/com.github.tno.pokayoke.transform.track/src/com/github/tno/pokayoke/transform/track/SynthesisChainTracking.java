@@ -1151,7 +1151,8 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Stores the new decision or merge node created as the translation of a Petri net place, and its child or parent node respectively, for later handling.
+     * Stores the new decision or merge node created as the translation of a Petri net place, and its child or parent
+     * node respectively, for later handling.
      *
      * @param newNode The new decision or merge node introduced as a translation of a Petri net place.
      * @param activityNode The child or parent node of {@code newNode}, if {@code newNode} is a decision or merge node,
