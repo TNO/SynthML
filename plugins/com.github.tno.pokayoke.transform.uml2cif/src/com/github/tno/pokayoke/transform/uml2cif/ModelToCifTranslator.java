@@ -282,7 +282,7 @@ public abstract class ModelToCifTranslator {
         List<Invariant> result = translateInvariant(CifParserHelper.parseInvariant(constraint));
         if (result.isEmpty()) {
             warnings.add(String.format(
-                    "Constraint '%s' was not translated, since its constrained events are not used in the synthesized activity.",
+                    "Constraint '%s' was not translated, since its constrained elements are not used in the synthesized activity.",
                     constraint.getName()));
         }
         return result;
