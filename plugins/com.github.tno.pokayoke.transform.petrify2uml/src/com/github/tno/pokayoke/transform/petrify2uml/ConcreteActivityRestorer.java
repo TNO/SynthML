@@ -3,6 +3,7 @@ package com.github.tno.pokayoke.transform.petrify2uml;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -83,7 +84,7 @@ public class ConcreteActivityRestorer {
 
         // Restore the decision node patterns.
         for (Entry<DecisionNode, Set<ActivityNode>> pattern: tracker.getDecisionChildNodes().entrySet()) {
-            Pair<List<ActivityNode>, List<ActivityEdge>> elementsToDelete = restoreConcreteDecisionNodePattern(
+            Pair<Set<ActivityNode>, Set<ActivityEdge>> elementsToDelete = restoreConcreteDecisionNodePattern(
                     pattern.getKey(), pattern.getValue());
             nodesToDelete.addAll(elementsToDelete.left);
             edgesToDelete.addAll(elementsToDelete.right);
@@ -91,7 +92,7 @@ public class ConcreteActivityRestorer {
 
         // Restore the merge node patterns.
         for (Entry<MergeNode, Set<ActivityNode>> pattern: tracker.getMergeParentNodes().entrySet()) {
-            Pair<List<ActivityNode>, List<ActivityEdge>> elementsToDelete = restoreConcreteMergeNodePattern(
+            Pair<Set<ActivityNode>, Set<ActivityEdge>> elementsToDelete = restoreConcreteMergeNodePattern(
                     pattern.getKey(), pattern.getValue());
             nodesToDelete.addAll(elementsToDelete.left);
             edgesToDelete.addAll(elementsToDelete.right);
@@ -124,7 +125,7 @@ public class ConcreteActivityRestorer {
      * @param childNodes The child nodes of the decision node.
      * @return A pair containing the other decision nodes and their incoming edges to remove.
      */
-    private Pair<List<ActivityNode>, List<ActivityEdge>> restoreConcreteDecisionNodePattern(DecisionNode decisionNode,
+    private Pair<Set<ActivityNode>, Set<ActivityEdge>> restoreConcreteDecisionNodePattern(DecisionNode decisionNode,
             Set<ActivityNode> childNodes)
     {
         // Find the child nodes that refer to the same original decision node and group them by their original UML
@@ -139,54 +140,60 @@ public class ConcreteActivityRestorer {
 
         // If no child nodes are a translation of a decision node, there are no patterns to restore.
         if (originalDecisionNodeToPatternNodes.isEmpty()) {
-            return new Pair<>(new ArrayList<>(), new ArrayList<>());
+            return new Pair<>(new LinkedHashSet<>(), new LinkedHashSet<>());
         }
 
-        // Sanity check: there must be only one original decision node to which all pattern nodes refer to.
-        Verify.verify(originalDecisionNodeToPatternNodes.size() == 1,
-                "Found more than one original decision node while restoring a concrete activity decision node pattern.");
+        Set<ActivityNode> decisionNodesToDelete = new LinkedHashSet<>();
+        Set<ActivityEdge> incomingEdgesToDelete = new LinkedHashSet<>();
+        for (Entry<DecisionNode, List<DecisionNode>> decisionNodeToPatternNodes: originalDecisionNodeToPatternNodes
+                .entrySet())
+        {
+            // Get the original decision node and the decision nodes derived from it.
+            ActivityNode originalDecisionNode = decisionNodeToPatternNodes.getKey();
+            List<DecisionNode> patternNodes = decisionNodeToPatternNodes.getValue();
 
-        // Get the original decision node and the decision nodes derived from it.
-        ActivityNode originalDecisionNode = originalDecisionNodeToPatternNodes.keySet().iterator().next();
-        List<DecisionNode> patternNodes = originalDecisionNodeToPatternNodes.values().iterator().next();
+            // If all pattern decision nodes have only one incoming edge, the edge has a trivial incoming guard, and it
+            // is coming from the newly created decision node, then we can unify them.
+            boolean unifiable = patternNodes.stream().allMatch(m -> m.getIncomings().size() == 1
+                    && m.getIncomings().get(0).getSource().equals(decisionNode) && NameHelper
+                            .isNullOrTriviallyTrue(PokaYokeUmlProfileUtil.getIncomingGuard(m.getIncomings().get(0))));
 
-        // If all pattern decision nodes have only one incoming edge, the edge has a trivial incoming guard, and it is
-        // coming from the newly created decision node, then we can unify them.
-        boolean unifiable = patternNodes.stream().allMatch(m -> m.getIncomings().size() == 1
-                && m.getIncomings().get(0).getSource().equals(decisionNode)
-                && NameHelper.isNullOrTriviallyTrue(PokaYokeUmlProfileUtil.getIncomingGuard(m.getIncomings().get(0))));
-
-        if (!unifiable) {
-            return new Pair<>(new ArrayList<>(), new ArrayList<>());
-        }
-
-        // Sanity check: all the pattern decision nodes have the entry guard equal to the entry guard of the
-        // original decision node (from which they are derived).
-        String originalEntryGuard = PokaYokeUmlProfileUtil.getOutgoingGuard(originalDecisionNode.getIncomings().get(0));
-        boolean equalEntryGuard = patternNodes.stream().allMatch(m -> Objects
-                .equals(PokaYokeUmlProfileUtil.getOutgoingGuard(m.getIncomings().get(0)), originalEntryGuard));
-        Verify.verify(equalEntryGuard,
-                String.format("The decision nodes derived from node '%s' have a different entry guard.",
-                        originalDecisionNode.getName()));
-
-        // Sanity check: the number of pattern decision nodes must be equal to the number of outgoing edges of the
-        // original decision node.
-        Verify.verify(originalDecisionNode.getOutgoings().size() == patternNodes.size(), String.format(
-                "The concrete decision node '%s' has %s outgoing edges, but found %s corresponding pattern decision nodes.",
-                originalDecisionNode.getName(), originalDecisionNode.getOutgoings().size(), patternNodes.size()));
-
-        // Redirect all outgoing control flows to start from the first pattern decision node in the list. Mark the
-        // other pattern decision nodes and their incoming edges to be deleted.
-        List<ActivityNode> nodesToDelete = patternNodes.subList(1, patternNodes.size()).stream()
-                .map(ActivityNode.class::cast).toList();
-        List<ActivityEdge> edgesToDelete = nodesToDelete.stream().map(n -> n.getIncomings().get(0)).toList();
-        for (ActivityNode node: nodesToDelete) {
-            for (ActivityEdge edge: new ArrayList<>(node.getOutgoings())) {
-                edge.setSource(patternNodes.get(0));
+            if (!unifiable) {
+                return new Pair<>(new LinkedHashSet<>(), new LinkedHashSet<>());
             }
+
+            // Sanity check: all the pattern decision nodes have the entry guard equal to the entry guard of the
+            // original decision node (from which they are derived).
+            String originalEntryGuard = PokaYokeUmlProfileUtil
+                    .getOutgoingGuard(originalDecisionNode.getIncomings().get(0));
+            boolean equalEntryGuard = patternNodes.stream().allMatch(m -> Objects
+                    .equals(PokaYokeUmlProfileUtil.getOutgoingGuard(m.getIncomings().get(0)), originalEntryGuard));
+            Verify.verify(equalEntryGuard,
+                    String.format("The decision nodes derived from node '%s' have a different entry guard.",
+                            originalDecisionNode.getName()));
+
+            // Sanity check: the number of pattern decision nodes must be equal to the number of outgoing edges of the
+            // original decision node.
+            Verify.verify(originalDecisionNode.getOutgoings().size() == patternNodes.size(), String.format(
+                    "The concrete decision node '%s' has %s outgoing edges, but found %s corresponding pattern decision nodes.",
+                    originalDecisionNode.getName(), originalDecisionNode.getOutgoings().size(), patternNodes.size()));
+
+            // Redirect all outgoing control flows to start from the first pattern decision node in the list. Mark the
+            // other pattern decision nodes and their incoming edges to be deleted.
+            List<ActivityNode> nodesToDelete = patternNodes.subList(1, patternNodes.size()).stream()
+                    .map(ActivityNode.class::cast).toList();
+            List<ActivityEdge> edgesToDelete = nodesToDelete.stream().map(n -> n.getIncomings().get(0)).toList();
+            for (ActivityNode node: nodesToDelete) {
+                for (ActivityEdge edge: new ArrayList<>(node.getOutgoings())) {
+                    edge.setSource(patternNodes.get(0));
+                }
+            }
+
+            decisionNodesToDelete.addAll(nodesToDelete);
+            incomingEdgesToDelete.addAll(edgesToDelete);
         }
 
-        return new Pair<>(nodesToDelete, edgesToDelete);
+        return new Pair<>(decisionNodesToDelete, incomingEdgesToDelete);
     }
 
     /**
@@ -205,7 +212,7 @@ public class ConcreteActivityRestorer {
      * @param parentNodes The parent nodes of the merge node.
      * @return A pair containing the other merge nodes and their outgoing edges to remove.
      */
-    private Pair<List<ActivityNode>, List<ActivityEdge>> restoreConcreteMergeNodePattern(MergeNode mergeNode,
+    private Pair<Set<ActivityNode>, Set<ActivityEdge>> restoreConcreteMergeNodePattern(MergeNode mergeNode,
             Set<ActivityNode> parentNodes)
     {
         // Find the parent nodes who refer to the same original merge node and group them by their original UML element.
@@ -219,54 +226,57 @@ public class ConcreteActivityRestorer {
 
         // If no parent nodes are translation of a merge node, there is no pattern to restore.
         if (originalMergeNodeToPatternNodes.isEmpty()) {
-            return new Pair<>(new ArrayList<>(), new ArrayList<>());
+            return new Pair<>(new LinkedHashSet<>(), new LinkedHashSet<>());
         }
 
-        // Sanity check: there must be only one original merge node to which all pattern nodes refer to.
-        Verify.verify(originalMergeNodeToPatternNodes.size() == 1,
-                "Found more than one original merge node while restoring a concrete activity merge node pattern.");
+        Set<ActivityNode> mergeNodesToDelete = new LinkedHashSet<>();
+        Set<ActivityEdge> outgoingEdgesToDelete = new LinkedHashSet<>();
+        for (Entry<MergeNode, List<MergeNode>> mergeNodeToPatternNodes: originalMergeNodeToPatternNodes.entrySet()) {
+            // Get the original merge node and the merge nodes derived from it.
+            ActivityNode originalMergeNode = mergeNodeToPatternNodes.getKey();
+            List<MergeNode> patternNodes = mergeNodeToPatternNodes.getValue();
 
-        // Get the original merge node and the merge nodes derived from it.
-        ActivityNode originalMergeNode = originalMergeNodeToPatternNodes.keySet().iterator().next();
-        List<MergeNode> patternNodes = originalMergeNodeToPatternNodes.values().iterator().next();
+            // If all pattern merge nodes have only one outgoing edge, the edge has a trivial guard and it is directed
+            // to the newly created merge node, we can unify them.
+            boolean unifiable = patternNodes.stream()
+                    .allMatch(m -> m.getOutgoings().size() == 1 && m.getOutgoings().get(0).getTarget().equals(mergeNode)
+                            && NameHelper.isNullOrTriviallyTrue(
+                                    PokaYokeUmlProfileUtil.getOutgoingGuard(m.getOutgoings().get(0))));
 
-        // If all pattern merge nodes have only one outgoing edge, the edge has a trivial guard and it is directed to
-        // the newly created merge node, we can unify them.
-        boolean unifiable = patternNodes.stream().allMatch(m -> m.getOutgoings().size() == 1
-                && m.getOutgoings().get(0).getTarget().equals(mergeNode)
-                && NameHelper.isNullOrTriviallyTrue(PokaYokeUmlProfileUtil.getOutgoingGuard(m.getOutgoings().get(0)))
-
-        );
-
-        if (!unifiable) {
-            return new Pair<>(new ArrayList<>(), new ArrayList<>());
-        }
-
-        // Sanity check: all the pattern merge nodes have the exit guard equal to the exit guard of the original
-        // merge node (from which they are derived).
-        String originalExitGuard = PokaYokeUmlProfileUtil.getIncomingGuard(originalMergeNode.getOutgoings().get(0));
-        boolean equalExitGuard = patternNodes.stream().allMatch(m -> java.util.Objects
-                .equals(PokaYokeUmlProfileUtil.getIncomingGuard(m.getOutgoings().get(0)), originalExitGuard));
-        Verify.verify(equalExitGuard, String.format(
-                "The merge nodes derived from node '%s' have a different exit guard.", originalMergeNode.getName()));
-
-        // Sanity check: the number of pattern merge nodes must be equal to the number of incoming edges of the
-        // original merge node.
-        Verify.verify(originalMergeNode.getIncomings().size() == patternNodes.size(), String.format(
-                "The original merge node '%s' has %s incoming edges, but found %s corresponding pattern merge nodes.",
-                originalMergeNode.getName(), originalMergeNode.getOutgoings().size(), patternNodes.size()));
-
-        // Redirect all incoming control flows to reach the first pattern merge node in the list. Mark the other
-        // pattern merge nodes and their outgoing edge to be deleted.
-        List<ActivityNode> nodesToDelete = patternNodes.subList(1, patternNodes.size()).stream()
-                .map(ActivityNode.class::cast).toList();
-        List<ActivityEdge> edgesToDelete = nodesToDelete.stream().map(n -> n.getOutgoings().get(0)).toList();
-        for (ActivityNode node: nodesToDelete) {
-            for (ActivityEdge edge: new ArrayList<>(node.getIncomings())) {
-                edge.setTarget(patternNodes.get(0));
+            if (!unifiable) {
+                return new Pair<>(new LinkedHashSet<>(), new LinkedHashSet<>());
             }
+
+            // Sanity check: all the pattern merge nodes have the exit guard equal to the exit guard of the original
+            // merge node (from which they are derived).
+            String originalExitGuard = PokaYokeUmlProfileUtil.getIncomingGuard(originalMergeNode.getOutgoings().get(0));
+            boolean equalExitGuard = patternNodes.stream().allMatch(m -> java.util.Objects
+                    .equals(PokaYokeUmlProfileUtil.getIncomingGuard(m.getOutgoings().get(0)), originalExitGuard));
+            Verify.verify(equalExitGuard,
+                    String.format("The merge nodes derived from node '%s' have a different exit guard.",
+                            originalMergeNode.getName()));
+
+            // Sanity check: the number of pattern merge nodes must be equal to the number of incoming edges of the
+            // original merge node.
+            Verify.verify(originalMergeNode.getIncomings().size() == patternNodes.size(), String.format(
+                    "The original merge node '%s' has %s incoming edges, but found %s corresponding pattern merge nodes.",
+                    originalMergeNode.getName(), originalMergeNode.getOutgoings().size(), patternNodes.size()));
+
+            // Redirect all incoming control flows to reach the first pattern merge node in the list. Mark the other
+            // pattern merge nodes and their outgoing edge to be deleted.
+            List<ActivityNode> nodesToDelete = patternNodes.subList(1, patternNodes.size()).stream()
+                    .map(ActivityNode.class::cast).toList();
+            List<ActivityEdge> edgesToDelete = nodesToDelete.stream().map(n -> n.getOutgoings().get(0)).toList();
+            for (ActivityNode node: nodesToDelete) {
+                for (ActivityEdge edge: new ArrayList<>(node.getIncomings())) {
+                    edge.setTarget(patternNodes.get(0));
+                }
+            }
+
+            mergeNodesToDelete.addAll(nodesToDelete);
+            outgoingEdgesToDelete.addAll(edgesToDelete);
         }
 
-        return new Pair<>(nodesToDelete, edgesToDelete);
+        return new Pair<>(mergeNodesToDelete, outgoingEdgesToDelete);
     }
 }
