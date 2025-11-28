@@ -409,7 +409,7 @@ public class SynthesisChainTracking {
                 Verify.verify(
                         startEndEventsMap.get(startEvent).stream().map(e -> getEventTraceInfo(e).getEntryGuard())
                                 .allMatch(g -> g == null),
-                        String.format("The end events of '%s' have nonn-'null' entry guard.", startEvent.getName()));
+                        String.format("The end events of '%s' have non-'null' entry guard.", startEvent.getName()));
 
                 // Create a new 'EventTraceInfo' with 'isEndEvent' set to 'true', the exit guard is derived from the end
                 // events, and overwrite the info in the map.
@@ -1151,8 +1151,7 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Stores the new decision (or merge) node created as the translation of a Petri net place, and its children
-     * (parent) node, for later handling.
+     * Stores the new decision or merge node created as the translation of a Petri net place, and its child or parent node respectively, for later handling.
      *
      * @param newNode The new decision or merge node introduced as a translation of a Petri net place.
      * @param activityNode The child or parent node of {@code newNode}, if {@code newNode} is a decision or merge node,

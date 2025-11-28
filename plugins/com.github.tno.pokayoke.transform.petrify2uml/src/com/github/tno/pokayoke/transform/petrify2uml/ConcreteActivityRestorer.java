@@ -39,8 +39,8 @@ public class ConcreteActivityRestorer {
     }
 
     /**
-     * Restores the control flow guards from called concrete activities, and the decision (merge) node patterns deriving
-     * from decision (merge) nodes located in called concrete activities.
+     * Restores the control flow guards from called concrete activities, and the decision (or merge) node patterns deriving
+     * from decision (or merge) nodes located in called concrete activities.
      */
     public void restore() {
         restoreConcreteControlFlowGuards();
@@ -59,8 +59,8 @@ public class ConcreteActivityRestorer {
             String entryGuard = tracker.getEntryGuard(node);
             String exitGuard = tracker.getExitGuard(node);
 
-            // Sanity check: the outgoing guard of the node's incoming edge and the incoming guard of the node's
-            // outgoing edge must have no guards.
+            // Sanity check: the outgoing guard of the node's incoming edges and the incoming guard of the node's
+            // outgoing edges must have no guards.
             Verify.verify(
                     node.getIncomings().stream().allMatch(
                             e -> NameHelper.isNullOrTriviallyTrue(PokaYokeUmlProfileUtil.getOutgoingGuard(e))),
@@ -150,8 +150,8 @@ public class ConcreteActivityRestorer {
         ActivityNode originalDecisionNode = originalDecisionNodeToPatternNodes.keySet().iterator().next();
         List<DecisionNode> patternNodes = originalDecisionNodeToPatternNodes.values().iterator().next();
 
-        // If all pattern decision nodes have only one incoming edge, the edge has a trivial incoming guard and it is
-        // coming from the newly created decision node, and we can unify them.
+        // If all pattern decision nodes have only one incoming edge, the edge has a trivial incoming guard, and it is
+        // coming from the newly created decision node, then we can unify them.
         boolean unifiable = patternNodes.stream().allMatch(m -> m.getIncomings().size() == 1
                 && m.getIncomings().get(0).getSource().equals(decisionNode)
                 && NameHelper.isNullOrTriviallyTrue(PokaYokeUmlProfileUtil.getIncomingGuard(m.getIncomings().get(0))));
