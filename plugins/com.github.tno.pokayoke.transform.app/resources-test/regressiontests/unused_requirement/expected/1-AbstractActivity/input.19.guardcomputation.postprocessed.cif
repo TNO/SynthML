@@ -1,0 +1,22 @@
+controllable __node__CallBehaviorAction__30;
+plant automaton Class1:
+  disc bool flipped = false;
+  disc bool __controlflow__26;
+  disc bool __controlflow__27 = true;
+  alg bool precondition = not flipped;
+  alg bool __token_on_first_controlflow = __controlflow__27;
+  alg bool __precondition = precondition and __token_on_first_controlflow;
+  alg bool postcondition = flipped;
+  alg bool __postcondition_without_structure = postcondition;
+  alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
+  alg bool __postcondition_with_structure__controlflow__27 = not __controlflow__27;
+  alg bool __token_on_last_controlflow = __controlflow__26;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure and (__postcondition_with_structure__controlflow__27 and __token_on_last_controlflow);
+  initial __precondition;
+  marked __postcondition_with_structure;
+  location:
+    initial;
+    marked;
+    edge __node__CallBehaviorAction__30 when not flipped, __controlflow__27, not __controlflow__26 do flipped := true, __controlflow__27 := false, __controlflow__26 := true;
+end
+requirement invariant Class1.__postcondition_without_structure disables __node__CallBehaviorAction__30;

@@ -1,0 +1,12 @@
+controllable flip;
+controllable ImpossibleBehavior;
+automaton synthesis_state_space:
+  alphabet flip, ImpossibleBehavior;
+  @state(Class1: "*", Class1.flipped: false, sup: "*")
+  location loc1:
+    initial;
+    edge flip goto loc2;
+  @state(Class1: "*", Class1.flipped: true, sup: "*")
+  location loc2:
+    marked;
+end

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:SynthML="https://github.com/TNO/SynthML/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="_-LAmAMu4EfC-BsrRCi5dpA" name="NewModel">
+    <packagedElement xmi:type="uml:Class" xmi:id="_BNhUwMu5EfC-BsrRCi5dpA" name="Class1" classifierBehavior="_C4iFEMu5EfC-BsrRCi5dpA" isActive="true">
+      <ownedRule xmi:id="_pTzRIMu5EfC-BsrRCi5dpA" name="Requirement">
+        <specification xmi:type="uml:OpaqueExpression" xmi:id="_t1SfUMu5EfC-BsrRCi5dpA">
+          <language>CIF</language>
+          <body>ImpossibleBehavior needs flipped</body>
+        </specification>
+      </ownedRule>
+      <ownedAttribute xmi:id="_TwSFUMu5EfC-BsrRCi5dpA" name="flipped">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_UqYWEMu5EfC-BsrRCi5dpA" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_UqY9IMu5EfC-BsrRCi5dpA" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_VjB1UMu5EfC-BsrRCi5dpA">
+          <language>CIF</language>
+          <body>false</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_C4iFEMu5EfC-BsrRCi5dpA" name="AbstractActivity" isAbstract="true" postcondition="_aS76AMu5EfC-BsrRCi5dpA" precondition="_XhSRwMu5EfC-BsrRCi5dpA">
+        <ownedRule xmi:id="_XhSRwMu5EfC-BsrRCi5dpA" name="precondition">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="_ZeF8sMu5EfC-BsrRCi5dpA">
+            <language>CIF</language>
+            <body>not flipped</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:id="_aS76AMu5EfC-BsrRCi5dpA" name="postcondition">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="_cHox0Mu5EfC-BsrRCi5dpA">
+            <language>CIF</language>
+            <body>flipped</body>
+          </specification>
+        </ownedRule>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_dWbgMMu5EfC-BsrRCi5dpA" name="flip"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_jQKTsMu5EfC-BsrRCi5dpA" name="ImpossibleBehavior"/>
+    </packagedElement>
+    <profileApplication xmi:id="_UqVSwMu5EfC-BsrRCi5dpA">
+      <eAnnotations xmi:id="_UqXvAMu5EfC-BsrRCi5dpA" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/SynthML/#/"/>
+      </eAnnotations>
+      <appliedProfile href="platform:/plugin/com.github.tno.synthml.uml.profile.plugin/model/synthml.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+    </profileApplication>
+  </uml:Model>
+  <SynthML:SynthesisPrecondition xmi:id="_XzifYMu5EfC-BsrRCi5dpA" base_Constraint="_XhSRwMu5EfC-BsrRCi5dpA"/>
+  <SynthML:Postcondition xmi:id="_aiYEMMu5EfC-BsrRCi5dpA" base_Constraint="_aS76AMu5EfC-BsrRCi5dpA"/>
+  <SynthML:FormalElement xmi:id="_eLDbEMu5EfC-BsrRCi5dpA" guard="not flipped" base_RedefinableElement="_dWbgMMu5EfC-BsrRCi5dpA" atomic="true">
+    <effects>flipped := true</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="_lQ0j4Mu5EfC-BsrRCi5dpA" guard="flipped" base_RedefinableElement="_jQKTsMu5EfC-BsrRCi5dpA" atomic="true">
+    <effects>flipped := false</effects>
+  </SynthML:FormalElement>
+  <SynthML:Requirement xmi:id="_qmF_cMu5EfC-BsrRCi5dpA" base_Constraint="_pTzRIMu5EfC-BsrRCi5dpA"/>
+</xmi:XMI>
