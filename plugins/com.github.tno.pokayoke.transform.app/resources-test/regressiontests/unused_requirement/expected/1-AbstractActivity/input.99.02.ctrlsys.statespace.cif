@@ -1,0 +1,11 @@
+uncontrollable __node__CallBehaviorAction__31;
+automaton post_synthesis_chain_state_space:
+  alphabet __node__CallBehaviorAction__31;
+  @state(Class1: "*", Class1.__controlflow__26: false, Class1.__controlflow__27: true, Class1.flipped: false)
+  location loc1:
+    initial;
+    edge __node__CallBehaviorAction__31 goto loc2;
+  @state(Class1: "*", Class1.__controlflow__26: true, Class1.__controlflow__27: false, Class1.flipped: true)
+  location loc2:
+    marked;
+end

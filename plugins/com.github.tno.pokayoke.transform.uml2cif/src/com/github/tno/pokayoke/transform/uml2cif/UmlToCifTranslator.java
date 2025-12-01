@@ -137,9 +137,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     private final BiMap<Pair<ActivityEdge, ActivityEdge>, Event> activityOrNodeMapping = HashBiMap.create();
 
     public UmlToCifTranslator(CifContext context, Activity activity, UmlToCifTranslationPurpose purpose,
-            SynthesisChainTracking tracker)
+            SynthesisChainTracking tracker, List<String> warnings)
     {
-        super(context, tracker, purpose);
+        super(context, tracker, purpose, warnings);
         this.activity = activity;
     }
 

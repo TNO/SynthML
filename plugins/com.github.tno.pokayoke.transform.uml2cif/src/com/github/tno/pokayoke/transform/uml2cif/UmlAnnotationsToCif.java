@@ -276,8 +276,11 @@ public class UmlAnnotationsToCif extends ACifObjectWalker<Object> {
                         String.format("UML element '%s' does not belong to the CIF context.", event));
                 List<Event> cifEvents = synthesisTracker.getStartEventsCorrespondingToOriginalUmlElement(umlElement,
                         translationPurpose);
-                Verify.verify(cifEvents.size() > 0, String
-                        .format("Could not find any CIF event corresponding to a UML element called '%s'.", event));
+
+                if (cifEvents.size() == 0) {
+                    // If there are no CIF events related to the these events, skip the translation.
+                    continue;
+                }
 
                 for (Event cifEvent: cifEvents) {
                     Invariant cifInvariant = CifConstructors.newInvariant();

@@ -3,6 +3,7 @@ package com.github.tno.pokayoke.transform.uml2cif;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -69,7 +70,8 @@ public class Uml2CifRegressionTest extends RegressionTest {
 
             // Translate the current UML activity to a CIF specification.
             Specification cifSpecification = new UmlToCifTranslator(context, activity,
-                    UmlToCifTranslationPurpose.SYNTHESIS, new SynthesisChainTracking(activity)).translate();
+                    UmlToCifTranslationPurpose.SYNTHESIS, new SynthesisChainTracking(activity), new ArrayList<>())
+                            .translate();
 
             // Store the translated CIF specification.
             try {
