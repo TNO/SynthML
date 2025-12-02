@@ -196,9 +196,9 @@ public class ConcreteActivityRestorer {
     }
 
     /**
-     * Analyze the parents of a newly created merge node, and look for the ones who are the translation of a single
-     * merge node located in a called concrete activity. These children merge nodes can be united into a single merge
-     * node when:
+     * Analyze the parents of a newly created merge node, and look for the ones that are the translation of a single
+     * merge node located in a called concrete activity. These parent merge nodes can be united into a single merge node
+     * when:
      * <ol>
      * <li>All merge nodes can be traced back to the same merge node in a called concrete activity;</li>
      * <li>Each node has exactly one outgoing edge;</li>
@@ -215,7 +215,8 @@ public class ConcreteActivityRestorer {
     private Pair<Set<ActivityNode>, Set<RedefinableElement>> restoreConcreteMergeNodePattern(MergeNode mergeNode,
             Set<ActivityNode> parentNodes)
     {
-        // Find the parent nodes who refer to the same original merge node and group them by their original UML element.
+        // Find the parent nodes that refer to the same original merge node and group them by their original UML
+        // element.
         Map<MergeNode, List<MergeNode>> originalMergeNodeToPatternNodes = new LinkedHashMap<>();
         for (ActivityNode parent: parentNodes) {
             if (tracker.getOriginalUmlElement(parent) instanceof MergeNode originalMergeNode) {
@@ -231,8 +232,8 @@ public class ConcreteActivityRestorer {
             ActivityNode originalMergeNode = mergeNodeToPatternNodes.getKey();
             List<MergeNode> patternNodes = mergeNodeToPatternNodes.getValue();
 
-            // If all pattern merge nodes have only one outgoing edge, the edge has a trivial guard and it is directed
-            // to the newly created merge node, we can unify them.
+            // If all pattern merge nodes have only one outgoing edge, the edge has a trivial outgoing guard, and it is
+            // directed to the newly created merge node, we can unify them.
             boolean unifiable = patternNodes.stream()
                     .allMatch(m -> m.getOutgoings().size() == 1 && m.getOutgoings().get(0).getTarget().equals(mergeNode)
                             && NameHelper.isNullOrTriviallyTrue(
@@ -254,7 +255,7 @@ public class ConcreteActivityRestorer {
             // Sanity check: the number of pattern merge nodes must be equal to the number of incoming edges of the
             // original merge node.
             Verify.verify(originalMergeNode.getIncomings().size() == patternNodes.size(), String.format(
-                    "The original merge node '%s' has %s incoming edges, but found %s corresponding pattern merge nodes.",
+                    "The concrete merge node '%s' has %s incoming edges, but found %s corresponding pattern merge nodes.",
                     originalMergeNode.getName(), originalMergeNode.getOutgoings().size(), patternNodes.size()));
 
             // Redirect all incoming control flows to reach the first pattern merge node in the list. Mark the other
