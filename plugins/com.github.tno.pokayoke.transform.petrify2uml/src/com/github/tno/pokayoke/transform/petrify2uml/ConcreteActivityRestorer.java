@@ -78,34 +78,33 @@ public class ConcreteActivityRestorer {
     }
 
     private void restoreConcreteDecisionMergeNodes() {
-        // Initialize nodes and edge to delete.
-        List<ActivityNode> nodesToDelete = new ArrayList<>();
-        List<ActivityEdge> edgesToDelete = new ArrayList<>();
+        // Initialize the lists of update nodes and the nodes and edges to delete.
+        List<ActivityNode> updatedNodes = new ArrayList<>();
+        List<RedefinableElement> elementsToDelete = new ArrayList<>();
 
         // Restore the decision node patterns.
         for (Entry<DecisionNode, Set<ActivityNode>> pattern: tracker.getDecisionChildNodes().entrySet()) {
-            Pair<Set<ActivityNode>, Set<ActivityEdge>> elementsToDelete = restoreConcreteDecisionNodePattern(
+            Pair<Set<ActivityNode>, Set<RedefinableElement>> updatedAndToDelete = restoreConcreteDecisionNodePattern(
                     pattern.getKey(), pattern.getValue());
-            nodesToDelete.addAll(elementsToDelete.left);
-            edgesToDelete.addAll(elementsToDelete.right);
+            updatedNodes.addAll(updatedAndToDelete.left);
+            elementsToDelete.addAll(updatedAndToDelete.right);
         }
 
         // Restore the merge node patterns.
         for (Entry<MergeNode, Set<ActivityNode>> pattern: tracker.getMergeParentNodes().entrySet()) {
-            Pair<Set<ActivityNode>, Set<ActivityEdge>> elementsToDelete = restoreConcreteMergeNodePattern(
+            Pair<Set<ActivityNode>, Set<RedefinableElement>> updatedAndToDelete = restoreConcreteMergeNodePattern(
                     pattern.getKey(), pattern.getValue());
-            nodesToDelete.addAll(elementsToDelete.left);
-            edgesToDelete.addAll(elementsToDelete.right);
+            updatedNodes.addAll(updatedAndToDelete.left);
+            elementsToDelete.addAll(updatedAndToDelete.right);
         }
 
         // Sanity check: exactly one edge per node to remove.
-        Verify.verify(nodesToDelete.size() == edgesToDelete.size(),
+        Verify.verify(elementsToDelete.size() == updatedNodes.size(),
                 "Expected the same number of nodes and edges to remove after restoring decision/merge patterns.");
 
         // Update the tracker and destroy the other decision and merge nodes and their edges.
-        tracker.removeNodes(nodesToDelete);
-        edgesToDelete.forEach(e -> e.destroy());
-        nodesToDelete.forEach(n -> n.destroy());
+        tracker.removeNodes(elementsToDelete);
+        elementsToDelete.forEach(e -> e.destroy());
     }
 
     /**
@@ -123,10 +122,11 @@ public class ConcreteActivityRestorer {
      *
      * @param decisionNode The decision node created as the translation of a Petri net place.
      * @param childNodes The child nodes of the decision node.
-     * @return A pair containing the other decision nodes and their incoming edges to remove.
+     * @return A pair containing the updated decision nodes and a set containing the other decision nodes and their
+     *     incoming edges to remove.
      */
-    private Pair<Set<ActivityNode>, Set<ActivityEdge>> restoreConcreteDecisionNodePattern(DecisionNode decisionNode,
-            Set<ActivityNode> childNodes)
+    private Pair<Set<ActivityNode>, Set<RedefinableElement>>
+            restoreConcreteDecisionNodePattern(DecisionNode decisionNode, Set<ActivityNode> childNodes)
     {
         // Find the child nodes that refer to the same original decision node and group them by their original UML
         // element.
@@ -143,8 +143,8 @@ public class ConcreteActivityRestorer {
             return new Pair<>(new LinkedHashSet<>(), new LinkedHashSet<>());
         }
 
-        Set<ActivityNode> decisionNodesToDelete = new LinkedHashSet<>();
-        Set<ActivityEdge> incomingEdgesToDelete = new LinkedHashSet<>();
+        Set<ActivityNode> updatedDecisionNodes = new LinkedHashSet<>();
+        Set<RedefinableElement> incomingEdgesAndNodesToDelete = new LinkedHashSet<>();
         for (Entry<DecisionNode, List<DecisionNode>> decisionNodeToPatternNodes: originalDecisionNodeToPatternNodes
                 .entrySet())
         {
@@ -189,11 +189,12 @@ public class ConcreteActivityRestorer {
                 }
             }
 
-            decisionNodesToDelete.addAll(nodesToDelete);
-            incomingEdgesToDelete.addAll(edgesToDelete);
+            updatedDecisionNodes.add(patternNodes.get(0));
+            incomingEdgesAndNodesToDelete.addAll(nodesToDelete);
+            incomingEdgesAndNodesToDelete.addAll(edgesToDelete);
         }
 
-        return new Pair<>(decisionNodesToDelete, incomingEdgesToDelete);
+        return new Pair<>(updatedDecisionNodes, incomingEdgesAndNodesToDelete);
     }
 
     /**
@@ -210,9 +211,10 @@ public class ConcreteActivityRestorer {
      *
      * @param mergeNode The merge node created as the translation of a Petri net place.
      * @param parentNodes The parent nodes of the merge node.
-     * @return A pair containing the other merge nodes and their outgoing edges to remove.
+     * @return A pair containing the updated merge node and a set containing the other merge nodes and their outgoing
+     *     edges to remove.
      */
-    private Pair<Set<ActivityNode>, Set<ActivityEdge>> restoreConcreteMergeNodePattern(MergeNode mergeNode,
+    private Pair<Set<ActivityNode>, Set<RedefinableElement>> restoreConcreteMergeNodePattern(MergeNode mergeNode,
             Set<ActivityNode> parentNodes)
     {
         // Find the parent nodes who refer to the same original merge node and group them by their original UML element.
@@ -229,8 +231,8 @@ public class ConcreteActivityRestorer {
             return new Pair<>(new LinkedHashSet<>(), new LinkedHashSet<>());
         }
 
-        Set<ActivityNode> mergeNodesToDelete = new LinkedHashSet<>();
-        Set<ActivityEdge> outgoingEdgesToDelete = new LinkedHashSet<>();
+        Set<ActivityNode> updatedMergeNodes = new LinkedHashSet<>();
+        Set<RedefinableElement> outgoingEdgesAndNodesToDelete = new LinkedHashSet<>();
         for (Entry<MergeNode, List<MergeNode>> mergeNodeToPatternNodes: originalMergeNodeToPatternNodes.entrySet()) {
             // Get the original merge node and the merge nodes derived from it.
             ActivityNode originalMergeNode = mergeNodeToPatternNodes.getKey();
@@ -273,10 +275,11 @@ public class ConcreteActivityRestorer {
                 }
             }
 
-            mergeNodesToDelete.addAll(nodesToDelete);
-            outgoingEdgesToDelete.addAll(edgesToDelete);
+            updatedMergeNodes.add(patternNodes.get(0));
+            outgoingEdgesAndNodesToDelete.addAll(nodesToDelete);
+            outgoingEdgesAndNodesToDelete.addAll(edgesToDelete);
         }
 
-        return new Pair<>(mergeNodesToDelete, outgoingEdgesToDelete);
+        return new Pair<>(updatedMergeNodes, outgoingEdgesAndNodesToDelete);
     }
 }
