@@ -1195,9 +1195,9 @@ public class SynthesisChainTracking {
      * and now represents the merging of multiple activity nodes derived from a single decision or merge node in a
      * called concrete activity.</li>
      * <li>Ensures that only one CIF event and one Petri net transition are kept, since all merged nodes refer to the
-     * same original UML element. Tracking multiple transitions and events is unnecessary.</li>
-     * <li>Deletes all other related nodes from the tracker, along with their associated Petri net transitions and CIF
-     * events, as they are now redundant.</li>
+     * same original UML element. Tracking multiple transitions and events is unnecessary. Thus, this method deletes all
+     * other related nodes from the tracker, along with their associated Petri net transitions and CIF events, as they
+     * are now redundant.</li>
      * </ul>
      *
      * @param nodesToUpdate The set of activity nodes to update.
