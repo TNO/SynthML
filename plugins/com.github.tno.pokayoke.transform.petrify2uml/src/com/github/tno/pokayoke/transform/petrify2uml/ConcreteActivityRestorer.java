@@ -141,11 +141,6 @@ public class ConcreteActivityRestorer {
             }
         }
 
-        // If no child nodes are a translation of a decision node, there are no patterns to restore.
-        if (originalDecisionNodeToPatternNodes.isEmpty()) {
-            return new Pair<>(new LinkedHashSet<>(), new LinkedHashSet<>());
-        }
-
         Set<ActivityNode> updatedDecisionNodes = new LinkedHashSet<>();
         Set<RedefinableElement> incomingEdgesAndNodesToDelete = new LinkedHashSet<>();
         for (Entry<DecisionNode, List<DecisionNode>> decisionNodeToPatternNodes: originalDecisionNodeToPatternNodes
@@ -162,7 +157,7 @@ public class ConcreteActivityRestorer {
                             .isNullOrTriviallyTrue(PokaYokeUmlProfileUtil.getIncomingGuard(m.getIncomings().get(0))));
 
             if (!unifiable) {
-                return new Pair<>(new LinkedHashSet<>(), new LinkedHashSet<>());
+                continue;
             }
 
             // Sanity check: all the pattern decision nodes have the entry guard equal to the entry guard of the
@@ -229,11 +224,6 @@ public class ConcreteActivityRestorer {
             }
         }
 
-        // If no parent nodes are translation of a merge node, there is no pattern to restore.
-        if (originalMergeNodeToPatternNodes.isEmpty()) {
-            return new Pair<>(new LinkedHashSet<>(), new LinkedHashSet<>());
-        }
-
         Set<ActivityNode> updatedMergeNodes = new LinkedHashSet<>();
         Set<RedefinableElement> outgoingEdgesAndNodesToDelete = new LinkedHashSet<>();
         for (Entry<MergeNode, List<MergeNode>> mergeNodeToPatternNodes: originalMergeNodeToPatternNodes.entrySet()) {
@@ -249,7 +239,7 @@ public class ConcreteActivityRestorer {
                                     PokaYokeUmlProfileUtil.getOutgoingGuard(m.getOutgoings().get(0))));
 
             if (!unifiable) {
-                return new Pair<>(new LinkedHashSet<>(), new LinkedHashSet<>());
+                continue;
             }
 
             // Sanity check: all the pattern merge nodes have the exit guard equal to the exit guard of the original
