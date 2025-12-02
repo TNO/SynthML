@@ -1195,7 +1195,7 @@ public class SynthesisChainTracking {
      * and now represents the merging of multiple activity nodes derived from a single decision or merge node in a
      * called concrete activity.</li>
      * <li>Ensures that only one CIF event and one Petri net transition are kept, since all merged nodes refer to the
-     * same original UML element. Tracking multiple guards and events is unnecessary.</li>
+     * same original UML element. Tracking multiple transitions and events is unnecessary.</li>
      * <li>Deletes all other related nodes from the tracker, along with their associated Petri net transitions and CIF
      * events, as they are now redundant.</li>
      * </ul>
@@ -1219,7 +1219,7 @@ public class SynthesisChainTracking {
                 .flatMap(t -> transitionTraceInfo.get(t).getCifEvents().stream()).collect(Collectors.toSet());
 
         for (Event event: eventsToUpdate) {
-            // Create a new 'EventTraceInfo' where the entry guard and the exit guard are both null, to identify that
+            // Create a new 'EventTraceInfo' where the entry guard and the exit guard are both 'null', to identify that
             // the restoring is done.
             EventTraceInfo oldEventTraceInfo = getEventTraceInfo(event);
             EventTraceInfo newEventTraceInfo = new EventTraceInfo(oldEventTraceInfo.getTranslationPurpose(),

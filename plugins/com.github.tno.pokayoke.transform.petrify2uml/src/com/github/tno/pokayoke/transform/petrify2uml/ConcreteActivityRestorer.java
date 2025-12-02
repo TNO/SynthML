@@ -78,7 +78,7 @@ public class ConcreteActivityRestorer {
     }
 
     private void restoreConcreteDecisionMergeNodes() {
-        // Initialize the lists of update nodes and the nodes and edges to delete.
+        // Initialize the lists of updated nodes and the nodes and edges to delete.
         List<ActivityNode> updatedNodes = new ArrayList<>();
         List<RedefinableElement> elementsToDelete = new ArrayList<>();
 
