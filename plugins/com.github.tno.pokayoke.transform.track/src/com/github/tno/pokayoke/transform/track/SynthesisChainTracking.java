@@ -1188,11 +1188,46 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Removes the given activity nodes along with the related Petri net transition and CIF events.
+     * Updates the event tracing information for the specified decision or merge nodes. This method performs the
+     * following steps:
+     * <ul>
+     * <li>Sets the entry and exit guards of the given nodes to {@code null}, indicating that the node has been restored
+     * and now represents the merging of multiple activity nodes derived from a single decision or merge node in a
+     * called concrete activity.</li>
+     * <li>Ensures that only one CIF event and one Petri net transition are kept, since all merged nodes refer to the
+     * same original UML element. Tracking multiple guards and events is unnecessary.</li>
+     * <li>Deletes all other related nodes from the tracker, along with their associated Petri net transitions and CIF
+     * events, as they are now redundant.</li>
+     * </ul>
      *
-     * @param nodesToRemove The set of activity nodes to be removed.
+     * @param nodesToUpdate The set of activity nodes to update.
+     * @param nodesToRemove The set of UML elements to be removed.
      */
-    public void removeNodes(List<ActivityNode> nodesToRemove) {
+    public void updateConcreteDecisionMergeNodesAndEdges(List<ActivityNode> nodesToUpdate,
+            List<ActivityNode> nodesToRemove)
+    {
+        // Sanity check: all nodes must be decision or merge nodes.
+        Verify.verify(nodesToUpdate.stream().allMatch(n -> n instanceof DecisionNode || n instanceof MergeNode),
+                "Only decision or merge nodes are allowed to be restored.");
+        Verify.verify(nodesToRemove.stream().allMatch(n -> n instanceof DecisionNode || n instanceof MergeNode),
+                "Only decision or merge nodes are allowed to be restored.");
+
+        // Update the CIF event tracing info corresponding the nodes to be updated.
+        Set<Transition> transitions = nodesToUpdate.stream().map(activityNodeToTransition::get)
+                .collect(Collectors.toSet());
+        Set<Event> eventsToUpdate = transitions.stream()
+                .flatMap(t -> transitionTraceInfo.get(t).getCifEvents().stream()).collect(Collectors.toSet());
+
+        for (Event event: eventsToUpdate) {
+            // Create a new 'EventTraceInfo' where the entry guard and the exit guard are both null, to identify that
+            // the restoring is done.
+            EventTraceInfo oldEventTraceInfo = getEventTraceInfo(event);
+            EventTraceInfo newEventTraceInfo = new EventTraceInfo(oldEventTraceInfo.getTranslationPurpose(),
+                    oldEventTraceInfo.getUmlElement(), oldEventTraceInfo.getEffectIdx(),
+                    oldEventTraceInfo.isStartEvent(), oldEventTraceInfo.isEndEvent(), null, null);
+            cifEventTraceInfo.put(event, newEventTraceInfo);
+        }
+
         // Remove activity nodes from the internal map and the corresponding transition and CIF event tracing info.
         Set<Transition> transitionToRemove = nodesToRemove.stream().map(activityNodeToTransition::get)
                 .collect(Collectors.toSet());

@@ -99,11 +99,14 @@ public class ConcreteActivityRestorer {
         }
 
         // Sanity check: exactly one edge per node to remove.
-        Verify.verify(elementsToDelete.size() == updatedNodes.size(),
+        Verify.verify(
+                elementsToDelete.stream().filter(e -> e instanceof ActivityNode).toList().size() == elementsToDelete
+                        .stream().filter(e -> e instanceof ActivityEdge).toList().size(),
                 "Expected the same number of nodes and edges to remove after restoring decision/merge patterns.");
 
         // Update the tracker and destroy the other decision and merge nodes and their edges.
-        tracker.removeNodes(elementsToDelete);
+        tracker.updateConcreteDecisionMergeNodesAndEdges(updatedNodes, elementsToDelete.stream()
+                .filter(e -> e instanceof ActivityNode).map(ActivityNode.class::cast).toList());
         elementsToDelete.forEach(e -> e.destroy());
     }
 
