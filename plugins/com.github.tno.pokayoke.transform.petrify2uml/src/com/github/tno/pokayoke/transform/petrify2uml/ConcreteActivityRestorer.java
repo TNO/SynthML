@@ -129,7 +129,7 @@ public class ConcreteActivityRestorer {
      *     incoming edges to remove.
      */
     private Pair<Set<ActivityNode>, Set<RedefinableElement>>
-            restoreConcreteDecisionNodePattern(DecisionNode decisionNode, Set<ActivityNode> childNodes)
+            restoreConcreteDecisionNodePatterns(DecisionNode decisionNode, Set<ActivityNode> childNodes)
     {
         // Find the child nodes that refer to the same original decision node and group them by their original UML
         // element.
@@ -209,10 +209,10 @@ public class ConcreteActivityRestorer {
      *
      * @param mergeNode The merge node created as the translation of a Petri net place.
      * @param parentNodes The parent nodes of the merge node.
-     * @return A pair containing the updated merge node and a set containing the other merge nodes and their outgoing
+     * @return A pair containing the updated merge nodes and a set containing the other merge nodes and their outgoing
      *     edges to remove.
      */
-    private Pair<Set<ActivityNode>, Set<RedefinableElement>> restoreConcreteMergeNodePattern(MergeNode mergeNode,
+    private Pair<Set<ActivityNode>, Set<RedefinableElement>> restoreConcreteMergeNodePatterns(MergeNode mergeNode,
             Set<ActivityNode> parentNodes)
     {
         // Find the parent nodes that refer to the same original merge node and group them by their original UML
