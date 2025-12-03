@@ -84,7 +84,7 @@ public class ConcreteActivityRestorer {
 
         // Restore the decision node patterns.
         for (Entry<DecisionNode, Set<ActivityNode>> pattern: tracker.getDecisionChildNodes().entrySet()) {
-            Pair<Set<ActivityNode>, Set<RedefinableElement>> updatedAndToDelete = restoreConcreteDecisionNodePattern(
+            Pair<Set<ActivityNode>, Set<RedefinableElement>> updatedAndToDelete = restoreConcreteDecisionNodePatterns(
                     pattern.getKey(), pattern.getValue());
             updatedNodes.addAll(updatedAndToDelete.left);
             elementsToDelete.addAll(updatedAndToDelete.right);
@@ -92,7 +92,7 @@ public class ConcreteActivityRestorer {
 
         // Restore the merge node patterns.
         for (Entry<MergeNode, Set<ActivityNode>> pattern: tracker.getMergeParentNodes().entrySet()) {
-            Pair<Set<ActivityNode>, Set<RedefinableElement>> updatedAndToDelete = restoreConcreteMergeNodePattern(
+            Pair<Set<ActivityNode>, Set<RedefinableElement>> updatedAndToDelete = restoreConcreteMergeNodePatterns(
                     pattern.getKey(), pattern.getValue());
             updatedNodes.addAll(updatedAndToDelete.left);
             elementsToDelete.addAll(updatedAndToDelete.right);
