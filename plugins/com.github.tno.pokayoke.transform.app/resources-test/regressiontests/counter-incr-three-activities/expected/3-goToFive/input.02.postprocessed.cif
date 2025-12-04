@@ -104,7 +104,7 @@ plant automaton Context:
     edge initialize__na_result_2 when __nonAtomicActive__initialize do init := true, count := 2, __nonAtomicActive__initialize := false;
     edge incr1 when init do count := count + 1;
     edge incr2 when init do count := count + 2;
-    edge __node__InitialNode__132__0 when true, not __controlflow__124, true do __controlflow__124 := true;
+    edge __node__InitialNode__132__0 when true, not __controlflow__124 do __controlflow__124 := true;
     edge __node__DecisionNode__135__0 when true, __controlflow__110, not __controlflow__98, count = 1 or (count = 3 or count = 5) do __controlflow__110 := false, __controlflow__98 := true;
     edge __node__DecisionNode__135__1 when true, __controlflow__110, not __controlflow__104, count = 0 or (count = 2 or count = 4) do __controlflow__110 := false, __controlflow__104 := true;
     edge __node__MergeNode__138__0 when true, __controlflow__113, true, not __controlflow__119 do __controlflow__113 := false, __controlflow__119 := true;
@@ -115,7 +115,7 @@ plant automaton Context:
     edge __node__CallBehaviorAction__150 when not init, __controlflow__124, true, not __controlflow__110, not __nonAtomicActive____node__CallBehaviorAction__150 do __controlflow__124 := false, __nonAtomicActive____node__CallBehaviorAction__150 := true;
     edge __node__CallBehaviorAction__150__na_result_1 when not __controlflow__110, __nonAtomicActive____node__CallBehaviorAction__150 do init := true, count := 1, __controlflow__110 := true, __nonAtomicActive____node__CallBehaviorAction__150 := false;
     edge __node__CallBehaviorAction__150__na_result_2 when not __controlflow__110, __nonAtomicActive____node__CallBehaviorAction__150 do init := true, count := 2, __controlflow__110 := true, __nonAtomicActive____node__CallBehaviorAction__150 := false;
-    edge __node__InitialNode__229__0 when true, not __controlflow__224, true do __controlflow__224 := true;
+    edge __node__InitialNode__229__0 when true, not __controlflow__224 do __controlflow__224 := true;
     edge __node__DecisionNode__231__0 when true, __controlflow__205, not __controlflow__189, count = 1 or (count = 3 or count = 5) do __controlflow__205 := false, __controlflow__189 := true;
     edge __node__DecisionNode__231__1 when true, __controlflow__205, not __controlflow__193, count = 1 or (count = 3 or count = 5) do __controlflow__205 := false, __controlflow__193 := true;
     edge __node__DecisionNode__231__2 when true, __controlflow__205, not __controlflow__197, count = 0 or (count = 2 or count = 4) do __controlflow__205 := false, __controlflow__197 := true;

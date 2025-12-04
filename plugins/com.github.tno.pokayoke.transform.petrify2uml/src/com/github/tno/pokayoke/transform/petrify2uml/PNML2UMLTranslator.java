@@ -28,7 +28,6 @@ import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.ForkNode;
 import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.JoinNode;
-import org.eclipse.uml2.uml.LiteralBoolean;
 import org.eclipse.uml2.uml.MergeNode;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.OpaqueAction;
@@ -38,7 +37,6 @@ import org.eclipse.uml2.uml.UMLFactory;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.transform.track.SynthesisChainTracking;
-import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Preconditions;
 
 import fr.lip6.move.pnml.framework.utils.exception.ImportException;
@@ -161,7 +159,7 @@ public class PNML2UMLTranslator {
 
         // Transform all Petri Net places and the arcs connected to them.
         List<Place> places = sorted(page.getObjects().stream().filter(Place.class::isInstance).map(Place.class::cast));
-        places.forEach(this::translate);
+        places.forEach(t -> translate(t, tracker));
 
         // Post-process the UML activity to introduce forks and joins where needed.
         introduceForksAndJoins();
@@ -213,7 +211,7 @@ public class PNML2UMLTranslator {
         }
     }
 
-    private void translate(Place place) {
+    private void translate(Place place, SynthesisChainTracking tracker) {
         Preconditions.checkArgument(!placeMapping.containsKey(place),
                 "Expected the given place to have not yet been translated.");
 
@@ -242,6 +240,11 @@ public class PNML2UMLTranslator {
                 ControlFlow flow = createControlFlow(activity, transitionMapping.get(arc.getSource()), sourceNode);
                 arcMapping.put(arc, flow);
                 controlFlowMapping.put(flow, arc);
+
+                // Add the new merge node and its parent node to the tracker, for later repair.
+                if (tracker != null) {
+                    tracker.addDecisionOrMergePatternNodes(sourceNode, transitionMapping.get(arc.getSource()));
+                }
             }
         }
 
@@ -266,9 +269,10 @@ public class PNML2UMLTranslator {
                 arcMapping.put(arc, flow);
                 controlFlowMapping.put(flow, arc);
 
-                LiteralBoolean guard = UML_FACTORY.createLiteralBoolean();
-                guard.setValue(true);
-                PokaYokeUmlProfileUtil.setIncomingGuard(flow, guard);
+                // Add the new decision node and its child node to the tracker, for later repair.
+                if (tracker != null) {
+                    tracker.addDecisionOrMergePatternNodes(targetNode, transitionMapping.get(arc.getTarget()));
+                }
             }
         }
 

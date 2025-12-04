@@ -58,15 +58,15 @@ plant automaton Machine:
     edge __node__OpaqueAction__82 when true, __controlflow__61, true, not __controlflow__67, __activeAction = 0 do __controlflow__61 := false, __controlflow__67 := true;
     edge __node__OpaqueAction__83 when true, __controlflow__63, true, not __controlflow__76, __activeAction = 0 do a_executed := true, __controlflow__63 := false, __controlflow__76 := true;
     edge __node__OpaqueAction__84 when true, __controlflow__65, true, not __controlflow__77, __activeAction = 0 do a_executed := true, __controlflow__65 := false, __controlflow__77 := true;
-    edge __node__DecisionNode__87__0 when true, __controlflow__67, not __controlflow__63, true, __activeAction = 0 do __controlflow__67 := false, __controlflow__63 := true;
-    edge __node__DecisionNode__87__1 when true, __controlflow__67, not __controlflow__65, true, __activeAction = 0 do __controlflow__67 := false, __controlflow__65 := true;
+    edge __node__DecisionNode__87__0 when true, __controlflow__67, not __controlflow__63, __activeAction = 0 do __controlflow__67 := false, __controlflow__63 := true;
+    edge __node__DecisionNode__87__1 when true, __controlflow__67, not __controlflow__65, __activeAction = 0 do __controlflow__67 := false, __controlflow__65 := true;
     edge __node__MergeNode__88__0 when true, __controlflow__69, true, not __controlflow__71, __activeAction = 0 do __controlflow__69 := false, __controlflow__71 := true;
     edge __node__MergeNode__88__1 when true, __controlflow__70, true, not __controlflow__71, __activeAction = 0 do __controlflow__70 := false, __controlflow__71 := true;
     edge __node__MergeNode__89__0 when true, __controlflow__72, true, not __controlflow__74, __activeAction = 0 do __controlflow__72 := false, __controlflow__74 := true;
     edge __node__MergeNode__89__1 when true, __controlflow__73, true, not __controlflow__74, __activeAction = 0 do __controlflow__73 := false, __controlflow__74 := true;
     edge __node__ForkNode__90 when true, __controlflow__76, true, not __controlflow__69, not __controlflow__72, __activeAction = 0 do __controlflow__76 := false, __controlflow__69 := true, __controlflow__72 := true;
     edge __node__ForkNode__91 when true, __controlflow__77, true, not __controlflow__70, not __controlflow__73, __activeAction = 0 do __controlflow__77 := false, __controlflow__70 := true, __controlflow__73 := true;
-    edge __node__JoinNode__92 when true, __controlflow__60, __controlflow__68, __controlflow__75, not __controlflow__78, true, __activeAction = 0 do __controlflow__60 := false, __controlflow__68 := false, __controlflow__75 := false, __controlflow__78 := true;
+    edge __node__JoinNode__92 when true, __controlflow__60, __controlflow__68, __controlflow__75, not __controlflow__78, __activeAction = 0 do __controlflow__60 := false, __controlflow__68 := false, __controlflow__75 := false, __controlflow__78 := true;
     edge __node__ForkNode__93 when true, __controlflow__80, true, not __controlflow__61, not __controlflow__62, __activeAction = 0 do __controlflow__80 := false, __controlflow__61 := true, __controlflow__62 := true;
     edge __node__CallBehaviorAction__94 when a_executed = true, __controlflow__71, true, not __controlflow__75, __activeAction = 0 do __controlflow__71 := false, __activeAction := 1;
     edge __node__CallBehaviorAction__94__result_1 when not __controlflow__75, __activeAction = 1 do b_executed := true, __controlflow__75 := true, __activeAction := 0;

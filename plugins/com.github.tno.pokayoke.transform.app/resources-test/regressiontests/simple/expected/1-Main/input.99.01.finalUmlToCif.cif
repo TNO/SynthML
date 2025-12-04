@@ -51,7 +51,7 @@ plant automaton Context:
     edge __node__DecisionNode__101__0 when true, __controlflow__92, not __controlflow__88, productCorrectlyPlaced = False, __activeAction = 0 do __controlflow__92 := false, __controlflow__88 := true;
     edge __node__DecisionNode__101__1 when true, __controlflow__92, not __controlflow__90, productCorrectlyPlaced != False, __activeAction = 0 do __controlflow__92 := false, __controlflow__90 := true;
     edge __node__ForkNode__102 when true, __controlflow__96, true, not __controlflow__80, not __controlflow__81, __activeAction = 0 do __controlflow__96 := false, __controlflow__80 := true, __controlflow__81 := true;
-    edge __node__JoinNode__103 when true, __controlflow__82, __controlflow__83, not __controlflow__93, true, __activeAction = 0 do __controlflow__82 := false, __controlflow__83 := false, __controlflow__93 := true;
+    edge __node__JoinNode__103 when true, __controlflow__82, __controlflow__83, not __controlflow__93, __activeAction = 0 do __controlflow__82 := false, __controlflow__83 := false, __controlflow__93 := true;
     edge __node__CallBehaviorAction__104 when location2Prepared and location2HasProduct and productCorrectlyPlaced = Unknown, __controlflow__87, true, not __controlflow__92, __activeAction = 0 do __controlflow__87 := false, __activeAction := 1;
     edge __node__CallBehaviorAction__104__result_1 when not __controlflow__92, __activeAction = 1 do productCorrectlyPlaced := True, __controlflow__92 := true, __activeAction := 0;
     edge __node__CallBehaviorAction__104__result_2 when not __controlflow__92, __activeAction = 1 do productCorrectlyPlaced := False, __controlflow__92 := true, __activeAction := 0;
