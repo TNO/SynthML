@@ -150,13 +150,16 @@ public class ConcreteActivityRestorer {
             ActivityNode originalDecisionNode = decisionNodeToPatternNodes.getKey();
             List<DecisionNode> patternNodes = decisionNodeToPatternNodes.getValue();
 
-            // If all pattern decision nodes have only one incoming edge, the edge has a trivial incoming guard, and it
-            // is coming from the newly created decision node, then we can unify them.
+            // We can unify the decision nodes if the pattern is complete and structurally unifiable. The pattern is
+            // complete when all the child decision nodes of the original decision node are present. The pattern is
+            // structurally unifiable if all pattern decision nodes have only one incoming edge, the edge has a trivial
+            // incoming guard, and it is coming from the newly created decision node.
+            boolean completePattern = originalDecisionNode.getOutgoings().size() == patternNodes.size();
             boolean unifiable = patternNodes.stream().allMatch(m -> m.getIncomings().size() == 1
                     && m.getIncomings().get(0).getSource().equals(decisionNode) && NameHelper
                             .isNullOrTriviallyTrue(PokaYokeUmlProfileUtil.getIncomingGuard(m.getIncomings().get(0))));
 
-            if (!unifiable) {
+            if (!completePattern || !unifiable) {
                 continue;
             }
 
@@ -169,12 +172,6 @@ public class ConcreteActivityRestorer {
             Verify.verify(equalEntryGuard,
                     String.format("The decision nodes derived from node '%s' have a different entry guard.",
                             originalDecisionNode.getName()));
-
-            // Sanity check: the number of pattern decision nodes must be equal to the number of outgoing edges of the
-            // original decision node.
-            Verify.verify(originalDecisionNode.getOutgoings().size() == patternNodes.size(), String.format(
-                    "The concrete decision node '%s' has %s outgoing edges, but found %s corresponding pattern decision nodes.",
-                    originalDecisionNode.getName(), originalDecisionNode.getOutgoings().size(), patternNodes.size()));
 
             // Redirect all outgoing control flows to start from the first pattern decision node in the list. Mark the
             // other pattern decision nodes and their incoming edges to be deleted.
@@ -232,14 +229,17 @@ public class ConcreteActivityRestorer {
             ActivityNode originalMergeNode = mergeNodeToPatternNodes.getKey();
             List<MergeNode> patternNodes = mergeNodeToPatternNodes.getValue();
 
-            // If all pattern merge nodes have only one outgoing edge, the edge has a trivial outgoing guard, and it is
-            // directed to the newly created merge node, we can unify them.
+            // We can unify the merge nodes if the pattern is complete and structurally unifiable. The pattern is
+            // complete when all the parent merge nodes of the original merge node are present. The pattern is
+            // structurally unifiable if all pattern merge nodes have only one outgoing edge, the edge has a trivial
+            // outgoing guard, and it is directed to the newly created merge node.
+            boolean completePattern = originalMergeNode.getIncomings().size() == patternNodes.size();
             boolean unifiable = patternNodes.stream()
                     .allMatch(m -> m.getOutgoings().size() == 1 && m.getOutgoings().get(0).getTarget().equals(mergeNode)
                             && NameHelper.isNullOrTriviallyTrue(
                                     PokaYokeUmlProfileUtil.getOutgoingGuard(m.getOutgoings().get(0))));
 
-            if (!unifiable) {
+            if (!completePattern || !unifiable) {
                 continue;
             }
 
@@ -251,12 +251,6 @@ public class ConcreteActivityRestorer {
             Verify.verify(equalExitGuard,
                     String.format("The merge nodes derived from node '%s' have a different exit guard.",
                             originalMergeNode.getName()));
-
-            // Sanity check: the number of pattern merge nodes must be equal to the number of incoming edges of the
-            // original merge node.
-            Verify.verify(originalMergeNode.getIncomings().size() == patternNodes.size(), String.format(
-                    "The concrete merge node '%s' has %s incoming edges, but found %s corresponding pattern merge nodes.",
-                    originalMergeNode.getName(), originalMergeNode.getOutgoings().size(), patternNodes.size()));
 
             // Redirect all incoming control flows to reach the first pattern merge node in the list. Mark the other
             // pattern merge nodes and their outgoing edge to be deleted.
