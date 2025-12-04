@@ -33,7 +33,7 @@ plant automaton Example:
     marked;
     edge __node__DecisionNode__44__0 when true, __controlflow__36, not __controlflow__32, field1, __activeAction = 0 do __controlflow__36 := false, __controlflow__32 := true;
     edge __node__DecisionNode__44__1 when true, __controlflow__36, not __controlflow__34, not field1, __activeAction = 0 do __controlflow__36 := false, __controlflow__34 := true;
-    edge __node__JoinNode__46 when true, __controlflow__32, __controlflow__37, not __controlflow__38, true, __activeAction = 0 do __controlflow__32 := false, __controlflow__37 := false, __controlflow__38 := true;
+    edge __node__JoinNode__46 when true, __controlflow__32, __controlflow__37, not __controlflow__38, __activeAction = 0 do __controlflow__32 := false, __controlflow__37 := false, __controlflow__38 := true;
     edge __node__ForkNode__47 when true, __controlflow__40, true, not __controlflow__30, not __controlflow__31, __activeAction = 0 do __controlflow__40 := false, __controlflow__30 := true, __controlflow__31 := true;
     edge __node__CallBehaviorAction__48 when not field1, __controlflow__42, true, not __controlflow__36, __activeAction = 0 do __controlflow__42 := false, __activeAction := 1;
     edge __node__CallBehaviorAction__48__result_1 when not __controlflow__36, __activeAction = 1 do field1 := true, __controlflow__36 := true, __activeAction := 0;

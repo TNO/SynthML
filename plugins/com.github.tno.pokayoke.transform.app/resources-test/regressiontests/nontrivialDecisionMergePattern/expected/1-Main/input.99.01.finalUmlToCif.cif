@@ -64,8 +64,8 @@ plant automaton Context:
     edge __node__DecisionNode__85__1 when true, __controlflow__64, not __controlflow__62, field1 do __controlflow__64 := false, __controlflow__62 := true;
     edge __node__MergeNode__86__0 when true, __controlflow__65, true, not __controlflow__67 do __controlflow__65 := false, __controlflow__67 := true;
     edge __node__MergeNode__86__1 when true, __controlflow__66, true, not __controlflow__67 do __controlflow__66 := false, __controlflow__67 := true;
-    edge __node__DecisionNode__87__0 when true, __controlflow__72, not __controlflow__68, true do __controlflow__72 := false, __controlflow__68 := true;
-    edge __node__DecisionNode__87__1 when true, __controlflow__72, not __controlflow__70, true do __controlflow__72 := false, __controlflow__70 := true;
+    edge __node__DecisionNode__87__0 when true, __controlflow__72, not __controlflow__68 do __controlflow__72 := false, __controlflow__68 := true;
+    edge __node__DecisionNode__87__1 when true, __controlflow__72, not __controlflow__70 do __controlflow__72 := false, __controlflow__70 := true;
     edge __node__MergeNode__88__0 when true, __controlflow__73, true, not __controlflow__77 do __controlflow__73 := false, __controlflow__77 := true;
     edge __node__MergeNode__88__1 when true, __controlflow__74, true, not __controlflow__77 do __controlflow__74 := false, __controlflow__77 := true;
     edge __node__MergeNode__88__2 when true, __controlflow__75, true, not __controlflow__77 do __controlflow__75 := false, __controlflow__77 := true;

@@ -43,13 +43,13 @@ plant automaton Context:
     marked;
     edge __node__OpaqueAction__65 when not done_a and not done_b, __controlflow__48, true, not __controlflow__60 do __controlflow__48 := false, __controlflow__60 := true;
     edge __node__OpaqueAction__66 when true, __controlflow__57, true, not __controlflow__51 do done_b := true, __controlflow__57 := false, __controlflow__51 := true;
-    edge __node__DecisionNode__68__0 when true, __controlflow__63, not __controlflow__46, true do __controlflow__63 := false, __controlflow__46 := true;
-    edge __node__DecisionNode__68__1 when true, __controlflow__63, not __controlflow__48, true do __controlflow__63 := false, __controlflow__48 := true;
+    edge __node__DecisionNode__68__0 when true, __controlflow__63, not __controlflow__46 do __controlflow__63 := false, __controlflow__46 := true;
+    edge __node__DecisionNode__68__1 when true, __controlflow__63, not __controlflow__48 do __controlflow__63 := false, __controlflow__48 := true;
     edge __node__MergeNode__69__0 when true, __controlflow__50, true, not __controlflow__52 do __controlflow__50 := false, __controlflow__52 := true;
     edge __node__MergeNode__69__1 when true, __controlflow__51, true, not __controlflow__52 do __controlflow__51 := false, __controlflow__52 := true;
     edge __node__MergeNode__70__0 when true, __controlflow__53, true, not __controlflow__55 do __controlflow__53 := false, __controlflow__55 := true;
     edge __node__MergeNode__70__1 when true, __controlflow__54, true, not __controlflow__55 do __controlflow__54 := false, __controlflow__55 := true;
-    edge __node__JoinNode__72 when true, __controlflow__52, __controlflow__58, not __controlflow__61, true do __controlflow__52 := false, __controlflow__58 := false, __controlflow__61 := true;
+    edge __node__JoinNode__72 when true, __controlflow__52, __controlflow__58, not __controlflow__61 do __controlflow__52 := false, __controlflow__58 := false, __controlflow__61 := true;
     edge __node__ForkNode__73 when true, __controlflow__59, true, not __controlflow__50, not __controlflow__53 do __controlflow__59 := false, __controlflow__50 := true, __controlflow__53 := true;
     edge __node__ForkNode__74 when true, __controlflow__60, true, not __controlflow__56, not __controlflow__57 do __controlflow__60 := false, __controlflow__56 := true, __controlflow__57 := true;
     edge __node__CallBehaviorAction__75 when not done_a, __controlflow__56, true, not __controlflow__54 do done_a := true, __controlflow__56 := false, __controlflow__54 := true;

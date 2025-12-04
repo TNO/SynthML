@@ -46,7 +46,7 @@ plant automaton Context:
     edge __node__DecisionNode__78__1 when true, __controlflow__66, not __controlflow__64, Coffee_or_Tea = Tea, __activeAction = 0 do __controlflow__66 := false, __controlflow__64 := true;
     edge __node__MergeNode__79__0 when true, __controlflow__68, true, not __controlflow__70, __activeAction = 0 do __controlflow__68 := false, __controlflow__70 := true;
     edge __node__MergeNode__79__1 when true, __controlflow__69, true, not __controlflow__70, __activeAction = 0 do __controlflow__69 := false, __controlflow__70 := true;
-    edge __node__JoinNode__81 when true, __controlflow__67, __controlflow__70, not __controlflow__71, true, __activeAction = 0 do __controlflow__67 := false, __controlflow__70 := false, __controlflow__71 := true;
+    edge __node__JoinNode__81 when true, __controlflow__67, __controlflow__70, not __controlflow__71, __activeAction = 0 do __controlflow__67 := false, __controlflow__70 := false, __controlflow__71 := true;
     edge __node__ForkNode__82 when true, __controlflow__73, true, not __controlflow__60, not __controlflow__61, __activeAction = 0 do __controlflow__73 := false, __controlflow__60 := true, __controlflow__61 := true;
     edge __node__CallBehaviorAction__83 when not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Coffee, __controlflow__62, true, not __controlflow__68, __activeAction = 0 do Has_Drank_Coffee_or_Tea := true, Coffee_or_Tea := Unknown, __controlflow__62 := false, __controlflow__68 := true;
     edge __node__CallBehaviorAction__84 when not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Tea, __controlflow__64, true, not __controlflow__69, __activeAction = 0 do Has_Drank_Coffee_or_Tea := true, Coffee_or_Tea := Unknown, __controlflow__64 := false, __controlflow__69 := true;
