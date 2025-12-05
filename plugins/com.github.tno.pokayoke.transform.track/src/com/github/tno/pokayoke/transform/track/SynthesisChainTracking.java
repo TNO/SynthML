@@ -1289,7 +1289,7 @@ public class SynthesisChainTracking {
      * @return {@code true} if the given activity node can be traced to a concrete activity's control node;
      *     {@code false} otherwise.
      */
-    public boolean isConcreteControlNode(ActivityNode node) {
+    public boolean isRelatedToControlNodeOfCalledActivity(ActivityNode node) {
         RedefinableElement originalUmlElement = getOriginalUmlElement(node);
         return originalUmlElement instanceof ControlNode;
     }

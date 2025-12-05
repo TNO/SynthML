@@ -292,7 +292,7 @@ public class PNML2UMLTranslator {
         // Transform any fork or join pattern in any relevant activity node.
         for (ActivityNode node: activityNodes) {
             // Add join and fork only for opaque actions or control nodes that belong to a concrete activity.
-            if (node instanceof OpaqueAction || tracker.isConcreteControlNode(node)) {
+            if (node instanceof OpaqueAction || tracker.isRelatedToControlNodeOfCalledActivity(node)) {
                 Preconditions.checkArgument(!node.getIncomings().isEmpty(), "Expected at least one incoming edge.");
                 Preconditions.checkArgument(!node.getOutgoings().isEmpty(), "Expected at least one outgoing edge.");
 
