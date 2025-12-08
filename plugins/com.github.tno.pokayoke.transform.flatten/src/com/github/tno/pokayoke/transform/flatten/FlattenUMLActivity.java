@@ -16,18 +16,22 @@ import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Class;
+import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.MergeNode;
 import org.eclipse.uml2.uml.Model;
+import org.eclipse.uml2.uml.OpaqueExpression;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.transform.common.IDHelper;
 import com.github.tno.pokayoke.transform.common.NameHelper;
 import com.github.tno.pokayoke.transform.common.StructureInfoHelper;
 import com.github.tno.pokayoke.transform.common.ValidationHelper;
+import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.github.tno.synthml.uml.profile.util.UMLActivityUtils;
+import com.google.common.base.Verify;
 
 /** Flattens nested UML activities. */
 public class FlattenUMLActivity {
@@ -145,8 +149,18 @@ public class FlattenUMLActivity {
                 if (node instanceof InitialNode initialNode) {
                     // Create dummy node to substitute the initial node, and redirect the relevant edges. An initial
                     // node must have only one outgoing edge, and a call behavior action node must have only one
-                    // incoming edge.
+                    // incoming edge. If the activity has any usage preconditions, conjunct them with the incoming guard
+                    // of the outgoing edge.
                     DecisionNode initialNodeSub = FileHelper.FACTORY.createDecisionNode();
+
+                    List<String> initialNodePreconditions = childBehaviorCopy.getPreconditions().stream()
+                            .filter(p -> PokaYokeUmlProfileUtil.isUsagePrecondition(p))
+                            .map(up -> getConstraintBodyExpression(up)).collect(Collectors.toList());
+                    initialNodePreconditions
+                            .add(PokaYokeUmlProfileUtil.getIncomingGuard(initialNode.getOutgoings().get(0)));
+                    PokaYokeUmlProfileUtil.setIncomingGuard(initialNode.getOutgoings().get(0),
+                            NameHelper.conjoinExprs(initialNodePreconditions));
+
                     initialNode.getOutgoings().get(0).setSource(initialNodeSub);
                     callBehaviorActionToReplace.getIncomings().get(0).setTarget(initialNodeSub);
                     initialNodeSub.setActivity(parentActivity);
@@ -188,5 +202,21 @@ public class FlattenUMLActivity {
         source.eResource().getContents().addAll(copier.copyAll(stereotypeApplications));
         copier.copyReferences();
         return result;
+    }
+
+    private String getConstraintBodyExpression(Constraint constraint) {
+        if (!(constraint.getSpecification() instanceof OpaqueExpression)) {
+            throw new RuntimeException(
+                    String.format("Expected specification body of constraint '%s' to be an opaque expression.",
+                            constraint.getName()));
+        }
+        OpaqueExpression opaqueSpec = (OpaqueExpression)constraint.getSpecification();
+
+        // Sanity check: opaque expression must have one body.
+        Verify.verify(opaqueSpec.getBodies().size() == 1, String
+                .format("Expected specification of constraint '%s' to have a single body.", constraint.getName()));
+
+        // Return the opaque expression body.
+        return opaqueSpec.getBodies().get(0);
     }
 }
