@@ -48,7 +48,7 @@ gal ExampleModel__ExampleClass{
   transition __ActivityFinalNode_ExampleActivity__ActivityFinalNode__5 [ __init == 1 && __edge__6 == 1 ] {
     __edge__6 = 0    ;
   }
-  transition __DecisionNode_ExampleActivity__CallBehaviorAction__DoOperation__InitialNode__6 [ __init == 1 && __edge__5 == 1 && __edge__7 == 0 ] {
+  transition __DecisionNode_ExampleActivity__CallBehaviorAction__DoOperation__InitialNode__6 [ __init == 1 && __edge__5 == 1 && __edge__7 == 0 && true ] {
     __edge__5 = 0    ;
     __edge__7 = 1    ;
   }
