@@ -526,7 +526,7 @@ public class PokaYokeUmlProfileUtil {
             return false;
         }
 
-        return appliedStereotypes.get(0).equals(getStereotype(constraint, ST_SYNTHESIS_PRECONDITION));
+        return appliedStereotypes.get(0).getName().equals(ST_SYNTHESIS_PRECONDITION);
     }
 
     public static boolean isUsagePrecondition(Constraint constraint) {
@@ -536,7 +536,7 @@ public class PokaYokeUmlProfileUtil {
             return false;
         }
 
-        return appliedStereotypes.get(0).equals(getStereotype(constraint, ST_USAGE_PRECONDITION));
+        return appliedStereotypes.get(0).getName().equals(ST_USAGE_PRECONDITION);
     }
 
     private static boolean isPostconditionConstraint(Constraint constraint) {
