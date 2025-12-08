@@ -789,9 +789,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             boolean controllableStartEvents)
     {
         // Get the relevant guards for the CIF event.
-        String entryGuardConjunction = conjoinExprs(
+        String entryGuardConjunction = NameHelper.conjoinExprs(
                 node.getIncomings().stream().map(e -> PokaYokeUmlProfileUtil.getOutgoingGuard(e)).toList());
-        String exitGuardConjunction = conjoinExprs(
+        String exitGuardConjunction = NameHelper.conjoinExprs(
                 node.getOutgoings().stream().map(e -> PokaYokeUmlProfileUtil.getIncomingGuard(e)).toList());
 
         // Translate the UML activity node as an action.
@@ -812,17 +812,6 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         addExtraGuardsAndUpdatesForControlFlows(node.getIncomings(), node.getOutgoings(), startEdge, endEdges);
 
         return newEventEdges;
-    }
-
-    /**
-     * Gives the conjunction of all given strings as a single expression.
-     *
-     * @param exprs The strings to conjoin.
-     * @return The conjunction of all given strings as a single expression.
-     */
-    static String conjoinExprs(List<String> exprs) {
-        return exprs.stream().filter(e -> e != null)
-                .reduce((left, right) -> String.format("(%s) and (%s)", left, right)).orElse("true");
     }
 
     /**
