@@ -24,6 +24,7 @@ import org.eclipse.uml2.uml.MergeNode;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.OpaqueExpression;
 
+import com.github.tno.pokayoke.transform.common.ExprHelper;
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.transform.common.IDHelper;
 import com.github.tno.pokayoke.transform.common.NameHelper;
@@ -159,7 +160,7 @@ public class FlattenUMLActivity {
                     initialNodePreconditions
                             .add(PokaYokeUmlProfileUtil.getIncomingGuard(initialNode.getOutgoings().get(0)));
                     PokaYokeUmlProfileUtil.setIncomingGuard(initialNode.getOutgoings().get(0),
-                            NameHelper.conjoinExprs(initialNodePreconditions));
+                            ExprHelper.conjoinExprs(initialNodePreconditions));
 
                     initialNode.getOutgoings().get(0).setSource(initialNodeSub);
                     callBehaviorActionToReplace.getIncomings().get(0).setTarget(initialNodeSub);

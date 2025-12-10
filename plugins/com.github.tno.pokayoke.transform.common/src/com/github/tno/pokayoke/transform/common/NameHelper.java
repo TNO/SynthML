@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -223,20 +222,5 @@ public class NameHelper {
     public static boolean isReservedKeyword(String name) {
         // Note that Petrify uses the . (dot) before its keywords.
         return CIF_RESERVED_KEYWORDS.contains(name) || GAL_RESERVED_KEYWORDS.contains(name) || name.startsWith(".");
-    }
-
-    public static boolean isNullOrTriviallyTrue(String s) {
-        return s == null || s.equals("true");
-    }
-
-    /**
-     * Gives the conjunction of all given strings as a single expression.
-     *
-     * @param exprs The strings to conjoin.
-     * @return The conjunction of all given strings as a single expression.
-     */
-    public static String conjoinExprs(List<String> exprs) {
-        return exprs.stream().filter(e -> e != null)
-                .reduce((left, right) -> String.format("(%s) and (%s)", left, right)).orElse("true");
     }
 }
