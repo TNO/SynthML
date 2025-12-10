@@ -223,8 +223,4 @@ public class NameHelper {
         // Note that Petrify uses the . (dot) before its keywords.
         return CIF_RESERVED_KEYWORDS.contains(name) || GAL_RESERVED_KEYWORDS.contains(name) || name.startsWith(".");
     }
-
-    public static boolean isNullOrTriviallyTrue(String s) {
-        return s == null || s.equals("true");
-    }
 }

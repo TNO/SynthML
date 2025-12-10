@@ -19,7 +19,7 @@ import org.eclipse.uml2.uml.MergeNode;
 import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.RedefinableElement;
 
-import com.github.tno.pokayoke.transform.common.NameHelper;
+import com.github.tno.pokayoke.transform.common.ExprHelper;
 import com.github.tno.pokayoke.transform.track.SynthesisChainTracking;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Verify;
@@ -64,11 +64,11 @@ public class ConcreteActivityRestorer {
             // outgoing edges must have no guards.
             Verify.verify(
                     node.getIncomings().stream().allMatch(
-                            e -> NameHelper.isNullOrTriviallyTrue(PokaYokeUmlProfileUtil.getOutgoingGuard(e))),
+                            e -> ExprHelper.isNullOrTriviallyTrue(PokaYokeUmlProfileUtil.getOutgoingGuard(e))),
                     String.format("Node '%s' has non-'null' outgoing guards on its incoming edges.", node.getName()));
             Verify.verify(
                     node.getOutgoings().stream().allMatch(
-                            e -> NameHelper.isNullOrTriviallyTrue(PokaYokeUmlProfileUtil.getIncomingGuard(e))),
+                            e -> ExprHelper.isNullOrTriviallyTrue(PokaYokeUmlProfileUtil.getIncomingGuard(e))),
                     String.format("Node '%s' has non-'null' incoming guards on its outgoing edges.", node.getName()));
 
             // Add the entry and exit guards to its incoming and outgoing edges, respectively.
@@ -156,7 +156,7 @@ public class ConcreteActivityRestorer {
             // incoming guard, and it is coming from the newly created decision node.
             boolean completePattern = originalDecisionNode.getOutgoings().size() == patternNodes.size();
             boolean unifiable = patternNodes.stream().allMatch(m -> m.getIncomings().size() == 1
-                    && m.getIncomings().get(0).getSource().equals(decisionNode) && NameHelper
+                    && m.getIncomings().get(0).getSource().equals(decisionNode) && ExprHelper
                             .isNullOrTriviallyTrue(PokaYokeUmlProfileUtil.getIncomingGuard(m.getIncomings().get(0))));
 
             if (!completePattern || !unifiable) {
@@ -236,7 +236,7 @@ public class ConcreteActivityRestorer {
             boolean completePattern = originalMergeNode.getIncomings().size() == patternNodes.size();
             boolean unifiable = patternNodes.stream()
                     .allMatch(m -> m.getOutgoings().size() == 1 && m.getOutgoings().get(0).getTarget().equals(mergeNode)
-                            && NameHelper.isNullOrTriviallyTrue(
+                            && ExprHelper.isNullOrTriviallyTrue(
                                     PokaYokeUmlProfileUtil.getOutgoingGuard(m.getOutgoings().get(0))));
 
             if (!completePattern || !unifiable) {

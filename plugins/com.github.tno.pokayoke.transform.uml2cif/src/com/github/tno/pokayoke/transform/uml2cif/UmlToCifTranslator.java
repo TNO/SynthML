@@ -66,9 +66,9 @@ import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.ValueSpecification;
 
+import com.github.tno.pokayoke.transform.common.ExprHelper;
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.transform.common.IDHelper;
-import com.github.tno.pokayoke.transform.common.NameHelper;
 import com.github.tno.pokayoke.transform.common.ValidationHelper;
 import com.github.tno.pokayoke.transform.flatten.FlattenUMLActivity;
 import com.github.tno.pokayoke.transform.track.SynthesisChainTracking;
@@ -789,9 +789,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             boolean controllableStartEvents)
     {
         // Get the relevant guards for the CIF event.
-        String entryGuardConjunction = conjoinExprs(
+        String entryGuardConjunction = ExprHelper.conjoinExprs(
                 node.getIncomings().stream().map(e -> PokaYokeUmlProfileUtil.getOutgoingGuard(e)).toList());
-        String exitGuardConjunction = conjoinExprs(
+        String exitGuardConjunction = ExprHelper.conjoinExprs(
                 node.getOutgoings().stream().map(e -> PokaYokeUmlProfileUtil.getIncomingGuard(e)).toList());
 
         // Translate the UML activity node as an action.
@@ -812,17 +812,6 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         addExtraGuardsAndUpdatesForControlFlows(node.getIncomings(), node.getOutgoings(), startEdge, endEdges);
 
         return newEventEdges;
-    }
-
-    /**
-     * Gives the conjunction of all given strings as a single expression.
-     *
-     * @param exprs The strings to conjoin.
-     * @return The conjunction of all given strings as a single expression.
-     */
-    static String conjoinExprs(List<String> exprs) {
-        return exprs.stream().filter(e -> e != null)
-                .reduce((left, right) -> String.format("(%s) and (%s)", left, right)).orElse("true");
     }
 
     /**
@@ -999,7 +988,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 // to the execution semantics of activities. In practice, the UML activity node is likely a UML decision
                 // node and thus is atomic, deterministic, and has no effects. There are some validation checks just to
                 // be sure.
-                if (!NameHelper.isNullOrTriviallyTrue(PokaYokeUmlProfileUtil.getIncomingGuard(outgoing))) {
+                if (!ExprHelper.isNullOrTriviallyTrue(PokaYokeUmlProfileUtil.getIncomingGuard(outgoing))) {
                     Verify.verify(endEdge.equals(startEdge),
                             "Expected the activity node to have been translated as an atomic deterministic action.");
                     Verify.verify(!PokaYokeUmlProfileUtil.isSetEffects(outgoing.getSource()),
