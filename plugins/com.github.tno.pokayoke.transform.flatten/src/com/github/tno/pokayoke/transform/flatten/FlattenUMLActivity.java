@@ -3,6 +3,7 @@ package com.github.tno.pokayoke.transform.flatten;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -160,11 +161,12 @@ public class FlattenUMLActivity {
                     Set<String> activityPreconditions = childBehaviorCopy.getPreconditions().stream()
                             .filter(p -> PokaYokeUmlProfileUtil.isUsagePrecondition(p))
                             .map(up -> PokaYokeUmlProfileUtil.getConstraintBodyExpression(up))
-                            .collect(Collectors.toSet());
+                            .collect(Collectors.toCollection(LinkedHashSet::new));
                     activityPreconditions
                             .add(PokaYokeUmlProfileUtil.getIncomingGuard(initialNodeSub.getOutgoings().get(0)));
                     Set<String> filteredPreconditions = activityPreconditions.stream()
-                            .filter(p -> p != null && !p.equals("true")).collect(Collectors.toSet());
+                            .filter(p -> !ExprHelper.isNullOrTriviallyTrue(p))
+                            .collect(Collectors.toCollection(LinkedHashSet::new));
                     PokaYokeUmlProfileUtil.setIncomingGuard(initialNodeSub.getOutgoings().get(0),
                             ExprHelper.conjoinExprs(filteredPreconditions));
 
