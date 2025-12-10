@@ -4,6 +4,7 @@ package com.github.tno.pokayoke.transform.flatten;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.CoreException;
@@ -150,22 +151,24 @@ public class FlattenUMLActivity {
                 if (node instanceof InitialNode initialNode) {
                     // Create dummy node to substitute the initial node, and redirect the relevant edges. An initial
                     // node must have only one outgoing edge, and a call behavior action node must have only one
-                    // incoming edge. If the activity has any usage preconditions, conjunct them with the incoming guard
-                    // of the outgoing edge.
+                    // incoming edge.
                     DecisionNode initialNodeSub = FileHelper.FACTORY.createDecisionNode();
-
-                    List<String> initialNodePreconditions = childBehaviorCopy.getPreconditions().stream()
-                            .filter(p -> PokaYokeUmlProfileUtil.isUsagePrecondition(p))
-                            .map(up -> getConstraintBodyExpression(up)).collect(Collectors.toList());
-                    initialNodePreconditions
-                            .add(PokaYokeUmlProfileUtil.getIncomingGuard(initialNode.getOutgoings().get(0)));
-                    PokaYokeUmlProfileUtil.setIncomingGuard(initialNode.getOutgoings().get(0),
-                            ExprHelper.conjoinExprs(initialNodePreconditions));
-
                     initialNode.getOutgoings().get(0).setSource(initialNodeSub);
                     callBehaviorActionToReplace.getIncomings().get(0).setTarget(initialNodeSub);
                     initialNodeSub.setActivity(parentActivity);
                     initialNodeSub.setName(initialNode.getName());
+
+                    // If the activity has any usage preconditions, conjunct them with the incoming guard of the
+                    // outgoing edge.
+                    Set<String> activityPreconditions = childBehaviorCopy.getPreconditions().stream()
+                            .filter(p -> PokaYokeUmlProfileUtil.isUsagePrecondition(p))
+                            .map(up -> getConstraintBodyExpression(up)).collect(Collectors.toSet());
+                    activityPreconditions
+                            .add(PokaYokeUmlProfileUtil.getIncomingGuard(initialNodeSub.getOutgoings().get(0)));
+                    Set<String> filteredPreconditions = activityPreconditions.stream()
+                            .filter(p -> p != null && !p.equals("true")).collect(Collectors.toSet());
+                    PokaYokeUmlProfileUtil.setIncomingGuard(initialNodeSub.getOutgoings().get(0),
+                            ExprHelper.conjoinExprs(filteredPreconditions));
 
                     // Destroy the initial node.
                     initialNode.destroy();
