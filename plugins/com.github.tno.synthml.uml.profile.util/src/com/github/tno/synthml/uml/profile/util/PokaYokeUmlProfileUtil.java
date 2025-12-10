@@ -515,6 +515,10 @@ public class PokaYokeUmlProfileUtil {
         }
     }
 
+    private static Stereotype getStereotype(Constraint constraint, String stereotypeName) {
+        return getPokaYokeProfile(constraint).getOwnedStereotype(stereotypeName);
+    }
+
     private static boolean isPreconditionConstraint(Constraint constraint) {
         return (constraint.eContainer() instanceof Activity activity)
                 && activity.getPreconditions().contains(constraint);
@@ -547,10 +551,6 @@ public class PokaYokeUmlProfileUtil {
 
     private static boolean isClassRequirement(Constraint constraint) {
         return (constraint.eContainer() instanceof Classifier clazz) && clazz.getOwnedRules().contains(constraint);
-    }
-
-    private static Stereotype getStereotype(Constraint constraint, String stereotypeName) {
-        return getPokaYokeProfile(constraint).getOwnedStereotype(stereotypeName);
     }
 
     /**
