@@ -17,13 +17,11 @@ import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Class;
-import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.MergeNode;
 import org.eclipse.uml2.uml.Model;
-import org.eclipse.uml2.uml.OpaqueExpression;
 
 import com.github.tno.pokayoke.transform.common.ExprHelper;
 import com.github.tno.pokayoke.transform.common.FileHelper;
@@ -33,7 +31,6 @@ import com.github.tno.pokayoke.transform.common.StructureInfoHelper;
 import com.github.tno.pokayoke.transform.common.ValidationHelper;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.github.tno.synthml.uml.profile.util.UMLActivityUtils;
-import com.google.common.base.Verify;
 
 /** Flattens nested UML activities. */
 public class FlattenUMLActivity {
@@ -162,7 +159,8 @@ public class FlattenUMLActivity {
                     // outgoing edge.
                     Set<String> activityPreconditions = childBehaviorCopy.getPreconditions().stream()
                             .filter(p -> PokaYokeUmlProfileUtil.isUsagePrecondition(p))
-                            .map(up -> getConstraintBodyExpression(up)).collect(Collectors.toSet());
+                            .map(up -> PokaYokeUmlProfileUtil.getConstraintBodyExpression(up))
+                            .collect(Collectors.toSet());
                     activityPreconditions
                             .add(PokaYokeUmlProfileUtil.getIncomingGuard(initialNodeSub.getOutgoings().get(0)));
                     Set<String> filteredPreconditions = activityPreconditions.stream()
@@ -206,21 +204,5 @@ public class FlattenUMLActivity {
         source.eResource().getContents().addAll(copier.copyAll(stereotypeApplications));
         copier.copyReferences();
         return result;
-    }
-
-    private String getConstraintBodyExpression(Constraint constraint) {
-        if (!(constraint.getSpecification() instanceof OpaqueExpression)) {
-            throw new RuntimeException(
-                    String.format("Expected specification body of constraint '%s' to be an opaque expression.",
-                            constraint.getName()));
-        }
-        OpaqueExpression opaqueSpec = (OpaqueExpression)constraint.getSpecification();
-
-        // Sanity check: opaque expression must have one body.
-        Verify.verify(opaqueSpec.getBodies().size() == 1, String
-                .format("Expected specification of constraint '%s' to have a single body.", constraint.getName()));
-
-        // Return the opaque expression body.
-        return opaqueSpec.getBodies().get(0);
     }
 }
