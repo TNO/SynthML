@@ -314,8 +314,7 @@ public class GuardComputation {
         BDD guardCheck = uncontrolledGuard.and(guard);
 
         if (!guardCheck.equals(controlledGuard)) {
-            throw new RuntimeException(
-                    "Expected the computed guard to be correct, without depending on internal variables.");
+            synthesisTracker.addWarning("Computed guards depend on internal variables.");
         }
 
         guardCheck.free();

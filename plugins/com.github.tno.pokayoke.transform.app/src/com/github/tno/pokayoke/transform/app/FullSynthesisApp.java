@@ -165,6 +165,9 @@ public class FullSynthesisApp {
             CIFDataSynthesisHelper.convertSynthesisResultToCif(cifSpec, cifSynthesisResult, cifSynthesisPath,
                     outputFolderPath.toString());
 
+            // Add potential guard computation warnings.
+            warnings.addAll(tracker.getWarnings());
+
             // Check the activity for non-deterministic choices.
             CheckNonDeterministicChoices.check(activity, umlToCifTranslator, warnings, cifBddSpec);
 
@@ -357,6 +360,9 @@ public class FullSynthesisApp {
                 umlActivityToCifPath);
         Path umlGuardsOutputPath = outputFolderPath.resolve(filePrefix + ".21.guardsadded.uml");
         FileHelper.storeModel(umlActivityToCifTranslator.getActivity().getModel(), umlGuardsOutputPath.toString());
+
+        // Add potential guard computation warnings.
+        warnings.addAll(tracker.getWarnings());
 
         // Check the activity for non-deterministic choices.
         CheckNonDeterministicChoices.check(activity, umlToCifTranslator, warnings, cifBddSpec);

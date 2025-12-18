@@ -85,6 +85,9 @@ public class SynthesisChainTracking {
     /** The set containing the events removed after the restoring of decision and merge nodes of concrete activities. */
     private final Set<Event> restoredDecisionMergeNodeEvents = new LinkedHashSet<>();
 
+    /** The set containing the warnings raised during the synthesis chain. */
+    private Set<String> synthesisWarnings = new LinkedHashSet<>();
+
     public static enum ActionKind {
         START_OPAQUE_BEHAVIOR, END_OPAQUE_BEHAVIOR, COMPLETE_OPAQUE_BEHAVIOR, START_SHADOW, END_SHADOW, COMPLETE_SHADOW,
         START_OPAQUE_ACTION, END_OPAQUE_ACTION, COMPLETE_OPAQUE_ACTION, START_CALL_BEHAVIOR, END_CALL_BEHAVIOR,
@@ -1776,5 +1779,17 @@ public class SynthesisChainTracking {
                                 .map(e -> e.getName()).toList()));
 
         return pairedEvents;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Section dealing with synthesis chain warnings.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public void addWarning(String warning) {
+        synthesisWarnings.add(warning);
+    }
+
+    public Set<String> getWarnings() {
+        return ImmutableSet.copyOf(synthesisWarnings);
     }
 }
