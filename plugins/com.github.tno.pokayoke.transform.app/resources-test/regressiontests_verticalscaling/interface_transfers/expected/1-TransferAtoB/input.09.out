@@ -1,0 +1,21 @@
+.model minimal
+.dummy  __start Robot1MoveToLocA ReleaseProductAtLocB HomeRobot1 PickProductAtLocA __end Robot1MoveToLocB __loop
+.graph
+HomeRobot1 p7
+PickProductAtLocA p4
+ReleaseProductAtLocB p6
+Robot1MoveToLocA p3
+Robot1MoveToLocB p5
+__end p8
+__loop p8
+__start p2
+p1 __start
+p2 Robot1MoveToLocA
+p3 PickProductAtLocA
+p4 Robot1MoveToLocB
+p5 ReleaseProductAtLocB
+p6 HomeRobot1
+p7 __end
+p8 __loop
+.marking { p1 }
+.end

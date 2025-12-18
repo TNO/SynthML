@@ -1,0 +1,41 @@
+enum Position = LocA, LocB, LocC, Home;
+enum Product = Product0, Product1, None;
+uncontrollable __node__CallBehaviorAction__123;
+uncontrollable __node__CallBehaviorAction__124;
+uncontrollable __node__CallBehaviorAction__125;
+uncontrollable __node__CallBehaviorAction__126;
+uncontrollable __node__CallBehaviorAction__127;
+plant automaton Class1:
+  disc Position robot1Pos = Home;
+  disc Product robot1Product = None;
+  disc Product LocAProduct in any;
+  disc Product LocBProduct in any;
+  disc Position robot2Pos = Home;
+  disc Product robot2Product = None;
+  disc Product LocCProduct = None;
+  disc bool startedZero in any;
+  disc bool startedOne in any;
+  disc bool doneZero = false;
+  disc bool doneOne = false;
+  disc bool __controlflow__114;
+  disc bool __controlflow__115;
+  disc bool __controlflow__116;
+  disc bool __controlflow__117;
+  disc bool __controlflow__118;
+  disc bool __controlflow__119 = true;
+  alg bool T_A2B_Synthesis = robot1Pos = Home and LocBProduct = None and LocAProduct != None;
+  alg bool __token_on_first_controlflow = __controlflow__119;
+  alg bool __precondition = T_A2B_Synthesis and __token_on_first_controlflow;
+  alg bool __token_on_last_controlflow = __controlflow__118;
+  alg bool __postcondition = __token_on_last_controlflow;
+  initial __precondition;
+  marked __postcondition;
+  location:
+    initial;
+    marked;
+    edge __node__CallBehaviorAction__123 when true, __controlflow__117, true, not __controlflow__118 do robot1Pos := Home, __controlflow__117 := false, __controlflow__118 := true;
+    edge __node__CallBehaviorAction__124 when robot1Pos = LocA and robot1Product = None, __controlflow__114, true, not __controlflow__115 do robot1Product := LocAProduct, LocAProduct := None, __controlflow__114 := false, __controlflow__115 := true;
+    edge __node__CallBehaviorAction__125 when robot1Pos = LocB and robot1Product != None, __controlflow__116, true, not __controlflow__117 do LocBProduct := robot1Product, robot1Product := None, __controlflow__116 := false, __controlflow__117 := true;
+    edge __node__CallBehaviorAction__126 when true, __controlflow__119, true, not __controlflow__114 do robot1Pos := LocA, __controlflow__119 := false, __controlflow__114 := true;
+    edge __node__CallBehaviorAction__127 when true, __controlflow__115, true, not __controlflow__116 do robot1Pos := LocB, __controlflow__115 := false, __controlflow__116 := true;
+end

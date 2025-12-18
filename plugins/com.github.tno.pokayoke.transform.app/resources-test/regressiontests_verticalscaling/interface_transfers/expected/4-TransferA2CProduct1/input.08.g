@@ -1,0 +1,24 @@
+.model minimal
+.dummy __start LoadOneAtLocA UnloadOne __end __node__InitialNode__317__0 __node__CallBehaviorAction__337 __node__ActivityFinalNode__321__0 __node__InitialNode__450__0 __node__CallBehaviorAction__325 __node__CallBehaviorAction__329 __node__CallBehaviorAction__341 __node__CallBehaviorAction__333 __node__CallBehaviorAction__465 __node__ActivityFinalNode__453__0 __node__CallBehaviorAction__456 __node__CallBehaviorAction__459 __node__CallBehaviorAction__468 __node__CallBehaviorAction__462 __loop
+.state graph
+s1 __start s2
+s2 LoadOneAtLocA s6
+s4 UnloadOne s5
+s5 __end s3
+s6 __node__InitialNode__317__0 s7
+s7 __node__CallBehaviorAction__337 s11
+s8 __node__ActivityFinalNode__321__0 s9
+s9 __node__InitialNode__450__0 s14
+s10 __node__CallBehaviorAction__325 s8
+s11 __node__CallBehaviorAction__329 s12
+s12 __node__CallBehaviorAction__341 s13
+s13 __node__CallBehaviorAction__333 s10
+s14 __node__CallBehaviorAction__465 s17
+s15 __node__ActivityFinalNode__453__0 s4
+s16 __node__CallBehaviorAction__456 s15
+s17 __node__CallBehaviorAction__459 s18
+s18 __node__CallBehaviorAction__468 s19
+s19 __node__CallBehaviorAction__462 s16
+s3 __loop s3
+.marking {s1}
+.end

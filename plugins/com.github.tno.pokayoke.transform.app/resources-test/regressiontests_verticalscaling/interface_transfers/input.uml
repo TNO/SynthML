@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:SynthML="https://github.com/TNO/SynthML/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="_rfWvAM60EfCf2_2sDO9h4Q" name="NewModel">
+    <packagedElement xmi:type="uml:Class" xmi:id="_tt-isM60EfCf2_2sDO9h4Q" name="Class1" classifierBehavior="_v7lpwM60EfCf2_2sDO9h4Q" isActive="true">
+      <ownedAttribute xmi:id="_8IiN4M9bEfCqucJhffHOKg" name="robot1Pos" type="_1RFN4M9bEfCqucJhffHOKg">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_9qiMIM9bEfCqucJhffHOKg" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_9qizMM9bEfCqucJhffHOKg" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_cnl5INArEfC_78fh-jD8FA">
+          <language>CIF</language>
+          <body>Home</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_RNVA4M9dEfCqucJhffHOKg" name="robot1Product" type="_Dgi9QM9cEfCqucJhffHOKg">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_SZLwAM9dEfCqucJhffHOKg" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_SZLwAc9dEfCqucJhffHOKg" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_TB5V0M9dEfCqucJhffHOKg">
+          <language>CIF</language>
+          <body>None</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_LmnFcM9cEfCqucJhffHOKg" name="LocAProduct" type="_Dgi9QM9cEfCqucJhffHOKg">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_NSk4AM9cEfCqucJhffHOKg" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_NSk4Ac9cEfCqucJhffHOKg" value="1"/>
+        <defaultValue xmi:type="uml:LiteralNull" xmi:id="_REOSwM9eEfCqucJhffHOKg"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_2gVqsNApEfC_78fh-jD8FA" name="LocBProduct" type="_Dgi9QM9cEfCqucJhffHOKg">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_3kpAUNApEfC_78fh-jD8FA" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_3kpnYNApEfC_78fh-jD8FA" value="1"/>
+        <defaultValue xmi:type="uml:LiteralNull" xmi:id="_UCY5sNAyEfCMB8ofxQBt0A"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_TjcNgNAqEfC_78fh-jD8FA" name="robot2Pos" type="_1RFN4M9bEfCqucJhffHOKg">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_VBpQ4NAqEfC_78fh-jD8FA" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_VBpQ4dAqEfC_78fh-jD8FA" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_eKRz4NArEfC_78fh-jD8FA">
+          <language>CIF</language>
+          <body>Home</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_WNMeANAqEfC_78fh-jD8FA" name="robot2Product" type="_Dgi9QM9cEfCqucJhffHOKg">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_XHfjENAqEfC_78fh-jD8FA" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_XHfjEdAqEfC_78fh-jD8FA" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_exQ7YNArEfC_78fh-jD8FA">
+          <language>CIF</language>
+          <body>None</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_YblBINAqEfC_78fh-jD8FA" name="LocCProduct" type="_Dgi9QM9cEfCqucJhffHOKg">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_ZkLA4NAqEfC_78fh-jD8FA" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_ZkMPANAqEfC_78fh-jD8FA" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_jkj10NAsEfC_78fh-jD8FA">
+          <language>CIF</language>
+          <body>None</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_L52A8NHBEfC0drgzWidLZg" name="startedZero">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_Ms09ENHBEfC0drgzWidLZg" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_Ms09EdHBEfC0drgzWidLZg" value="1"/>
+        <defaultValue xmi:type="uml:LiteralNull" xmi:id="_fKgHYNHDEfC0drgzWidLZg"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_N90D0NHBEfC0drgzWidLZg" name="startedOne">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_Oibz0NHBEfC0drgzWidLZg" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_Oica4NHBEfC0drgzWidLZg" value="1"/>
+        <defaultValue xmi:type="uml:LiteralNull" xmi:id="_fho1ANHDEfC0drgzWidLZg"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_yAyIgNHREfCVCOw-mhsWNQ" name="doneZero">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_yl2kcNHREfCVCOw-mhsWNQ" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_yl2kcdHREfCVCOw-mhsWNQ" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_WD_pUNRJEfC7k4c0KUtmcw">
+          <language>CIF</language>
+          <body>false</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_0CjzANHREfCVCOw-mhsWNQ" name="doneOne">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_0qeHkNHREfCVCOw-mhsWNQ" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_0qeHkdHREfCVCOw-mhsWNQ" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_WyEQQNRJEfC7k4c0KUtmcw">
+          <language>CIF</language>
+          <body>false</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_v7lpwM60EfCf2_2sDO9h4Q" name="TransferAtoB" isAbstract="true" postcondition="_us0aMM9cEfCqucJhffHOKg" precondition="_mjHIIM9cEfCqucJhffHOKg _ra8ZwM9cEfCqucJhffHOKg">
+        <ownedRule xmi:id="_mjHIIM9cEfCqucJhffHOKg" name="T_A2B_Synthesis">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="__FF5ANA0EfCMB8ofxQBt0A">
+            <language>CIF</language>
+            <body>robot1Pos = Home and &#xD;
+LocBProduct = None and LocAProduct != None</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:id="_ra8ZwM9cEfCqucJhffHOKg" name="T_A2B_Usage">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="_IIJukNAtEfC_78fh-jD8FA">
+            <language>CIF</language>
+            <body>true</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:id="_us0aMM9cEfCqucJhffHOKg" name="T_A2B_Post">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="_ifccMNG-EfC0drgzWidLZg">
+            <language>CIF</language>
+            <body>LocBProduct != None and robot1Pos = Home</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="_CrXMQM9dEfCqucJhffHOKg" name="ZeroCalls" constrainedElement="_Coz4YNAqEfC_78fh-jD8FA _c8j5ANAqEfC_78fh-jD8FA _qGlqUNAqEfC_78fh-jD8FA _jYzjsNAqEfC_78fh-jD8FA _mtWN4NA7EfCMB8ofxQBt0A _fbD2kNA8EfCMB8ofxQBt0A _tlAQ8NA1EfCMB8ofxQBt0A _3EdGkNA4EfCMB8ofxQBt0A _l1Zg8NA1EfCMB8ofxQBt0A _GNLR0NA8EfCMB8ofxQBt0A _aMrJUNBAEfCuUrh4WRy0ZA _oFCLsNG-EfC0drgzWidLZg">
+          <specification xmi:type="uml:Interval" xmi:id="_F_9JgM9dEfCqucJhffHOKg" name="" max="_ID5XMM9dEfCqucJhffHOKg" min="_ID5XMM9dEfCqucJhffHOKg"/>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="_yOeGkM9dEfCqucJhffHOKg" name="OneCall" constrainedElement="_O107EM66EfCf2_2sDO9h4Q _ACdmsM61EfCf2_2sDO9h4Q _XG1vAM66EfCf2_2sDO9h4Q _joquENG-EfC0drgzWidLZg">
+          <specification xmi:type="uml:Interval" xmi:id="_1sQcEM9dEfCqucJhffHOKg" name="" max="_314bAM9dEfCqucJhffHOKg" min="_ID5XMM9dEfCqucJhffHOKg"/>
+        </ownedRule>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_LIRo8NAzEfCMB8ofxQBt0A" name="ReleaseProductAtLocB"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_ACdmsM61EfCf2_2sDO9h4Q" name="Robot1MoveToLocA"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_joquENG-EfC0drgzWidLZg" name="HomeRobot1"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_O107EM66EfCf2_2sDO9h4Q" name="PickProductAtLocA"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_XG1vAM66EfCf2_2sDO9h4Q" name="Robot1MoveToLocB"/>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_Coz4YNAqEfC_78fh-jD8FA" name="TransferBtoC" isAbstract="true" postcondition="_ENXl8NArEfC_78fh-jD8FA" precondition="_E7QcINAqEfC_78fh-jD8FA _5hRaMNArEfC_78fh-jD8FA">
+        <ownedRule xmi:id="_E7QcINAqEfC_78fh-jD8FA" name="T_B2C_Synthesis">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="_-VjScNA0EfCMB8ofxQBt0A">
+            <language>CIF</language>
+            <body>robot2Pos = Home and &#xD;
+LocCProduct = None and LocBProduct != None</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:id="_5hRaMNArEfC_78fh-jD8FA" name="T_B2C_Usage">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="_I32GINAtEfC_78fh-jD8FA">
+            <language>CIF</language>
+            <body>true</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:id="_ENXl8NArEfC_78fh-jD8FA" name="T_B2C_Post">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="_jUrloNG_EfC0drgzWidLZg">
+            <language>CIF</language>
+            <body>LocCProduct != None and robot2Pos = Home</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="_On_xwNArEfC_78fh-jD8FA" name="ZeroCalls" constrainedElement="_ACdmsM61EfCf2_2sDO9h4Q _O107EM66EfCf2_2sDO9h4Q _XG1vAM66EfCf2_2sDO9h4Q _v7lpwM60EfCf2_2sDO9h4Q _LIRo8NAzEfCMB8ofxQBt0A _mtWN4NA7EfCMB8ofxQBt0A _fbD2kNA8EfCMB8ofxQBt0A _tlAQ8NA1EfCMB8ofxQBt0A _3EdGkNA4EfCMB8ofxQBt0A _l1Zg8NA1EfCMB8ofxQBt0A _GNLR0NA8EfCMB8ofxQBt0A _aMrJUNBAEfCuUrh4WRy0ZA _joquENG-EfC0drgzWidLZg">
+          <specification xmi:type="uml:Interval" xmi:id="_hPOLkNArEfC_78fh-jD8FA" name="Interval1" max="_ID5XMM9dEfCqucJhffHOKg" min="_ID5XMM9dEfCqucJhffHOKg"/>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="_tHmOANG7EfClg8DCTtSmdw" name="OneCall" constrainedElement="_c8j5ANAqEfC_78fh-jD8FA _jYzjsNAqEfC_78fh-jD8FA _qGlqUNAqEfC_78fh-jD8FA _oFCLsNG-EfC0drgzWidLZg">
+          <specification xmi:type="uml:Interval" xmi:id="_03ggANG7EfClg8DCTtSmdw" name="Interval1" max="_314bAM9dEfCqucJhffHOKg" min="_ID5XMM9dEfCqucJhffHOKg"/>
+        </ownedRule>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_oFCLsNG-EfC0drgzWidLZg" name="HomeRobot2"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_wIR7cNA0EfCMB8ofxQBt0A" name="ReleaseProductAtLocC"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_c8j5ANAqEfC_78fh-jD8FA" name="Robot2MoveToLocB"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_jYzjsNAqEfC_78fh-jD8FA" name="PickProductAtLocB"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_qGlqUNAqEfC_78fh-jD8FA" name="Robot2MoveToLocC"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_GNLR0NA8EfCMB8ofxQBt0A" name="UnloadOne"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_l1Zg8NA1EfCMB8ofxQBt0A" name="UnloadZero"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_tlAQ8NA1EfCMB8ofxQBt0A" name="LoadZeroLocA"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_3EdGkNA4EfCMB8ofxQBt0A" name="LoadOneAtLocA"/>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_mtWN4NA7EfCMB8ofxQBt0A" name="TransferA2CProduct0" isAbstract="true" postcondition="_xV3rwNA7EfCMB8ofxQBt0A" precondition="_plxMgNA7EfCMB8ofxQBt0A">
+        <ownedRule xmi:id="_plxMgNA7EfCMB8ofxQBt0A" name="T_Product0_Synth">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="_LEZvENQkEfCE3a5nbGfn4Q">
+            <language>CIF</language>
+            <body>LocAProduct = None and LocBProduct = None and LocCProduct = None &#xD;
+and not doneZero</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:id="_xV3rwNA7EfCMB8ofxQBt0A" name="T_Product0_post">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="_5gduoNA7EfCMB8ofxQBt0A">
+            <language>CIF</language>
+            <body>doneZero = true</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="_UgfmcNA8EfCMB8ofxQBt0A" name="ZeroCalls" constrainedElement="_ACdmsM61EfCf2_2sDO9h4Q _O107EM66EfCf2_2sDO9h4Q _XG1vAM66EfCf2_2sDO9h4Q _c8j5ANAqEfC_78fh-jD8FA _jYzjsNAqEfC_78fh-jD8FA _qGlqUNAqEfC_78fh-jD8FA _LIRo8NAzEfCMB8ofxQBt0A _wIR7cNA0EfCMB8ofxQBt0A _3EdGkNA4EfCMB8ofxQBt0A _GNLR0NA8EfCMB8ofxQBt0A _fbD2kNA8EfCMB8ofxQBt0A _aMrJUNBAEfCuUrh4WRy0ZA _joquENG-EfC0drgzWidLZg _oFCLsNG-EfC0drgzWidLZg">
+          <specification xmi:type="uml:Interval" xmi:id="_uTwJINA8EfCMB8ofxQBt0A" name="" max="_ID5XMM9dEfCqucJhffHOKg" min="_ID5XMM9dEfCqucJhffHOKg"/>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="_rur5cNA-EfCuUrh4WRy0ZA" name="OneCall" constrainedElement="_tlAQ8NA1EfCMB8ofxQBt0A _l1Zg8NA1EfCMB8ofxQBt0A">
+          <specification xmi:type="uml:Interval" xmi:id="_2lrRINA-EfCuUrh4WRy0ZA" name="" max="_314bAM9dEfCqucJhffHOKg" min="_ID5XMM9dEfCqucJhffHOKg"/>
+        </ownedRule>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_fbD2kNA8EfCMB8ofxQBt0A" name="TransferA2CProduct1" isAbstract="true" postcondition="_nZz10NA8EfCMB8ofxQBt0A" precondition="_jl1N4NA8EfCMB8ofxQBt0A _hgjzQNRJEfC7k4c0KUtmcw">
+        <ownedRule xmi:id="_jl1N4NA8EfCMB8ofxQBt0A" name="T_Product1_Synth">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="_MkdMkNQkEfCE3a5nbGfn4Q">
+            <language>CIF</language>
+            <body>LocAProduct = None and LocBProduct = None and LocCProduct = None &#xD;
+and not doneOne</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:id="_nZz10NA8EfCMB8ofxQBt0A" name="T_Product1_Post">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="_qgkLYNA8EfCMB8ofxQBt0A">
+            <language>CIF</language>
+            <body>doneOne = true</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="_sFgv8NA8EfCMB8ofxQBt0A" name="ZeroCalls" constrainedElement="_ACdmsM61EfCf2_2sDO9h4Q _O107EM66EfCf2_2sDO9h4Q _XG1vAM66EfCf2_2sDO9h4Q _c8j5ANAqEfC_78fh-jD8FA _jYzjsNAqEfC_78fh-jD8FA _qGlqUNAqEfC_78fh-jD8FA _LIRo8NAzEfCMB8ofxQBt0A _wIR7cNA0EfCMB8ofxQBt0A _l1Zg8NA1EfCMB8ofxQBt0A _tlAQ8NA1EfCMB8ofxQBt0A _mtWN4NA7EfCMB8ofxQBt0A _aMrJUNBAEfCuUrh4WRy0ZA _joquENG-EfC0drgzWidLZg _oFCLsNG-EfC0drgzWidLZg">
+          <specification xmi:type="uml:Interval" xmi:id="_3tuwQNA8EfCMB8ofxQBt0A" name="" max="_ID5XMM9dEfCqucJhffHOKg" min="_ID5XMM9dEfCqucJhffHOKg"/>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="_whrHUNA-EfCuUrh4WRy0ZA" name="OneCall" constrainedElement="_3EdGkNA4EfCMB8ofxQBt0A _GNLR0NA8EfCMB8ofxQBt0A">
+          <specification xmi:type="uml:Interval" xmi:id="_0DTbANA-EfCuUrh4WRy0ZA" name="" max="_314bAM9dEfCqucJhffHOKg" min="_ID5XMM9dEfCqucJhffHOKg"/>
+        </ownedRule>
+        <ownedRule xmi:id="_hgjzQNRJEfC7k4c0KUtmcw" name="T_Product1_Use">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="_PGBm0Nw6EfCEZORd6aiqPA">
+            <language>CIF</language>
+            <body>doneZero</body>
+          </specification>
+        </ownedRule>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_aMrJUNBAEfCuUrh4WRy0ZA" name="Interface" node="_jBUOwNBAEfCuUrh4WRy0ZA _lROb4NBAEfCuUrh4WRy0ZA _mnENcNBAEfCuUrh4WRy0ZA _nx63ANBAEfCuUrh4WRy0ZA _92FXwNwzEfCgUpfvrqOdqw _AASlgNw0EfCgUpfvrqOdqw">
+        <edge xmi:type="uml:ControlFlow" xmi:id="_2CtcENBAEfCuUrh4WRy0ZA" target="_mnENcNBAEfCuUrh4WRy0ZA" source="_jBUOwNBAEfCuUrh4WRy0ZA">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="_2CuDINBAEfCuUrh4WRy0ZA" name="Initial1_To_Fork1_guard" value="true"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_2CuqMNBAEfCuUrh4WRy0ZA" name="Initial1_To_Fork1_weight"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_2z1-ENBAEfCuUrh4WRy0ZA" target="_lROb4NBAEfCuUrh4WRy0ZA" source="_nx63ANBAEfCuUrh4WRy0ZA">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="_2z2lINBAEfCuUrh4WRy0ZA" name="Join1_To_ActivityFinal1_guard" value="true"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_2z2lIdBAEfCuUrh4WRy0ZA" name="Join1_To_ActivityFinal1_weight"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_I9cGsNw0EfCgUpfvrqOdqw" target="_92FXwNwzEfCgUpfvrqOdqw" source="_mnENcNBAEfCuUrh4WRy0ZA">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="_I9ctwNw0EfCgUpfvrqOdqw" name="_To__guard" value="true"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_I9dU0Nw0EfCgUpfvrqOdqw" name="_To__weight"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_JXzugNw0EfCgUpfvrqOdqw" target="_AASlgNw0EfCgUpfvrqOdqw" source="_mnENcNBAEfCuUrh4WRy0ZA">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="_JX0VkNw0EfCgUpfvrqOdqw" name="_To__guard" value="true"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_JX0Vkdw0EfCgUpfvrqOdqw" name="_To__weight"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_KMjlMNw0EfCgUpfvrqOdqw" target="_nx63ANBAEfCuUrh4WRy0ZA" source="_92FXwNwzEfCgUpfvrqOdqw">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="_KMkMQNw0EfCgUpfvrqOdqw" name="_To__guard" value="true"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_KMkMQdw0EfCgUpfvrqOdqw" name="_To__weight"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_Kn0k4Nw0EfCgUpfvrqOdqw" target="_nx63ANBAEfCuUrh4WRy0ZA" source="_AASlgNw0EfCgUpfvrqOdqw">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="_Kn1L8Nw0EfCgUpfvrqOdqw" name="_To__guard" value="true"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_Kn1zANw0EfCgUpfvrqOdqw" name="_To__weight"/>
+        </edge>
+        <node xmi:type="uml:InitialNode" xmi:id="_jBUOwNBAEfCuUrh4WRy0ZA" name="" outgoing="_2CtcENBAEfCuUrh4WRy0ZA"/>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="_lROb4NBAEfCuUrh4WRy0ZA" name="" incoming="_2z1-ENBAEfCuUrh4WRy0ZA"/>
+        <node xmi:type="uml:ForkNode" xmi:id="_mnENcNBAEfCuUrh4WRy0ZA" name="" incoming="_2CtcENBAEfCuUrh4WRy0ZA" outgoing="_I9cGsNw0EfCgUpfvrqOdqw _JXzugNw0EfCgUpfvrqOdqw"/>
+        <node xmi:type="uml:JoinNode" xmi:id="_nx63ANBAEfCuUrh4WRy0ZA" name="" incoming="_KMjlMNw0EfCgUpfvrqOdqw _Kn0k4Nw0EfCgUpfvrqOdqw" outgoing="_2z1-ENBAEfCuUrh4WRy0ZA">
+          <joinSpec xmi:type="uml:LiteralBoolean" xmi:id="_nx7eENBAEfCuUrh4WRy0ZA" name="Join1" value="true"/>
+        </node>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="_92FXwNwzEfCgUpfvrqOdqw" incoming="_I9cGsNw0EfCgUpfvrqOdqw" outgoing="_KMjlMNw0EfCgUpfvrqOdqw" behavior="_mtWN4NA7EfCMB8ofxQBt0A"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="_AASlgNw0EfCgUpfvrqOdqw" incoming="_JXzugNw0EfCgUpfvrqOdqw" outgoing="_Kn0k4Nw0EfCgUpfvrqOdqw" behavior="_fbD2kNA8EfCMB8ofxQBt0A"/>
+      </ownedBehavior>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Enumeration" xmi:id="_1RFN4M9bEfCqucJhffHOKg" name="Position">
+      <ownedLiteral xmi:id="_22H5EM9bEfCqucJhffHOKg" name="LocA"/>
+      <ownedLiteral xmi:id="_3_1TIM9bEfCqucJhffHOKg" name="LocB"/>
+      <ownedLiteral xmi:id="_ma93sNArEfC_78fh-jD8FA" name="LocC"/>
+      <ownedLiteral xmi:id="_5P7CAM9bEfCqucJhffHOKg" name="Home"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Enumeration" xmi:id="_Dgi9QM9cEfCqucJhffHOKg" name="Product">
+      <ownedLiteral xmi:id="_FuNHoM9cEfCqucJhffHOKg" name="Product0"/>
+      <ownedLiteral xmi:id="_JI2CgM9cEfCqucJhffHOKg" name="Product1"/>
+      <ownedLiteral xmi:id="_PSuK0M9cEfCqucJhffHOKg" name="None"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:LiteralInteger" xmi:id="_ID5XMM9dEfCqucJhffHOKg" name="LiteralZero"/>
+    <packagedElement xmi:type="uml:LiteralInteger" xmi:id="_314bAM9dEfCqucJhffHOKg" name="LiteralOne" value="1"/>
+    <profileApplication xmi:id="_EJzPgM61EfCf2_2sDO9h4Q">
+      <eAnnotations xmi:id="_EJ2S0M61EfCf2_2sDO9h4Q" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/SynthML/#/"/>
+      </eAnnotations>
+      <appliedProfile href="platform:/plugin/com.github.tno.synthml.uml.profile.plugin/model/synthml.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+    </profileApplication>
+  </uml:Model>
+  <SynthML:FormalElement xmi:id="_EKfzEM61EfCf2_2sDO9h4Q" guard="true" base_RedefinableElement="_ACdmsM61EfCf2_2sDO9h4Q" atomic="true">
+    <effects>robot1Pos := LocA</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="_QKOiMM66EfCf2_2sDO9h4Q" guard="robot1Pos = LocA and robot1Product = None" base_RedefinableElement="_O107EM66EfCf2_2sDO9h4Q" atomic="true">
+    <effects>robot1Product := LocAProduct, LocAProduct := None</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="_YXuIEM66EfCf2_2sDO9h4Q" guard="true" base_RedefinableElement="_XG1vAM66EfCf2_2sDO9h4Q" atomic="true">
+    <effects>robot1Pos := LocB</effects>
+  </SynthML:FormalElement>
+  <SynthML:SynthesisPrecondition xmi:id="_n2O84M9cEfCqucJhffHOKg" base_Constraint="_mjHIIM9cEfCqucJhffHOKg"/>
+  <SynthML:UsagePrecondition xmi:id="_snJuMM9cEfCqucJhffHOKg" base_Constraint="_ra8ZwM9cEfCqucJhffHOKg"/>
+  <SynthML:Postcondition xmi:id="_vgDN8M9cEfCqucJhffHOKg" base_Constraint="_us0aMM9cEfCqucJhffHOKg"/>
+  <SynthML:SynthesisPrecondition xmi:id="_NfGsgNAqEfC_78fh-jD8FA" base_Constraint="_E7QcINAqEfC_78fh-jD8FA"/>
+  <SynthML:FormalElement xmi:id="_fPXCENAqEfC_78fh-jD8FA" guard="true" base_RedefinableElement="_c8j5ANAqEfC_78fh-jD8FA" atomic="true">
+    <effects>robot2Pos := LocB</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="_jnxMwNAqEfC_78fh-jD8FA" guard="robot2Pos = LocB and robot2Product = None" base_RedefinableElement="_jYzjsNAqEfC_78fh-jD8FA" atomic="true">
+    <effects>robot2Product := LocBProduct, LocBProduct := None</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="_qRvKYNAqEfC_78fh-jD8FA" guard="true" base_RedefinableElement="_qGlqUNAqEfC_78fh-jD8FA" atomic="true">
+    <effects>robot2Pos := LocC</effects>
+  </SynthML:FormalElement>
+  <SynthML:Postcondition xmi:id="_F4wwwNArEfC_78fh-jD8FA" base_Constraint="_ENXl8NArEfC_78fh-jD8FA"/>
+  <SynthML:UsagePrecondition xmi:id="_67i_0NArEfC_78fh-jD8FA" base_Constraint="_5hRaMNArEfC_78fh-jD8FA"/>
+  <SynthML:FormalElement xmi:id="_NQGRENAzEfCMB8ofxQBt0A" guard="robot1Pos = LocB and robot1Product != None" base_RedefinableElement="_LIRo8NAzEfCMB8ofxQBt0A" atomic="true">
+    <effects>LocBProduct := robot1Product, robot1Product := None</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="_yFOwUNA0EfCMB8ofxQBt0A" guard="robot2Pos = LocC and robot2Product != None" base_RedefinableElement="_wIR7cNA0EfCMB8ofxQBt0A" atomic="true">
+    <effects>LocCProduct := robot2Product, robot2Product := None</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalActivity xmi:id="_KWAzoNA1EfCMB8ofxQBt0A" interface="true"/>
+  <SynthML:FormalElement xmi:id="_oj7jwNA1EfCMB8ofxQBt0A" guard="LocCProduct = Product0" base_RedefinableElement="_l1Zg8NA1EfCMB8ofxQBt0A" atomic="true">
+    <effects>LocCProduct := None, doneZero := true</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="_vj7bwNA1EfCMB8ofxQBt0A" guard="LocAProduct = None" base_RedefinableElement="_tlAQ8NA1EfCMB8ofxQBt0A" atomic="true">
+    <effects>LocAProduct := Product0, startedZero := true</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="_4qLHMNA4EfCMB8ofxQBt0A" guard="LocAProduct = None" base_RedefinableElement="_3EdGkNA4EfCMB8ofxQBt0A" atomic="true">
+    <effects>LocAProduct := Product1, startedOne := true</effects>
+  </SynthML:FormalElement>
+  <SynthML:SynthesisPrecondition xmi:id="_p1fqkNA7EfCMB8ofxQBt0A" base_Constraint="_plxMgNA7EfCMB8ofxQBt0A"/>
+  <SynthML:Postcondition xmi:id="_yqlb8NA7EfCMB8ofxQBt0A" base_Constraint="_xV3rwNA7EfCMB8ofxQBt0A"/>
+  <SynthML:FormalElement xmi:id="_HiNyINA8EfCMB8ofxQBt0A" guard="LocCProduct = Product1" base_RedefinableElement="_GNLR0NA8EfCMB8ofxQBt0A" atomic="true">
+    <effects>LocCProduct := None, doneOne := true</effects>
+  </SynthML:FormalElement>
+  <SynthML:SynthesisPrecondition xmi:id="_lF880NA8EfCMB8ofxQBt0A" base_Constraint="_jl1N4NA8EfCMB8ofxQBt0A"/>
+  <SynthML:Postcondition xmi:id="_o4jrwNA8EfCMB8ofxQBt0A" base_Constraint="_nZz10NA8EfCMB8ofxQBt0A"/>
+  <SynthML:FormalActivity xmi:id="_bLF5YNBAEfCuUrh4WRy0ZA" base_Activity="_aMrJUNBAEfCuUrh4WRy0ZA" interface="true"/>
+  <SynthML:FormalElement xmi:id="_lO8IUNG-EfC0drgzWidLZg" guard="true" base_RedefinableElement="_joquENG-EfC0drgzWidLZg" atomic="true">
+    <effects>robot1Pos := Home</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="_pReJoNG-EfC0drgzWidLZg" guard="true" base_RedefinableElement="_oFCLsNG-EfC0drgzWidLZg" atomic="true">
+    <effects>robot2Pos := Home</effects>
+  </SynthML:FormalElement>
+  <SynthML:UsagePrecondition xmi:id="_j6_OUNRJEfC7k4c0KUtmcw" base_Constraint="_hgjzQNRJEfC7k4c0KUtmcw"/>
+</xmi:XMI>

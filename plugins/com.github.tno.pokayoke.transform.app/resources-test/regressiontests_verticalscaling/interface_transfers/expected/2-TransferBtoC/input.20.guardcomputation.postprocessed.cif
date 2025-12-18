@@ -1,0 +1,90 @@
+enum Position = LocA, LocB, LocC, Home;
+enum Product = Product0, Product1, None;
+controllable __node__CallBehaviorAction__256;
+controllable __node__CallBehaviorAction__257;
+controllable __node__CallBehaviorAction__258;
+controllable __node__CallBehaviorAction__259;
+controllable __node__CallBehaviorAction__260;
+plant automaton Class1:
+  disc Position robot1Pos = Home;
+  disc Product robot1Product = None;
+  disc Product LocAProduct in any;
+  disc Product LocBProduct in any;
+  disc Position robot2Pos = Home;
+  disc Product robot2Product = None;
+  disc Product LocCProduct = None;
+  disc bool startedZero in any;
+  disc bool startedOne in any;
+  disc bool doneZero = false;
+  disc bool doneOne = false;
+  disc bool __controlflow__248;
+  disc bool __controlflow__249;
+  disc bool __controlflow__250;
+  disc bool __controlflow__251;
+  disc bool __controlflow__252;
+  disc bool __controlflow__253 = true;
+  alg bool T_B2C_Synthesis = robot2Pos = Home and LocCProduct = None and LocBProduct != None;
+  alg bool __token_on_first_controlflow = __controlflow__253;
+  alg bool __precondition = T_B2C_Synthesis and __token_on_first_controlflow;
+  alg bool T_B2C_Post = LocCProduct != None and robot2Pos = Home;
+  alg bool __postcondition_without_structure__OneCall__242__Robot2MoveToLocB__267 = OneCall__242__Robot2MoveToLocB__267.__occurrences >= 0;
+  alg bool __postcondition_without_structure__OneCall__242__PickProductAtLocB__270 = OneCall__242__PickProductAtLocB__270.__occurrences >= 0;
+  alg bool __postcondition_without_structure__OneCall__242__Robot2MoveToLocC__273 = OneCall__242__Robot2MoveToLocC__273.__occurrences >= 0;
+  alg bool __postcondition_without_structure__OneCall__242__HomeRobot2__261 = OneCall__242__HomeRobot2__261.__occurrences >= 0;
+  alg bool __postcondition_without_structure = T_B2C_Post and __postcondition_without_structure__OneCall__242__Robot2MoveToLocB__267 and (__postcondition_without_structure__OneCall__242__PickProductAtLocB__270 and (__postcondition_without_structure__OneCall__242__Robot2MoveToLocC__273 and __postcondition_without_structure__OneCall__242__HomeRobot2__261));
+  alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
+  alg bool __postcondition_with_structure__controlflow__248 = not __controlflow__248;
+  alg bool __postcondition_with_structure__controlflow__249 = not __controlflow__249;
+  alg bool __postcondition_with_structure__controlflow__250 = not __controlflow__250;
+  alg bool __postcondition_with_structure__controlflow__251 = not __controlflow__251;
+  alg bool __postcondition_with_structure__controlflow__253 = not __controlflow__253;
+  alg bool __token_on_last_controlflow = __controlflow__252;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure and (__postcondition_with_structure__controlflow__248 and __postcondition_with_structure__controlflow__249) and (__postcondition_with_structure__controlflow__250 and __postcondition_with_structure__controlflow__251 and (__postcondition_with_structure__controlflow__253 and __token_on_last_controlflow));
+  initial __precondition;
+  marked __postcondition_with_structure;
+  location:
+    initial;
+    marked;
+    edge __node__CallBehaviorAction__256 when true, __controlflow__251, not __controlflow__252 do robot2Pos := Home, __controlflow__251 := false, __controlflow__252 := true;
+    edge __node__CallBehaviorAction__257 when robot2Pos = LocB and robot2Product = None, __controlflow__248, not __controlflow__249 do robot2Product := LocBProduct, LocBProduct := None, __controlflow__248 := false, __controlflow__249 := true;
+    edge __node__CallBehaviorAction__258 when robot2Pos = LocC and robot2Product != None, __controlflow__250, not __controlflow__251 do LocCProduct := robot2Product, robot2Product := None, __controlflow__250 := false, __controlflow__251 := true;
+    edge __node__CallBehaviorAction__259 when true, __controlflow__253, not __controlflow__248 do robot2Pos := LocB, __controlflow__253 := false, __controlflow__248 := true;
+    edge __node__CallBehaviorAction__260 when true, __controlflow__249, not __controlflow__250 do robot2Pos := LocC, __controlflow__249 := false, __controlflow__250 := true;
+end
+requirement automaton OneCall__242__Robot2MoveToLocB__267:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+    edge __node__CallBehaviorAction__259 when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+requirement automaton OneCall__242__PickProductAtLocB__270:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+    edge __node__CallBehaviorAction__257 when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+requirement automaton OneCall__242__Robot2MoveToLocC__273:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+    edge __node__CallBehaviorAction__260 when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+requirement automaton OneCall__242__HomeRobot2__261:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+    edge __node__CallBehaviorAction__256 when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+requirement invariant Class1.__postcondition_without_structure disables __node__CallBehaviorAction__256;
+requirement invariant Class1.__postcondition_without_structure disables __node__CallBehaviorAction__257;
+requirement invariant Class1.__postcondition_without_structure disables __node__CallBehaviorAction__258;
+requirement invariant Class1.__postcondition_without_structure disables __node__CallBehaviorAction__259;
+requirement invariant Class1.__postcondition_without_structure disables __node__CallBehaviorAction__260;

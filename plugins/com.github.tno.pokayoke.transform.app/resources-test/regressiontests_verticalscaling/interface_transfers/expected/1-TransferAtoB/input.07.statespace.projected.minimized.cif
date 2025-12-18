@@ -1,0 +1,36 @@
+controllable ReleaseProductAtLocB;
+controllable Robot1MoveToLocA;
+controllable HomeRobot1;
+controllable PickProductAtLocA;
+controllable Robot1MoveToLocB;
+controllable ReleaseProductAtLocC;
+controllable __start;
+controllable __end;
+automaton minimal:
+  alphabet ReleaseProductAtLocB, Robot1MoveToLocA, HomeRobot1, PickProductAtLocA, Robot1MoveToLocB, ReleaseProductAtLocC, __start, __end;
+  @state(projected: "s1")
+  location s1:
+    initial;
+    edge __start goto s2;
+  @state(projected: "s2")
+  location s2:
+    edge Robot1MoveToLocA goto s6;
+  @state(projected: "s8")
+  location s3:
+    marked;
+  @state(projected: "s5")
+  location s4:
+    edge ReleaseProductAtLocB goto s5;
+  @state(projected: "s6")
+  location s5:
+    edge HomeRobot1 goto s7;
+  @state(projected: "s3")
+  location s6:
+    edge PickProductAtLocA goto s8;
+  @state(projected: "s7")
+  location s7:
+    edge __end goto s3;
+  @state(projected: "s4")
+  location s8:
+    edge Robot1MoveToLocB goto s4;
+end

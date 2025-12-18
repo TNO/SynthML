@@ -1,0 +1,1333 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:SynthML="https://github.com/TNO/SynthML/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="1" name="NewModel">
+    <packagedElement xmi:type="uml:Class" xmi:id="2" name="Class1" classifierBehavior="137" isActive="true">
+      <ownedComment xmi:id="3">
+        <body>Original-ID-Path:2</body>
+      </ownedComment>
+      <ownedComment xmi:id="4">
+        <body>Original-ID-Path:2</body>
+      </ownedComment>
+      <ownedAttribute xmi:id="5" name="robot1Pos" type="431">
+        <ownedComment xmi:id="6">
+          <body>Original-ID-Path:3</body>
+        </ownedComment>
+        <ownedComment xmi:id="7">
+          <body>Original-ID-Path:4</body>
+        </ownedComment>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="8" value="1">
+          <ownedComment xmi:id="9">
+            <body>Original-ID-Path:4</body>
+          </ownedComment>
+          <ownedComment xmi:id="10">
+            <body>Original-ID-Path:6</body>
+          </ownedComment>
+        </lowerValue>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="11" value="1">
+          <ownedComment xmi:id="12">
+            <body>Original-ID-Path:5</body>
+          </ownedComment>
+          <ownedComment xmi:id="13">
+            <body>Original-ID-Path:8</body>
+          </ownedComment>
+        </upperValue>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="14">
+          <ownedComment xmi:id="15">
+            <body>Original-ID-Path:6</body>
+          </ownedComment>
+          <ownedComment xmi:id="16">
+            <body>Original-ID-Path:10</body>
+          </ownedComment>
+          <language>CIF</language>
+          <body>Home</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="17" name="robot1Product" type="446">
+        <ownedComment xmi:id="18">
+          <body>Original-ID-Path:7</body>
+        </ownedComment>
+        <ownedComment xmi:id="19">
+          <body>Original-ID-Path:12</body>
+        </ownedComment>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="20" value="1">
+          <ownedComment xmi:id="21">
+            <body>Original-ID-Path:8</body>
+          </ownedComment>
+          <ownedComment xmi:id="22">
+            <body>Original-ID-Path:14</body>
+          </ownedComment>
+        </lowerValue>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="23" value="1">
+          <ownedComment xmi:id="24">
+            <body>Original-ID-Path:9</body>
+          </ownedComment>
+          <ownedComment xmi:id="25">
+            <body>Original-ID-Path:16</body>
+          </ownedComment>
+        </upperValue>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="26">
+          <ownedComment xmi:id="27">
+            <body>Original-ID-Path:10</body>
+          </ownedComment>
+          <ownedComment xmi:id="28">
+            <body>Original-ID-Path:18</body>
+          </ownedComment>
+          <language>CIF</language>
+          <body>None</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="29" name="LocAProduct" type="446">
+        <ownedComment xmi:id="30">
+          <body>Original-ID-Path:11</body>
+        </ownedComment>
+        <ownedComment xmi:id="31">
+          <body>Original-ID-Path:20</body>
+        </ownedComment>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="32" value="1">
+          <ownedComment xmi:id="33">
+            <body>Original-ID-Path:12</body>
+          </ownedComment>
+          <ownedComment xmi:id="34">
+            <body>Original-ID-Path:22</body>
+          </ownedComment>
+        </lowerValue>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="35" value="1">
+          <ownedComment xmi:id="36">
+            <body>Original-ID-Path:13</body>
+          </ownedComment>
+          <ownedComment xmi:id="37">
+            <body>Original-ID-Path:24</body>
+          </ownedComment>
+        </upperValue>
+        <defaultValue xmi:type="uml:LiteralNull" xmi:id="38">
+          <ownedComment xmi:id="39">
+            <body>Original-ID-Path:14</body>
+          </ownedComment>
+          <ownedComment xmi:id="40">
+            <body>Original-ID-Path:26</body>
+          </ownedComment>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="41" name="LocBProduct" type="446">
+        <ownedComment xmi:id="42">
+          <body>Original-ID-Path:15</body>
+        </ownedComment>
+        <ownedComment xmi:id="43">
+          <body>Original-ID-Path:28</body>
+        </ownedComment>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="44" value="1">
+          <ownedComment xmi:id="45">
+            <body>Original-ID-Path:16</body>
+          </ownedComment>
+          <ownedComment xmi:id="46">
+            <body>Original-ID-Path:30</body>
+          </ownedComment>
+        </lowerValue>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="47" value="1">
+          <ownedComment xmi:id="48">
+            <body>Original-ID-Path:17</body>
+          </ownedComment>
+          <ownedComment xmi:id="49">
+            <body>Original-ID-Path:32</body>
+          </ownedComment>
+        </upperValue>
+        <defaultValue xmi:type="uml:LiteralNull" xmi:id="50">
+          <ownedComment xmi:id="51">
+            <body>Original-ID-Path:18</body>
+          </ownedComment>
+          <ownedComment xmi:id="52">
+            <body>Original-ID-Path:34</body>
+          </ownedComment>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="53" name="robot2Pos" type="431">
+        <ownedComment xmi:id="54">
+          <body>Original-ID-Path:19</body>
+        </ownedComment>
+        <ownedComment xmi:id="55">
+          <body>Original-ID-Path:36</body>
+        </ownedComment>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="56" value="1">
+          <ownedComment xmi:id="57">
+            <body>Original-ID-Path:20</body>
+          </ownedComment>
+          <ownedComment xmi:id="58">
+            <body>Original-ID-Path:38</body>
+          </ownedComment>
+        </lowerValue>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="59" value="1">
+          <ownedComment xmi:id="60">
+            <body>Original-ID-Path:21</body>
+          </ownedComment>
+          <ownedComment xmi:id="61">
+            <body>Original-ID-Path:40</body>
+          </ownedComment>
+        </upperValue>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="62">
+          <ownedComment xmi:id="63">
+            <body>Original-ID-Path:22</body>
+          </ownedComment>
+          <ownedComment xmi:id="64">
+            <body>Original-ID-Path:42</body>
+          </ownedComment>
+          <language>CIF</language>
+          <body>Home</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="65" name="robot2Product" type="446">
+        <ownedComment xmi:id="66">
+          <body>Original-ID-Path:23</body>
+        </ownedComment>
+        <ownedComment xmi:id="67">
+          <body>Original-ID-Path:44</body>
+        </ownedComment>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="68" value="1">
+          <ownedComment xmi:id="69">
+            <body>Original-ID-Path:24</body>
+          </ownedComment>
+          <ownedComment xmi:id="70">
+            <body>Original-ID-Path:46</body>
+          </ownedComment>
+        </lowerValue>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="71" value="1">
+          <ownedComment xmi:id="72">
+            <body>Original-ID-Path:25</body>
+          </ownedComment>
+          <ownedComment xmi:id="73">
+            <body>Original-ID-Path:48</body>
+          </ownedComment>
+        </upperValue>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="74">
+          <ownedComment xmi:id="75">
+            <body>Original-ID-Path:26</body>
+          </ownedComment>
+          <ownedComment xmi:id="76">
+            <body>Original-ID-Path:50</body>
+          </ownedComment>
+          <language>CIF</language>
+          <body>None</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="77" name="LocCProduct" type="446">
+        <ownedComment xmi:id="78">
+          <body>Original-ID-Path:27</body>
+        </ownedComment>
+        <ownedComment xmi:id="79">
+          <body>Original-ID-Path:52</body>
+        </ownedComment>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="80" value="1">
+          <ownedComment xmi:id="81">
+            <body>Original-ID-Path:28</body>
+          </ownedComment>
+          <ownedComment xmi:id="82">
+            <body>Original-ID-Path:54</body>
+          </ownedComment>
+        </lowerValue>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="83" value="1">
+          <ownedComment xmi:id="84">
+            <body>Original-ID-Path:29</body>
+          </ownedComment>
+          <ownedComment xmi:id="85">
+            <body>Original-ID-Path:56</body>
+          </ownedComment>
+        </upperValue>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="86">
+          <ownedComment xmi:id="87">
+            <body>Original-ID-Path:30</body>
+          </ownedComment>
+          <ownedComment xmi:id="88">
+            <body>Original-ID-Path:58</body>
+          </ownedComment>
+          <language>CIF</language>
+          <body>None</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="89" name="startedZero">
+        <ownedComment xmi:id="90">
+          <body>Original-ID-Path:31</body>
+        </ownedComment>
+        <ownedComment xmi:id="91">
+          <body>Original-ID-Path:60</body>
+        </ownedComment>
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="92" value="1">
+          <ownedComment xmi:id="93">
+            <body>Original-ID-Path:32</body>
+          </ownedComment>
+          <ownedComment xmi:id="94">
+            <body>Original-ID-Path:62</body>
+          </ownedComment>
+        </lowerValue>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="95" value="1">
+          <ownedComment xmi:id="96">
+            <body>Original-ID-Path:33</body>
+          </ownedComment>
+          <ownedComment xmi:id="97">
+            <body>Original-ID-Path:64</body>
+          </ownedComment>
+        </upperValue>
+        <defaultValue xmi:type="uml:LiteralNull" xmi:id="98">
+          <ownedComment xmi:id="99">
+            <body>Original-ID-Path:34</body>
+          </ownedComment>
+          <ownedComment xmi:id="100">
+            <body>Original-ID-Path:66</body>
+          </ownedComment>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="101" name="startedOne">
+        <ownedComment xmi:id="102">
+          <body>Original-ID-Path:35</body>
+        </ownedComment>
+        <ownedComment xmi:id="103">
+          <body>Original-ID-Path:68</body>
+        </ownedComment>
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="104" value="1">
+          <ownedComment xmi:id="105">
+            <body>Original-ID-Path:36</body>
+          </ownedComment>
+          <ownedComment xmi:id="106">
+            <body>Original-ID-Path:70</body>
+          </ownedComment>
+        </lowerValue>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="107" value="1">
+          <ownedComment xmi:id="108">
+            <body>Original-ID-Path:37</body>
+          </ownedComment>
+          <ownedComment xmi:id="109">
+            <body>Original-ID-Path:72</body>
+          </ownedComment>
+        </upperValue>
+        <defaultValue xmi:type="uml:LiteralNull" xmi:id="110">
+          <ownedComment xmi:id="111">
+            <body>Original-ID-Path:38</body>
+          </ownedComment>
+          <ownedComment xmi:id="112">
+            <body>Original-ID-Path:74</body>
+          </ownedComment>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="113" name="doneZero">
+        <ownedComment xmi:id="114">
+          <body>Original-ID-Path:39</body>
+        </ownedComment>
+        <ownedComment xmi:id="115">
+          <body>Original-ID-Path:76</body>
+        </ownedComment>
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="116" value="1">
+          <ownedComment xmi:id="117">
+            <body>Original-ID-Path:40</body>
+          </ownedComment>
+          <ownedComment xmi:id="118">
+            <body>Original-ID-Path:78</body>
+          </ownedComment>
+        </lowerValue>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="119" value="1">
+          <ownedComment xmi:id="120">
+            <body>Original-ID-Path:41</body>
+          </ownedComment>
+          <ownedComment xmi:id="121">
+            <body>Original-ID-Path:80</body>
+          </ownedComment>
+        </upperValue>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="122">
+          <ownedComment xmi:id="123">
+            <body>Original-ID-Path:42</body>
+          </ownedComment>
+          <ownedComment xmi:id="124">
+            <body>Original-ID-Path:82</body>
+          </ownedComment>
+          <language>CIF</language>
+          <body>false</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="125" name="doneOne">
+        <ownedComment xmi:id="126">
+          <body>Original-ID-Path:43</body>
+        </ownedComment>
+        <ownedComment xmi:id="127">
+          <body>Original-ID-Path:84</body>
+        </ownedComment>
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="128" value="1">
+          <ownedComment xmi:id="129">
+            <body>Original-ID-Path:44</body>
+          </ownedComment>
+          <ownedComment xmi:id="130">
+            <body>Original-ID-Path:86</body>
+          </ownedComment>
+        </lowerValue>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="131" value="1">
+          <ownedComment xmi:id="132">
+            <body>Original-ID-Path:45</body>
+          </ownedComment>
+          <ownedComment xmi:id="133">
+            <body>Original-ID-Path:88</body>
+          </ownedComment>
+        </upperValue>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="134">
+          <ownedComment xmi:id="135">
+            <body>Original-ID-Path:46</body>
+          </ownedComment>
+          <ownedComment xmi:id="136">
+            <body>Original-ID-Path:90</body>
+          </ownedComment>
+          <language>CIF</language>
+          <body>false</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="137" name="TransferAtoB" postcondition="152" precondition="140 146" node="186 188 190 192 194 196 198">
+        <ownedComment xmi:id="138">
+          <body>Original-ID-Path:47</body>
+        </ownedComment>
+        <ownedComment xmi:id="139">
+          <body>Original-ID-Path:92</body>
+        </ownedComment>
+        <ownedRule xmi:id="140" name="T_A2B_Synthesis">
+          <ownedComment xmi:id="141">
+            <body>Original-ID-Path:48</body>
+          </ownedComment>
+          <ownedComment xmi:id="142">
+            <body>Original-ID-Path:94</body>
+          </ownedComment>
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="143">
+            <ownedComment xmi:id="144">
+              <body>Original-ID-Path:49</body>
+            </ownedComment>
+            <ownedComment xmi:id="145">
+              <body>Original-ID-Path:96</body>
+            </ownedComment>
+            <language>CIF</language>
+            <body>robot1Pos = Home and &#xD;
+LocBProduct = None and LocAProduct != None</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:id="146" name="T_A2B_Usage">
+          <ownedComment xmi:id="147">
+            <body>Original-ID-Path:50</body>
+          </ownedComment>
+          <ownedComment xmi:id="148">
+            <body>Original-ID-Path:98</body>
+          </ownedComment>
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="149">
+            <ownedComment xmi:id="150">
+              <body>Original-ID-Path:51</body>
+            </ownedComment>
+            <ownedComment xmi:id="151">
+              <body>Original-ID-Path:100</body>
+            </ownedComment>
+            <language>CIF</language>
+            <body>true</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:id="152" name="T_A2B_Post">
+          <ownedComment xmi:id="153">
+            <body>Original-ID-Path:52</body>
+          </ownedComment>
+          <ownedComment xmi:id="154">
+            <body>Original-ID-Path:102</body>
+          </ownedComment>
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="155">
+            <ownedComment xmi:id="156">
+              <body>Original-ID-Path:53</body>
+            </ownedComment>
+            <ownedComment xmi:id="157">
+              <body>Original-ID-Path:104</body>
+            </ownedComment>
+            <language>CIF</language>
+            <body>LocBProduct != None and robot1Pos = Home</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="158" name="ZeroCalls" constrainedElement="215 268 274 271 289 316 283 286 280 277 349 262">
+          <ownedComment xmi:id="159">
+            <body>Original-ID-Path:54</body>
+          </ownedComment>
+          <ownedComment xmi:id="160">
+            <body>Original-ID-Path:106</body>
+          </ownedComment>
+          <specification xmi:type="uml:Interval" xmi:id="161" name="" max="458" min="458">
+            <ownedComment xmi:id="162">
+              <body>Original-ID-Path:55</body>
+            </ownedComment>
+            <ownedComment xmi:id="163">
+              <body>Original-ID-Path:108</body>
+            </ownedComment>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="164" name="OneCall" constrainedElement="209 203 212 206">
+          <ownedComment xmi:id="165">
+            <body>Original-ID-Path:56</body>
+          </ownedComment>
+          <ownedComment xmi:id="166">
+            <body>Original-ID-Path:110</body>
+          </ownedComment>
+          <specification xmi:type="uml:Interval" xmi:id="167" name="" max="461" min="458">
+            <ownedComment xmi:id="168">
+              <body>Original-ID-Path:57</body>
+            </ownedComment>
+            <ownedComment xmi:id="169">
+              <body>Original-ID-Path:112</body>
+            </ownedComment>
+          </specification>
+        </ownedRule>
+        <edge xmi:type="uml:ControlFlow" xmi:id="170" name="ControlFlow_1" target="192" source="196">
+          <ownedComment xmi:id="171">
+            <body>Original-ID-Path:114</body>
+          </ownedComment>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="172" name="ControlFlow_2" target="198" source="192">
+          <ownedComment xmi:id="173">
+            <body>Original-ID-Path:115</body>
+          </ownedComment>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="174" name="ControlFlow_3" target="194" source="198">
+          <ownedComment xmi:id="175">
+            <body>Original-ID-Path:116</body>
+          </ownedComment>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="176" name="ControlFlow_4" target="190" source="194">
+          <ownedComment xmi:id="177">
+            <body>Original-ID-Path:117</body>
+          </ownedComment>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="178" name="ControlFlow_5" target="188" source="190">
+          <ownedComment xmi:id="179">
+            <body>Original-ID-Path:118</body>
+          </ownedComment>
+          <ownedComment xmi:id="180">
+            <body>Original-Structure:1 End</body>
+          </ownedComment>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="181" name="ControlFlow_6" target="196" source="186">
+          <ownedComment xmi:id="182">
+            <body>Original-ID-Path:119</body>
+          </ownedComment>
+          <ownedComment xmi:id="183">
+            <body>Original-Structure:1 Start</body>
+          </ownedComment>
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="184">
+            <ownedComment xmi:id="185">
+              <body>Original-ID-Path:120</body>
+            </ownedComment>
+            <language>CIF</language>
+            <body>true</body>
+          </guard>
+        </edge>
+        <node xmi:type="uml:InitialNode" xmi:id="186" name="InitialNode" outgoing="181">
+          <ownedComment xmi:id="187">
+            <body>Original-ID-Path:121</body>
+          </ownedComment>
+        </node>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="188" name="ActivityFinalNode" incoming="178">
+          <ownedComment xmi:id="189">
+            <body>Original-ID-Path:122</body>
+          </ownedComment>
+        </node>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="190" name="HomeRobot1" incoming="176" outgoing="178" behavior="206">
+          <ownedComment xmi:id="191">
+            <body>Original-ID-Path:123</body>
+          </ownedComment>
+        </node>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="192" name="PickProductAtLocA" incoming="170" outgoing="172" behavior="209">
+          <ownedComment xmi:id="193">
+            <body>Original-ID-Path:124</body>
+          </ownedComment>
+        </node>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="194" name="ReleaseProductAtLocB" incoming="174" outgoing="176" behavior="200">
+          <ownedComment xmi:id="195">
+            <body>Original-ID-Path:125</body>
+          </ownedComment>
+        </node>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="196" name="Robot1MoveToLocA" incoming="181" outgoing="170" behavior="203">
+          <ownedComment xmi:id="197">
+            <body>Original-ID-Path:126</body>
+          </ownedComment>
+        </node>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="198" name="Robot1MoveToLocB" incoming="172" outgoing="174" behavior="212">
+          <ownedComment xmi:id="199">
+            <body>Original-ID-Path:127</body>
+          </ownedComment>
+        </node>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="200" name="ReleaseProductAtLocB">
+        <ownedComment xmi:id="201">
+          <body>Original-ID-Path:58</body>
+        </ownedComment>
+        <ownedComment xmi:id="202">
+          <body>Original-ID-Path:128</body>
+        </ownedComment>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="203" name="Robot1MoveToLocA">
+        <ownedComment xmi:id="204">
+          <body>Original-ID-Path:59</body>
+        </ownedComment>
+        <ownedComment xmi:id="205">
+          <body>Original-ID-Path:130</body>
+        </ownedComment>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="206" name="HomeRobot1">
+        <ownedComment xmi:id="207">
+          <body>Original-ID-Path:60</body>
+        </ownedComment>
+        <ownedComment xmi:id="208">
+          <body>Original-ID-Path:132</body>
+        </ownedComment>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="209" name="PickProductAtLocA">
+        <ownedComment xmi:id="210">
+          <body>Original-ID-Path:61</body>
+        </ownedComment>
+        <ownedComment xmi:id="211">
+          <body>Original-ID-Path:134</body>
+        </ownedComment>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="212" name="Robot1MoveToLocB">
+        <ownedComment xmi:id="213">
+          <body>Original-ID-Path:62</body>
+        </ownedComment>
+        <ownedComment xmi:id="214">
+          <body>Original-ID-Path:136</body>
+        </ownedComment>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="215" name="TransferBtoC" postcondition="230" precondition="218 224" node="255 256 257 258 259 260 261">
+        <ownedComment xmi:id="216">
+          <body>Original-ID-Path:63</body>
+        </ownedComment>
+        <ownedComment xmi:id="217">
+          <body>Original-ID-Path:138</body>
+        </ownedComment>
+        <ownedRule xmi:id="218" name="T_B2C_Synthesis">
+          <ownedComment xmi:id="219">
+            <body>Original-ID-Path:64</body>
+          </ownedComment>
+          <ownedComment xmi:id="220">
+            <body>Original-ID-Path:140</body>
+          </ownedComment>
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="221">
+            <ownedComment xmi:id="222">
+              <body>Original-ID-Path:65</body>
+            </ownedComment>
+            <ownedComment xmi:id="223">
+              <body>Original-ID-Path:142</body>
+            </ownedComment>
+            <language>CIF</language>
+            <body>robot2Pos = Home and &#xD;
+LocCProduct = None and LocBProduct != None</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:id="224" name="T_B2C_Usage">
+          <ownedComment xmi:id="225">
+            <body>Original-ID-Path:66</body>
+          </ownedComment>
+          <ownedComment xmi:id="226">
+            <body>Original-ID-Path:144</body>
+          </ownedComment>
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="227">
+            <ownedComment xmi:id="228">
+              <body>Original-ID-Path:67</body>
+            </ownedComment>
+            <ownedComment xmi:id="229">
+              <body>Original-ID-Path:146</body>
+            </ownedComment>
+            <language>CIF</language>
+            <body>true</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:id="230" name="T_B2C_Post">
+          <ownedComment xmi:id="231">
+            <body>Original-ID-Path:68</body>
+          </ownedComment>
+          <ownedComment xmi:id="232">
+            <body>Original-ID-Path:148</body>
+          </ownedComment>
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="233">
+            <ownedComment xmi:id="234">
+              <body>Original-ID-Path:69</body>
+            </ownedComment>
+            <ownedComment xmi:id="235">
+              <body>Original-ID-Path:150</body>
+            </ownedComment>
+            <language>CIF</language>
+            <body>LocCProduct != None and robot2Pos = Home</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="236" name="ZeroCalls" constrainedElement="203 209 212 137 200 289 316 283 286 280 277 349 206">
+          <ownedComment xmi:id="237">
+            <body>Original-ID-Path:70</body>
+          </ownedComment>
+          <ownedComment xmi:id="238">
+            <body>Original-ID-Path:152</body>
+          </ownedComment>
+          <specification xmi:type="uml:Interval" xmi:id="239" name="Interval1" max="458" min="458">
+            <ownedComment xmi:id="240">
+              <body>Original-ID-Path:71</body>
+            </ownedComment>
+            <ownedComment xmi:id="241">
+              <body>Original-ID-Path:154</body>
+            </ownedComment>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="242" name="OneCall" constrainedElement="268 271 274 262">
+          <ownedComment xmi:id="243">
+            <body>Original-ID-Path:72</body>
+          </ownedComment>
+          <ownedComment xmi:id="244">
+            <body>Original-ID-Path:156</body>
+          </ownedComment>
+          <specification xmi:type="uml:Interval" xmi:id="245" name="Interval1" max="461" min="458">
+            <ownedComment xmi:id="246">
+              <body>Original-ID-Path:73</body>
+            </ownedComment>
+            <ownedComment xmi:id="247">
+              <body>Original-ID-Path:158</body>
+            </ownedComment>
+          </specification>
+        </ownedRule>
+        <edge xmi:type="uml:ControlFlow" xmi:id="248" target="258" source="260"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="249" target="261" source="258"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="250" target="259" source="261"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="251" target="257" source="259"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="252" target="256" source="257"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="253" target="260" source="255">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="254">
+            <language>CIF</language>
+            <body>true</body>
+          </guard>
+        </edge>
+        <node xmi:type="uml:InitialNode" xmi:id="255" outgoing="253"/>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="256" incoming="252"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="257" name="HomeRobot2" incoming="251" outgoing="252" behavior="262"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="258" name="PickProductAtLocB" incoming="248" outgoing="249" behavior="271"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="259" name="ReleaseProductAtLocC" incoming="250" outgoing="251" behavior="265"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="260" name="Robot2MoveToLocB" incoming="253" outgoing="248" behavior="268"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="261" name="Robot2MoveToLocC" incoming="249" outgoing="250" behavior="274"/>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="262" name="HomeRobot2">
+        <ownedComment xmi:id="263">
+          <body>Original-ID-Path:74</body>
+        </ownedComment>
+        <ownedComment xmi:id="264">
+          <body>Original-ID-Path:160</body>
+        </ownedComment>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="265" name="ReleaseProductAtLocC">
+        <ownedComment xmi:id="266">
+          <body>Original-ID-Path:75</body>
+        </ownedComment>
+        <ownedComment xmi:id="267">
+          <body>Original-ID-Path:162</body>
+        </ownedComment>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="268" name="Robot2MoveToLocB">
+        <ownedComment xmi:id="269">
+          <body>Original-ID-Path:76</body>
+        </ownedComment>
+        <ownedComment xmi:id="270">
+          <body>Original-ID-Path:164</body>
+        </ownedComment>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="271" name="PickProductAtLocB">
+        <ownedComment xmi:id="272">
+          <body>Original-ID-Path:77</body>
+        </ownedComment>
+        <ownedComment xmi:id="273">
+          <body>Original-ID-Path:166</body>
+        </ownedComment>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="274" name="Robot2MoveToLocC">
+        <ownedComment xmi:id="275">
+          <body>Original-ID-Path:78</body>
+        </ownedComment>
+        <ownedComment xmi:id="276">
+          <body>Original-ID-Path:168</body>
+        </ownedComment>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="277" name="UnloadOne">
+        <ownedComment xmi:id="278">
+          <body>Original-ID-Path:79</body>
+        </ownedComment>
+        <ownedComment xmi:id="279">
+          <body>Original-ID-Path:170</body>
+        </ownedComment>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="280" name="UnloadZero">
+        <ownedComment xmi:id="281">
+          <body>Original-ID-Path:80</body>
+        </ownedComment>
+        <ownedComment xmi:id="282">
+          <body>Original-ID-Path:172</body>
+        </ownedComment>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="283" name="LoadZeroLocA">
+        <ownedComment xmi:id="284">
+          <body>Original-ID-Path:81</body>
+        </ownedComment>
+        <ownedComment xmi:id="285">
+          <body>Original-ID-Path:174</body>
+        </ownedComment>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="286" name="LoadOneAtLocA">
+        <ownedComment xmi:id="287">
+          <body>Original-ID-Path:82</body>
+        </ownedComment>
+        <ownedComment xmi:id="288">
+          <body>Original-ID-Path:176</body>
+        </ownedComment>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="289" name="TransferA2CProduct0" isAbstract="true" postcondition="298" precondition="292">
+        <ownedComment xmi:id="290">
+          <body>Original-ID-Path:83</body>
+        </ownedComment>
+        <ownedComment xmi:id="291">
+          <body>Original-ID-Path:178</body>
+        </ownedComment>
+        <ownedRule xmi:id="292" name="T_Product0_Synth">
+          <ownedComment xmi:id="293">
+            <body>Original-ID-Path:84</body>
+          </ownedComment>
+          <ownedComment xmi:id="294">
+            <body>Original-ID-Path:180</body>
+          </ownedComment>
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="295">
+            <ownedComment xmi:id="296">
+              <body>Original-ID-Path:85</body>
+            </ownedComment>
+            <ownedComment xmi:id="297">
+              <body>Original-ID-Path:182</body>
+            </ownedComment>
+            <language>CIF</language>
+            <body>LocAProduct = None and LocBProduct = None and LocCProduct = None &#xD;
+and not doneZero</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:id="298" name="T_Product0_post">
+          <ownedComment xmi:id="299">
+            <body>Original-ID-Path:86</body>
+          </ownedComment>
+          <ownedComment xmi:id="300">
+            <body>Original-ID-Path:184</body>
+          </ownedComment>
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="301">
+            <ownedComment xmi:id="302">
+              <body>Original-ID-Path:87</body>
+            </ownedComment>
+            <ownedComment xmi:id="303">
+              <body>Original-ID-Path:186</body>
+            </ownedComment>
+            <language>CIF</language>
+            <body>doneZero = true</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="304" name="ZeroCalls" constrainedElement="203 209 212 268 271 274 200 265 286 277 316 349 206 262">
+          <ownedComment xmi:id="305">
+            <body>Original-ID-Path:88</body>
+          </ownedComment>
+          <ownedComment xmi:id="306">
+            <body>Original-ID-Path:188</body>
+          </ownedComment>
+          <specification xmi:type="uml:Interval" xmi:id="307" name="" max="458" min="458">
+            <ownedComment xmi:id="308">
+              <body>Original-ID-Path:89</body>
+            </ownedComment>
+            <ownedComment xmi:id="309">
+              <body>Original-ID-Path:190</body>
+            </ownedComment>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="310" name="OneCall" constrainedElement="283 280">
+          <ownedComment xmi:id="311">
+            <body>Original-ID-Path:90</body>
+          </ownedComment>
+          <ownedComment xmi:id="312">
+            <body>Original-ID-Path:192</body>
+          </ownedComment>
+          <specification xmi:type="uml:Interval" xmi:id="313" name="" max="461" min="458">
+            <ownedComment xmi:id="314">
+              <body>Original-ID-Path:91</body>
+            </ownedComment>
+            <ownedComment xmi:id="315">
+              <body>Original-ID-Path:194</body>
+            </ownedComment>
+          </specification>
+        </ownedRule>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="316" name="TransferA2CProduct1" isAbstract="true" postcondition="325" precondition="319 343">
+        <ownedComment xmi:id="317">
+          <body>Original-ID-Path:92</body>
+        </ownedComment>
+        <ownedComment xmi:id="318">
+          <body>Original-ID-Path:196</body>
+        </ownedComment>
+        <ownedRule xmi:id="319" name="T_Product1_Synth">
+          <ownedComment xmi:id="320">
+            <body>Original-ID-Path:93</body>
+          </ownedComment>
+          <ownedComment xmi:id="321">
+            <body>Original-ID-Path:198</body>
+          </ownedComment>
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="322">
+            <ownedComment xmi:id="323">
+              <body>Original-ID-Path:94</body>
+            </ownedComment>
+            <ownedComment xmi:id="324">
+              <body>Original-ID-Path:200</body>
+            </ownedComment>
+            <language>CIF</language>
+            <body>LocAProduct = None and LocBProduct = None and LocCProduct = None &#xD;
+and not doneOne</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:id="325" name="T_Product1_Post">
+          <ownedComment xmi:id="326">
+            <body>Original-ID-Path:95</body>
+          </ownedComment>
+          <ownedComment xmi:id="327">
+            <body>Original-ID-Path:202</body>
+          </ownedComment>
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="328">
+            <ownedComment xmi:id="329">
+              <body>Original-ID-Path:96</body>
+            </ownedComment>
+            <ownedComment xmi:id="330">
+              <body>Original-ID-Path:204</body>
+            </ownedComment>
+            <language>CIF</language>
+            <body>doneOne = true</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="331" name="ZeroCalls" constrainedElement="203 209 212 268 271 274 200 265 280 283 289 349 206 262">
+          <ownedComment xmi:id="332">
+            <body>Original-ID-Path:97</body>
+          </ownedComment>
+          <ownedComment xmi:id="333">
+            <body>Original-ID-Path:206</body>
+          </ownedComment>
+          <specification xmi:type="uml:Interval" xmi:id="334" name="" max="458" min="458">
+            <ownedComment xmi:id="335">
+              <body>Original-ID-Path:98</body>
+            </ownedComment>
+            <ownedComment xmi:id="336">
+              <body>Original-ID-Path:208</body>
+            </ownedComment>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="337" name="OneCall" constrainedElement="286 277">
+          <ownedComment xmi:id="338">
+            <body>Original-ID-Path:99</body>
+          </ownedComment>
+          <ownedComment xmi:id="339">
+            <body>Original-ID-Path:210</body>
+          </ownedComment>
+          <specification xmi:type="uml:Interval" xmi:id="340" name="" max="461" min="458">
+            <ownedComment xmi:id="341">
+              <body>Original-ID-Path:100</body>
+            </ownedComment>
+            <ownedComment xmi:id="342">
+              <body>Original-ID-Path:212</body>
+            </ownedComment>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:id="343" name="T_Product1_Use">
+          <ownedComment xmi:id="344">
+            <body>Original-ID-Path:101</body>
+          </ownedComment>
+          <ownedComment xmi:id="345">
+            <body>Original-ID-Path:214</body>
+          </ownedComment>
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="346">
+            <ownedComment xmi:id="347">
+              <body>Original-ID-Path:102</body>
+            </ownedComment>
+            <ownedComment xmi:id="348">
+              <body>Original-ID-Path:216</body>
+            </ownedComment>
+            <language>CIF</language>
+            <body>doneZero</body>
+          </specification>
+        </ownedRule>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="349" name="Interface" node="410 413 416 419 425 428">
+        <ownedComment xmi:id="350">
+          <body>Original-ID-Path:103</body>
+        </ownedComment>
+        <ownedComment xmi:id="351">
+          <body>Original-ID-Path:218</body>
+        </ownedComment>
+        <edge xmi:type="uml:ControlFlow" xmi:id="352" name="ControlFlow_1" target="416" source="410">
+          <ownedComment xmi:id="353">
+            <body>Original-ID-Path:104</body>
+          </ownedComment>
+          <ownedComment xmi:id="354">
+            <body>Original-Structure:5 Start</body>
+          </ownedComment>
+          <ownedComment xmi:id="355">
+            <body>Original-ID-Path:220</body>
+          </ownedComment>
+          <ownedComment xmi:id="356">
+            <body>Original-Structure:5 Start</body>
+          </ownedComment>
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="357" name="Initial1_To_Fork1_guard" value="true">
+            <ownedComment xmi:id="358">
+              <body>Original-ID-Path:105</body>
+            </ownedComment>
+            <ownedComment xmi:id="359">
+              <body>Original-ID-Path:223</body>
+            </ownedComment>
+          </guard>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="360" name="Initial1_To_Fork1_weight">
+            <ownedComment xmi:id="361">
+              <body>Original-ID-Path:106</body>
+            </ownedComment>
+            <ownedComment xmi:id="362">
+              <body>Original-ID-Path:225</body>
+            </ownedComment>
+          </weight>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="363" name="ControlFlow_2" target="413" source="419">
+          <ownedComment xmi:id="364">
+            <body>Original-ID-Path:107</body>
+          </ownedComment>
+          <ownedComment xmi:id="365">
+            <body>Original-Structure:5 End</body>
+          </ownedComment>
+          <ownedComment xmi:id="366">
+            <body>Original-ID-Path:227</body>
+          </ownedComment>
+          <ownedComment xmi:id="367">
+            <body>Original-Structure:5 End</body>
+          </ownedComment>
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="368" name="Join1_To_ActivityFinal1_guard" value="true">
+            <ownedComment xmi:id="369">
+              <body>Original-ID-Path:108</body>
+            </ownedComment>
+            <ownedComment xmi:id="370">
+              <body>Original-ID-Path:230</body>
+            </ownedComment>
+          </guard>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="371" name="Join1_To_ActivityFinal1_weight">
+            <ownedComment xmi:id="372">
+              <body>Original-ID-Path:109</body>
+            </ownedComment>
+            <ownedComment xmi:id="373">
+              <body>Original-ID-Path:232</body>
+            </ownedComment>
+          </weight>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="374" name="ControlFlow_3" target="425" source="416">
+          <ownedComment xmi:id="375">
+            <body>Original-ID-Path:110</body>
+          </ownedComment>
+          <ownedComment xmi:id="376">
+            <body>Original-ID-Path:234</body>
+          </ownedComment>
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="377" name="_To__guard" value="true">
+            <ownedComment xmi:id="378">
+              <body>Original-ID-Path:111</body>
+            </ownedComment>
+            <ownedComment xmi:id="379">
+              <body>Original-ID-Path:236</body>
+            </ownedComment>
+          </guard>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="380" name="_To__weight">
+            <ownedComment xmi:id="381">
+              <body>Original-ID-Path:112</body>
+            </ownedComment>
+            <ownedComment xmi:id="382">
+              <body>Original-ID-Path:238</body>
+            </ownedComment>
+          </weight>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="383" name="ControlFlow_4" target="428" source="416">
+          <ownedComment xmi:id="384">
+            <body>Original-ID-Path:113</body>
+          </ownedComment>
+          <ownedComment xmi:id="385">
+            <body>Original-ID-Path:240</body>
+          </ownedComment>
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="386" name="_To__guard" value="true">
+            <ownedComment xmi:id="387">
+              <body>Original-ID-Path:114</body>
+            </ownedComment>
+            <ownedComment xmi:id="388">
+              <body>Original-ID-Path:242</body>
+            </ownedComment>
+          </guard>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="389" name="_To__weight">
+            <ownedComment xmi:id="390">
+              <body>Original-ID-Path:115</body>
+            </ownedComment>
+            <ownedComment xmi:id="391">
+              <body>Original-ID-Path:244</body>
+            </ownedComment>
+          </weight>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="392" name="ControlFlow_5" target="419" source="425">
+          <ownedComment xmi:id="393">
+            <body>Original-ID-Path:116</body>
+          </ownedComment>
+          <ownedComment xmi:id="394">
+            <body>Original-ID-Path:246</body>
+          </ownedComment>
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="395" name="_To__guard" value="true">
+            <ownedComment xmi:id="396">
+              <body>Original-ID-Path:117</body>
+            </ownedComment>
+            <ownedComment xmi:id="397">
+              <body>Original-ID-Path:248</body>
+            </ownedComment>
+          </guard>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="398" name="_To__weight">
+            <ownedComment xmi:id="399">
+              <body>Original-ID-Path:118</body>
+            </ownedComment>
+            <ownedComment xmi:id="400">
+              <body>Original-ID-Path:250</body>
+            </ownedComment>
+          </weight>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="401" name="ControlFlow_6" target="419" source="428">
+          <ownedComment xmi:id="402">
+            <body>Original-ID-Path:119</body>
+          </ownedComment>
+          <ownedComment xmi:id="403">
+            <body>Original-ID-Path:252</body>
+          </ownedComment>
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="404" name="_To__guard" value="true">
+            <ownedComment xmi:id="405">
+              <body>Original-ID-Path:120</body>
+            </ownedComment>
+            <ownedComment xmi:id="406">
+              <body>Original-ID-Path:254</body>
+            </ownedComment>
+          </guard>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="407" name="_To__weight">
+            <ownedComment xmi:id="408">
+              <body>Original-ID-Path:121</body>
+            </ownedComment>
+            <ownedComment xmi:id="409">
+              <body>Original-ID-Path:256</body>
+            </ownedComment>
+          </weight>
+        </edge>
+        <node xmi:type="uml:InitialNode" xmi:id="410" name="InitialNode" outgoing="352">
+          <ownedComment xmi:id="411">
+            <body>Original-ID-Path:122</body>
+          </ownedComment>
+          <ownedComment xmi:id="412">
+            <body>Original-ID-Path:258</body>
+          </ownedComment>
+        </node>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="413" name="ActivityFinalNode" incoming="363">
+          <ownedComment xmi:id="414">
+            <body>Original-ID-Path:123</body>
+          </ownedComment>
+          <ownedComment xmi:id="415">
+            <body>Original-ID-Path:260</body>
+          </ownedComment>
+        </node>
+        <node xmi:type="uml:ForkNode" xmi:id="416" name="ForkNode" incoming="352" outgoing="374 383">
+          <ownedComment xmi:id="417">
+            <body>Original-ID-Path:124</body>
+          </ownedComment>
+          <ownedComment xmi:id="418">
+            <body>Original-ID-Path:262</body>
+          </ownedComment>
+        </node>
+        <node xmi:type="uml:JoinNode" xmi:id="419" name="JoinNode" incoming="392 401" outgoing="363">
+          <ownedComment xmi:id="420">
+            <body>Original-ID-Path:125</body>
+          </ownedComment>
+          <ownedComment xmi:id="421">
+            <body>Original-ID-Path:264</body>
+          </ownedComment>
+          <joinSpec xmi:type="uml:LiteralBoolean" xmi:id="422" name="Join1" value="true">
+            <ownedComment xmi:id="423">
+              <body>Original-ID-Path:126</body>
+            </ownedComment>
+            <ownedComment xmi:id="424">
+              <body>Original-ID-Path:266</body>
+            </ownedComment>
+          </joinSpec>
+        </node>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="425" name="CallBehaviorAction_1" incoming="374" outgoing="392" behavior="289">
+          <ownedComment xmi:id="426">
+            <body>Original-ID-Path:127</body>
+          </ownedComment>
+          <ownedComment xmi:id="427">
+            <body>Original-ID-Path:268</body>
+          </ownedComment>
+        </node>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="428" name="CallBehaviorAction_2" incoming="383" outgoing="401" behavior="316">
+          <ownedComment xmi:id="429">
+            <body>Original-ID-Path:128</body>
+          </ownedComment>
+          <ownedComment xmi:id="430">
+            <body>Original-ID-Path:270</body>
+          </ownedComment>
+        </node>
+      </ownedBehavior>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Enumeration" xmi:id="431" name="Position">
+      <ownedComment xmi:id="432">
+        <body>Original-ID-Path:129</body>
+      </ownedComment>
+      <ownedComment xmi:id="433">
+        <body>Original-ID-Path:272</body>
+      </ownedComment>
+      <ownedLiteral xmi:id="434" name="LocA">
+        <ownedComment xmi:id="435">
+          <body>Original-ID-Path:130</body>
+        </ownedComment>
+        <ownedComment xmi:id="436">
+          <body>Original-ID-Path:274</body>
+        </ownedComment>
+      </ownedLiteral>
+      <ownedLiteral xmi:id="437" name="LocB">
+        <ownedComment xmi:id="438">
+          <body>Original-ID-Path:131</body>
+        </ownedComment>
+        <ownedComment xmi:id="439">
+          <body>Original-ID-Path:276</body>
+        </ownedComment>
+      </ownedLiteral>
+      <ownedLiteral xmi:id="440" name="LocC">
+        <ownedComment xmi:id="441">
+          <body>Original-ID-Path:132</body>
+        </ownedComment>
+        <ownedComment xmi:id="442">
+          <body>Original-ID-Path:278</body>
+        </ownedComment>
+      </ownedLiteral>
+      <ownedLiteral xmi:id="443" name="Home">
+        <ownedComment xmi:id="444">
+          <body>Original-ID-Path:133</body>
+        </ownedComment>
+        <ownedComment xmi:id="445">
+          <body>Original-ID-Path:280</body>
+        </ownedComment>
+      </ownedLiteral>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Enumeration" xmi:id="446" name="Product">
+      <ownedComment xmi:id="447">
+        <body>Original-ID-Path:134</body>
+      </ownedComment>
+      <ownedComment xmi:id="448">
+        <body>Original-ID-Path:282</body>
+      </ownedComment>
+      <ownedLiteral xmi:id="449" name="Product0">
+        <ownedComment xmi:id="450">
+          <body>Original-ID-Path:135</body>
+        </ownedComment>
+        <ownedComment xmi:id="451">
+          <body>Original-ID-Path:284</body>
+        </ownedComment>
+      </ownedLiteral>
+      <ownedLiteral xmi:id="452" name="Product1">
+        <ownedComment xmi:id="453">
+          <body>Original-ID-Path:136</body>
+        </ownedComment>
+        <ownedComment xmi:id="454">
+          <body>Original-ID-Path:286</body>
+        </ownedComment>
+      </ownedLiteral>
+      <ownedLiteral xmi:id="455" name="None">
+        <ownedComment xmi:id="456">
+          <body>Original-ID-Path:137</body>
+        </ownedComment>
+        <ownedComment xmi:id="457">
+          <body>Original-ID-Path:288</body>
+        </ownedComment>
+      </ownedLiteral>
+    </packagedElement>
+    <packagedElement xmi:type="uml:LiteralInteger" xmi:id="458" name="LiteralZero">
+      <ownedComment xmi:id="459">
+        <body>Original-ID-Path:138</body>
+      </ownedComment>
+      <ownedComment xmi:id="460">
+        <body>Original-ID-Path:290</body>
+      </ownedComment>
+    </packagedElement>
+    <packagedElement xmi:type="uml:LiteralInteger" xmi:id="461" name="LiteralOne" value="1">
+      <ownedComment xmi:id="462">
+        <body>Original-ID-Path:139</body>
+      </ownedComment>
+      <ownedComment xmi:id="463">
+        <body>Original-ID-Path:292</body>
+      </ownedComment>
+    </packagedElement>
+    <profileApplication xmi:id="464">
+      <eAnnotations xmi:id="465" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/SynthML/#/"/>
+      </eAnnotations>
+      <appliedProfile href="platform:/plugin/com.github.tno.synthml.uml.profile.plugin/model/synthml.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+    </profileApplication>
+  </uml:Model>
+  <SynthML:SynthesisPrecondition xmi:id="466" base_Constraint="140"/>
+  <SynthML:UsagePrecondition xmi:id="467" base_Constraint="146"/>
+  <SynthML:Postcondition xmi:id="468" base_Constraint="152"/>
+  <SynthML:FormalControlFlow xmi:id="469" outgoingGuard="true" base_ControlFlow="170"/>
+  <SynthML:FormalControlFlow xmi:id="470" outgoingGuard="true" base_ControlFlow="172"/>
+  <SynthML:FormalControlFlow xmi:id="471" outgoingGuard="true" base_ControlFlow="174"/>
+  <SynthML:FormalControlFlow xmi:id="472" outgoingGuard="true" base_ControlFlow="176"/>
+  <SynthML:FormalControlFlow xmi:id="473" outgoingGuard="true" base_ControlFlow="178"/>
+  <SynthML:FormalControlFlow xmi:id="474" outgoingGuard="true" base_ControlFlow="181"/>
+  <SynthML:FormalElement xmi:id="475" guard="robot1Pos = LocB and robot1Product != None" base_RedefinableElement="200" atomic="true">
+    <effects>LocBProduct := robot1Product, robot1Product := None</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="476" guard="true" base_RedefinableElement="203" atomic="true">
+    <effects>robot1Pos := LocA</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="477" guard="true" base_RedefinableElement="206" atomic="true">
+    <effects>robot1Pos := Home</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="478" guard="robot1Pos = LocA and robot1Product = None" base_RedefinableElement="209" atomic="true">
+    <effects>robot1Product := LocAProduct, LocAProduct := None</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="479" guard="true" base_RedefinableElement="212" atomic="true">
+    <effects>robot1Pos := LocB</effects>
+  </SynthML:FormalElement>
+  <SynthML:SynthesisPrecondition xmi:id="480" base_Constraint="218"/>
+  <SynthML:UsagePrecondition xmi:id="481" base_Constraint="224"/>
+  <SynthML:Postcondition xmi:id="482" base_Constraint="230"/>
+  <SynthML:FormalControlFlow xmi:id="483" outgoingGuard="true" base_ControlFlow="248"/>
+  <SynthML:FormalControlFlow xmi:id="484" outgoingGuard="true" base_ControlFlow="249"/>
+  <SynthML:FormalControlFlow xmi:id="485" outgoingGuard="true" base_ControlFlow="250"/>
+  <SynthML:FormalControlFlow xmi:id="486" outgoingGuard="true" base_ControlFlow="251"/>
+  <SynthML:FormalControlFlow xmi:id="487" outgoingGuard="true" base_ControlFlow="252"/>
+  <SynthML:FormalControlFlow xmi:id="488" outgoingGuard="true" base_ControlFlow="253"/>
+  <SynthML:FormalElement xmi:id="489" guard="true" base_RedefinableElement="262" atomic="true">
+    <effects>robot2Pos := Home</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="490" guard="robot2Pos = LocC and robot2Product != None" base_RedefinableElement="265" atomic="true">
+    <effects>LocCProduct := robot2Product, robot2Product := None</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="491" guard="true" base_RedefinableElement="268" atomic="true">
+    <effects>robot2Pos := LocB</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="492" guard="robot2Pos = LocB and robot2Product = None" base_RedefinableElement="271" atomic="true">
+    <effects>robot2Product := LocBProduct, LocBProduct := None</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="493" guard="true" base_RedefinableElement="274" atomic="true">
+    <effects>robot2Pos := LocC</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="494" guard="LocCProduct = Product1" base_RedefinableElement="277" atomic="true">
+    <effects>LocCProduct := None, doneOne := true</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="495" guard="LocCProduct = Product0" base_RedefinableElement="280" atomic="true">
+    <effects>LocCProduct := None, doneZero := true</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="496" guard="LocAProduct = None" base_RedefinableElement="283" atomic="true">
+    <effects>LocAProduct := Product0, startedZero := true</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="497" guard="LocAProduct = None" base_RedefinableElement="286" atomic="true">
+    <effects>LocAProduct := Product1, startedOne := true</effects>
+  </SynthML:FormalElement>
+  <SynthML:SynthesisPrecondition xmi:id="498" base_Constraint="292"/>
+  <SynthML:Postcondition xmi:id="499" base_Constraint="298"/>
+  <SynthML:SynthesisPrecondition xmi:id="500" base_Constraint="319"/>
+  <SynthML:Postcondition xmi:id="501" base_Constraint="325"/>
+  <SynthML:UsagePrecondition xmi:id="502" base_Constraint="343"/>
+  <SynthML:FormalActivity xmi:id="503" base_Activity="349" interface="true"/>
+</xmi:XMI>

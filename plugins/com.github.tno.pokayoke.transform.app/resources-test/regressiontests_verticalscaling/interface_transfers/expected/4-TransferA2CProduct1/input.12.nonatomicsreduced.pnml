@@ -1,0 +1,266 @@
+<pnml xmlns="http://www.pnml.org/version-2009/grammar/pnml">
+  <net id="minimal" type="http://www.pnml.org/version-2009/grammar/ptnet">
+    <page id="minimal">
+      <transition id="__start">
+        <name>
+          <text>__start</text>
+        </name>
+      </transition>
+      <transition id="LoadOneAtLocA">
+        <name>
+          <text>LoadOneAtLocA</text>
+        </name>
+      </transition>
+      <transition id="UnloadOne">
+        <name>
+          <text>UnloadOne</text>
+        </name>
+      </transition>
+      <transition id="__end">
+        <name>
+          <text>__end</text>
+        </name>
+      </transition>
+      <transition id="__node__InitialNode__317__0">
+        <name>
+          <text>__node__InitialNode__317__0</text>
+        </name>
+      </transition>
+      <transition id="__node__CallBehaviorAction__337">
+        <name>
+          <text>__node__CallBehaviorAction__337</text>
+        </name>
+      </transition>
+      <transition id="__node__ActivityFinalNode__321__0">
+        <name>
+          <text>__node__ActivityFinalNode__321__0</text>
+        </name>
+      </transition>
+      <transition id="__node__InitialNode__450__0">
+        <name>
+          <text>__node__InitialNode__450__0</text>
+        </name>
+      </transition>
+      <transition id="__node__CallBehaviorAction__325">
+        <name>
+          <text>__node__CallBehaviorAction__325</text>
+        </name>
+      </transition>
+      <transition id="__node__CallBehaviorAction__329">
+        <name>
+          <text>__node__CallBehaviorAction__329</text>
+        </name>
+      </transition>
+      <transition id="__node__CallBehaviorAction__341">
+        <name>
+          <text>__node__CallBehaviorAction__341</text>
+        </name>
+      </transition>
+      <transition id="__node__CallBehaviorAction__333">
+        <name>
+          <text>__node__CallBehaviorAction__333</text>
+        </name>
+      </transition>
+      <transition id="__node__CallBehaviorAction__465">
+        <name>
+          <text>__node__CallBehaviorAction__465</text>
+        </name>
+      </transition>
+      <transition id="__node__ActivityFinalNode__453__0">
+        <name>
+          <text>__node__ActivityFinalNode__453__0</text>
+        </name>
+      </transition>
+      <transition id="__node__CallBehaviorAction__456">
+        <name>
+          <text>__node__CallBehaviorAction__456</text>
+        </name>
+      </transition>
+      <transition id="__node__CallBehaviorAction__459">
+        <name>
+          <text>__node__CallBehaviorAction__459</text>
+        </name>
+      </transition>
+      <transition id="__node__CallBehaviorAction__468">
+        <name>
+          <text>__node__CallBehaviorAction__468</text>
+        </name>
+      </transition>
+      <transition id="__node__CallBehaviorAction__462">
+        <name>
+          <text>__node__CallBehaviorAction__462</text>
+        </name>
+      </transition>
+      <place id="p3">
+        <name>
+          <text>p3</text>
+        </name>
+      </place>
+      <arc id="LoadOneAtLocA__to__p3" source="LoadOneAtLocA" target="p3">
+      </arc>
+      <place id="p18">
+        <name>
+          <text>p18</text>
+        </name>
+      </place>
+      <arc id="UnloadOne__to__p18" source="UnloadOne" target="p18">
+      </arc>
+      <place id="p19">
+        <name>
+          <text>p19</text>
+        </name>
+      </place>
+      <arc id="__end__to__p19" source="__end" target="p19">
+      </arc>
+      <place id="p10">
+        <name>
+          <text>p10</text>
+        </name>
+      </place>
+      <arc id="__node__ActivityFinalNode__321__0__to__p10" source="__node__ActivityFinalNode__321__0" target="p10">
+      </arc>
+      <place id="p17">
+        <name>
+          <text>p17</text>
+        </name>
+      </place>
+      <arc id="__node__ActivityFinalNode__453__0__to__p17" source="__node__ActivityFinalNode__453__0" target="p17">
+      </arc>
+      <place id="p9">
+        <name>
+          <text>p9</text>
+        </name>
+      </place>
+      <arc id="__node__CallBehaviorAction__325__to__p9" source="__node__CallBehaviorAction__325" target="p9">
+      </arc>
+      <place id="p6">
+        <name>
+          <text>p6</text>
+        </name>
+      </place>
+      <arc id="__node__CallBehaviorAction__329__to__p6" source="__node__CallBehaviorAction__329" target="p6">
+      </arc>
+      <place id="p8">
+        <name>
+          <text>p8</text>
+        </name>
+      </place>
+      <arc id="__node__CallBehaviorAction__333__to__p8" source="__node__CallBehaviorAction__333" target="p8">
+      </arc>
+      <place id="p5">
+        <name>
+          <text>p5</text>
+        </name>
+      </place>
+      <arc id="__node__CallBehaviorAction__337__to__p5" source="__node__CallBehaviorAction__337" target="p5">
+      </arc>
+      <place id="p7">
+        <name>
+          <text>p7</text>
+        </name>
+      </place>
+      <arc id="__node__CallBehaviorAction__341__to__p7" source="__node__CallBehaviorAction__341" target="p7">
+      </arc>
+      <place id="p16">
+        <name>
+          <text>p16</text>
+        </name>
+      </place>
+      <arc id="__node__CallBehaviorAction__456__to__p16" source="__node__CallBehaviorAction__456" target="p16">
+      </arc>
+      <place id="p13">
+        <name>
+          <text>p13</text>
+        </name>
+      </place>
+      <arc id="__node__CallBehaviorAction__459__to__p13" source="__node__CallBehaviorAction__459" target="p13">
+      </arc>
+      <place id="p15">
+        <name>
+          <text>p15</text>
+        </name>
+      </place>
+      <arc id="__node__CallBehaviorAction__462__to__p15" source="__node__CallBehaviorAction__462" target="p15">
+      </arc>
+      <place id="p12">
+        <name>
+          <text>p12</text>
+        </name>
+      </place>
+      <arc id="__node__CallBehaviorAction__465__to__p12" source="__node__CallBehaviorAction__465" target="p12">
+      </arc>
+      <place id="p14">
+        <name>
+          <text>p14</text>
+        </name>
+      </place>
+      <arc id="__node__CallBehaviorAction__468__to__p14" source="__node__CallBehaviorAction__468" target="p14">
+      </arc>
+      <place id="p4">
+        <name>
+          <text>p4</text>
+        </name>
+      </place>
+      <arc id="__node__InitialNode__317__0__to__p4" source="__node__InitialNode__317__0" target="p4">
+      </arc>
+      <place id="p11">
+        <name>
+          <text>p11</text>
+        </name>
+      </place>
+      <arc id="__node__InitialNode__450__0__to__p11" source="__node__InitialNode__450__0" target="p11">
+      </arc>
+      <place id="p2">
+        <name>
+          <text>p2</text>
+        </name>
+      </place>
+      <arc id="__start__to__p2" source="__start" target="p2">
+      </arc>
+      <place id="p1">
+        <name>
+          <text>p1</text>
+        </name>
+        <initialMarking>
+          <text>1</text>
+        </initialMarking>
+      </place>
+      <arc id="p1__to____start" source="p1" target="__start">
+      </arc>
+      <arc id="p10__to____node__InitialNode__450__0" source="p10" target="__node__InitialNode__450__0">
+      </arc>
+      <arc id="p11__to____node__CallBehaviorAction__465" source="p11" target="__node__CallBehaviorAction__465">
+      </arc>
+      <arc id="p12__to____node__CallBehaviorAction__459" source="p12" target="__node__CallBehaviorAction__459">
+      </arc>
+      <arc id="p13__to____node__CallBehaviorAction__468" source="p13" target="__node__CallBehaviorAction__468">
+      </arc>
+      <arc id="p14__to____node__CallBehaviorAction__462" source="p14" target="__node__CallBehaviorAction__462">
+      </arc>
+      <arc id="p15__to____node__CallBehaviorAction__456" source="p15" target="__node__CallBehaviorAction__456">
+      </arc>
+      <arc id="p16__to____node__ActivityFinalNode__453__0" source="p16" target="__node__ActivityFinalNode__453__0">
+      </arc>
+      <arc id="p17__to__UnloadOne" source="p17" target="UnloadOne">
+      </arc>
+      <arc id="p18__to____end" source="p18" target="__end">
+      </arc>
+      <arc id="p2__to__LoadOneAtLocA" source="p2" target="LoadOneAtLocA">
+      </arc>
+      <arc id="p3__to____node__InitialNode__317__0" source="p3" target="__node__InitialNode__317__0">
+      </arc>
+      <arc id="p4__to____node__CallBehaviorAction__337" source="p4" target="__node__CallBehaviorAction__337">
+      </arc>
+      <arc id="p5__to____node__CallBehaviorAction__329" source="p5" target="__node__CallBehaviorAction__329">
+      </arc>
+      <arc id="p6__to____node__CallBehaviorAction__341" source="p6" target="__node__CallBehaviorAction__341">
+      </arc>
+      <arc id="p7__to____node__CallBehaviorAction__333" source="p7" target="__node__CallBehaviorAction__333">
+      </arc>
+      <arc id="p8__to____node__CallBehaviorAction__325" source="p8" target="__node__CallBehaviorAction__325">
+      </arc>
+      <arc id="p9__to____node__ActivityFinalNode__321__0" source="p9" target="__node__ActivityFinalNode__321__0">
+      </arc>
+    </page>
+  </net>
+</pnml>

@@ -1,0 +1,98 @@
+controllable UnloadOne;
+controllable LoadOneAtLocA;
+controllable __node__InitialNode__317__0;
+uncontrollable __node__ActivityFinalNode__321__0;
+uncontrollable __node__CallBehaviorAction__325;
+uncontrollable __node__CallBehaviorAction__329;
+uncontrollable __node__CallBehaviorAction__333;
+uncontrollable __node__CallBehaviorAction__337;
+uncontrollable __node__CallBehaviorAction__341;
+controllable __node__InitialNode__450__0;
+uncontrollable __node__ActivityFinalNode__453__0;
+uncontrollable __node__CallBehaviorAction__456;
+uncontrollable __node__CallBehaviorAction__459;
+uncontrollable __node__CallBehaviorAction__462;
+uncontrollable __node__CallBehaviorAction__465;
+uncontrollable __node__CallBehaviorAction__468;
+controllable __start;
+controllable __end;
+automaton projected:
+  alphabet UnloadOne, LoadOneAtLocA, __node__InitialNode__317__0, __node__ActivityFinalNode__321__0, __node__CallBehaviorAction__325, __node__CallBehaviorAction__329, __node__CallBehaviorAction__333, __node__CallBehaviorAction__337, __node__CallBehaviorAction__341, __node__InitialNode__450__0, __node__ActivityFinalNode__453__0, __node__CallBehaviorAction__456, __node__CallBehaviorAction__459, __node__CallBehaviorAction__462, __node__CallBehaviorAction__465, __node__CallBehaviorAction__468, __start, __end;
+  @state(synthesis_state_space: "__init")
+  location s1:
+    initial;
+    edge __start goto s2;
+  @state(synthesis_state_space: "loc4")
+  @state(synthesis_state_space: "loc3")
+  @state(synthesis_state_space: "loc2")
+  @state(synthesis_state_space: "loc1")
+  location s2:
+    edge LoadOneAtLocA goto s3;
+  @state(synthesis_state_space: "loc6")
+  @state(synthesis_state_space: "loc5")
+  location s3:
+    edge __node__InitialNode__317__0 goto s4;
+  @state(synthesis_state_space: "loc8")
+  @state(synthesis_state_space: "loc7")
+  location s4:
+    edge __node__CallBehaviorAction__337 goto s5;
+  @state(synthesis_state_space: "loc10")
+  @state(synthesis_state_space: "loc9")
+  location s5:
+    edge __node__CallBehaviorAction__329 goto s6;
+  @state(synthesis_state_space: "loc12")
+  @state(synthesis_state_space: "loc11")
+  location s6:
+    edge __node__CallBehaviorAction__341 goto s7;
+  @state(synthesis_state_space: "loc14")
+  @state(synthesis_state_space: "loc13")
+  location s7:
+    edge __node__CallBehaviorAction__333 goto s8;
+  @state(synthesis_state_space: "loc16")
+  @state(synthesis_state_space: "loc15")
+  location s8:
+    edge __node__CallBehaviorAction__325 goto s9;
+  @state(synthesis_state_space: "loc18")
+  @state(synthesis_state_space: "loc17")
+  location s9:
+    edge __node__ActivityFinalNode__321__0 goto s10;
+  @state(synthesis_state_space: "loc20")
+  @state(synthesis_state_space: "loc19")
+  location s10:
+    edge __node__InitialNode__450__0 goto s11;
+  @state(synthesis_state_space: "loc22")
+  @state(synthesis_state_space: "loc21")
+  location s11:
+    edge __node__CallBehaviorAction__465 goto s12;
+  @state(synthesis_state_space: "loc24")
+  @state(synthesis_state_space: "loc23")
+  location s12:
+    edge __node__CallBehaviorAction__459 goto s13;
+  @state(synthesis_state_space: "loc26")
+  @state(synthesis_state_space: "loc25")
+  location s13:
+    edge __node__CallBehaviorAction__468 goto s14;
+  @state(synthesis_state_space: "loc28")
+  @state(synthesis_state_space: "loc27")
+  location s14:
+    edge __node__CallBehaviorAction__462 goto s15;
+  @state(synthesis_state_space: "loc30")
+  @state(synthesis_state_space: "loc29")
+  location s15:
+    edge __node__CallBehaviorAction__456 goto s16;
+  @state(synthesis_state_space: "loc32")
+  @state(synthesis_state_space: "loc31")
+  location s16:
+    edge __node__ActivityFinalNode__453__0 goto s17;
+  @state(synthesis_state_space: "loc34")
+  @state(synthesis_state_space: "loc33")
+  location s17:
+    edge UnloadOne goto s18;
+  @state(synthesis_state_space: "loc36")
+  @state(synthesis_state_space: "loc35")
+  location s18:
+    edge __end goto s19;
+  @state(synthesis_state_space: "__done")
+  location s19:
+    marked;
+end

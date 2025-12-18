@@ -1,0 +1,124 @@
+enum Position = LocA, LocB, LocC, Home;
+enum Product = Product0, Product1, None;
+controllable UnloadZero;
+controllable LoadZeroLocA;
+controllable __node__InitialNode__252__0;
+uncontrollable __node__ActivityFinalNode__255__0;
+uncontrollable __node__CallBehaviorAction__258;
+uncontrollable __node__CallBehaviorAction__261;
+uncontrollable __node__CallBehaviorAction__264;
+uncontrollable __node__CallBehaviorAction__267;
+uncontrollable __node__CallBehaviorAction__270;
+controllable __node__InitialNode__353__0;
+uncontrollable __node__ActivityFinalNode__355__0;
+uncontrollable __node__CallBehaviorAction__357;
+uncontrollable __node__CallBehaviorAction__359;
+uncontrollable __node__CallBehaviorAction__361;
+uncontrollable __node__CallBehaviorAction__363;
+uncontrollable __node__CallBehaviorAction__365;
+plant automaton Class1:
+  disc Position robot1Pos = Home;
+  disc Product robot1Product = None;
+  disc Product LocAProduct in any;
+  disc Product LocBProduct in any;
+  disc Position robot2Pos = Home;
+  disc Product robot2Product = None;
+  disc Product LocCProduct = None;
+  disc bool startedZero in any;
+  disc bool startedOne in any;
+  disc bool doneZero = false;
+  disc bool doneOne = false;
+  disc bool __controlflow__227;
+  disc bool __controlflow__230;
+  disc bool __controlflow__233;
+  disc bool __controlflow__236;
+  disc bool __controlflow__239;
+  disc bool __controlflow__244;
+  disc bool __controlflow__337;
+  disc bool __controlflow__339;
+  disc bool __controlflow__341;
+  disc bool __controlflow__343;
+  disc bool __controlflow__345;
+  disc bool __controlflow__348;
+  alg bool T_Product0_Synth = LocAProduct = None and LocBProduct = None and LocCProduct = None and not doneZero;
+  alg bool __precondition = T_Product0_Synth;
+  alg bool T_Product0_post = doneZero = true;
+  alg bool __postcondition__OneCall__431__LoadZeroLocA__395 = OneCall__431__LoadZeroLocA__395.__occurrences >= 0;
+  alg bool __postcondition__OneCall__431__UnloadZero__391 = OneCall__431__UnloadZero__391.__occurrences >= 0;
+  alg bool __postcondition__controlflow__227 = not __controlflow__227;
+  alg bool __postcondition__controlflow__230 = not __controlflow__230;
+  alg bool __postcondition__controlflow__233 = not __controlflow__233;
+  alg bool __postcondition__controlflow__236 = not __controlflow__236;
+  alg bool __postcondition__controlflow__239 = not __controlflow__239;
+  alg bool __postcondition__controlflow__244 = not __controlflow__244;
+  alg bool __postcondition__controlflow__337 = not __controlflow__337;
+  alg bool __postcondition__controlflow__339 = not __controlflow__339;
+  alg bool __postcondition__controlflow__341 = not __controlflow__341;
+  alg bool __postcondition__controlflow__343 = not __controlflow__343;
+  alg bool __postcondition__controlflow__345 = not __controlflow__345;
+  alg bool __postcondition__controlflow__348 = not __controlflow__348;
+  alg bool __postcondition = T_Product0_post and (__postcondition__OneCall__431__LoadZeroLocA__395 and __postcondition__OneCall__431__UnloadZero__391) and (__postcondition__controlflow__227 and __postcondition__controlflow__230 and (__postcondition__controlflow__233 and __postcondition__controlflow__236)) and (__postcondition__controlflow__239 and __postcondition__controlflow__244 and (__postcondition__controlflow__337 and __postcondition__controlflow__339) and (__postcondition__controlflow__341 and __postcondition__controlflow__343 and (__postcondition__controlflow__345 and __postcondition__controlflow__348)));
+  initial __precondition;
+  marked __postcondition;
+  location:
+    initial;
+    marked;
+    edge UnloadZero when LocCProduct = Product0 do LocCProduct := None, doneZero := true;
+    edge LoadZeroLocA when LocAProduct = None do LocAProduct := Product0, startedZero := true;
+    edge __node__InitialNode__252__0 when true, not __controlflow__244, true do __controlflow__244 := true;
+    edge __node__ActivityFinalNode__255__0 when true, __controlflow__239, true, LocBProduct != None and robot1Pos = Home do __controlflow__239 := false;
+    edge __node__CallBehaviorAction__258 when true, __controlflow__236, true, not __controlflow__239 do robot1Pos := Home, __controlflow__236 := false, __controlflow__239 := true;
+    edge __node__CallBehaviorAction__261 when robot1Pos = LocA and robot1Product = None, __controlflow__227, true, not __controlflow__230 do robot1Product := LocAProduct, LocAProduct := None, __controlflow__227 := false, __controlflow__230 := true;
+    edge __node__CallBehaviorAction__264 when robot1Pos = LocB and robot1Product != None, __controlflow__233, true, not __controlflow__236 do LocBProduct := robot1Product, robot1Product := None, __controlflow__233 := false, __controlflow__236 := true;
+    edge __node__CallBehaviorAction__267 when true, __controlflow__244, true, not __controlflow__227 do robot1Pos := LocA, __controlflow__244 := false, __controlflow__227 := true;
+    edge __node__CallBehaviorAction__270 when true, __controlflow__230, true, not __controlflow__233 do robot1Pos := LocB, __controlflow__230 := false, __controlflow__233 := true;
+    edge __node__InitialNode__353__0 when true, not __controlflow__348, true do __controlflow__348 := true;
+    edge __node__ActivityFinalNode__355__0 when true, __controlflow__345, true, LocCProduct != None and robot2Pos = Home do __controlflow__345 := false;
+    edge __node__CallBehaviorAction__357 when true, __controlflow__343, true, not __controlflow__345 do robot2Pos := Home, __controlflow__343 := false, __controlflow__345 := true;
+    edge __node__CallBehaviorAction__359 when robot2Pos = LocB and robot2Product = None, __controlflow__337, true, not __controlflow__339 do robot2Product := LocBProduct, LocBProduct := None, __controlflow__337 := false, __controlflow__339 := true;
+    edge __node__CallBehaviorAction__361 when robot2Pos = LocC and robot2Product != None, __controlflow__341, true, not __controlflow__343 do LocCProduct := robot2Product, robot2Product := None, __controlflow__341 := false, __controlflow__343 := true;
+    edge __node__CallBehaviorAction__363 when true, __controlflow__348, true, not __controlflow__337 do robot2Pos := LocB, __controlflow__348 := false, __controlflow__337 := true;
+    edge __node__CallBehaviorAction__365 when true, __controlflow__339, true, not __controlflow__341 do robot2Pos := LocC, __controlflow__339 := false, __controlflow__341 := true;
+end
+supervisor automaton OneCall__431__LoadZeroLocA__395:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+    edge LoadZeroLocA when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+supervisor automaton OneCall__431__UnloadZero__391:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+    edge UnloadZero when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+supervisor automaton sup:
+  alphabet UnloadZero, LoadZeroLocA, __node__InitialNode__252__0, __node__InitialNode__353__0;
+  location:
+    initial;
+    marked;
+    edge __node__InitialNode__252__0 when Class1.LocAProduct != None and (Class1.robot1Pos = LocB or Class1.robot1Pos = Home);
+    edge __node__InitialNode__353__0 when Class1.LocAProduct = None and (Class1.startedZero and Class1.robot1Product = None) and ((Class1.robot1Pos = LocC or Class1.robot1Pos = Home) and (not Class1.__controlflow__239 and not Class1.__controlflow__337)) and (not Class1.__controlflow__339 and (not Class1.__controlflow__341 and not Class1.__controlflow__343) and (not Class1.__controlflow__345 and (OneCall__431__LoadZeroLocA__395.__occurrences = 1 and Class1.LocBProduct != None)));
+    edge LoadZeroLocA when true;
+    edge UnloadZero when not Class1.__controlflow__343 and not Class1.__controlflow__345;
+end
+supervisor invariant Class1.__postcondition disables UnloadZero;
+supervisor invariant Class1.__postcondition disables LoadZeroLocA;
+supervisor invariant Class1.__postcondition disables __node__InitialNode__252__0;
+supervisor invariant Class1.__postcondition disables __node__ActivityFinalNode__255__0;
+supervisor invariant Class1.__postcondition disables __node__CallBehaviorAction__258;
+supervisor invariant Class1.__postcondition disables __node__CallBehaviorAction__261;
+supervisor invariant Class1.__postcondition disables __node__CallBehaviorAction__264;
+supervisor invariant Class1.__postcondition disables __node__CallBehaviorAction__267;
+supervisor invariant Class1.__postcondition disables __node__CallBehaviorAction__270;
+supervisor invariant Class1.__postcondition disables __node__InitialNode__353__0;
+supervisor invariant Class1.__postcondition disables __node__ActivityFinalNode__355__0;
+supervisor invariant Class1.__postcondition disables __node__CallBehaviorAction__357;
+supervisor invariant Class1.__postcondition disables __node__CallBehaviorAction__359;
+supervisor invariant Class1.__postcondition disables __node__CallBehaviorAction__361;
+supervisor invariant Class1.__postcondition disables __node__CallBehaviorAction__363;
+supervisor invariant Class1.__postcondition disables __node__CallBehaviorAction__365;

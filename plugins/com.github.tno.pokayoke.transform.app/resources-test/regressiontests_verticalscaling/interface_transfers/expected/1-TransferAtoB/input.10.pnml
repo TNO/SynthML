@@ -1,0 +1,121 @@
+<pnml xmlns="http://www.pnml.org/version-2009/grammar/pnml">
+  <net id="minimal" type="http://www.pnml.org/version-2009/grammar/ptnet">
+    <page id="minimal">
+      <transition id="__start">
+        <name>
+          <text>__start</text>
+        </name>
+      </transition>
+      <transition id="Robot1MoveToLocA">
+        <name>
+          <text>Robot1MoveToLocA</text>
+        </name>
+      </transition>
+      <transition id="ReleaseProductAtLocB">
+        <name>
+          <text>ReleaseProductAtLocB</text>
+        </name>
+      </transition>
+      <transition id="HomeRobot1">
+        <name>
+          <text>HomeRobot1</text>
+        </name>
+      </transition>
+      <transition id="PickProductAtLocA">
+        <name>
+          <text>PickProductAtLocA</text>
+        </name>
+      </transition>
+      <transition id="__end">
+        <name>
+          <text>__end</text>
+        </name>
+      </transition>
+      <transition id="Robot1MoveToLocB">
+        <name>
+          <text>Robot1MoveToLocB</text>
+        </name>
+      </transition>
+      <transition id="__loop">
+        <name>
+          <text>__loop</text>
+        </name>
+      </transition>
+      <place id="p7">
+        <name>
+          <text>p7</text>
+        </name>
+      </place>
+      <arc id="HomeRobot1__to__p7" source="HomeRobot1" target="p7">
+      </arc>
+      <place id="p4">
+        <name>
+          <text>p4</text>
+        </name>
+      </place>
+      <arc id="PickProductAtLocA__to__p4" source="PickProductAtLocA" target="p4">
+      </arc>
+      <place id="p6">
+        <name>
+          <text>p6</text>
+        </name>
+      </place>
+      <arc id="ReleaseProductAtLocB__to__p6" source="ReleaseProductAtLocB" target="p6">
+      </arc>
+      <place id="p3">
+        <name>
+          <text>p3</text>
+        </name>
+      </place>
+      <arc id="Robot1MoveToLocA__to__p3" source="Robot1MoveToLocA" target="p3">
+      </arc>
+      <place id="p5">
+        <name>
+          <text>p5</text>
+        </name>
+      </place>
+      <arc id="Robot1MoveToLocB__to__p5" source="Robot1MoveToLocB" target="p5">
+      </arc>
+      <place id="p8">
+        <name>
+          <text>p8</text>
+        </name>
+      </place>
+      <arc id="__end__to__p8" source="__end" target="p8">
+      </arc>
+      <arc id="__loop__to__p8" source="__loop" target="p8">
+      </arc>
+      <place id="p2">
+        <name>
+          <text>p2</text>
+        </name>
+      </place>
+      <arc id="__start__to__p2" source="__start" target="p2">
+      </arc>
+      <place id="p1">
+        <name>
+          <text>p1</text>
+        </name>
+        <initialMarking>
+          <text>1</text>
+        </initialMarking>
+      </place>
+      <arc id="p1__to____start" source="p1" target="__start">
+      </arc>
+      <arc id="p2__to__Robot1MoveToLocA" source="p2" target="Robot1MoveToLocA">
+      </arc>
+      <arc id="p3__to__PickProductAtLocA" source="p3" target="PickProductAtLocA">
+      </arc>
+      <arc id="p4__to__Robot1MoveToLocB" source="p4" target="Robot1MoveToLocB">
+      </arc>
+      <arc id="p5__to__ReleaseProductAtLocB" source="p5" target="ReleaseProductAtLocB">
+      </arc>
+      <arc id="p6__to__HomeRobot1" source="p6" target="HomeRobot1">
+      </arc>
+      <arc id="p7__to____end" source="p7" target="__end">
+      </arc>
+      <arc id="p8__to____loop" source="p8" target="__loop">
+      </arc>
+    </page>
+  </net>
+</pnml>

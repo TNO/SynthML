@@ -1,0 +1,75 @@
+enum Position = LocA, LocB, LocC, Home;
+enum Product = Product0, Product1, None;
+controllable HomeRobot2;
+controllable ReleaseProductAtLocC;
+controllable Robot2MoveToLocB;
+controllable PickProductAtLocB;
+controllable Robot2MoveToLocC;
+plant automaton Class1:
+  disc Position robot1Pos = Home;
+  disc Product robot1Product = None;
+  disc Product LocAProduct in any;
+  disc Product LocBProduct in any;
+  disc Position robot2Pos = Home;
+  disc Product robot2Product = None;
+  disc Product LocCProduct = None;
+  disc bool startedZero in any;
+  disc bool startedOne in any;
+  disc bool doneZero = false;
+  disc bool doneOne = false;
+  alg bool T_B2C_Synthesis = robot2Pos = Home and LocCProduct = None and LocBProduct != None;
+  alg bool __precondition = T_B2C_Synthesis;
+  alg bool T_B2C_Post = LocCProduct != None and robot2Pos = Home;
+  alg bool __postcondition__OneCall__243__Robot2MoveToLocB__255 = OneCall__243__Robot2MoveToLocB__255.__occurrences >= 0;
+  alg bool __postcondition__OneCall__243__PickProductAtLocB__258 = OneCall__243__PickProductAtLocB__258.__occurrences >= 0;
+  alg bool __postcondition__OneCall__243__Robot2MoveToLocC__261 = OneCall__243__Robot2MoveToLocC__261.__occurrences >= 0;
+  alg bool __postcondition__OneCall__243__HomeRobot2__249 = OneCall__243__HomeRobot2__249.__occurrences >= 0;
+  alg bool __postcondition = T_B2C_Post and __postcondition__OneCall__243__Robot2MoveToLocB__255 and (__postcondition__OneCall__243__PickProductAtLocB__258 and (__postcondition__OneCall__243__Robot2MoveToLocC__261 and __postcondition__OneCall__243__HomeRobot2__249));
+  initial __precondition;
+  marked __postcondition;
+  location:
+    initial;
+    marked;
+    edge HomeRobot2 when true do robot2Pos := Home;
+    edge ReleaseProductAtLocC when robot2Pos = LocC and robot2Product != None do LocCProduct := robot2Product, robot2Product := None;
+    edge Robot2MoveToLocB when true do robot2Pos := LocB;
+    edge PickProductAtLocB when robot2Pos = LocB and robot2Product = None do robot2Product := LocBProduct, LocBProduct := None;
+    edge Robot2MoveToLocC when true do robot2Pos := LocC;
+end
+requirement automaton OneCall__243__Robot2MoveToLocB__255:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+    edge Robot2MoveToLocB when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+requirement automaton OneCall__243__PickProductAtLocB__258:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+    edge PickProductAtLocB when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+requirement automaton OneCall__243__Robot2MoveToLocC__261:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+    edge Robot2MoveToLocC when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+requirement automaton OneCall__243__HomeRobot2__249:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+    edge HomeRobot2 when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+requirement invariant Class1.__postcondition disables HomeRobot2;
+requirement invariant Class1.__postcondition disables ReleaseProductAtLocC;
+requirement invariant Class1.__postcondition disables Robot2MoveToLocB;
+requirement invariant Class1.__postcondition disables PickProductAtLocB;
+requirement invariant Class1.__postcondition disables Robot2MoveToLocC;

@@ -1,0 +1,79 @@
+controllable UnloadOne;
+controllable LoadOneAtLocA;
+controllable __node__InitialNode__317__0;
+uncontrollable __node__ActivityFinalNode__321__0;
+uncontrollable __node__CallBehaviorAction__325;
+uncontrollable __node__CallBehaviorAction__329;
+uncontrollable __node__CallBehaviorAction__333;
+uncontrollable __node__CallBehaviorAction__337;
+uncontrollable __node__CallBehaviorAction__341;
+controllable __node__InitialNode__450__0;
+uncontrollable __node__ActivityFinalNode__453__0;
+uncontrollable __node__CallBehaviorAction__456;
+uncontrollable __node__CallBehaviorAction__459;
+uncontrollable __node__CallBehaviorAction__462;
+uncontrollable __node__CallBehaviorAction__465;
+uncontrollable __node__CallBehaviorAction__468;
+controllable __start;
+controllable __end;
+automaton minimal:
+  alphabet UnloadOne, LoadOneAtLocA, __node__InitialNode__317__0, __node__ActivityFinalNode__321__0, __node__CallBehaviorAction__325, __node__CallBehaviorAction__329, __node__CallBehaviorAction__333, __node__CallBehaviorAction__337, __node__CallBehaviorAction__341, __node__InitialNode__450__0, __node__ActivityFinalNode__453__0, __node__CallBehaviorAction__456, __node__CallBehaviorAction__459, __node__CallBehaviorAction__462, __node__CallBehaviorAction__465, __node__CallBehaviorAction__468, __start, __end;
+  @state(projected: "s1")
+  location s1:
+    initial;
+    edge __start goto s2;
+  @state(projected: "s2")
+  location s2:
+    edge LoadOneAtLocA goto s6;
+  @state(projected: "s19")
+  location s3:
+    marked;
+  @state(projected: "s17")
+  location s4:
+    edge UnloadOne goto s5;
+  @state(projected: "s18")
+  location s5:
+    edge __end goto s3;
+  @state(projected: "s3")
+  location s6:
+    edge __node__InitialNode__317__0 goto s7;
+  @state(projected: "s4")
+  location s7:
+    edge __node__CallBehaviorAction__337 goto s11;
+  @state(projected: "s9")
+  location s8:
+    edge __node__ActivityFinalNode__321__0 goto s9;
+  @state(projected: "s10")
+  location s9:
+    edge __node__InitialNode__450__0 goto s14;
+  @state(projected: "s8")
+  location s10:
+    edge __node__CallBehaviorAction__325 goto s8;
+  @state(projected: "s5")
+  location s11:
+    edge __node__CallBehaviorAction__329 goto s12;
+  @state(projected: "s6")
+  location s12:
+    edge __node__CallBehaviorAction__341 goto s13;
+  @state(projected: "s7")
+  location s13:
+    edge __node__CallBehaviorAction__333 goto s10;
+  @state(projected: "s11")
+  location s14:
+    edge __node__CallBehaviorAction__465 goto s17;
+  @state(projected: "s16")
+  location s15:
+    edge __node__ActivityFinalNode__453__0 goto s4;
+  @state(projected: "s15")
+  location s16:
+    edge __node__CallBehaviorAction__456 goto s15;
+  @state(projected: "s12")
+  location s17:
+    edge __node__CallBehaviorAction__459 goto s18;
+  @state(projected: "s13")
+  location s18:
+    edge __node__CallBehaviorAction__468 goto s19;
+  @state(projected: "s14")
+  location s19:
+    edge __node__CallBehaviorAction__462 goto s16;
+end
