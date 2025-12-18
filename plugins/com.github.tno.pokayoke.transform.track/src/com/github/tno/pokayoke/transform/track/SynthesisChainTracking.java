@@ -158,8 +158,23 @@ public class SynthesisChainTracking {
      * @return The list of CIF events corresponding to the UML elements.
      */
     public List<Event> getEventsOf(Set<? extends RedefinableElement> umlElements, UmlToCifTranslationPurpose purpose) {
-        return cifEventTraceInfo.entrySet().stream().filter(e -> e.getValue().getTranslationPurpose().equals(purpose)
-                && umlElements.contains(e.getValue().getUmlElement())).map(Map.Entry::getKey).toList();
+        switch (purpose) {
+            case SYNTHESIS: {
+                return cifEventTraceInfo.entrySet().stream()
+                        .filter(e -> e.getValue().getTranslationPurpose().equals(purpose)
+                                && umlElements.contains(e.getValue().getUmlElement()))
+                        .map(Map.Entry::getKey).toList();
+            }
+            case GUARD_COMPUTATION:
+            case LANGUAGE_EQUIVALENCE: {
+                return cifEventTraceInfo.entrySet().stream()
+                        .filter(e -> e.getValue().getTranslationPurpose().equals(purpose) && umlElements
+                                .contains(getOriginalUmlElement((ActivityNode)e.getValue().getUmlElement())))
+                        .map(Map.Entry::getKey).toList();
+            }
+            default:
+                throw new IllegalArgumentException("Unexpected value: " + purpose);
+        }
     }
 
     /**
