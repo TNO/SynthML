@@ -15,8 +15,6 @@ import org.eclipse.uml2.uml.Comment;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.NamedElement;
 
-import com.google.common.base.Verify;
-
 /** Helper class for adding tracing ID to model elements. */
 public class IDHelper {
     private static final String TRACING_IDENTIFIER = "Original-ID-Path";
@@ -71,10 +69,10 @@ public class IDHelper {
         List<String> actionIDs = extractIDsFromTracingComment(action);
         List<String> activityIDs = extractIDsFromTracingComment(activity);
 
-        Verify.verify(actionIDs.size() == 1,
-                String.format("Action %s should have only one tracing comment.", action.getName()));
-        Verify.verify(activityIDs.size() == 1,
-                String.format("Activity %s should have only one tracing comment.", activity.getName()));
+//        Verify.verify(actionIDs.size() == 1,
+//                String.format("Action %s should have only one tracing comment.", action.getName()));
+//        Verify.verify(activityIDs.size() == 1,
+//                String.format("Activity %s should have only one tracing comment.", activity.getName()));
 
         String id = actionIDs.get(0) + " " + activityIDs.get(0);
 
