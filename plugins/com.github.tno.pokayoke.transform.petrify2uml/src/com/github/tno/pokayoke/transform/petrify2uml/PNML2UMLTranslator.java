@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.io.FilenameUtils;
-import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityFinalNode;
@@ -38,6 +37,7 @@ import org.eclipse.uml2.uml.UMLFactory;
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.transform.track.SynthesisChainTracking;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Verify;
 
 import fr.lip6.move.pnml.framework.utils.exception.ImportException;
 import fr.lip6.move.pnml.framework.utils.exception.InvalidIDException;
@@ -162,7 +162,7 @@ public class PNML2UMLTranslator {
         places.forEach(t -> translate(t, tracker));
 
         // Post-process the UML activity to introduce forks and joins where needed.
-        introduceForksAndJoins();
+        introduceForksAndJoins(tracker);
 
         // Rename any duplication markers by means of action renaming.
         transitionMapping.values().forEach(act -> act.setName(getNameWithoutDuplicationPostfix(act.getName())));
@@ -289,48 +289,69 @@ public class PNML2UMLTranslator {
         }
     }
 
-    private void introduceForksAndJoins() {
-        // Collect all action nodes in the given UML activity.
-        List<Action> actions = activity.getNodes().stream().filter(Action.class::isInstance).map(Action.class::cast)
-                .toList();
+    private void introduceForksAndJoins(SynthesisChainTracking tracker) {
+        // Collect all activity nodes in the given UML activity.
+        List<ActivityNode> activityNodes = new ArrayList<>(activity.getNodes());
 
-        // Transform any fork or join pattern in any action node.
-        for (Action action: actions) {
-            Preconditions.checkArgument(!action.getIncomings().isEmpty(), "Expected at least one incoming edge.");
-            Preconditions.checkArgument(!action.getOutgoings().isEmpty(), "Expected at least one outgoing edge.");
+        // Transform any fork or join pattern in any relevant activity node.
+        for (ActivityNode node: activityNodes) {
+            // Add join and fork only for opaque actions or control nodes that belong to a concrete activity.
+            if (node instanceof OpaqueAction
+                    || (tracker != null && tracker.isRelatedToControlNodeOfCalledActivity(node)))
+            {
+                Preconditions.checkArgument(!node.getIncomings().isEmpty(), "Expected at least one incoming edge.");
+                Preconditions.checkArgument(!node.getOutgoings().isEmpty(), "Expected at least one outgoing edge.");
 
-            // Introduce a join node in case there are multiple incoming control flows.
-            if (action.getIncomings().size() > 1) {
-                JoinNode join = UML_FACTORY.createJoinNode();
-                join.setActivity(activity);
-                join.setName("Join__" + action.getName());
-                nodeMapping.put(join, nodeMapping.get(action));
-
-                for (ActivityEdge controlFlow: new ArrayList<>(action.getIncomings())) {
-                    controlFlow.setName(concatenateNamesOf(controlFlow.getSource(), join));
-                    controlFlow.setTarget(join);
+                // Introduce a join node in case there are multiple incoming control flows, and the node is not a join
+                // node.
+                if (node.getIncomings().size() > 1 && !(node instanceof JoinNode)) {
+                    introduceJoinNode(node);
                 }
 
-                ControlFlow controlFlow = createControlFlow(activity, join, action);
-                controlFlowMapping.put(controlFlow, nodeMapping.get(action));
-            }
-
-            // Introduce a fork node in case there are multiple outgoing control flows.
-            if (action.getOutgoings().size() > 1) {
-                ForkNode fork = UML_FACTORY.createForkNode();
-                fork.setActivity(activity);
-                fork.setName("Fork__" + action.getName());
-                nodeMapping.put(fork, nodeMapping.get(action));
-
-                for (ActivityEdge controlFlow: new ArrayList<>(action.getOutgoings())) {
-                    controlFlow.setName(concatenateNamesOf(fork, controlFlow.getTarget()));
-                    controlFlow.setSource(fork);
+                // Introduce a fork node in case there are multiple outgoing control flows, and the node is not a fork
+                // node.
+                if (node.getOutgoings().size() > 1 && !(node instanceof ForkNode)) {
+                    introduceForkNode(node);
                 }
-
-                ControlFlow controlFlow = createControlFlow(activity, action, fork);
-                controlFlowMapping.put(controlFlow, nodeMapping.get(action));
+            } else {
+                // Sanity check: the node is a new node, created at this stage.
+                Verify.verify(tracker == null || tracker.belongsToSynthesizedActivity(node),
+                        String.format(
+                                "Node '%s' belongs to the synthesized activity but it is not translated "
+                                        + "as an opaque action and it is not a control node of a concrete activity.",
+                                node.getName()));
             }
         }
+    }
+
+    private void introduceJoinNode(ActivityNode node) {
+        JoinNode join = UML_FACTORY.createJoinNode();
+        join.setActivity(activity);
+        join.setName("Join__" + node.getName());
+        nodeMapping.put(join, nodeMapping.get(node));
+
+        for (ActivityEdge controlFlow: new ArrayList<>(node.getIncomings())) {
+            controlFlow.setName(concatenateNamesOf(controlFlow.getSource(), join));
+            controlFlow.setTarget(join);
+        }
+
+        ControlFlow controlFlow = createControlFlow(activity, join, node);
+        controlFlowMapping.put(controlFlow, nodeMapping.get(node));
+    }
+
+    private void introduceForkNode(ActivityNode node) {
+        ForkNode fork = UML_FACTORY.createForkNode();
+        fork.setActivity(activity);
+        fork.setName("Fork__" + node.getName());
+        nodeMapping.put(fork, nodeMapping.get(node));
+
+        for (ActivityEdge controlFlow: new ArrayList<>(node.getOutgoings())) {
+            controlFlow.setName(concatenateNamesOf(fork, controlFlow.getTarget()));
+            controlFlow.setSource(fork);
+        }
+
+        ControlFlow controlFlow = createControlFlow(activity, node, fork);
+        controlFlowMapping.put(controlFlow, nodeMapping.get(node));
     }
 
     static ControlFlow createControlFlow(Activity activity, ActivityNode source, ActivityNode target) {
