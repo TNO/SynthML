@@ -29,7 +29,8 @@ Require-Bundle: org.eclipse.escet.cif.io;bundle-version="0.0.0",
  org.eclipse.escet.common.app.framework;bundle-version="8.0.0",
  com.github.tno.pokayoke.transform.uml2cif;bundle-version="0.0.0",
  com.github.tno.synthml.uml.profile.util;bundle-version="0.0.1",
- com.github.tno.pokayoke.transform.track;bundle-version="0.0.1"
+ com.github.tno.pokayoke.transform.track;bundle-version="0.0.1",
+ com.github.tno.pokayoke.transform.common
 Bundle-Vendor: TNO
 Automatic-Module-Name: com.github.tno.pokayoke.transform.activitysynthesis
 Bundle-RequiredExecutionEnvironment: JavaSE-21
