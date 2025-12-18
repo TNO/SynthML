@@ -1,0 +1,70 @@
+controllable __node__MergeNode__47__0;
+controllable __node__DecisionNode__48__0;
+controllable __node__DecisionNode__48__1;
+controllable __node__DecisionNode__49__0;
+controllable __node__OpaqueAction__50;
+controllable __node__OpaqueAction__51;
+controllable __node__DecisionNode__54__0;
+controllable __node__MergeNode__55__0;
+controllable __node__MergeNode__55__1;
+plant automaton Class1:
+  disc bool init = false;
+  disc bool p = false;
+  disc bool __controlflow__34;
+  disc bool __controlflow__35;
+  disc bool __controlflow__36;
+  disc bool __controlflow__38;
+  disc bool __controlflow__40;
+  disc bool __controlflow__42;
+  disc bool __controlflow__44;
+  disc bool __controlflow__45;
+  disc bool __controlflow__46 = true;
+  alg bool prec = not init;
+  alg bool __token_on_first_controlflow = __controlflow__46;
+  alg bool __precondition = prec and __token_on_first_controlflow;
+  alg bool postc = init or p;
+  alg bool __postcondition_without_structure__OneCall__30__Activity2__56 = OneCall__30__Activity2__56.__occurrences >= 0;
+  alg bool __postcondition_without_structure = postc and __postcondition_without_structure__OneCall__30__Activity2__56;
+  alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
+  alg bool __postcondition_with_structure__controlflow__34 = not __controlflow__34;
+  alg bool __postcondition_with_structure__controlflow__35 = not __controlflow__35;
+  alg bool __postcondition_with_structure__controlflow__36 = not __controlflow__36;
+  alg bool __postcondition_with_structure__controlflow__38 = not __controlflow__38;
+  alg bool __postcondition_with_structure__controlflow__40 = not __controlflow__40;
+  alg bool __postcondition_with_structure__controlflow__42 = not __controlflow__42;
+  alg bool __postcondition_with_structure__controlflow__44 = not __controlflow__44;
+  alg bool __postcondition_with_structure__controlflow__46 = not __controlflow__46;
+  alg bool __token_on_last_controlflow = __controlflow__45;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure and __postcondition_with_structure__controlflow__34 and (__postcondition_with_structure__controlflow__35 and (__postcondition_with_structure__controlflow__36 and __postcondition_with_structure__controlflow__38)) and (__postcondition_with_structure__controlflow__40 and __postcondition_with_structure__controlflow__42 and (__postcondition_with_structure__controlflow__44 and (__postcondition_with_structure__controlflow__46 and __token_on_last_controlflow)));
+  initial __precondition;
+  marked __postcondition_with_structure;
+  location:
+    initial;
+    marked;
+    edge __node__MergeNode__47__0 when true, __controlflow__44, not __controlflow__45 do __controlflow__44 := false, __controlflow__45 := true;
+    edge __node__DecisionNode__48__0 when true, __controlflow__34, not __controlflow__36 do __controlflow__34 := false, __controlflow__36 := true;
+    edge __node__DecisionNode__48__1 when true, __controlflow__34, not __controlflow__38 do __controlflow__34 := false, __controlflow__38 := true;
+    edge __node__DecisionNode__49__0 when true, __controlflow__46, not __controlflow__35 do __controlflow__46 := false, __controlflow__35 := true;
+    edge __node__OpaqueAction__50 when not init, __controlflow__36, true, not __controlflow__40 do init := true, __controlflow__36 := false, __controlflow__40 := true;
+    edge __node__OpaqueAction__51 when true, __controlflow__38, true, not __controlflow__42 do p := true, __controlflow__38 := false, __controlflow__42 := true;
+    edge __node__DecisionNode__54__0 when true, __controlflow__35, not __controlflow__34 do __controlflow__35 := false, __controlflow__34 := true;
+    edge __node__MergeNode__55__0 when true, __controlflow__42, not __controlflow__44 do __controlflow__42 := false, __controlflow__44 := true;
+    edge __node__MergeNode__55__1 when true, __controlflow__40, not __controlflow__44 do __controlflow__40 := false, __controlflow__44 := true;
+end
+requirement automaton OneCall__30__Activity2__56:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+    edge __node__DecisionNode__49__0 when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+requirement invariant Class1.__postcondition_with_structure disables __node__MergeNode__47__0;
+requirement invariant Class1.__postcondition_with_structure disables __node__DecisionNode__48__0;
+requirement invariant Class1.__postcondition_with_structure disables __node__DecisionNode__48__1;
+requirement invariant Class1.__postcondition_without_structure disables __node__DecisionNode__49__0;
+requirement invariant Class1.__postcondition_with_structure disables __node__OpaqueAction__50;
+requirement invariant Class1.__postcondition_with_structure disables __node__OpaqueAction__51;
+requirement invariant Class1.__postcondition_with_structure disables __node__DecisionNode__54__0;
+requirement invariant Class1.__postcondition_with_structure disables __node__MergeNode__55__0;
+requirement invariant Class1.__postcondition_with_structure disables __node__MergeNode__55__1;

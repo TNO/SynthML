@@ -1,0 +1,57 @@
+controllable flip1;
+uncontrollable flip1__na_result_1;
+controllable flip2;
+controllable flip3;
+controllable flip4;
+uncontrollable flip4__na_result_1;
+controllable flip5;
+controllable __node__InitialNode__109__0;
+uncontrollable __node__ActivityFinalNode__111__0;
+uncontrollable __node__CallBehaviorAction__113;
+uncontrollable __node__CallBehaviorAction__113__na_result_1;
+controllable __start;
+controllable __end;
+automaton projected:
+  alphabet flip1, flip1__na_result_1, flip2, flip3, flip4, flip4__na_result_1, flip5, __node__InitialNode__109__0, __node__ActivityFinalNode__111__0, __node__CallBehaviorAction__113, __node__CallBehaviorAction__113__na_result_1, __start, __end;
+  @state(synthesis_state_space: "__init")
+  location s1:
+    initial;
+    edge __start goto s2;
+  @state(synthesis_state_space: "loc1")
+  location s2:
+    edge __node__InitialNode__109__0 goto s3;
+    edge flip2 goto s4;
+  @state(synthesis_state_space: "loc3")
+  location s3:
+    edge __node__CallBehaviorAction__113 goto s6;
+    edge flip2 goto s5;
+  @state(synthesis_state_space: "loc2")
+  location s4:
+    edge __node__InitialNode__109__0 goto s5;
+  @state(synthesis_state_space: "loc4")
+  location s5:
+    edge __node__CallBehaviorAction__113 goto s7;
+  @state(synthesis_state_space: "loc5")
+  location s6:
+    edge __node__CallBehaviorAction__113__na_result_1 goto s8;
+    edge flip2 goto s7;
+  @state(synthesis_state_space: "loc6")
+  location s7:
+    edge __node__CallBehaviorAction__113__na_result_1 goto s9;
+  @state(synthesis_state_space: "loc7")
+  location s8:
+    edge __node__ActivityFinalNode__111__0 goto s10;
+    edge flip2 goto s9;
+  @state(synthesis_state_space: "loc8")
+  location s9:
+    edge __node__ActivityFinalNode__111__0 goto s11;
+  @state(synthesis_state_space: "loc9")
+  location s10:
+    edge flip2 goto s11;
+  @state(synthesis_state_space: "loc10")
+  location s11:
+    edge __end goto s12;
+  @state(synthesis_state_space: "__done")
+  location s12:
+    marked;
+end

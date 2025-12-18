@@ -1,0 +1,43 @@
+controllable __node__InitialNode__54__0;
+uncontrollable __node__ActivityFinalNode__56__0;
+uncontrollable __node__OpaqueAction__58;
+uncontrollable __node__OpaqueAction__60;
+uncontrollable __node__DecisionNode__62__0;
+uncontrollable __node__DecisionNode__62__1;
+uncontrollable __node__MergeNode__64__0;
+uncontrollable __node__MergeNode__64__1;
+automaton synthesis_state_space:
+  alphabet __node__InitialNode__54__0, __node__ActivityFinalNode__56__0, __node__OpaqueAction__58, __node__OpaqueAction__60, __node__DecisionNode__62__0, __node__DecisionNode__62__1, __node__MergeNode__64__0, __node__MergeNode__64__1;
+  @state(Class1: "*", Class1.__controlflow__36: false, Class1.__controlflow__38: false, Class1.__controlflow__40: false, Class1.__controlflow__43: false, Class1.__controlflow__46: false, Class1.__controlflow__50: false, Class1.init: false, Class1.p: false, OneCall__30__Activity2__34: "*", OneCall__30__Activity2__34.__occurrences: 0, sup: "*")
+  location loc1:
+    initial;
+    edge __node__InitialNode__54__0 goto loc2;
+  @state(Class1: "*", Class1.__controlflow__36: false, Class1.__controlflow__38: false, Class1.__controlflow__40: false, Class1.__controlflow__43: true, Class1.__controlflow__46: false, Class1.__controlflow__50: false, Class1.init: false, Class1.p: false, OneCall__30__Activity2__34: "*", OneCall__30__Activity2__34.__occurrences: 1, sup: "*")
+  location loc2:
+    edge __node__DecisionNode__62__0 goto loc3;
+    edge __node__DecisionNode__62__1 goto loc4;
+  @state(Class1: "*", Class1.__controlflow__36: false, Class1.__controlflow__38: false, Class1.__controlflow__40: false, Class1.__controlflow__43: false, Class1.__controlflow__46: true, Class1.__controlflow__50: false, Class1.init: false, Class1.p: false, OneCall__30__Activity2__34: "*", OneCall__30__Activity2__34.__occurrences: 1, sup: "*")
+  location loc3:
+    edge __node__OpaqueAction__58 goto loc5;
+  @state(Class1: "*", Class1.__controlflow__36: false, Class1.__controlflow__38: false, Class1.__controlflow__40: false, Class1.__controlflow__43: false, Class1.__controlflow__46: false, Class1.__controlflow__50: true, Class1.init: false, Class1.p: false, OneCall__30__Activity2__34: "*", OneCall__30__Activity2__34.__occurrences: 1, sup: "*")
+  location loc4:
+    edge __node__OpaqueAction__60 goto loc6;
+  @state(Class1: "*", Class1.__controlflow__36: false, Class1.__controlflow__38: true, Class1.__controlflow__40: false, Class1.__controlflow__43: false, Class1.__controlflow__46: false, Class1.__controlflow__50: false, Class1.init: true, Class1.p: false, OneCall__30__Activity2__34: "*", OneCall__30__Activity2__34.__occurrences: 1, sup: "*")
+  location loc5:
+    edge __node__MergeNode__64__1 goto loc7;
+  @state(Class1: "*", Class1.__controlflow__36: true, Class1.__controlflow__38: false, Class1.__controlflow__40: false, Class1.__controlflow__43: false, Class1.__controlflow__46: false, Class1.__controlflow__50: false, Class1.init: false, Class1.p: true, OneCall__30__Activity2__34: "*", OneCall__30__Activity2__34.__occurrences: 1, sup: "*")
+  location loc6:
+    edge __node__MergeNode__64__0 goto loc8;
+  @state(Class1: "*", Class1.__controlflow__36: false, Class1.__controlflow__38: false, Class1.__controlflow__40: true, Class1.__controlflow__43: false, Class1.__controlflow__46: false, Class1.__controlflow__50: false, Class1.init: true, Class1.p: false, OneCall__30__Activity2__34: "*", OneCall__30__Activity2__34.__occurrences: 1, sup: "*")
+  location loc7:
+    edge __node__ActivityFinalNode__56__0 goto loc9;
+  @state(Class1: "*", Class1.__controlflow__36: false, Class1.__controlflow__38: false, Class1.__controlflow__40: true, Class1.__controlflow__43: false, Class1.__controlflow__46: false, Class1.__controlflow__50: false, Class1.init: false, Class1.p: true, OneCall__30__Activity2__34: "*", OneCall__30__Activity2__34.__occurrences: 1, sup: "*")
+  location loc8:
+    edge __node__ActivityFinalNode__56__0 goto loc10;
+  @state(Class1: "*", Class1.__controlflow__36: false, Class1.__controlflow__38: false, Class1.__controlflow__40: false, Class1.__controlflow__43: false, Class1.__controlflow__46: false, Class1.__controlflow__50: false, Class1.init: true, Class1.p: false, OneCall__30__Activity2__34: "*", OneCall__30__Activity2__34.__occurrences: 1, sup: "*")
+  location loc9:
+    marked;
+  @state(Class1: "*", Class1.__controlflow__36: false, Class1.__controlflow__38: false, Class1.__controlflow__40: false, Class1.__controlflow__43: false, Class1.__controlflow__46: false, Class1.__controlflow__50: false, Class1.init: false, Class1.p: true, OneCall__30__Activity2__34: "*", OneCall__30__Activity2__34.__occurrences: 1, sup: "*")
+  location loc10:
+    marked;
+end

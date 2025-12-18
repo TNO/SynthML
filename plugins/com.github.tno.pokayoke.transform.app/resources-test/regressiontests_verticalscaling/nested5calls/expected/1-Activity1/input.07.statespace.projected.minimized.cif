@@ -1,0 +1,28 @@
+controllable flip1;
+uncontrollable flip1__na_result_1;
+controllable flip2;
+controllable flip3;
+controllable flip4;
+uncontrollable flip4__na_result_1;
+controllable flip5;
+controllable __start;
+controllable __end;
+automaton minimal:
+  alphabet flip1, flip1__na_result_1, flip2, flip3, flip4, flip4__na_result_1, flip5, __start, __end;
+  @state(projected: "s1")
+  location s1:
+    initial;
+    edge __start goto s2;
+  @state(projected: "s2")
+  location s2:
+    edge flip1 goto s4;
+  @state(projected: "s5")
+  location s3:
+    marked;
+  @state(projected: "s3")
+  location s4:
+    edge flip1__na_result_1 goto s5;
+  @state(projected: "s4")
+  location s5:
+    edge __end goto s3;
+end

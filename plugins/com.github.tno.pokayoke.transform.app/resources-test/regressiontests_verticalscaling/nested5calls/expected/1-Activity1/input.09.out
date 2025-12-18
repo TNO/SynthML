@@ -1,0 +1,15 @@
+.model minimal
+.dummy  __start flip1 flip1__na_result_1 __end __loop
+.graph
+__end p5
+__loop p5
+__start p2
+flip1 p3
+flip1__na_result_1 p4
+p1 __start
+p2 flip1
+p3 flip1__na_result_1
+p4 __end
+p5 __loop
+.marking { p1 }
+.end

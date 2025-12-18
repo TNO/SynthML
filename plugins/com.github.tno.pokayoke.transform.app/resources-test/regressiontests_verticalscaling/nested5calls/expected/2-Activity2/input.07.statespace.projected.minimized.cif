@@ -1,0 +1,57 @@
+controllable flip1;
+uncontrollable flip1__na_result_1;
+controllable flip2;
+controllable flip3;
+controllable flip4;
+uncontrollable flip4__na_result_1;
+controllable flip5;
+controllable __node__InitialNode__109__0;
+uncontrollable __node__ActivityFinalNode__111__0;
+uncontrollable __node__CallBehaviorAction__113;
+uncontrollable __node__CallBehaviorAction__113__na_result_1;
+controllable __start;
+controllable __end;
+automaton minimal:
+  alphabet flip1, flip1__na_result_1, flip2, flip3, flip4, flip4__na_result_1, flip5, __node__InitialNode__109__0, __node__ActivityFinalNode__111__0, __node__CallBehaviorAction__113, __node__CallBehaviorAction__113__na_result_1, __start, __end;
+  @state(projected: "s1")
+  location s1:
+    initial;
+    edge __start goto s2;
+  @state(projected: "s2")
+  location s2:
+    edge __node__InitialNode__109__0 goto s4;
+    edge flip2 goto s5;
+  @state(projected: "s12")
+  location s3:
+    marked;
+  @state(projected: "s3")
+  location s4:
+    edge __node__CallBehaviorAction__113 goto s7;
+    edge flip2 goto s6;
+  @state(projected: "s4")
+  location s5:
+    edge __node__InitialNode__109__0 goto s6;
+  @state(projected: "s5")
+  location s6:
+    edge __node__CallBehaviorAction__113 goto s12;
+  @state(projected: "s6")
+  location s7:
+    edge __node__CallBehaviorAction__113__na_result_1 goto s10;
+    edge flip2 goto s12;
+  @state(projected: "s9")
+  location s8:
+    edge __node__ActivityFinalNode__111__0 goto s9;
+  @state(projected: "s11")
+  location s9:
+    edge __end goto s3;
+  @state(projected: "s8")
+  location s10:
+    edge __node__ActivityFinalNode__111__0 goto s11;
+    edge flip2 goto s8;
+  @state(projected: "s10")
+  location s11:
+    edge flip2 goto s9;
+  @state(projected: "s7")
+  location s12:
+    edge __node__CallBehaviorAction__113__na_result_1 goto s8;
+end

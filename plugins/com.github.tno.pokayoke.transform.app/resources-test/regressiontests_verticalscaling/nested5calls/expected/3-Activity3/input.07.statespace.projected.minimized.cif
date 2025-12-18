@@ -1,0 +1,137 @@
+controllable flip1;
+uncontrollable flip1__na_result_1;
+controllable flip2;
+controllable flip3;
+controllable flip4;
+uncontrollable flip4__na_result_1;
+controllable flip5;
+controllable __node__InitialNode__147__0;
+uncontrollable __node__ActivityFinalNode__150__0;
+uncontrollable __node__CallBehaviorAction__153;
+uncontrollable __node__CallBehaviorAction__153__na_result_1;
+uncontrollable __node__MergeNode__210__0;
+uncontrollable __node__DecisionNode__212__0;
+controllable __node__InitialNode__214__0;
+uncontrollable __node__ActivityFinalNode__216__0;
+uncontrollable __node__JoinNode__218;
+uncontrollable __node__ForkNode__220;
+uncontrollable __node__CallBehaviorAction__222;
+uncontrollable __node__CallBehaviorAction__222__na_result_1;
+uncontrollable __node__CallBehaviorAction__224;
+controllable __start;
+controllable __end;
+automaton minimal:
+  alphabet flip1, flip1__na_result_1, flip2, flip3, flip4, flip4__na_result_1, flip5, __node__InitialNode__147__0, __node__ActivityFinalNode__150__0, __node__CallBehaviorAction__153, __node__CallBehaviorAction__153__na_result_1, __node__MergeNode__210__0, __node__DecisionNode__212__0, __node__InitialNode__214__0, __node__ActivityFinalNode__216__0, __node__JoinNode__218, __node__ForkNode__220, __node__CallBehaviorAction__222, __node__CallBehaviorAction__222__na_result_1, __node__CallBehaviorAction__224, __start, __end;
+  @state(projected: "s1")
+  location s1:
+    initial;
+    edge __start goto s2;
+  @state(projected: "s2")
+  location s2:
+    edge __node__InitialNode__214__0 goto s4;
+    edge flip3 goto s5;
+  @state(projected: "s30")
+  location s3:
+    marked;
+  @state(projected: "s3")
+  location s4:
+    edge __node__ForkNode__220 goto s16;
+    edge flip3 goto s20;
+  @state(projected: "s4")
+  location s5:
+    edge __node__InitialNode__214__0 goto s20;
+  @state(projected: "s19")
+  location s6:
+    edge __node__CallBehaviorAction__224 goto s7;
+    edge __node__MergeNode__210__0 goto s8;
+  @state(projected: "s22")
+  location s7:
+    edge __node__MergeNode__210__0 goto s15;
+  @state(projected: "s23")
+  location s8:
+    edge __node__CallBehaviorAction__224 goto s15;
+  @state(projected: "s17")
+  location s9:
+    edge __node__CallBehaviorAction__224 goto s10;
+    edge __node__MergeNode__210__0 goto s11;
+    edge flip3 goto s6;
+  @state(projected: "s20")
+  location s10:
+    edge __node__MergeNode__210__0 goto s19;
+    edge flip3 goto s7;
+  @state(projected: "s21")
+  location s11:
+    edge __node__CallBehaviorAction__224 goto s19;
+    edge flip3 goto s8;
+  @state(projected: "s7")
+  location s12:
+    edge __node__CallBehaviorAction__224 goto s13;
+    edge __node__DecisionNode__212__0 goto s14;
+  @state(projected: "s10")
+  location s13:
+    edge __node__DecisionNode__212__0 goto s21;
+  @state(projected: "s11")
+  location s14:
+    edge __node__CallBehaviorAction__224 goto s21;
+    edge __node__CallBehaviorAction__222 goto s28;
+  @state(projected: "s25")
+  location s15:
+    edge __node__JoinNode__218 goto s23;
+  @state(projected: "s6")
+  location s16:
+    edge __node__CallBehaviorAction__224 goto s17;
+    edge __node__DecisionNode__212__0 goto s18;
+    edge flip3 goto s12;
+  @state(projected: "s8")
+  location s17:
+    edge __node__DecisionNode__212__0 goto s22;
+    edge flip3 goto s13;
+  @state(projected: "s9")
+  location s18:
+    edge __node__CallBehaviorAction__224 goto s22;
+    edge __node__CallBehaviorAction__222 goto s27;
+    edge flip3 goto s14;
+  @state(projected: "s24")
+  location s19:
+    edge __node__JoinNode__218 goto s25;
+    edge flip3 goto s15;
+  @state(projected: "s5")
+  location s20:
+    edge __node__ForkNode__220 goto s12;
+  @state(projected: "s14")
+  location s21:
+    edge __node__CallBehaviorAction__222 goto s30;
+  @state(projected: "s12")
+  location s22:
+    edge __node__CallBehaviorAction__222 goto s29;
+    edge flip3 goto s21;
+  @state(projected: "s27")
+  location s23:
+    edge __node__ActivityFinalNode__216__0 goto s24;
+  @state(projected: "s29")
+  location s24:
+    edge __end goto s3;
+  @state(projected: "s26")
+  location s25:
+    edge __node__ActivityFinalNode__216__0 goto s26;
+    edge flip3 goto s23;
+  @state(projected: "s28")
+  location s26:
+    edge flip3 goto s24;
+  @state(projected: "s13")
+  location s27:
+    edge __node__CallBehaviorAction__224 goto s29;
+    edge __node__CallBehaviorAction__222__na_result_1 goto s9;
+    edge flip3 goto s28;
+  @state(projected: "s15")
+  location s28:
+    edge __node__CallBehaviorAction__224 goto s30;
+    edge __node__CallBehaviorAction__222__na_result_1 goto s6;
+  @state(projected: "s16")
+  location s29:
+    edge __node__CallBehaviorAction__222__na_result_1 goto s10;
+    edge flip3 goto s30;
+  @state(projected: "s18")
+  location s30:
+    edge __node__CallBehaviorAction__222__na_result_1 goto s7;
+end

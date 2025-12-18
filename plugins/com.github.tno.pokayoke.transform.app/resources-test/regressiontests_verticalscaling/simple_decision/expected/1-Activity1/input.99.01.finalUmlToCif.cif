@@ -1,0 +1,41 @@
+uncontrollable __node__MergeNode__50__0;
+uncontrollable __node__DecisionNode__51__0;
+uncontrollable __node__DecisionNode__51__1;
+uncontrollable __node__DecisionNode__52__0;
+uncontrollable __node__OpaqueAction__53;
+uncontrollable __node__OpaqueAction__54;
+uncontrollable __node__DecisionNode__57__0;
+uncontrollable __node__MergeNode__58__0;
+uncontrollable __node__MergeNode__58__1;
+plant automaton Class1:
+  disc bool init = false;
+  disc bool p = false;
+  disc bool __controlflow__34;
+  disc bool __controlflow__36;
+  disc bool __controlflow__38;
+  disc bool __controlflow__40;
+  disc bool __controlflow__42;
+  disc bool __controlflow__44;
+  disc bool __controlflow__46;
+  disc bool __controlflow__47;
+  disc bool __controlflow__48 = true;
+  alg bool prec = not init;
+  alg bool __token_on_first_controlflow = __controlflow__48;
+  alg bool __precondition = prec and __token_on_first_controlflow;
+  alg bool __token_on_last_controlflow = __controlflow__47;
+  alg bool __postcondition = __token_on_last_controlflow;
+  initial __precondition;
+  marked __postcondition;
+  location:
+    initial;
+    marked;
+    edge __node__MergeNode__50__0 when true, __controlflow__46, true, not __controlflow__47 do __controlflow__46 := false, __controlflow__47 := true;
+    edge __node__DecisionNode__51__0 when true, __controlflow__34, not __controlflow__38 do __controlflow__34 := false, __controlflow__38 := true;
+    edge __node__DecisionNode__51__1 when true, __controlflow__34, not __controlflow__40 do __controlflow__34 := false, __controlflow__40 := true;
+    edge __node__DecisionNode__52__0 when true, __controlflow__48, not __controlflow__36 do __controlflow__48 := false, __controlflow__36 := true;
+    edge __node__OpaqueAction__53 when not init, __controlflow__38, true, not __controlflow__42 do init := true, __controlflow__38 := false, __controlflow__42 := true;
+    edge __node__OpaqueAction__54 when true, __controlflow__40, true, not __controlflow__44 do p := true, __controlflow__40 := false, __controlflow__44 := true;
+    edge __node__DecisionNode__57__0 when true, __controlflow__36, not __controlflow__34 do __controlflow__36 := false, __controlflow__34 := true;
+    edge __node__MergeNode__58__0 when true, __controlflow__44, true, not __controlflow__46 do __controlflow__44 := false, __controlflow__46 := true;
+    edge __node__MergeNode__58__1 when true, __controlflow__42, true, not __controlflow__46 do __controlflow__42 := false, __controlflow__46 := true;
+end

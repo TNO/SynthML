@@ -1,0 +1,125 @@
+controllable __node__MergeNode__275__0;
+controllable __node__DecisionNode__276__0;
+controllable __node__ForkNode__277;
+controllable __node__DecisionNode__278__0;
+controllable __node__JoinNode__279;
+controllable __node__MergeNode__280__0;
+controllable __node__JoinNode__283;
+controllable __node__ForkNode__284;
+controllable __node__CallBehaviorAction__285;
+uncontrollable __node__CallBehaviorAction__285__na_result_1;
+controllable __node__CallBehaviorAction__286;
+controllable __node__CallBehaviorAction__287;
+plant automaton Class1:
+  disc bool v1 = false;
+  disc bool v2 = false;
+  disc bool v3 = false;
+  disc bool v4 = false;
+  disc bool v5 = false;
+  disc bool __controlflow__254;
+  disc bool __controlflow__256;
+  disc bool __controlflow__258;
+  disc bool __controlflow__260;
+  disc bool __controlflow__261;
+  disc bool __controlflow__262;
+  disc bool __controlflow__263;
+  disc bool __controlflow__264;
+  disc bool __controlflow__266;
+  disc bool __controlflow__267;
+  disc bool __controlflow__269;
+  disc bool __controlflow__271;
+  disc bool __controlflow__273;
+  disc bool __controlflow__274 = true;
+  disc bool __nonAtomicActive____node__CallBehaviorAction__285;
+  alg bool precondition3 = not v3 and not v2 and not v1;
+  alg bool __token_on_first_controlflow = __controlflow__274;
+  alg bool __precondition = precondition3 and __token_on_first_controlflow;
+  alg bool postcondition3 = v3 and v2 and v1;
+  alg bool __postcondition_without_structure__nonAtomicActive____node__CallBehaviorAction__285 = not __nonAtomicActive____node__CallBehaviorAction__285;
+  alg bool __postcondition_without_structure__ZeroCalls__230__flip1__86 = ZeroCalls__230__flip1__86.__occurrences >= 0;
+  alg bool __postcondition_without_structure__ZeroCalls__230__flip2__90 = ZeroCalls__230__flip2__90.__occurrences >= 0;
+  alg bool __postcondition_without_structure__ZeroCalls__230__flip4__98 = ZeroCalls__230__flip4__98.__occurrences >= 0;
+  alg bool __postcondition_without_structure__ZeroCalls__230__flip5__102 = ZeroCalls__230__flip5__102.__occurrences >= 0;
+  alg bool __postcondition_without_structure__ZeroCalls__230__Activity1__106 = ZeroCalls__230__Activity1__106.__occurrences >= 0;
+  alg bool __postcondition_without_structure = postcondition3 and (__postcondition_without_structure__nonAtomicActive____node__CallBehaviorAction__285 and __postcondition_without_structure__ZeroCalls__230__flip1__86) and (__postcondition_without_structure__ZeroCalls__230__flip2__90 and __postcondition_without_structure__ZeroCalls__230__flip4__98 and (__postcondition_without_structure__ZeroCalls__230__flip5__102 and __postcondition_without_structure__ZeroCalls__230__Activity1__106));
+  alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
+  alg bool __postcondition_with_structure__controlflow__254 = not __controlflow__254;
+  alg bool __postcondition_with_structure__controlflow__256 = not __controlflow__256;
+  alg bool __postcondition_with_structure__controlflow__258 = not __controlflow__258;
+  alg bool __postcondition_with_structure__controlflow__260 = not __controlflow__260;
+  alg bool __postcondition_with_structure__controlflow__261 = not __controlflow__261;
+  alg bool __postcondition_with_structure__controlflow__262 = not __controlflow__262;
+  alg bool __postcondition_with_structure__controlflow__263 = not __controlflow__263;
+  alg bool __postcondition_with_structure__controlflow__264 = not __controlflow__264;
+  alg bool __postcondition_with_structure__controlflow__266 = not __controlflow__266;
+  alg bool __postcondition_with_structure__controlflow__267 = not __controlflow__267;
+  alg bool __postcondition_with_structure__controlflow__269 = not __controlflow__269;
+  alg bool __postcondition_with_structure__controlflow__271 = not __controlflow__271;
+  alg bool __postcondition_with_structure__controlflow__274 = not __controlflow__274;
+  alg bool __token_on_last_controlflow = __controlflow__273;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure and (__postcondition_with_structure__controlflow__254 and __postcondition_with_structure__controlflow__256) and (__postcondition_with_structure__controlflow__258 and __postcondition_with_structure__controlflow__260 and (__postcondition_with_structure__controlflow__261 and __postcondition_with_structure__controlflow__262)) and (__postcondition_with_structure__controlflow__263 and __postcondition_with_structure__controlflow__264 and (__postcondition_with_structure__controlflow__266 and __postcondition_with_structure__controlflow__267) and (__postcondition_with_structure__controlflow__269 and __postcondition_with_structure__controlflow__271 and (__postcondition_with_structure__controlflow__274 and __token_on_last_controlflow)));
+  initial __precondition;
+  marked __postcondition_with_structure;
+  location:
+    initial;
+    marked;
+    edge __node__MergeNode__275__0 when true, __controlflow__256, true, not __controlflow__260, v2 and v1 do __controlflow__256 := false, __controlflow__260 := true;
+    edge __node__DecisionNode__276__0 when true, __controlflow__269, not __controlflow__254 do __controlflow__269 := false, __controlflow__254 := true;
+    edge __node__ForkNode__277 when true, __controlflow__264, true, not __controlflow__267, not __controlflow__269 do __controlflow__264 := false, __controlflow__267 := true, __controlflow__269 := true;
+    edge __node__DecisionNode__278__0 when true, __controlflow__262, not __controlflow__264 do __controlflow__262 := false, __controlflow__264 := true;
+    edge __node__JoinNode__279 when true, __controlflow__261, true, __controlflow__271, true, not __controlflow__256 do __controlflow__261 := false, __controlflow__271 := false, __controlflow__256 := true;
+    edge __node__MergeNode__280__0 when true, __controlflow__258, true, not __controlflow__261 do __controlflow__258 := false, __controlflow__261 := true;
+    edge __node__JoinNode__283 when true, __controlflow__260, __controlflow__266, not __controlflow__273 do __controlflow__260 := false, __controlflow__266 := false, __controlflow__273 := true;
+    edge __node__ForkNode__284 when true, __controlflow__274, not __controlflow__262, not __controlflow__263 do __controlflow__274 := false, __controlflow__262 := true, __controlflow__263 := true;
+    edge __node__CallBehaviorAction__285 when not v1, __controlflow__254, true, not __controlflow__258, not __nonAtomicActive____node__CallBehaviorAction__285 do __controlflow__254 := false, __nonAtomicActive____node__CallBehaviorAction__285 := true;
+    edge __node__CallBehaviorAction__285__na_result_1 when not __controlflow__258, __nonAtomicActive____node__CallBehaviorAction__285 do v1 := true, __controlflow__258 := true, __nonAtomicActive____node__CallBehaviorAction__285 := false;
+    edge __node__CallBehaviorAction__286 when not v2, __controlflow__267, true, not __controlflow__271 do v2 := true, __controlflow__267 := false, __controlflow__271 := true;
+    edge __node__CallBehaviorAction__287 when not v3, __controlflow__263, not __controlflow__266 do v3 := true, __controlflow__263 := false, __controlflow__266 := true;
+end
+requirement automaton ZeroCalls__230__flip1__86:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+end
+requirement automaton ZeroCalls__230__flip2__90:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+end
+requirement automaton ZeroCalls__230__flip4__98:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+end
+requirement automaton ZeroCalls__230__flip5__102:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+end
+requirement automaton ZeroCalls__230__Activity1__106:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+end
+requirement invariant Class1.__postcondition_with_structure disables __node__MergeNode__275__0;
+requirement invariant Class1.__postcondition_with_structure disables __node__DecisionNode__276__0;
+requirement invariant Class1.__postcondition_with_structure disables __node__ForkNode__277;
+requirement invariant Class1.__postcondition_without_structure disables __node__DecisionNode__278__0;
+requirement invariant Class1.__postcondition_with_structure disables __node__JoinNode__279;
+requirement invariant Class1.__postcondition_with_structure disables __node__MergeNode__280__0;
+requirement invariant Class1.__postcondition_with_structure disables __node__JoinNode__283;
+requirement invariant Class1.__postcondition_with_structure disables __node__ForkNode__284;
+requirement invariant Class1.__postcondition_with_structure disables __node__CallBehaviorAction__285;
+requirement invariant Class1.__postcondition_with_structure disables __node__CallBehaviorAction__285__na_result_1;
+requirement invariant Class1.__postcondition_with_structure disables __node__CallBehaviorAction__286;
+requirement invariant Class1.__postcondition_without_structure disables __node__CallBehaviorAction__287;

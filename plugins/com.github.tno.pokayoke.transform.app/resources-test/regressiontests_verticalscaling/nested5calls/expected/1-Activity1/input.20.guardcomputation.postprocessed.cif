@@ -1,0 +1,63 @@
+controllable __node__CallBehaviorAction__72;
+uncontrollable __node__CallBehaviorAction__72__na_result_1;
+plant automaton Class1:
+  disc bool v1 = false;
+  disc bool v2 = false;
+  disc bool v3 = false;
+  disc bool v4 = false;
+  disc bool v5 = false;
+  disc bool __controlflow__68;
+  disc bool __controlflow__69 = true;
+  disc bool __nonAtomicActive____node__CallBehaviorAction__72;
+  alg bool precondition1 = not v1;
+  alg bool __token_on_first_controlflow = __controlflow__69;
+  alg bool __precondition = precondition1 and __token_on_first_controlflow;
+  alg bool postcondition1 = v1;
+  alg bool __postcondition_without_structure__nonAtomicActive____node__CallBehaviorAction__72 = not __nonAtomicActive____node__CallBehaviorAction__72;
+  alg bool __postcondition_without_structure__ZeroCalls__64__flip2__46 = ZeroCalls__64__flip2__46.__occurrences >= 0;
+  alg bool __postcondition_without_structure__ZeroCalls__64__flip3__48 = ZeroCalls__64__flip3__48.__occurrences >= 0;
+  alg bool __postcondition_without_structure__ZeroCalls__64__flip4__50 = ZeroCalls__64__flip4__50.__occurrences >= 0;
+  alg bool __postcondition_without_structure__ZeroCalls__64__flip5__52 = ZeroCalls__64__flip5__52.__occurrences >= 0;
+  alg bool __postcondition_without_structure = postcondition1 and (__postcondition_without_structure__nonAtomicActive____node__CallBehaviorAction__72 and __postcondition_without_structure__ZeroCalls__64__flip2__46) and (__postcondition_without_structure__ZeroCalls__64__flip3__48 and (__postcondition_without_structure__ZeroCalls__64__flip4__50 and __postcondition_without_structure__ZeroCalls__64__flip5__52));
+  alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
+  alg bool __postcondition_with_structure__controlflow__69 = not __controlflow__69;
+  alg bool __token_on_last_controlflow = __controlflow__68;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure and (__postcondition_with_structure__controlflow__69 and __token_on_last_controlflow);
+  initial __precondition;
+  marked __postcondition_with_structure;
+  location:
+    initial;
+    marked;
+    edge __node__CallBehaviorAction__72 when not v1, __controlflow__69, not __controlflow__68, not __nonAtomicActive____node__CallBehaviorAction__72 do __controlflow__69 := false, __nonAtomicActive____node__CallBehaviorAction__72 := true;
+    edge __node__CallBehaviorAction__72__na_result_1 when not __controlflow__68, __nonAtomicActive____node__CallBehaviorAction__72 do v1 := true, __controlflow__68 := true, __nonAtomicActive____node__CallBehaviorAction__72 := false;
+end
+requirement automaton ZeroCalls__64__flip2__46:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+end
+requirement automaton ZeroCalls__64__flip3__48:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+end
+requirement automaton ZeroCalls__64__flip4__50:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+end
+requirement automaton ZeroCalls__64__flip5__52:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+end
+requirement invariant Class1.__postcondition_without_structure disables __node__CallBehaviorAction__72;
+requirement invariant Class1.__postcondition_with_structure disables __node__CallBehaviorAction__72__na_result_1;

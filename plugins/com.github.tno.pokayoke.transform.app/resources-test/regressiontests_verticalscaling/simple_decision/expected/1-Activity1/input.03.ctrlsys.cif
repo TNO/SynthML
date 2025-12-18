@@ -1,0 +1,65 @@
+controllable __node__InitialNode__54__0;
+uncontrollable __node__ActivityFinalNode__56__0;
+uncontrollable __node__OpaqueAction__58;
+uncontrollable __node__OpaqueAction__60;
+uncontrollable __node__DecisionNode__62__0;
+uncontrollable __node__DecisionNode__62__1;
+uncontrollable __node__MergeNode__64__0;
+uncontrollable __node__MergeNode__64__1;
+plant automaton Class1:
+  disc bool init = false;
+  disc bool p = false;
+  disc bool __controlflow__36;
+  disc bool __controlflow__38;
+  disc bool __controlflow__40;
+  disc bool __controlflow__43;
+  disc bool __controlflow__46;
+  disc bool __controlflow__50;
+  alg bool prec = not init;
+  alg bool __precondition = prec;
+  alg bool postc = init or p;
+  alg bool __postcondition__OneCall__30__Activity2__34 = OneCall__30__Activity2__34.__occurrences >= 0;
+  alg bool __postcondition__controlflow__36 = not __controlflow__36;
+  alg bool __postcondition__controlflow__38 = not __controlflow__38;
+  alg bool __postcondition__controlflow__40 = not __controlflow__40;
+  alg bool __postcondition__controlflow__43 = not __controlflow__43;
+  alg bool __postcondition__controlflow__46 = not __controlflow__46;
+  alg bool __postcondition__controlflow__50 = not __controlflow__50;
+  alg bool __postcondition = postc and __postcondition__OneCall__30__Activity2__34 and (__postcondition__controlflow__36 and __postcondition__controlflow__38) and (__postcondition__controlflow__40 and __postcondition__controlflow__43 and (__postcondition__controlflow__46 and __postcondition__controlflow__50));
+  initial __precondition;
+  marked __postcondition;
+  location:
+    initial;
+    marked;
+    edge __node__InitialNode__54__0 when true, not __controlflow__43 do __controlflow__43 := true;
+    edge __node__ActivityFinalNode__56__0 when true, __controlflow__40 do __controlflow__40 := false;
+    edge __node__OpaqueAction__58 when not init, __controlflow__46, not __controlflow__38 do init := true, __controlflow__46 := false, __controlflow__38 := true;
+    edge __node__OpaqueAction__60 when true, __controlflow__50, not __controlflow__36 do p := true, __controlflow__50 := false, __controlflow__36 := true;
+    edge __node__DecisionNode__62__0 when true, __controlflow__43, not __controlflow__46 do __controlflow__43 := false, __controlflow__46 := true;
+    edge __node__DecisionNode__62__1 when true, __controlflow__43, not __controlflow__50 do __controlflow__43 := false, __controlflow__50 := true;
+    edge __node__MergeNode__64__0 when true, __controlflow__36, not __controlflow__40 do __controlflow__36 := false, __controlflow__40 := true;
+    edge __node__MergeNode__64__1 when true, __controlflow__38, not __controlflow__40 do __controlflow__38 := false, __controlflow__40 := true;
+end
+supervisor automaton OneCall__30__Activity2__34:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+    edge __node__InitialNode__54__0 when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+supervisor automaton sup:
+  alphabet __node__InitialNode__54__0;
+  location:
+    initial;
+    marked;
+    edge __node__InitialNode__54__0 when true;
+end
+supervisor invariant Class1.__postcondition disables __node__InitialNode__54__0;
+supervisor invariant Class1.__postcondition disables __node__ActivityFinalNode__56__0;
+supervisor invariant Class1.__postcondition disables __node__OpaqueAction__58;
+supervisor invariant Class1.__postcondition disables __node__OpaqueAction__60;
+supervisor invariant Class1.__postcondition disables __node__DecisionNode__62__0;
+supervisor invariant Class1.__postcondition disables __node__DecisionNode__62__1;
+supervisor invariant Class1.__postcondition disables __node__MergeNode__64__0;
+supervisor invariant Class1.__postcondition disables __node__MergeNode__64__1;

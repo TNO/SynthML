@@ -1,0 +1,30 @@
+uncontrollable __node__MergeNode__44__0;
+uncontrollable __node__DecisionNode__45__0;
+uncontrollable __node__DecisionNode__46__0;
+uncontrollable __node__MergeNode__47__0;
+uncontrollable __node__OpaqueAction__48;
+plant automaton Class1:
+  disc bool p1 = false;
+  disc bool p2 = false;
+  disc bool __controlflow__34;
+  disc bool __controlflow__36;
+  disc bool __controlflow__38;
+  disc bool __controlflow__40;
+  disc bool __controlflow__41;
+  disc bool __controlflow__42 = true;
+  alg bool precondition = not p1;
+  alg bool __token_on_first_controlflow = __controlflow__42;
+  alg bool __precondition = precondition and __token_on_first_controlflow;
+  alg bool __token_on_last_controlflow = __controlflow__41;
+  alg bool __postcondition = __token_on_last_controlflow;
+  initial __precondition;
+  marked __postcondition;
+  location:
+    initial;
+    marked;
+    edge __node__MergeNode__44__0 when true, __controlflow__40, true, not __controlflow__41 do __controlflow__40 := false, __controlflow__41 := true;
+    edge __node__DecisionNode__45__0 when true, __controlflow__34, not p1, not __controlflow__36, not p1 do __controlflow__34 := false, __controlflow__36 := true;
+    edge __node__DecisionNode__46__0 when true, __controlflow__42, not __controlflow__34 do __controlflow__42 := false, __controlflow__34 := true;
+    edge __node__MergeNode__47__0 when true, __controlflow__38, p1 = true, not __controlflow__40 do __controlflow__38 := false, __controlflow__40 := true;
+    edge __node__OpaqueAction__48 when not p1, __controlflow__36, true, not __controlflow__38 do p1 := true, __controlflow__36 := false, __controlflow__38 := true;
+end
