@@ -1,5 +1,3 @@
-controllable Initialize;
-uncontrollable Initialize__na_result_1;
 controllable __node__InitialNode__95__0;
 uncontrollable __node__ActivityFinalNode__97__0;
 uncontrollable __node__CallBehaviorAction__99;
@@ -52,7 +50,6 @@ plant automaton Class1:
   disc bool __controlflow__93;
   disc bool __controlflow__127;
   disc bool __controlflow__130;
-  disc bool __nonAtomicActive__Initialize;
   disc bool __nonAtomicActive____node__CallBehaviorAction__99;
   disc bool __nonAtomicActive____node__OpaqueAction__111;
   disc bool __nonAtomicActive____node__CallBehaviorAction__113;
@@ -61,13 +58,11 @@ plant automaton Class1:
   alg bool precondition = not init;
   alg bool __precondition = precondition;
   alg bool postcondition = init;
-  alg bool __postcondition__nonAtomicActive__Initialize = not __nonAtomicActive__Initialize;
   alg bool __postcondition__nonAtomicActive____node__CallBehaviorAction__99 = not __nonAtomicActive____node__CallBehaviorAction__99;
   alg bool __postcondition__nonAtomicActive____node__OpaqueAction__111 = not __nonAtomicActive____node__OpaqueAction__111;
   alg bool __postcondition__nonAtomicActive____node__CallBehaviorAction__113 = not __nonAtomicActive____node__CallBehaviorAction__113;
   alg bool __postcondition__nonAtomicActive____node__OpaqueAction__121 = not __nonAtomicActive____node__OpaqueAction__121;
   alg bool __postcondition__nonAtomicActive____node__OpaqueAction__137 = not __nonAtomicActive____node__OpaqueAction__137;
-  alg bool __postcondition__ZeroCalls__44__Initialize__123 = ZeroCalls__44__Initialize__123.__occurrences >= 0;
   alg bool __postcondition__controlflow__50 = not __controlflow__50;
   alg bool __postcondition__controlflow__55 = not __controlflow__55;
   alg bool __postcondition__controlflow__59 = not __controlflow__59;
@@ -87,14 +82,12 @@ plant automaton Class1:
   alg bool __postcondition__controlflow__93 = not __controlflow__93;
   alg bool __postcondition__controlflow__127 = not __controlflow__127;
   alg bool __postcondition__controlflow__130 = not __controlflow__130;
-  alg bool __postcondition = postcondition and (__postcondition__nonAtomicActive__Initialize and __postcondition__nonAtomicActive____node__CallBehaviorAction__99) and (__postcondition__nonAtomicActive____node__OpaqueAction__111 and (__postcondition__nonAtomicActive____node__CallBehaviorAction__113 and __postcondition__nonAtomicActive____node__OpaqueAction__121)) and (__postcondition__nonAtomicActive____node__OpaqueAction__137 and (__postcondition__ZeroCalls__44__Initialize__123 and __postcondition__controlflow__50) and (__postcondition__controlflow__55 and __postcondition__controlflow__59 and (__postcondition__controlflow__61 and __postcondition__controlflow__63))) and (__postcondition__controlflow__65 and (__postcondition__controlflow__68 and __postcondition__controlflow__70) and (__postcondition__controlflow__72 and __postcondition__controlflow__74 and (__postcondition__controlflow__76 and __postcondition__controlflow__78)) and (__postcondition__controlflow__80 and (__postcondition__controlflow__82 and __postcondition__controlflow__86) and (__postcondition__controlflow__90 and __postcondition__controlflow__93 and (__postcondition__controlflow__127 and __postcondition__controlflow__130))));
+  alg bool __postcondition = postcondition and (__postcondition__nonAtomicActive____node__CallBehaviorAction__99 and __postcondition__nonAtomicActive____node__OpaqueAction__111) and (__postcondition__nonAtomicActive____node__CallBehaviorAction__113 and (__postcondition__nonAtomicActive____node__OpaqueAction__121 and __postcondition__nonAtomicActive____node__OpaqueAction__137)) and (__postcondition__controlflow__50 and (__postcondition__controlflow__55 and __postcondition__controlflow__59) and (__postcondition__controlflow__61 and (__postcondition__controlflow__63 and __postcondition__controlflow__65))) and (__postcondition__controlflow__68 and (__postcondition__controlflow__70 and __postcondition__controlflow__72) and (__postcondition__controlflow__74 and (__postcondition__controlflow__76 and __postcondition__controlflow__78)) and (__postcondition__controlflow__80 and (__postcondition__controlflow__82 and __postcondition__controlflow__86) and (__postcondition__controlflow__90 and __postcondition__controlflow__93 and (__postcondition__controlflow__127 and __postcondition__controlflow__130))));
   initial __precondition;
   marked __postcondition;
   location:
     initial;
     marked;
-    edge Initialize when not init, not __nonAtomicActive__Initialize do __nonAtomicActive__Initialize := true;
-    edge Initialize__na_result_1 when __nonAtomicActive__Initialize do init := true, __nonAtomicActive__Initialize := false;
     edge __node__InitialNode__95__0 when true, not __controlflow__65 do __controlflow__65 := true;
     edge __node__ActivityFinalNode__97__0 when true, __controlflow__50 do __controlflow__50 := false;
     edge __node__CallBehaviorAction__99 when not init, __controlflow__68, not __controlflow__70, not __nonAtomicActive____node__CallBehaviorAction__99 do __controlflow__68 := false, __nonAtomicActive____node__CallBehaviorAction__99 := true;
@@ -124,25 +117,14 @@ plant automaton Class1:
     edge __node__OpaqueAction__137 when not property1, __controlflow__130, not __controlflow__127, not __nonAtomicActive____node__OpaqueAction__137 do __controlflow__130 := false, __nonAtomicActive____node__OpaqueAction__137 := true;
     edge __node__OpaqueAction__137__na_result_1 when not __controlflow__127, __nonAtomicActive____node__OpaqueAction__137 do property1 := true, __controlflow__127 := true, __nonAtomicActive____node__OpaqueAction__137 := false;
 end
-supervisor automaton ZeroCalls__44__Initialize__123:
-  disc int[0..1] __occurrences;
-  marked __occurrences >= 0;
-  location:
-    initial;
-    marked;
-    edge Initialize when __occurrences < 0 do __occurrences := __occurrences + 1;
-end
 supervisor automaton sup:
-  alphabet Initialize, __node__InitialNode__95__0, __node__InitialNode__133__0;
+  alphabet __node__InitialNode__95__0, __node__InitialNode__133__0;
   location:
     initial;
     marked;
     edge __node__InitialNode__133__0 when false;
     edge __node__InitialNode__95__0 when not Class1.__controlflow__63 and (not Class1.__controlflow__68 and not Class1.__controlflow__70) and (not Class1.__controlflow__72 and (not Class1.__controlflow__74 and not Class1.__controlflow__76)) and (not Class1.__controlflow__78 and (not Class1.__nonAtomicActive____node__CallBehaviorAction__99 and not Class1.__controlflow__50) and (not Class1.__controlflow__55 and (not Class1.__controlflow__59 and not Class1.init)));
-    edge Initialize when true;
 end
-supervisor invariant Class1.__postcondition disables Initialize;
-supervisor invariant Class1.__postcondition disables Initialize__na_result_1;
 supervisor invariant Class1.__postcondition disables __node__InitialNode__95__0;
 supervisor invariant Class1.__postcondition disables __node__ActivityFinalNode__97__0;
 supervisor invariant Class1.__postcondition disables __node__CallBehaviorAction__99;

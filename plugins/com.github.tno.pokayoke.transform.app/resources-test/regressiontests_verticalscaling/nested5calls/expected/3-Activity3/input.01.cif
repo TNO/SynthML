@@ -1,14 +1,4 @@
-controllable flip1;
-uncontrollable flip1__na_result_1;
-controllable flip2;
 controllable flip3;
-controllable flip4;
-uncontrollable flip4__na_result_1;
-controllable flip5;
-controllable __node__InitialNode__147__0;
-uncontrollable __node__ActivityFinalNode__150__0;
-uncontrollable __node__CallBehaviorAction__153;
-uncontrollable __node__CallBehaviorAction__153__na_result_1;
 uncontrollable __node__MergeNode__210__0;
 uncontrollable __node__DecisionNode__212__0;
 controllable __node__InitialNode__214__0;
@@ -24,8 +14,6 @@ plant automaton Class1:
   disc bool v3 = false;
   disc bool v4 = false;
   disc bool v5 = false;
-  disc bool __controlflow__134;
-  disc bool __controlflow__139;
   disc bool __controlflow__184;
   disc bool __controlflow__186;
   disc bool __controlflow__188;
@@ -34,24 +22,11 @@ plant automaton Class1:
   disc bool __controlflow__198;
   disc bool __controlflow__200;
   disc bool __controlflow__205;
-  disc bool __nonAtomicActive__flip1;
-  disc bool __nonAtomicActive__flip4;
-  disc bool __nonAtomicActive____node__CallBehaviorAction__153;
   disc bool __nonAtomicActive____node__CallBehaviorAction__222;
   alg bool precondition3 = not v3 and not v2 and not v1;
   alg bool __precondition = precondition3;
   alg bool postcondition3 = v3 and v2 and v1;
-  alg bool __postcondition__nonAtomicActive__flip1 = not __nonAtomicActive__flip1;
-  alg bool __postcondition__nonAtomicActive__flip4 = not __nonAtomicActive__flip4;
-  alg bool __postcondition__nonAtomicActive____node__CallBehaviorAction__153 = not __nonAtomicActive____node__CallBehaviorAction__153;
   alg bool __postcondition__nonAtomicActive____node__CallBehaviorAction__222 = not __nonAtomicActive____node__CallBehaviorAction__222;
-  alg bool __postcondition__ZeroCalls__230__flip1__86 = ZeroCalls__230__flip1__86.__occurrences >= 0;
-  alg bool __postcondition__ZeroCalls__230__flip2__90 = ZeroCalls__230__flip2__90.__occurrences >= 0;
-  alg bool __postcondition__ZeroCalls__230__flip4__98 = ZeroCalls__230__flip4__98.__occurrences >= 0;
-  alg bool __postcondition__ZeroCalls__230__flip5__102 = ZeroCalls__230__flip5__102.__occurrences >= 0;
-  alg bool __postcondition__ZeroCalls__230__Activity1__106 = ZeroCalls__230__Activity1__106.__occurrences >= 0;
-  alg bool __postcondition__controlflow__134 = not __controlflow__134;
-  alg bool __postcondition__controlflow__139 = not __controlflow__139;
   alg bool __postcondition__controlflow__184 = not __controlflow__184;
   alg bool __postcondition__controlflow__186 = not __controlflow__186;
   alg bool __postcondition__controlflow__188 = not __controlflow__188;
@@ -60,23 +35,13 @@ plant automaton Class1:
   alg bool __postcondition__controlflow__198 = not __controlflow__198;
   alg bool __postcondition__controlflow__200 = not __controlflow__200;
   alg bool __postcondition__controlflow__205 = not __controlflow__205;
-  alg bool __postcondition = postcondition3 and __postcondition__nonAtomicActive__flip1 and (__postcondition__nonAtomicActive__flip4 and (__postcondition__nonAtomicActive____node__CallBehaviorAction__153 and __postcondition__nonAtomicActive____node__CallBehaviorAction__222)) and (__postcondition__ZeroCalls__230__flip1__86 and __postcondition__ZeroCalls__230__flip2__90 and (__postcondition__ZeroCalls__230__flip4__98 and (__postcondition__ZeroCalls__230__flip5__102 and __postcondition__ZeroCalls__230__Activity1__106))) and (__postcondition__controlflow__134 and __postcondition__controlflow__139 and (__postcondition__controlflow__184 and (__postcondition__controlflow__186 and __postcondition__controlflow__188)) and (__postcondition__controlflow__192 and __postcondition__controlflow__194 and (__postcondition__controlflow__198 and (__postcondition__controlflow__200 and __postcondition__controlflow__205))));
+  alg bool __postcondition = postcondition3 and __postcondition__nonAtomicActive____node__CallBehaviorAction__222 and (__postcondition__controlflow__184 and (__postcondition__controlflow__186 and __postcondition__controlflow__188)) and (__postcondition__controlflow__192 and __postcondition__controlflow__194 and (__postcondition__controlflow__198 and (__postcondition__controlflow__200 and __postcondition__controlflow__205)));
   initial __precondition;
   marked __postcondition;
   location:
     initial;
     marked;
-    edge flip1 when not v1, not __nonAtomicActive__flip1 do __nonAtomicActive__flip1 := true;
-    edge flip1__na_result_1 when __nonAtomicActive__flip1 do v1 := true, __nonAtomicActive__flip1 := false;
-    edge flip2 when not v2 do v2 := true;
     edge flip3 when not v3 do v3 := true;
-    edge flip4 when not v4, not __nonAtomicActive__flip4 do __nonAtomicActive__flip4 := true;
-    edge flip4__na_result_1 when __nonAtomicActive__flip4 do v4 := true, __nonAtomicActive__flip4 := false;
-    edge flip5 when not v5 do v5 := true;
-    edge __node__InitialNode__147__0 when true, not __controlflow__139 do __controlflow__139 := true;
-    edge __node__ActivityFinalNode__150__0 when true, __controlflow__134, true, v1 do __controlflow__134 := false;
-    edge __node__CallBehaviorAction__153 when not v1, __controlflow__139, true, not __controlflow__134, not __nonAtomicActive____node__CallBehaviorAction__153 do __controlflow__139 := false, __nonAtomicActive____node__CallBehaviorAction__153 := true;
-    edge __node__CallBehaviorAction__153__na_result_1 when not __controlflow__134, __nonAtomicActive____node__CallBehaviorAction__153 do v1 := true, __controlflow__134 := true, __nonAtomicActive____node__CallBehaviorAction__153 := false;
     edge __node__MergeNode__210__0 when true, __controlflow__194, true, not __controlflow__198 do __controlflow__194 := false, __controlflow__198 := true;
     edge __node__DecisionNode__212__0 when true, __controlflow__184, not __controlflow__188 do __controlflow__184 := false, __controlflow__188 := true;
     edge __node__InitialNode__214__0 when true, not __controlflow__205 do __controlflow__205 := true;
@@ -87,57 +52,7 @@ plant automaton Class1:
     edge __node__CallBehaviorAction__222__na_result_1 when not __controlflow__194, __nonAtomicActive____node__CallBehaviorAction__222 do v1 := true, __controlflow__194 := true, __nonAtomicActive____node__CallBehaviorAction__222 := false;
     edge __node__CallBehaviorAction__224 when not v2, __controlflow__186, true, not __controlflow__192 do v2 := true, __controlflow__186 := false, __controlflow__192 := true;
 end
-requirement automaton ZeroCalls__230__flip1__86:
-  disc int[0..1] __occurrences;
-  marked __occurrences >= 0;
-  location:
-    initial;
-    marked;
-    edge flip1 when __occurrences < 0 do __occurrences := __occurrences + 1;
-end
-requirement automaton ZeroCalls__230__flip2__90:
-  disc int[0..1] __occurrences;
-  marked __occurrences >= 0;
-  location:
-    initial;
-    marked;
-    edge flip2 when __occurrences < 0 do __occurrences := __occurrences + 1;
-end
-requirement automaton ZeroCalls__230__flip4__98:
-  disc int[0..1] __occurrences;
-  marked __occurrences >= 0;
-  location:
-    initial;
-    marked;
-    edge flip4 when __occurrences < 0 do __occurrences := __occurrences + 1;
-end
-requirement automaton ZeroCalls__230__flip5__102:
-  disc int[0..1] __occurrences;
-  marked __occurrences >= 0;
-  location:
-    initial;
-    marked;
-    edge flip5 when __occurrences < 0 do __occurrences := __occurrences + 1;
-end
-requirement automaton ZeroCalls__230__Activity1__106:
-  disc int[0..1] __occurrences;
-  marked __occurrences >= 0;
-  location:
-    initial;
-    marked;
-    edge __node__InitialNode__147__0 when __occurrences < 0 do __occurrences := __occurrences + 1;
-end
-requirement invariant Class1.__postcondition disables flip1;
-requirement invariant Class1.__postcondition disables flip1__na_result_1;
-requirement invariant Class1.__postcondition disables flip2;
 requirement invariant Class1.__postcondition disables flip3;
-requirement invariant Class1.__postcondition disables flip4;
-requirement invariant Class1.__postcondition disables flip4__na_result_1;
-requirement invariant Class1.__postcondition disables flip5;
-requirement invariant Class1.__postcondition disables __node__InitialNode__147__0;
-requirement invariant Class1.__postcondition disables __node__ActivityFinalNode__150__0;
-requirement invariant Class1.__postcondition disables __node__CallBehaviorAction__153;
-requirement invariant Class1.__postcondition disables __node__CallBehaviorAction__153__na_result_1;
 requirement invariant Class1.__postcondition disables __node__MergeNode__210__0;
 requirement invariant Class1.__postcondition disables __node__DecisionNode__212__0;
 requirement invariant Class1.__postcondition disables __node__InitialNode__214__0;

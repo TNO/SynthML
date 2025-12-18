@@ -1,37 +1,4 @@
-controllable flip1;
-uncontrollable flip1__na_result_1;
-controllable flip2;
-controllable flip3;
-controllable flip4;
-uncontrollable flip4__na_result_1;
 controllable flip5;
-controllable __node__InitialNode__223__0;
-uncontrollable __node__ActivityFinalNode__228__0;
-uncontrollable __node__CallBehaviorAction__233;
-uncontrollable __node__CallBehaviorAction__233__na_result_1;
-uncontrollable __node__MergeNode__334__0;
-uncontrollable __node__DecisionNode__338__0;
-controllable __node__InitialNode__342__0;
-uncontrollable __node__ActivityFinalNode__346__0;
-uncontrollable __node__JoinNode__350;
-uncontrollable __node__ForkNode__354;
-uncontrollable __node__CallBehaviorAction__358;
-uncontrollable __node__CallBehaviorAction__358__na_result_1;
-uncontrollable __node__CallBehaviorAction__362;
-uncontrollable __node__MergeNode__481__0;
-uncontrollable __node__DecisionNode__484__0;
-uncontrollable __node__ForkNode__487;
-uncontrollable __node__DecisionNode__490__0;
-uncontrollable __node__JoinNode__493;
-uncontrollable __node__MergeNode__496__0;
-controllable __node__InitialNode__499__0;
-uncontrollable __node__ActivityFinalNode__502__0;
-uncontrollable __node__JoinNode__505;
-uncontrollable __node__ForkNode__508;
-uncontrollable __node__CallBehaviorAction__511;
-uncontrollable __node__CallBehaviorAction__511__na_result_1;
-uncontrollable __node__CallBehaviorAction__514;
-uncontrollable __node__CallBehaviorAction__517;
 uncontrollable __node__MergeNode__632__0;
 uncontrollable __node__DecisionNode__634__0;
 uncontrollable __node__DecisionNode__636__0;
@@ -58,30 +25,6 @@ plant automaton Class1:
   disc bool v3 = false;
   disc bool v4 = false;
   disc bool v5 = false;
-  disc bool __controlflow__200;
-  disc bool __controlflow__209;
-  disc bool __controlflow__280;
-  disc bool __controlflow__284;
-  disc bool __controlflow__288;
-  disc bool __controlflow__296;
-  disc bool __controlflow__300;
-  disc bool __controlflow__308;
-  disc bool __controlflow__312;
-  disc bool __controlflow__323;
-  disc bool __controlflow__408;
-  disc bool __controlflow__414;
-  disc bool __controlflow__420;
-  disc bool __controlflow__426;
-  disc bool __controlflow__429;
-  disc bool __controlflow__432;
-  disc bool __controlflow__435;
-  disc bool __controlflow__438;
-  disc bool __controlflow__444;
-  disc bool __controlflow__447;
-  disc bool __controlflow__453;
-  disc bool __controlflow__459;
-  disc bool __controlflow__465;
-  disc bool __controlflow__473;
   disc bool __controlflow__562;
   disc bool __controlflow__566;
   disc bool __controlflow__570;
@@ -102,54 +45,13 @@ plant automaton Class1:
   disc bool __controlflow__618;
   disc bool __controlflow__622;
   disc bool __controlflow__627;
-  disc bool __nonAtomicActive__flip1;
-  disc bool __nonAtomicActive__flip4;
-  disc bool __nonAtomicActive____node__CallBehaviorAction__233;
-  disc bool __nonAtomicActive____node__CallBehaviorAction__358;
-  disc bool __nonAtomicActive____node__CallBehaviorAction__511;
   disc bool __nonAtomicActive____node__CallBehaviorAction__660;
   disc bool __nonAtomicActive____node__CallBehaviorAction__666;
   alg bool precondition5 = not v5 and not v4 and not v3 and not v2 and not v1;
   alg bool __precondition = precondition5;
   alg bool postcondition5 = v5 and v4 and v3 and v2 and v1;
-  alg bool __postcondition__nonAtomicActive__flip1 = not __nonAtomicActive__flip1;
-  alg bool __postcondition__nonAtomicActive__flip4 = not __nonAtomicActive__flip4;
-  alg bool __postcondition__nonAtomicActive____node__CallBehaviorAction__233 = not __nonAtomicActive____node__CallBehaviorAction__233;
-  alg bool __postcondition__nonAtomicActive____node__CallBehaviorAction__358 = not __nonAtomicActive____node__CallBehaviorAction__358;
-  alg bool __postcondition__nonAtomicActive____node__CallBehaviorAction__511 = not __nonAtomicActive____node__CallBehaviorAction__511;
   alg bool __postcondition__nonAtomicActive____node__CallBehaviorAction__660 = not __nonAtomicActive____node__CallBehaviorAction__660;
   alg bool __postcondition__nonAtomicActive____node__CallBehaviorAction__666 = not __nonAtomicActive____node__CallBehaviorAction__666;
-  alg bool __postcondition__ZeroCalls__674__flip1__128 = ZeroCalls__674__flip1__128.__occurrences >= 0;
-  alg bool __postcondition__ZeroCalls__674__flip2__134 = ZeroCalls__674__flip2__134.__occurrences >= 0;
-  alg bool __postcondition__ZeroCalls__674__flip3__140 = ZeroCalls__674__flip3__140.__occurrences >= 0;
-  alg bool __postcondition__ZeroCalls__674__flip4__146 = ZeroCalls__674__flip4__146.__occurrences >= 0;
-  alg bool __postcondition__ZeroCalls__674__Activity1__158 = ZeroCalls__674__Activity1__158.__occurrences >= 0;
-  alg bool __postcondition__ZeroCalls__674__Activity2__238 = ZeroCalls__674__Activity2__238.__occurrences >= 0;
-  alg bool __postcondition__ZeroCalls__674__Activity3__366 = ZeroCalls__674__Activity3__366.__occurrences >= 0;
-  alg bool __postcondition__controlflow__200 = not __controlflow__200;
-  alg bool __postcondition__controlflow__209 = not __controlflow__209;
-  alg bool __postcondition__controlflow__280 = not __controlflow__280;
-  alg bool __postcondition__controlflow__284 = not __controlflow__284;
-  alg bool __postcondition__controlflow__288 = not __controlflow__288;
-  alg bool __postcondition__controlflow__296 = not __controlflow__296;
-  alg bool __postcondition__controlflow__300 = not __controlflow__300;
-  alg bool __postcondition__controlflow__308 = not __controlflow__308;
-  alg bool __postcondition__controlflow__312 = not __controlflow__312;
-  alg bool __postcondition__controlflow__323 = not __controlflow__323;
-  alg bool __postcondition__controlflow__408 = not __controlflow__408;
-  alg bool __postcondition__controlflow__414 = not __controlflow__414;
-  alg bool __postcondition__controlflow__420 = not __controlflow__420;
-  alg bool __postcondition__controlflow__426 = not __controlflow__426;
-  alg bool __postcondition__controlflow__429 = not __controlflow__429;
-  alg bool __postcondition__controlflow__432 = not __controlflow__432;
-  alg bool __postcondition__controlflow__435 = not __controlflow__435;
-  alg bool __postcondition__controlflow__438 = not __controlflow__438;
-  alg bool __postcondition__controlflow__444 = not __controlflow__444;
-  alg bool __postcondition__controlflow__447 = not __controlflow__447;
-  alg bool __postcondition__controlflow__453 = not __controlflow__453;
-  alg bool __postcondition__controlflow__459 = not __controlflow__459;
-  alg bool __postcondition__controlflow__465 = not __controlflow__465;
-  alg bool __postcondition__controlflow__473 = not __controlflow__473;
   alg bool __postcondition__controlflow__562 = not __controlflow__562;
   alg bool __postcondition__controlflow__566 = not __controlflow__566;
   alg bool __postcondition__controlflow__570 = not __controlflow__570;
@@ -170,46 +72,13 @@ plant automaton Class1:
   alg bool __postcondition__controlflow__618 = not __controlflow__618;
   alg bool __postcondition__controlflow__622 = not __controlflow__622;
   alg bool __postcondition__controlflow__627 = not __controlflow__627;
-  alg bool __postcondition = postcondition5 and (__postcondition__nonAtomicActive__flip1 and __postcondition__nonAtomicActive__flip4) and (__postcondition__nonAtomicActive____node__CallBehaviorAction__233 and __postcondition__nonAtomicActive____node__CallBehaviorAction__358 and (__postcondition__nonAtomicActive____node__CallBehaviorAction__511 and __postcondition__nonAtomicActive____node__CallBehaviorAction__660)) and (__postcondition__nonAtomicActive____node__CallBehaviorAction__666 and (__postcondition__ZeroCalls__674__flip1__128 and __postcondition__ZeroCalls__674__flip2__134) and (__postcondition__ZeroCalls__674__flip3__140 and __postcondition__ZeroCalls__674__flip4__146 and (__postcondition__ZeroCalls__674__Activity1__158 and __postcondition__ZeroCalls__674__Activity2__238))) and (__postcondition__ZeroCalls__674__Activity3__366 and (__postcondition__controlflow__200 and __postcondition__controlflow__209) and (__postcondition__controlflow__280 and __postcondition__controlflow__284 and (__postcondition__controlflow__288 and __postcondition__controlflow__296)) and (__postcondition__controlflow__300 and __postcondition__controlflow__308 and (__postcondition__controlflow__312 and __postcondition__controlflow__323) and (__postcondition__controlflow__408 and __postcondition__controlflow__414 and (__postcondition__controlflow__420 and __postcondition__controlflow__426)))) and (__postcondition__controlflow__429 and (__postcondition__controlflow__432 and __postcondition__controlflow__435) and (__postcondition__controlflow__438 and __postcondition__controlflow__444 and (__postcondition__controlflow__447 and __postcondition__controlflow__453)) and (__postcondition__controlflow__459 and __postcondition__controlflow__465 and (__postcondition__controlflow__473 and __postcondition__controlflow__562) and (__postcondition__controlflow__566 and __postcondition__controlflow__570 and (__postcondition__controlflow__574 and __postcondition__controlflow__578))) and (__postcondition__controlflow__580 and (__postcondition__controlflow__584 and __postcondition__controlflow__588) and (__postcondition__controlflow__592 and __postcondition__controlflow__596 and (__postcondition__controlflow__598 and __postcondition__controlflow__600)) and (__postcondition__controlflow__602 and __postcondition__controlflow__604 and (__postcondition__controlflow__608 and __postcondition__controlflow__610) and (__postcondition__controlflow__614 and __postcondition__controlflow__618 and (__postcondition__controlflow__622 and __postcondition__controlflow__627)))));
+  alg bool __postcondition = postcondition5 and __postcondition__nonAtomicActive____node__CallBehaviorAction__660 and (__postcondition__nonAtomicActive____node__CallBehaviorAction__666 and (__postcondition__controlflow__562 and __postcondition__controlflow__566)) and (__postcondition__controlflow__570 and (__postcondition__controlflow__574 and __postcondition__controlflow__578) and (__postcondition__controlflow__580 and (__postcondition__controlflow__584 and __postcondition__controlflow__588))) and (__postcondition__controlflow__592 and (__postcondition__controlflow__596 and __postcondition__controlflow__598) and (__postcondition__controlflow__600 and (__postcondition__controlflow__602 and __postcondition__controlflow__604)) and (__postcondition__controlflow__608 and (__postcondition__controlflow__610 and __postcondition__controlflow__614) and (__postcondition__controlflow__618 and (__postcondition__controlflow__622 and __postcondition__controlflow__627))));
   initial __precondition;
   marked __postcondition;
   location:
     initial;
     marked;
-    edge flip1 when not v1, not __nonAtomicActive__flip1 do __nonAtomicActive__flip1 := true;
-    edge flip1__na_result_1 when __nonAtomicActive__flip1 do v1 := true, __nonAtomicActive__flip1 := false;
-    edge flip2 when not v2 do v2 := true;
-    edge flip3 when not v3 do v3 := true;
-    edge flip4 when not v4, not __nonAtomicActive__flip4 do __nonAtomicActive__flip4 := true;
-    edge flip4__na_result_1 when __nonAtomicActive__flip4 do v4 := true, __nonAtomicActive__flip4 := false;
     edge flip5 when not v5 do v5 := true;
-    edge __node__InitialNode__223__0 when true, not __controlflow__209 do __controlflow__209 := true;
-    edge __node__ActivityFinalNode__228__0 when true, __controlflow__200, true, v1 do __controlflow__200 := false;
-    edge __node__CallBehaviorAction__233 when not v1, __controlflow__209, true, not __controlflow__200, not __nonAtomicActive____node__CallBehaviorAction__233 do __controlflow__209 := false, __nonAtomicActive____node__CallBehaviorAction__233 := true;
-    edge __node__CallBehaviorAction__233__na_result_1 when not __controlflow__200, __nonAtomicActive____node__CallBehaviorAction__233 do v1 := true, __controlflow__200 := true, __nonAtomicActive____node__CallBehaviorAction__233 := false;
-    edge __node__MergeNode__334__0 when true, __controlflow__300, true, not __controlflow__308 do __controlflow__300 := false, __controlflow__308 := true;
-    edge __node__DecisionNode__338__0 when true, __controlflow__280, not __controlflow__288 do __controlflow__280 := false, __controlflow__288 := true;
-    edge __node__InitialNode__342__0 when true, not __controlflow__323 do __controlflow__323 := true;
-    edge __node__ActivityFinalNode__346__0 when true, __controlflow__312, true, v2 and v1 do __controlflow__312 := false;
-    edge __node__JoinNode__350 when true, __controlflow__296, __controlflow__308, not __controlflow__312 do __controlflow__296 := false, __controlflow__308 := false, __controlflow__312 := true;
-    edge __node__ForkNode__354 when true, __controlflow__323, true, not __controlflow__280, not __controlflow__284 do __controlflow__323 := false, __controlflow__280 := true, __controlflow__284 := true;
-    edge __node__CallBehaviorAction__358 when not v1, __controlflow__288, true, not __controlflow__300, not __nonAtomicActive____node__CallBehaviorAction__358 do __controlflow__288 := false, __nonAtomicActive____node__CallBehaviorAction__358 := true;
-    edge __node__CallBehaviorAction__358__na_result_1 when not __controlflow__300, __nonAtomicActive____node__CallBehaviorAction__358 do v1 := true, __controlflow__300 := true, __nonAtomicActive____node__CallBehaviorAction__358 := false;
-    edge __node__CallBehaviorAction__362 when not v2, __controlflow__284, true, not __controlflow__296 do v2 := true, __controlflow__284 := false, __controlflow__296 := true;
-    edge __node__MergeNode__481__0 when true, __controlflow__414, true, not __controlflow__426 do __controlflow__414 := false, __controlflow__426 := true;
-    edge __node__DecisionNode__484__0 when true, __controlflow__453, not __controlflow__408 do __controlflow__453 := false, __controlflow__408 := true;
-    edge __node__ForkNode__487 when true, __controlflow__438, true, not __controlflow__447, not __controlflow__453 do __controlflow__438 := false, __controlflow__447 := true, __controlflow__453 := true;
-    edge __node__DecisionNode__490__0 when true, __controlflow__432, not __controlflow__438 do __controlflow__432 := false, __controlflow__438 := true;
-    edge __node__JoinNode__493 when true, __controlflow__429, true, __controlflow__459, true, not __controlflow__414 do __controlflow__429 := false, __controlflow__459 := false, __controlflow__414 := true;
-    edge __node__MergeNode__496__0 when true, __controlflow__420, true, not __controlflow__429 do __controlflow__420 := false, __controlflow__429 := true;
-    edge __node__InitialNode__499__0 when true, not __controlflow__473 do __controlflow__473 := true;
-    edge __node__ActivityFinalNode__502__0 when true, __controlflow__465, true, v3 and v2 and v1 do __controlflow__465 := false;
-    edge __node__JoinNode__505 when true, __controlflow__426, __controlflow__444, not __controlflow__465 do __controlflow__426 := false, __controlflow__444 := false, __controlflow__465 := true;
-    edge __node__ForkNode__508 when true, __controlflow__473, true, not __controlflow__432, not __controlflow__435 do __controlflow__473 := false, __controlflow__432 := true, __controlflow__435 := true;
-    edge __node__CallBehaviorAction__511 when not v1, __controlflow__408, true, not __controlflow__420, not __nonAtomicActive____node__CallBehaviorAction__511 do __controlflow__408 := false, __nonAtomicActive____node__CallBehaviorAction__511 := true;
-    edge __node__CallBehaviorAction__511__na_result_1 when not __controlflow__420, __nonAtomicActive____node__CallBehaviorAction__511 do v1 := true, __controlflow__420 := true, __nonAtomicActive____node__CallBehaviorAction__511 := false;
-    edge __node__CallBehaviorAction__514 when not v2, __controlflow__447, true, not __controlflow__459 do v2 := true, __controlflow__447 := false, __controlflow__459 := true;
-    edge __node__CallBehaviorAction__517 when not v3, __controlflow__435, true, not __controlflow__444 do v3 := true, __controlflow__435 := false, __controlflow__444 := true;
     edge __node__MergeNode__632__0 when true, __controlflow__566, true, not __controlflow__578 do __controlflow__566 := false, __controlflow__578 := true;
     edge __node__DecisionNode__634__0 when true, __controlflow__574, not __controlflow__584 do __controlflow__574 := false, __controlflow__584 := true;
     edge __node__DecisionNode__636__0 when true, __controlflow__614, not __controlflow__562 do __controlflow__614 := false, __controlflow__562 := true;
@@ -231,111 +100,15 @@ plant automaton Class1:
     edge __node__CallBehaviorAction__666 when not v4, __controlflow__602, true, not __controlflow__608, not __nonAtomicActive____node__CallBehaviorAction__666 do __controlflow__602 := false, __nonAtomicActive____node__CallBehaviorAction__666 := true;
     edge __node__CallBehaviorAction__666__na_result_1 when not __controlflow__608, __nonAtomicActive____node__CallBehaviorAction__666 do v4 := true, __controlflow__608 := true, __nonAtomicActive____node__CallBehaviorAction__666 := false;
 end
-supervisor automaton ZeroCalls__674__flip1__128:
-  disc int[0..1] __occurrences;
-  marked __occurrences >= 0;
-  location:
-    initial;
-    marked;
-    edge flip1 when __occurrences < 0 do __occurrences := __occurrences + 1;
-end
-supervisor automaton ZeroCalls__674__flip2__134:
-  disc int[0..1] __occurrences;
-  marked __occurrences >= 0;
-  location:
-    initial;
-    marked;
-    edge flip2 when __occurrences < 0 do __occurrences := __occurrences + 1;
-end
-supervisor automaton ZeroCalls__674__flip3__140:
-  disc int[0..1] __occurrences;
-  marked __occurrences >= 0;
-  location:
-    initial;
-    marked;
-    edge flip3 when __occurrences < 0 do __occurrences := __occurrences + 1;
-end
-supervisor automaton ZeroCalls__674__flip4__146:
-  disc int[0..1] __occurrences;
-  marked __occurrences >= 0;
-  location:
-    initial;
-    marked;
-    edge flip4 when __occurrences < 0 do __occurrences := __occurrences + 1;
-end
-supervisor automaton ZeroCalls__674__Activity1__158:
-  disc int[0..1] __occurrences;
-  marked __occurrences >= 0;
-  location:
-    initial;
-    marked;
-    edge __node__InitialNode__223__0 when __occurrences < 0 do __occurrences := __occurrences + 1;
-end
-supervisor automaton ZeroCalls__674__Activity2__238:
-  disc int[0..1] __occurrences;
-  marked __occurrences >= 0;
-  location:
-    initial;
-    marked;
-    edge __node__InitialNode__342__0 when __occurrences < 0 do __occurrences := __occurrences + 1;
-end
-supervisor automaton ZeroCalls__674__Activity3__366:
-  disc int[0..1] __occurrences;
-  marked __occurrences >= 0;
-  location:
-    initial;
-    marked;
-    edge __node__InitialNode__499__0 when __occurrences < 0 do __occurrences := __occurrences + 1;
-end
 supervisor automaton sup:
-  alphabet flip1, flip2, flip3, flip4, flip5, __node__InitialNode__223__0, __node__InitialNode__342__0, __node__InitialNode__499__0, __node__InitialNode__652__0;
+  alphabet flip5, __node__InitialNode__652__0;
   location:
     initial;
     marked;
-    edge __node__InitialNode__223__0 when true;
-    edge __node__InitialNode__342__0 when true;
-    edge __node__InitialNode__499__0 when true;
-    edge __node__InitialNode__652__0 when not Class1.v4 and not Class1.v3 and (not Class1.v2 and (not Class1.v1 and not Class1.__nonAtomicActive____node__CallBehaviorAction__666)) and (not Class1.__nonAtomicActive____node__CallBehaviorAction__660 and not Class1.__controlflow__614 and (not Class1.__controlflow__610 and (not Class1.__controlflow__604 and not Class1.__controlflow__602)));
-    edge flip1 when true;
-    edge flip2 when true;
-    edge flip3 when true;
-    edge flip4 when true;
+    edge __node__InitialNode__652__0 when not Class1.__controlflow__562 and (not Class1.__controlflow__570 and not Class1.__controlflow__574) and (not Class1.__controlflow__614 and not Class1.__controlflow__566 and (not Class1.__controlflow__578 and not Class1.__controlflow__580)) and (not Class1.__controlflow__588 and (not Class1.__controlflow__596 and not Class1.__controlflow__598) and (not Class1.__controlflow__602 and not Class1.__controlflow__604 and (not Class1.__controlflow__622 and not Class1.v1)));
     edge flip5 when true;
 end
-supervisor invariant Class1.__postcondition disables flip1;
-supervisor invariant Class1.__postcondition disables flip1__na_result_1;
-supervisor invariant Class1.__postcondition disables flip2;
-supervisor invariant Class1.__postcondition disables flip3;
-supervisor invariant Class1.__postcondition disables flip4;
-supervisor invariant Class1.__postcondition disables flip4__na_result_1;
 supervisor invariant Class1.__postcondition disables flip5;
-supervisor invariant Class1.__postcondition disables __node__InitialNode__223__0;
-supervisor invariant Class1.__postcondition disables __node__ActivityFinalNode__228__0;
-supervisor invariant Class1.__postcondition disables __node__CallBehaviorAction__233;
-supervisor invariant Class1.__postcondition disables __node__CallBehaviorAction__233__na_result_1;
-supervisor invariant Class1.__postcondition disables __node__MergeNode__334__0;
-supervisor invariant Class1.__postcondition disables __node__DecisionNode__338__0;
-supervisor invariant Class1.__postcondition disables __node__InitialNode__342__0;
-supervisor invariant Class1.__postcondition disables __node__ActivityFinalNode__346__0;
-supervisor invariant Class1.__postcondition disables __node__JoinNode__350;
-supervisor invariant Class1.__postcondition disables __node__ForkNode__354;
-supervisor invariant Class1.__postcondition disables __node__CallBehaviorAction__358;
-supervisor invariant Class1.__postcondition disables __node__CallBehaviorAction__358__na_result_1;
-supervisor invariant Class1.__postcondition disables __node__CallBehaviorAction__362;
-supervisor invariant Class1.__postcondition disables __node__MergeNode__481__0;
-supervisor invariant Class1.__postcondition disables __node__DecisionNode__484__0;
-supervisor invariant Class1.__postcondition disables __node__ForkNode__487;
-supervisor invariant Class1.__postcondition disables __node__DecisionNode__490__0;
-supervisor invariant Class1.__postcondition disables __node__JoinNode__493;
-supervisor invariant Class1.__postcondition disables __node__MergeNode__496__0;
-supervisor invariant Class1.__postcondition disables __node__InitialNode__499__0;
-supervisor invariant Class1.__postcondition disables __node__ActivityFinalNode__502__0;
-supervisor invariant Class1.__postcondition disables __node__JoinNode__505;
-supervisor invariant Class1.__postcondition disables __node__ForkNode__508;
-supervisor invariant Class1.__postcondition disables __node__CallBehaviorAction__511;
-supervisor invariant Class1.__postcondition disables __node__CallBehaviorAction__511__na_result_1;
-supervisor invariant Class1.__postcondition disables __node__CallBehaviorAction__514;
-supervisor invariant Class1.__postcondition disables __node__CallBehaviorAction__517;
 supervisor invariant Class1.__postcondition disables __node__MergeNode__632__0;
 supervisor invariant Class1.__postcondition disables __node__DecisionNode__634__0;
 supervisor invariant Class1.__postcondition disables __node__DecisionNode__636__0;

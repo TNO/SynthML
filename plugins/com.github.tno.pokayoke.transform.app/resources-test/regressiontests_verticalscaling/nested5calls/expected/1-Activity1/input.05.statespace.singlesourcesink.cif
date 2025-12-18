@@ -1,28 +1,23 @@
 controllable flip1;
 uncontrollable flip1__na_result_1;
-controllable flip2;
-controllable flip3;
-controllable flip4;
-uncontrollable flip4__na_result_1;
-controllable flip5;
 controllable __start;
 controllable __end;
 automaton synthesis_state_space:
-  alphabet flip1, flip1__na_result_1, flip2, flip3, flip4, flip4__na_result_1, flip5, __start, __end;
-  @state(Class1: "*", Class1.__nonAtomicActive__flip1: false, Class1.__nonAtomicActive__flip4: false, Class1.v1: false, Class1.v2: false, Class1.v3: false, Class1.v4: false, Class1.v5: false, sup: "*", ZeroCalls__64__flip2__46: "*", ZeroCalls__64__flip2__46.__occurrences: 0, ZeroCalls__64__flip3__48: "*", ZeroCalls__64__flip3__48.__occurrences: 0, ZeroCalls__64__flip4__50: "*", ZeroCalls__64__flip4__50.__occurrences: 0, ZeroCalls__64__flip5__52: "*", ZeroCalls__64__flip5__52.__occurrences: 0)
+  alphabet flip1, flip1__na_result_1, __start, __end;
+  @state(Class1: "*", Class1.__nonAtomicActive__flip1: false, Class1.v1: false, Class1.v2: false, Class1.v3: false, Class1.v4: false, Class1.v5: false, sup: "*")
   location __init:
     initial;
     edge __start goto loc1;
-  @state(Class1: "*", Class1.__nonAtomicActive__flip1: false, Class1.__nonAtomicActive__flip4: false, Class1.v1: false, Class1.v2: false, Class1.v3: false, Class1.v4: false, Class1.v5: false, sup: "*", ZeroCalls__64__flip2__46: "*", ZeroCalls__64__flip2__46.__occurrences: 0, ZeroCalls__64__flip3__48: "*", ZeroCalls__64__flip3__48.__occurrences: 0, ZeroCalls__64__flip4__50: "*", ZeroCalls__64__flip4__50.__occurrences: 0, ZeroCalls__64__flip5__52: "*", ZeroCalls__64__flip5__52.__occurrences: 0)
+  @state(Class1: "*", Class1.__nonAtomicActive__flip1: false, Class1.v1: false, Class1.v2: false, Class1.v3: false, Class1.v4: false, Class1.v5: false, sup: "*")
   location loc1:
     edge flip1 goto loc2;
-  @state(Class1: "*", Class1.__nonAtomicActive__flip1: true, Class1.__nonAtomicActive__flip4: false, Class1.v1: false, Class1.v2: false, Class1.v3: false, Class1.v4: false, Class1.v5: false, sup: "*", ZeroCalls__64__flip2__46: "*", ZeroCalls__64__flip2__46.__occurrences: 0, ZeroCalls__64__flip3__48: "*", ZeroCalls__64__flip3__48.__occurrences: 0, ZeroCalls__64__flip4__50: "*", ZeroCalls__64__flip4__50.__occurrences: 0, ZeroCalls__64__flip5__52: "*", ZeroCalls__64__flip5__52.__occurrences: 0)
+  @state(Class1: "*", Class1.__nonAtomicActive__flip1: true, Class1.v1: false, Class1.v2: false, Class1.v3: false, Class1.v4: false, Class1.v5: false, sup: "*")
   location loc2:
     edge flip1__na_result_1 goto loc3;
-  @state(Class1: "*", Class1.__nonAtomicActive__flip1: false, Class1.__nonAtomicActive__flip4: false, Class1.v1: true, Class1.v2: false, Class1.v3: false, Class1.v4: false, Class1.v5: false, sup: "*", ZeroCalls__64__flip2__46: "*", ZeroCalls__64__flip2__46.__occurrences: 0, ZeroCalls__64__flip3__48: "*", ZeroCalls__64__flip3__48.__occurrences: 0, ZeroCalls__64__flip4__50: "*", ZeroCalls__64__flip4__50.__occurrences: 0, ZeroCalls__64__flip5__52: "*", ZeroCalls__64__flip5__52.__occurrences: 0)
+  @state(Class1: "*", Class1.__nonAtomicActive__flip1: false, Class1.v1: true, Class1.v2: false, Class1.v3: false, Class1.v4: false, Class1.v5: false, sup: "*")
   location loc3:
     edge __end goto __done;
-  @state(Class1: "*", Class1.__nonAtomicActive__flip1: false, Class1.__nonAtomicActive__flip4: false, Class1.v1: true, Class1.v2: false, Class1.v3: false, Class1.v4: false, Class1.v5: false, sup: "*", ZeroCalls__64__flip2__46: "*", ZeroCalls__64__flip2__46.__occurrences: 0, ZeroCalls__64__flip3__48: "*", ZeroCalls__64__flip3__48.__occurrences: 0, ZeroCalls__64__flip4__50: "*", ZeroCalls__64__flip4__50.__occurrences: 0, ZeroCalls__64__flip5__52: "*", ZeroCalls__64__flip5__52.__occurrences: 0)
+  @state(Class1: "*", Class1.__nonAtomicActive__flip1: false, Class1.v1: true, Class1.v2: false, Class1.v3: false, Class1.v4: false, Class1.v5: false, sup: "*")
   location __done:
     marked;
 end

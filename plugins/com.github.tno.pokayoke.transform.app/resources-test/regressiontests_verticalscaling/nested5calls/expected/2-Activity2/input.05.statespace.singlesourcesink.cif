@@ -1,10 +1,4 @@
-controllable flip1;
-uncontrollable flip1__na_result_1;
 controllable flip2;
-controllable flip3;
-controllable flip4;
-uncontrollable flip4__na_result_1;
-controllable flip5;
 controllable __node__InitialNode__109__0;
 uncontrollable __node__ActivityFinalNode__111__0;
 uncontrollable __node__CallBehaviorAction__113;
@@ -12,46 +6,46 @@ uncontrollable __node__CallBehaviorAction__113__na_result_1;
 controllable __start;
 controllable __end;
 automaton synthesis_state_space:
-  alphabet flip1, flip1__na_result_1, flip2, flip3, flip4, flip4__na_result_1, flip5, __node__InitialNode__109__0, __node__ActivityFinalNode__111__0, __node__CallBehaviorAction__113, __node__CallBehaviorAction__113__na_result_1, __start, __end;
-  @state(Class1: "*", Class1.__controlflow__101: false, Class1.__controlflow__104: false, Class1.__nonAtomicActive____node__CallBehaviorAction__113: false, Class1.__nonAtomicActive__flip1: false, Class1.__nonAtomicActive__flip4: false, Class1.v1: false, Class1.v2: false, Class1.v3: false, Class1.v4: false, Class1.v5: false, sup: "*", ZeroCalls__130__flip1__65: "*", ZeroCalls__130__flip1__65.__occurrences: 0, ZeroCalls__130__flip3__71: "*", ZeroCalls__130__flip3__71.__occurrences: 0, ZeroCalls__130__flip4__74: "*", ZeroCalls__130__flip4__74.__occurrences: 0, ZeroCalls__130__flip5__77: "*", ZeroCalls__130__flip5__77.__occurrences: 0)
+  alphabet flip2, __node__InitialNode__109__0, __node__ActivityFinalNode__111__0, __node__CallBehaviorAction__113, __node__CallBehaviorAction__113__na_result_1, __start, __end;
+  @state(Class1: "*", Class1.__controlflow__101: false, Class1.__controlflow__104: false, Class1.__nonAtomicActive____node__CallBehaviorAction__113: false, Class1.v1: false, Class1.v2: false, Class1.v3: false, Class1.v4: false, Class1.v5: false, sup: "*")
   location __init:
     initial;
     edge __start goto loc1;
-  @state(Class1: "*", Class1.__controlflow__101: false, Class1.__controlflow__104: false, Class1.__nonAtomicActive____node__CallBehaviorAction__113: false, Class1.__nonAtomicActive__flip1: false, Class1.__nonAtomicActive__flip4: false, Class1.v1: false, Class1.v2: false, Class1.v3: false, Class1.v4: false, Class1.v5: false, sup: "*", ZeroCalls__130__flip1__65: "*", ZeroCalls__130__flip1__65.__occurrences: 0, ZeroCalls__130__flip3__71: "*", ZeroCalls__130__flip3__71.__occurrences: 0, ZeroCalls__130__flip4__74: "*", ZeroCalls__130__flip4__74.__occurrences: 0, ZeroCalls__130__flip5__77: "*", ZeroCalls__130__flip5__77.__occurrences: 0)
+  @state(Class1: "*", Class1.__controlflow__101: false, Class1.__controlflow__104: false, Class1.__nonAtomicActive____node__CallBehaviorAction__113: false, Class1.v1: false, Class1.v2: false, Class1.v3: false, Class1.v4: false, Class1.v5: false, sup: "*")
   location loc1:
     edge flip2 goto loc2;
     edge __node__InitialNode__109__0 goto loc3;
-  @state(Class1: "*", Class1.__controlflow__101: false, Class1.__controlflow__104: false, Class1.__nonAtomicActive____node__CallBehaviorAction__113: false, Class1.__nonAtomicActive__flip1: false, Class1.__nonAtomicActive__flip4: false, Class1.v1: false, Class1.v2: true, Class1.v3: false, Class1.v4: false, Class1.v5: false, sup: "*", ZeroCalls__130__flip1__65: "*", ZeroCalls__130__flip1__65.__occurrences: 0, ZeroCalls__130__flip3__71: "*", ZeroCalls__130__flip3__71.__occurrences: 0, ZeroCalls__130__flip4__74: "*", ZeroCalls__130__flip4__74.__occurrences: 0, ZeroCalls__130__flip5__77: "*", ZeroCalls__130__flip5__77.__occurrences: 0)
+  @state(Class1: "*", Class1.__controlflow__101: false, Class1.__controlflow__104: false, Class1.__nonAtomicActive____node__CallBehaviorAction__113: false, Class1.v1: false, Class1.v2: true, Class1.v3: false, Class1.v4: false, Class1.v5: false, sup: "*")
   location loc2:
     edge __node__InitialNode__109__0 goto loc4;
-  @state(Class1: "*", Class1.__controlflow__101: false, Class1.__controlflow__104: true, Class1.__nonAtomicActive____node__CallBehaviorAction__113: false, Class1.__nonAtomicActive__flip1: false, Class1.__nonAtomicActive__flip4: false, Class1.v1: false, Class1.v2: false, Class1.v3: false, Class1.v4: false, Class1.v5: false, sup: "*", ZeroCalls__130__flip1__65: "*", ZeroCalls__130__flip1__65.__occurrences: 0, ZeroCalls__130__flip3__71: "*", ZeroCalls__130__flip3__71.__occurrences: 0, ZeroCalls__130__flip4__74: "*", ZeroCalls__130__flip4__74.__occurrences: 0, ZeroCalls__130__flip5__77: "*", ZeroCalls__130__flip5__77.__occurrences: 0)
+  @state(Class1: "*", Class1.__controlflow__101: false, Class1.__controlflow__104: true, Class1.__nonAtomicActive____node__CallBehaviorAction__113: false, Class1.v1: false, Class1.v2: false, Class1.v3: false, Class1.v4: false, Class1.v5: false, sup: "*")
   location loc3:
     edge flip2 goto loc4;
     edge __node__CallBehaviorAction__113 goto loc5;
-  @state(Class1: "*", Class1.__controlflow__101: false, Class1.__controlflow__104: true, Class1.__nonAtomicActive____node__CallBehaviorAction__113: false, Class1.__nonAtomicActive__flip1: false, Class1.__nonAtomicActive__flip4: false, Class1.v1: false, Class1.v2: true, Class1.v3: false, Class1.v4: false, Class1.v5: false, sup: "*", ZeroCalls__130__flip1__65: "*", ZeroCalls__130__flip1__65.__occurrences: 0, ZeroCalls__130__flip3__71: "*", ZeroCalls__130__flip3__71.__occurrences: 0, ZeroCalls__130__flip4__74: "*", ZeroCalls__130__flip4__74.__occurrences: 0, ZeroCalls__130__flip5__77: "*", ZeroCalls__130__flip5__77.__occurrences: 0)
+  @state(Class1: "*", Class1.__controlflow__101: false, Class1.__controlflow__104: true, Class1.__nonAtomicActive____node__CallBehaviorAction__113: false, Class1.v1: false, Class1.v2: true, Class1.v3: false, Class1.v4: false, Class1.v5: false, sup: "*")
   location loc4:
     edge __node__CallBehaviorAction__113 goto loc6;
-  @state(Class1: "*", Class1.__controlflow__101: false, Class1.__controlflow__104: false, Class1.__nonAtomicActive____node__CallBehaviorAction__113: true, Class1.__nonAtomicActive__flip1: false, Class1.__nonAtomicActive__flip4: false, Class1.v1: false, Class1.v2: false, Class1.v3: false, Class1.v4: false, Class1.v5: false, sup: "*", ZeroCalls__130__flip1__65: "*", ZeroCalls__130__flip1__65.__occurrences: 0, ZeroCalls__130__flip3__71: "*", ZeroCalls__130__flip3__71.__occurrences: 0, ZeroCalls__130__flip4__74: "*", ZeroCalls__130__flip4__74.__occurrences: 0, ZeroCalls__130__flip5__77: "*", ZeroCalls__130__flip5__77.__occurrences: 0)
+  @state(Class1: "*", Class1.__controlflow__101: false, Class1.__controlflow__104: false, Class1.__nonAtomicActive____node__CallBehaviorAction__113: true, Class1.v1: false, Class1.v2: false, Class1.v3: false, Class1.v4: false, Class1.v5: false, sup: "*")
   location loc5:
     edge flip2 goto loc6;
     edge __node__CallBehaviorAction__113__na_result_1 goto loc7;
-  @state(Class1: "*", Class1.__controlflow__101: false, Class1.__controlflow__104: false, Class1.__nonAtomicActive____node__CallBehaviorAction__113: true, Class1.__nonAtomicActive__flip1: false, Class1.__nonAtomicActive__flip4: false, Class1.v1: false, Class1.v2: true, Class1.v3: false, Class1.v4: false, Class1.v5: false, sup: "*", ZeroCalls__130__flip1__65: "*", ZeroCalls__130__flip1__65.__occurrences: 0, ZeroCalls__130__flip3__71: "*", ZeroCalls__130__flip3__71.__occurrences: 0, ZeroCalls__130__flip4__74: "*", ZeroCalls__130__flip4__74.__occurrences: 0, ZeroCalls__130__flip5__77: "*", ZeroCalls__130__flip5__77.__occurrences: 0)
+  @state(Class1: "*", Class1.__controlflow__101: false, Class1.__controlflow__104: false, Class1.__nonAtomicActive____node__CallBehaviorAction__113: true, Class1.v1: false, Class1.v2: true, Class1.v3: false, Class1.v4: false, Class1.v5: false, sup: "*")
   location loc6:
     edge __node__CallBehaviorAction__113__na_result_1 goto loc8;
-  @state(Class1: "*", Class1.__controlflow__101: true, Class1.__controlflow__104: false, Class1.__nonAtomicActive____node__CallBehaviorAction__113: false, Class1.__nonAtomicActive__flip1: false, Class1.__nonAtomicActive__flip4: false, Class1.v1: true, Class1.v2: false, Class1.v3: false, Class1.v4: false, Class1.v5: false, sup: "*", ZeroCalls__130__flip1__65: "*", ZeroCalls__130__flip1__65.__occurrences: 0, ZeroCalls__130__flip3__71: "*", ZeroCalls__130__flip3__71.__occurrences: 0, ZeroCalls__130__flip4__74: "*", ZeroCalls__130__flip4__74.__occurrences: 0, ZeroCalls__130__flip5__77: "*", ZeroCalls__130__flip5__77.__occurrences: 0)
+  @state(Class1: "*", Class1.__controlflow__101: true, Class1.__controlflow__104: false, Class1.__nonAtomicActive____node__CallBehaviorAction__113: false, Class1.v1: true, Class1.v2: false, Class1.v3: false, Class1.v4: false, Class1.v5: false, sup: "*")
   location loc7:
     edge flip2 goto loc8;
     edge __node__ActivityFinalNode__111__0 goto loc9;
-  @state(Class1: "*", Class1.__controlflow__101: true, Class1.__controlflow__104: false, Class1.__nonAtomicActive____node__CallBehaviorAction__113: false, Class1.__nonAtomicActive__flip1: false, Class1.__nonAtomicActive__flip4: false, Class1.v1: true, Class1.v2: true, Class1.v3: false, Class1.v4: false, Class1.v5: false, sup: "*", ZeroCalls__130__flip1__65: "*", ZeroCalls__130__flip1__65.__occurrences: 0, ZeroCalls__130__flip3__71: "*", ZeroCalls__130__flip3__71.__occurrences: 0, ZeroCalls__130__flip4__74: "*", ZeroCalls__130__flip4__74.__occurrences: 0, ZeroCalls__130__flip5__77: "*", ZeroCalls__130__flip5__77.__occurrences: 0)
+  @state(Class1: "*", Class1.__controlflow__101: true, Class1.__controlflow__104: false, Class1.__nonAtomicActive____node__CallBehaviorAction__113: false, Class1.v1: true, Class1.v2: true, Class1.v3: false, Class1.v4: false, Class1.v5: false, sup: "*")
   location loc8:
     edge __node__ActivityFinalNode__111__0 goto loc10;
-  @state(Class1: "*", Class1.__controlflow__101: false, Class1.__controlflow__104: false, Class1.__nonAtomicActive____node__CallBehaviorAction__113: false, Class1.__nonAtomicActive__flip1: false, Class1.__nonAtomicActive__flip4: false, Class1.v1: true, Class1.v2: false, Class1.v3: false, Class1.v4: false, Class1.v5: false, sup: "*", ZeroCalls__130__flip1__65: "*", ZeroCalls__130__flip1__65.__occurrences: 0, ZeroCalls__130__flip3__71: "*", ZeroCalls__130__flip3__71.__occurrences: 0, ZeroCalls__130__flip4__74: "*", ZeroCalls__130__flip4__74.__occurrences: 0, ZeroCalls__130__flip5__77: "*", ZeroCalls__130__flip5__77.__occurrences: 0)
+  @state(Class1: "*", Class1.__controlflow__101: false, Class1.__controlflow__104: false, Class1.__nonAtomicActive____node__CallBehaviorAction__113: false, Class1.v1: true, Class1.v2: false, Class1.v3: false, Class1.v4: false, Class1.v5: false, sup: "*")
   location loc9:
     edge flip2 goto loc10;
-  @state(Class1: "*", Class1.__controlflow__101: false, Class1.__controlflow__104: false, Class1.__nonAtomicActive____node__CallBehaviorAction__113: false, Class1.__nonAtomicActive__flip1: false, Class1.__nonAtomicActive__flip4: false, Class1.v1: true, Class1.v2: true, Class1.v3: false, Class1.v4: false, Class1.v5: false, sup: "*", ZeroCalls__130__flip1__65: "*", ZeroCalls__130__flip1__65.__occurrences: 0, ZeroCalls__130__flip3__71: "*", ZeroCalls__130__flip3__71.__occurrences: 0, ZeroCalls__130__flip4__74: "*", ZeroCalls__130__flip4__74.__occurrences: 0, ZeroCalls__130__flip5__77: "*", ZeroCalls__130__flip5__77.__occurrences: 0)
+  @state(Class1: "*", Class1.__controlflow__101: false, Class1.__controlflow__104: false, Class1.__nonAtomicActive____node__CallBehaviorAction__113: false, Class1.v1: true, Class1.v2: true, Class1.v3: false, Class1.v4: false, Class1.v5: false, sup: "*")
   location loc10:
     edge __end goto __done;
-  @state(Class1: "*", Class1.__controlflow__101: false, Class1.__controlflow__104: false, Class1.__nonAtomicActive____node__CallBehaviorAction__113: false, Class1.__nonAtomicActive__flip1: false, Class1.__nonAtomicActive__flip4: false, Class1.v1: true, Class1.v2: true, Class1.v3: false, Class1.v4: false, Class1.v5: false, sup: "*", ZeroCalls__130__flip1__65: "*", ZeroCalls__130__flip1__65.__occurrences: 0, ZeroCalls__130__flip3__71: "*", ZeroCalls__130__flip3__71.__occurrences: 0, ZeroCalls__130__flip4__74: "*", ZeroCalls__130__flip4__74.__occurrences: 0, ZeroCalls__130__flip5__77: "*", ZeroCalls__130__flip5__77.__occurrences: 0)
+  @state(Class1: "*", Class1.__controlflow__101: false, Class1.__controlflow__104: false, Class1.__nonAtomicActive____node__CallBehaviorAction__113: false, Class1.v1: true, Class1.v2: true, Class1.v3: false, Class1.v4: false, Class1.v5: false, sup: "*")
   location __done:
     marked;
 end

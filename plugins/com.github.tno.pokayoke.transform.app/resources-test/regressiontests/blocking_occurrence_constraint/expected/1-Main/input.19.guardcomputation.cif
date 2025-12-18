@@ -18,8 +18,7 @@ plant automaton Context:
   alg bool postcondition = field2;
   alg bool __postcondition_without_structure__at_most_once__36__left__24 = at_most_once__36__left__24.__occurrences >= 0;
   alg bool __postcondition_without_structure__at_most_once__36__right__26 = at_most_once__36__right__26.__occurrences >= 0;
-  alg bool __postcondition_without_structure__blocking__40__flip__28 = blocking__40__flip__28.__occurrences >= 0;
-  alg bool __postcondition_without_structure = postcondition and __postcondition_without_structure__at_most_once__36__left__24 and (__postcondition_without_structure__at_most_once__36__right__26 and __postcondition_without_structure__blocking__40__flip__28);
+  alg bool __postcondition_without_structure = postcondition and (__postcondition_without_structure__at_most_once__36__left__24 and __postcondition_without_structure__at_most_once__36__right__26);
   alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
   alg bool __postcondition_with_structure__controlflow__44 = not __controlflow__44;
   alg bool __postcondition_with_structure__controlflow__45 = not __controlflow__45;
@@ -55,13 +54,6 @@ requirement automaton at_most_once__36__right__26:
     initial;
     marked;
     edge __node__CallBehaviorAction__55 when __occurrences < 1 do __occurrences := __occurrences + 1;
-end
-requirement automaton blocking__40__flip__28:
-  disc int[0..1] __occurrences;
-  marked __occurrences >= 0;
-  location:
-    initial;
-    marked;
 end
 requirement invariant Context.__postcondition_with_structure disables __node__DecisionNode__51__0;
 requirement invariant Context.__postcondition_with_structure disables __node__DecisionNode__51__1;

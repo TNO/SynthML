@@ -1,14 +1,9 @@
 controllable flip1;
 uncontrollable flip1__na_result_1;
-controllable flip2;
-controllable flip3;
-controllable flip4;
-uncontrollable flip4__na_result_1;
-controllable flip5;
 controllable __start;
 controllable __end;
 automaton projected:
-  alphabet flip1, flip1__na_result_1, flip2, flip3, flip4, flip4__na_result_1, flip5, __start, __end;
+  alphabet flip1, flip1__na_result_1, __start, __end;
   @state(synthesis_state_space: "__init")
   location s1:
     initial;

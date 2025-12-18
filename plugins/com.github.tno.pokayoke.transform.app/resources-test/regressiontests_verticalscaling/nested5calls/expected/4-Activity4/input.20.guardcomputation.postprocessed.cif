@@ -50,13 +50,7 @@ plant automaton Class1:
   alg bool postcondition4 = v4 and v3 and v2 and v1;
   alg bool __postcondition_without_structure__nonAtomicActive____node__CallBehaviorAction__486 = not __nonAtomicActive____node__CallBehaviorAction__486;
   alg bool __postcondition_without_structure__nonAtomicActive____node__CallBehaviorAction__489 = not __nonAtomicActive____node__CallBehaviorAction__489;
-  alg bool __postcondition_without_structure__ZeroCalls__410__flip1__107 = ZeroCalls__410__flip1__107.__occurrences >= 0;
-  alg bool __postcondition_without_structure__ZeroCalls__410__flip2__112 = ZeroCalls__410__flip2__112.__occurrences >= 0;
-  alg bool __postcondition_without_structure__ZeroCalls__410__flip3__117 = ZeroCalls__410__flip3__117.__occurrences >= 0;
-  alg bool __postcondition_without_structure__ZeroCalls__410__flip5__127 = ZeroCalls__410__flip5__127.__occurrences >= 0;
-  alg bool __postcondition_without_structure__ZeroCalls__410__Activity1__132 = ZeroCalls__410__Activity1__132.__occurrences >= 0;
-  alg bool __postcondition_without_structure__ZeroCalls__410__Activity2__197 = ZeroCalls__410__Activity2__197.__occurrences >= 0;
-  alg bool __postcondition_without_structure = postcondition4 and __postcondition_without_structure__nonAtomicActive____node__CallBehaviorAction__486 and (__postcondition_without_structure__nonAtomicActive____node__CallBehaviorAction__489 and __postcondition_without_structure__ZeroCalls__410__flip1__107) and (__postcondition_without_structure__ZeroCalls__410__flip2__112 and __postcondition_without_structure__ZeroCalls__410__flip3__117 and (__postcondition_without_structure__ZeroCalls__410__flip5__127 and (__postcondition_without_structure__ZeroCalls__410__Activity1__132 and __postcondition_without_structure__ZeroCalls__410__Activity2__197)));
+  alg bool __postcondition_without_structure = postcondition4 and (__postcondition_without_structure__nonAtomicActive____node__CallBehaviorAction__486 and __postcondition_without_structure__nonAtomicActive____node__CallBehaviorAction__489);
   alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
   alg bool __postcondition_with_structure__controlflow__440 = not __controlflow__440;
   alg bool __postcondition_with_structure__controlflow__442 = not __controlflow__442;
@@ -102,48 +96,6 @@ plant automaton Class1:
     edge __node__CallBehaviorAction__488 when not v3, __controlflow__464, true, not __controlflow__468 do v3 := true, __controlflow__464 := false, __controlflow__468 := true;
     edge __node__CallBehaviorAction__489 when not v4, __controlflow__460, not __controlflow__463, not __nonAtomicActive____node__CallBehaviorAction__489 do __controlflow__460 := false, __nonAtomicActive____node__CallBehaviorAction__489 := true;
     edge __node__CallBehaviorAction__489__na_result_1 when not __controlflow__463, __nonAtomicActive____node__CallBehaviorAction__489 do v4 := true, __controlflow__463 := true, __nonAtomicActive____node__CallBehaviorAction__489 := false;
-end
-requirement automaton ZeroCalls__410__flip1__107:
-  disc int[0..1] __occurrences;
-  marked __occurrences >= 0;
-  location:
-    initial;
-    marked;
-end
-requirement automaton ZeroCalls__410__flip2__112:
-  disc int[0..1] __occurrences;
-  marked __occurrences >= 0;
-  location:
-    initial;
-    marked;
-end
-requirement automaton ZeroCalls__410__flip3__117:
-  disc int[0..1] __occurrences;
-  marked __occurrences >= 0;
-  location:
-    initial;
-    marked;
-end
-requirement automaton ZeroCalls__410__flip5__127:
-  disc int[0..1] __occurrences;
-  marked __occurrences >= 0;
-  location:
-    initial;
-    marked;
-end
-requirement automaton ZeroCalls__410__Activity1__132:
-  disc int[0..1] __occurrences;
-  marked __occurrences >= 0;
-  location:
-    initial;
-    marked;
-end
-requirement automaton ZeroCalls__410__Activity2__197:
-  disc int[0..1] __occurrences;
-  marked __occurrences >= 0;
-  location:
-    initial;
-    marked;
 end
 requirement invariant Class1.__postcondition_with_structure disables __node__MergeNode__472__0;
 requirement invariant Class1.__postcondition_with_structure disables __node__DecisionNode__473__0;

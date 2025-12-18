@@ -25,11 +25,7 @@ plant automaton Class1:
   alg bool __precondition = precondition2 and __token_on_first_controlflow;
   alg bool postcondition2 = v2 and v1;
   alg bool __postcondition_without_structure__nonAtomicActive____node__CallBehaviorAction__152 = not __nonAtomicActive____node__CallBehaviorAction__152;
-  alg bool __postcondition_without_structure__ZeroCalls__130__flip1__65 = ZeroCalls__130__flip1__65.__occurrences >= 0;
-  alg bool __postcondition_without_structure__ZeroCalls__130__flip3__71 = ZeroCalls__130__flip3__71.__occurrences >= 0;
-  alg bool __postcondition_without_structure__ZeroCalls__130__flip4__74 = ZeroCalls__130__flip4__74.__occurrences >= 0;
-  alg bool __postcondition_without_structure__ZeroCalls__130__flip5__77 = ZeroCalls__130__flip5__77.__occurrences >= 0;
-  alg bool __postcondition_without_structure = postcondition2 and (__postcondition_without_structure__nonAtomicActive____node__CallBehaviorAction__152 and __postcondition_without_structure__ZeroCalls__130__flip1__65) and (__postcondition_without_structure__ZeroCalls__130__flip3__71 and (__postcondition_without_structure__ZeroCalls__130__flip4__74 and __postcondition_without_structure__ZeroCalls__130__flip5__77));
+  alg bool __postcondition_without_structure = postcondition2 and __postcondition_without_structure__nonAtomicActive____node__CallBehaviorAction__152;
   alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
   alg bool __postcondition_with_structure__controlflow__136 = not __controlflow__136;
   alg bool __postcondition_with_structure__controlflow__137 = not __controlflow__137;
@@ -52,34 +48,6 @@ plant automaton Class1:
     edge __node__CallBehaviorAction__152 when not v1, __controlflow__138, true, not __controlflow__141, not __nonAtomicActive____node__CallBehaviorAction__152 do __controlflow__138 := false, __nonAtomicActive____node__CallBehaviorAction__152 := true;
     edge __node__CallBehaviorAction__152__na_result_1 when not __controlflow__141, __nonAtomicActive____node__CallBehaviorAction__152 do v1 := true, __controlflow__141 := true, __nonAtomicActive____node__CallBehaviorAction__152 := false;
     edge __node__CallBehaviorAction__153 when not v2, __controlflow__137, not __controlflow__140 do v2 := true, __controlflow__137 := false, __controlflow__140 := true;
-end
-requirement automaton ZeroCalls__130__flip1__65:
-  disc int[0..1] __occurrences;
-  marked __occurrences >= 0;
-  location:
-    initial;
-    marked;
-end
-requirement automaton ZeroCalls__130__flip3__71:
-  disc int[0..1] __occurrences;
-  marked __occurrences >= 0;
-  location:
-    initial;
-    marked;
-end
-requirement automaton ZeroCalls__130__flip4__74:
-  disc int[0..1] __occurrences;
-  marked __occurrences >= 0;
-  location:
-    initial;
-    marked;
-end
-requirement automaton ZeroCalls__130__flip5__77:
-  disc int[0..1] __occurrences;
-  marked __occurrences >= 0;
-  location:
-    initial;
-    marked;
 end
 requirement invariant Class1.__postcondition_with_structure disables __node__MergeNode__146__0;
 requirement invariant Class1.__postcondition_without_structure disables __node__DecisionNode__147__0;
