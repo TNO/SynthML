@@ -85,6 +85,15 @@ public interface SynthMLFactory extends EFactory {
 	Postcondition createPostcondition();
 
 	/**
+	 * Returns a new object of class '<em>Formal Activity</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Formal Activity</em>'.
+	 * @generated
+	 */
+	FormalActivity createFormalActivity();
+
+	/**
 	 * Returns the package supported by this factory.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

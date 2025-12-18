@@ -28,5 +28,9 @@
     <genClasses ecoreClass="SynthML.ecore#//SynthesisPrecondition"/>
     <genClasses ecoreClass="SynthML.ecore#//UsagePrecondition"/>
     <genClasses ecoreClass="SynthML.ecore#//Postcondition"/>
+    <genClasses ecoreClass="SynthML.ecore#//FormalActivity">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference SynthML.ecore#//FormalActivity/base_Activity"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute SynthML.ecore#//FormalActivity/interface"/>
+    </genClasses>
   </genPackages>
 </genmodel:GenModel>
