@@ -789,10 +789,12 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             boolean controllableStartEvents)
     {
         // Get the relevant guards for the CIF event.
-        String entryGuardConjunction = ExprHelper.conjoinExprs(
-                node.getIncomings().stream().map(e -> PokaYokeUmlProfileUtil.getOutgoingGuard(e)).toList());
-        String exitGuardConjunction = ExprHelper.conjoinExprs(
-                node.getOutgoings().stream().map(e -> PokaYokeUmlProfileUtil.getIncomingGuard(e)).toList());
+        String entryGuardConjunction = ExprHelper
+                .conjoinExprs(node.getIncomings().stream().map(e -> PokaYokeUmlProfileUtil.getOutgoingGuard(e))
+                        .filter(g -> !ExprHelper.isNullOrTriviallyTrue(g)).toList());
+        String exitGuardConjunction = ExprHelper
+                .conjoinExprs(node.getOutgoings().stream().map(e -> PokaYokeUmlProfileUtil.getIncomingGuard(e))
+                        .filter(g -> !ExprHelper.isNullOrTriviallyTrue(g)).toList());
 
         // Translate the UML activity node as an action.
         String actionName = getActionNameForActivityNode(node);
