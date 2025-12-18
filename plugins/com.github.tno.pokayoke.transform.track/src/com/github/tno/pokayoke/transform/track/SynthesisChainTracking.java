@@ -28,6 +28,7 @@ import org.eclipse.uml2.uml.RedefinableElement;
 
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Verify;
+import com.google.common.collect.ImmutableSet;
 
 import fr.lip6.move.pnml.ptnet.PetriNet;
 import fr.lip6.move.pnml.ptnet.Transition;
@@ -80,6 +81,9 @@ public class SynthesisChainTracking {
 
     /** The map from the finalized UML elements to the non-finalized opaque actions they originate from. */
     private final Map<RedefinableElement, OpaqueAction> finalizedElementToAction = new LinkedHashMap<>();
+
+    /** The set containing the events removed after the restoring of decision and merge nodes of concrete activities. */
+    private final Set<Event> restoredDecisionMergeNodeEvents = new LinkedHashSet<>();
 
     public static enum ActionKind {
         START_OPAQUE_BEHAVIOR, END_OPAQUE_BEHAVIOR, COMPLETE_OPAQUE_BEHAVIOR, START_SHADOW, END_SHADOW, COMPLETE_SHADOW,
@@ -1251,11 +1255,13 @@ public class SynthesisChainTracking {
             cifEventTraceInfo.put(event, newEventTraceInfo);
         }
 
-        // Remove activity nodes from the internal map and the corresponding transition and CIF event tracing info.
+        // Remove activity nodes from the internal map and the corresponding transition and CIF event tracing info. Add
+        // the events to the internal map.
         Set<Transition> transitionToRemove = nodesToRemove.stream().map(activityNodeToTransition::get)
                 .collect(Collectors.toSet());
         Set<Event> eventsToRemove = transitionToRemove.stream()
                 .flatMap(t -> transitionTraceInfo.get(t).getCifEvents().stream()).collect(Collectors.toSet());
+        restoredDecisionMergeNodeEvents.addAll(eventsToRemove);
         activityNodeToTransition.keySet().removeAll(nodesToRemove);
         transitionTraceInfo.keySet().removeAll(transitionToRemove);
         cifEventTraceInfo.keySet().removeAll(eventsToRemove);
@@ -1604,6 +1610,10 @@ public class SynthesisChainTracking {
         }
 
         return externalEventsMap;
+    }
+
+    public Set<Event> getRestoredDecisionMergeNodeEvents() {
+        return ImmutableSet.copyOf(restoredDecisionMergeNodeEvents);
     }
 
     /**

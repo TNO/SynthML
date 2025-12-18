@@ -399,6 +399,7 @@ public class FullSynthesisApp {
 
         // Get internal event sets for the synthesis and language equivalence translations.
         Set<Event> synthesisInternalEvents = tracker.getInternalEvents(UmlToCifTranslationPurpose.SYNTHESIS);
+        synthesisInternalEvents.addAll(tracker.getRestoredDecisionMergeNodeEvents());
         Set<Event> languageEqInternalEvents = tracker
                 .getInternalEvents(UmlToCifTranslationPurpose.LANGUAGE_EQUIVALENCE);
 
