@@ -20,6 +20,7 @@ import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.ControlNode;
 import org.eclipse.uml2.uml.DecisionNode;
+import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.MergeNode;
 import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.OpaqueBehavior;
@@ -1522,6 +1523,30 @@ public class SynthesisChainTracking {
     public boolean isRelatedToControlNodeOfCalledActivity(ActivityNode node) {
         RedefinableElement originalUmlElement = getOriginalUmlElement(node);
         return originalUmlElement instanceof ControlNode;
+    }
+
+    /**
+     * Return {@code true} if the CIF event represents a concrete activity initial node. If the purpose is guard
+     * computation or language equivalence, the method refers to the original UML element.
+     *
+     * @param cifEvent The event to check.
+     * @param purpose The translation purpose.
+     * @return {@code true} if the node represents an initial node; {@code false} otherwise.
+     */
+    public boolean representsActivityInitialNode(Event cifEvent, UmlToCifTranslationPurpose purpose) {
+        EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
+        if (eventInfo == null) {
+            return false;
+        }
+
+        RedefinableElement umlElement = switch (purpose) {
+            case SYNTHESIS -> eventInfo.getUmlElement();
+            case GUARD_COMPUTATION, LANGUAGE_EQUIVALENCE -> getOriginalUmlElement(
+                    (ActivityNode)eventInfo.getUmlElement());
+            default -> throw new IllegalArgumentException("Unexpected translation purpose: " + purpose);
+        };
+
+        return umlElement instanceof InitialNode;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
