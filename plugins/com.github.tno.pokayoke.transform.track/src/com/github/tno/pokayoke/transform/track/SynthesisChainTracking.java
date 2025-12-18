@@ -1423,14 +1423,16 @@ public class SynthesisChainTracking {
     /**
      * Returns {@code true} if the given CIF event has been created for a finalized UML element during the guard
      * computation or language equivalence check phase, which corresponds to a CIF event created for the synthesis phase
-     * that represents the start event of an original opaque behavior.
+     * that represents the start event of an original opaque behavior, opaque action or call behavior action.
      *
      * @param cifEvent The CIF event.
      * @param purpose The translation purpose.
-     * @return {@code true} if the CIF event corresponds to the start of an original opaque behavior, {@code false}
-     *     otherwise.
+     * @return {@code true} if the CIF event corresponds to the start of an original opaque behavior, opaque action or
+     *     call behavior action; {@code false} otherwise.
      */
-    public boolean isStartOfOriginalOpaqueBehavior(Event cifEvent, UmlToCifTranslationPurpose purpose) {
+    public boolean isStartOfOriginalOpaqueBehaviorOpaqueActionOrCallBehavior(Event cifEvent,
+            UmlToCifTranslationPurpose purpose)
+    {
         // Precondition check.
         Verify.verify(purpose != UmlToCifTranslationPurpose.SYNTHESIS,
                 "Reference to original UML element is undefined for synthesis translation.");
@@ -1440,7 +1442,9 @@ public class SynthesisChainTracking {
         Verify.verifyNotNull(finalizedEventInfo, String.format(
                 "Event '%s' does not have any tracing info referring to the finalized UML model.", cifEvent.getName()));
         RedefinableElement finalizedUmlElement = finalizedEventInfo.getUmlElement();
-        return getOriginalUmlElement(finalizedUmlElement) instanceof OpaqueBehavior
+        return (getOriginalUmlElement(finalizedUmlElement) instanceof OpaqueBehavior
+                || getOriginalUmlElement(finalizedUmlElement) instanceof OpaqueAction
+                || getOriginalUmlElement(finalizedUmlElement) instanceof CallBehaviorAction)
                 && isRelatedToStartOfOriginalElement(finalizedEventInfo);
     }
 
