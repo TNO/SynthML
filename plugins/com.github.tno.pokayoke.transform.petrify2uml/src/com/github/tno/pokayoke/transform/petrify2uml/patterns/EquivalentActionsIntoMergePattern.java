@@ -8,21 +8,24 @@ import java.util.Optional;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
+import org.eclipse.uml2.uml.ActivityFinalNode;
 import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.MergeNode;
 import org.eclipse.uml2.uml.UMLFactory;
 
+import com.github.tno.pokayoke.transform.track.SynthesisChainTracking;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Preconditions;
 
 /**
  * Functionality for finding and rewriting <i>equivalent actions into merge</i> patterns in UML activities.
  * <p>
- * An <i>equivalent actions into merge</i> pattern is a pattern consisting of a merge node, which merges equivalent
- * action nodes. Such a pattern is redundant since the merge node could be 'pushed upwards' so that only a single such
- * action node would be needed. Every such pattern can be rewritten by 'pushing upwards' the merge node and eliminating
- * the redundant action nodes.
+ * An <i>equivalent actions into merge</i> pattern is a pattern consisting of a merge node, which does not correspond to
+ * the translation of an activity final node of a called concrete activity, which merges equivalent action nodes, and
+ * the related control flows have trivial guards. Such a pattern is redundant since the merge node could be 'pushed
+ * upwards' so that only a single such action node would be needed. Every such pattern can be rewritten by 'pushing
+ * upwards' the merge node and eliminating the redundant action nodes.
  * </p>
  */
 public class EquivalentActionsIntoMergePattern {
@@ -44,10 +47,11 @@ public class EquivalentActionsIntoMergePattern {
      * Finds and rewrites all <i>equivalent actions into merge</i> patterns in the given activity.
      *
      * @param activity The input activity, which is modified in-place.
+     * @param tracker The synthesis chain tracker.
      * @return {@code true} if the input activity has been rewritten, {@code false} otherwise.
      */
-    public static boolean findAndRewriteAll(Activity activity) {
-        List<EquivalentActionsIntoMergePattern> patterns = findAll(activity);
+    public static boolean findAndRewriteAll(Activity activity, SynthesisChainTracking tracker) {
+        List<EquivalentActionsIntoMergePattern> patterns = findAll(activity, tracker);
         patterns.forEach(EquivalentActionsIntoMergePattern::rewrite);
         return patterns.size() > 0;
     }
@@ -56,25 +60,34 @@ public class EquivalentActionsIntoMergePattern {
      * Finds all <i>equivalent actions into merge</i> patterns in the given activity.
      *
      * @param activity The input activity.
+     * @param tracker The synthesis chain tracker.
      * @return All <i>equivalent actions into merge</i> patterns in the given activity.
      */
-    public static List<EquivalentActionsIntoMergePattern> findAll(Activity activity) {
-        return activity.getNodes().stream().flatMap(node -> findAny(node).stream()).toList();
+    public static List<EquivalentActionsIntoMergePattern> findAll(Activity activity, SynthesisChainTracking tracker) {
+        return activity.getNodes().stream().flatMap(node -> findAny(node, tracker).stream()).toList();
     }
 
     /**
      * Tries finding an <i>equivalent actions into merge</i> pattern that involves the given activity node.
      *
      * @param node The input activity node.
+     * @param tracker The synthesis chain tracker.
      * @return Some <i>equivalent actions into merge</i> pattern in case one was found, or an empty result otherwise.
      */
-    private static Optional<EquivalentActionsIntoMergePattern> findAny(ActivityNode node) {
-        if (node instanceof MergeNode mergeNode && mergeNode.getIncomings().size() > 1) {
+    private static Optional<EquivalentActionsIntoMergePattern> findAny(ActivityNode node,
+            SynthesisChainTracking tracker)
+    {
+        if (node instanceof MergeNode mergeNode
+                && !(tracker.getOriginalUmlElement(mergeNode) instanceof ActivityFinalNode)
+                && mergeNode.getIncomings().size() > 1)
+        {
             List<Action> incomingActions = new ArrayList<>(node.getIncomings().size());
 
             for (ActivityEdge controlFlow: node.getIncomings()) {
-                if (controlFlow.getSource() instanceof Action action && (incomingActions.isEmpty()
-                        || PokaYokeUmlProfileUtil.areEquivalent(action, incomingActions.get(0))))
+                if (controlFlow.getSource() instanceof Action action
+                        && !PokaYokeUmlProfileUtil.isGuardedControlFlow((ControlFlow)controlFlow)
+                        && (incomingActions.isEmpty()
+                                || PokaYokeUmlProfileUtil.areEquivalent(action, incomingActions.get(0))))
                 {
                     incomingActions.add(action);
                 } else {

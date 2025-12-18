@@ -93,15 +93,16 @@ public class PostProcessActivity {
      * Simplifies the given activity.
      *
      * @param activity The activity to simplify, which is modified in-place.
+     * @param tracker The synthesis chain tracker.
      */
-    public static void simplify(Activity activity) {
+    public static void simplify(Activity activity, SynthesisChainTracking tracker) {
         while (true) {
             boolean changed = false;
 
-            changed |= RedundantDecisionMergePattern.findAndRewriteAll(activity);
-            changed |= RedundantDecisionForkMergePattern.findAndRewriteAll(activity);
-            changed |= EquivalentActionsIntoMergePattern.findAndRewriteAll(activity);
-            changed |= DoubleMergePattern.findAndRewriteAll(activity);
+            changed |= RedundantDecisionMergePattern.findAndRewriteAll(activity, tracker);
+            changed |= RedundantDecisionForkMergePattern.findAndRewriteAll(activity, tracker);
+            changed |= EquivalentActionsIntoMergePattern.findAndRewriteAll(activity, tracker);
+            changed |= DoubleMergePattern.findAndRewriteAll(activity, tracker);
 
             if (!changed) {
                 break;

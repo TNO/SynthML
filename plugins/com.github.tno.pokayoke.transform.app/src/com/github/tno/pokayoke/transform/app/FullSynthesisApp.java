@@ -291,7 +291,7 @@ public class FullSynthesisApp {
 
         // Post-process the activity to simplify it.
         Path umlSimplifiedOutputPath = outputFolderPath.resolve(filePrefix + ".17.simplified.uml");
-        PostProcessActivity.simplify(activity);
+        PostProcessActivity.simplify(activity, tracker);
         FileHelper.storeModel(activity.getModel(), umlSimplifiedOutputPath.toString());
 
         // Post-process the activity to remove the names of edges and nodes.
