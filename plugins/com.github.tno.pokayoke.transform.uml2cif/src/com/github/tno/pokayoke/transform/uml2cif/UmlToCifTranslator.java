@@ -1577,16 +1577,22 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             // Determine which postcondition to use.
             PostConditionKind kind = switch (translationPurpose) {
                 case GUARD_COMPUTATION -> {
-                    if (synthesisTracker.getEventTraceInfo(cifEvent).isInternal()) {
+                    if (!synthesisTracker.representsActivityInitialNode(cifEvent, translationPurpose)
+                            && (synthesisTracker.getEventTraceInfo(cifEvent).isInternal()
+                                    || !synthesisTracker.belongsToActivity(cifEvent, translationPurpose)))
+                    {
                         // We must allow internal actions after the user-defined postconditions etc hold, to ensure
                         // that the token can still pass through merge/join/etc nodes and the token can still reach
-                        // the incoming control flow to the final place.
+                        // the incoming control flow to the final place. Similarly, if the CIF event relates to an
+                        // element within a called concrete activity; the only exception is when a node represents the
+                        // start of an activity, which should not be called after reaching a marked state.
                         yield PostConditionKind.WITH_STRUCTURE;
                     } else if (synthesisTracker.isStartOfOriginalOpaqueBehaviorOpaqueActionOrCallBehavior(cifEvent,
-                            translationPurpose))
+                            translationPurpose)
+                            || synthesisTracker.representsActivityInitialNode(cifEvent, translationPurpose))
                     {
                         // As soon as the user-defined postconditions etc hold, we should no longer allow starting any
-                        // of the actions that the user defined.
+                        // of the actions that the user defined or a concrete activity.
                         yield PostConditionKind.WITHOUT_STRUCTURE;
                     } else {
                         // We must allow finishing non-atomic/non-deterministic actions.
