@@ -119,8 +119,8 @@
         <node xmi:type="uml:DecisionNode" xmi:id="48" name="__node__DecisionNode__66__0" incoming="33" outgoing="36 38"/>
         <node xmi:type="uml:DecisionNode" xmi:id="49" name="__node__InitialNode__56__0" incoming="30" outgoing="31"/>
         <node xmi:type="uml:MergeNode" xmi:id="50" name="__node__MergeNode__64__0" incoming="38 40" outgoing="42"/>
-        <node xmi:type="uml:OpaqueAction" xmi:id="51" name="__node__OpaqueAction__60" incoming="36" outgoing="40"/>
-        <node xmi:type="uml:OpaqueAction" xmi:id="52" name="__node__OpaqueAction__62" incoming="31" outgoing="34"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="51" name="Activity2_ValFlipper" incoming="36" outgoing="40"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="52" name="Activity2_Initialize" incoming="31" outgoing="34"/>
         <node xmi:type="uml:OpaqueAction" xmi:id="53" name="__start" incoming="28" outgoing="30"/>
         <node xmi:type="uml:InitialNode" xmi:id="54" name="InitialNode__p1" outgoing="28"/>
         <node xmi:type="uml:ActivityFinalNode" xmi:id="55" name="FinalNode__p10" incoming="29"/>
