@@ -31,6 +31,7 @@ import org.eclipse.uml2.uml.UMLFactory;
 import org.eclipse.uml2.uml.UMLPlugin;
 import org.eclipse.uml2.uml.ValueSpecification;
 
+import com.github.tno.pokayoke.transform.common.ExprHelper;
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.google.common.base.Strings;
 import com.google.common.base.Verify;
@@ -125,6 +126,17 @@ public class PokaYokeUmlProfileUtil {
 
     public static boolean isGuardEffectsAction(Action action) {
         return isSetGuard(action) || isSetEffects(action);
+    }
+
+    /**
+     * Returns {@code true} if the control flow has non-trivial (i.e. null or true) guards.
+     *
+     * @param controlFlow The control flow to interrogate.
+     * @return {@code true} if the control flow has non-trivial guards.
+     */
+    public static boolean isGuardedControlFlow(ControlFlow controlFlow) {
+        return !ExprHelper.isNullOrTriviallyTrue(PokaYokeUmlProfileUtil.getIncomingGuard(controlFlow))
+                || !ExprHelper.isNullOrTriviallyTrue(PokaYokeUmlProfileUtil.getOutgoingGuard(controlFlow));
     }
 
     public static boolean isSetGuard(RedefinableElement element) {
