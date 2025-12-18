@@ -122,7 +122,7 @@ public class PostProcessActivity {
         for (ActivityNode node: List.copyOf(activity.getNodes())) {
             if (node instanceof OpaqueAction action) {
                 if (tracker.isTemporaryPetrificationAction(action)) {
-                    // If the action is temporary, skip the current action.
+                    // If the action is temporary or comes from an interface, skip the current action.
                     continue;
                 }
 

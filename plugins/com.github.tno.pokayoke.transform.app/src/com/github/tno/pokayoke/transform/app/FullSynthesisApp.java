@@ -59,6 +59,7 @@ import com.github.tno.pokayoke.transform.track.UmlToCifTranslationPurpose;
 import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
 import com.github.tno.synthml.uml.profile.cif.CifContextManager;
+import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 
@@ -117,8 +118,11 @@ public class FullSynthesisApp {
         SynthesisChainTracking tracker = new SynthesisChainTracking(activity);
 
         // Translate the UML specification to a CIF specification.
-        UmlToCifTranslator umlToCifTranslator = new UmlToCifTranslator(ctxManager.getGlobalContext(), activity,
-                UmlToCifTranslationPurpose.SYNTHESIS, tracker, warnings);
+        UmlToCifTranslationPurpose purpose = PokaYokeUmlProfileUtil.isFormalActivity(activity)
+                ? UmlToCifTranslationPurpose.INTERFACE : UmlToCifTranslationPurpose.SYNTHESIS;
+        UmlToCifTranslator umlToCifTranslator = new UmlToCifTranslator(ctxManager.getGlobalContext(), activity, purpose,
+                tracker, warnings);
+
         Specification cifSpec = umlToCifTranslator.translate();
         Path cifSpecPath = outputFolderPath.resolve(filePrefix + ".01.cif");
         try {
@@ -143,6 +147,29 @@ public class FullSynthesisApp {
         CifDataSynthesisSettings settings = CIFDataSynthesisHelper.getSynthesisSettings();
         CifBddSpec cifBddSpec = CIFDataSynthesisHelper.getCifBddSpec(cifSpec,
                 cifPostProcessedSpecPath.toAbsolutePath().toString(), settings);
+
+        if (tracker.isInterfaceActivity()) {
+            // Post-process the activity to remove the names of edges and nodes.
+            Path umlLabelsRemovedOutputPath = outputFolderPath.resolve(filePrefix + ".17.labelsremoved.uml");
+            PostProcessActivity.removeNodesEdgesNames(activity);
+            FileHelper.storeModel(activity.getModel(), umlLabelsRemovedOutputPath.toString());
+
+            // Computing guards.
+            GuardComputation guardComputer = new GuardComputation(umlToCifTranslator, tracker);
+            CifDataSynthesisResult cifSynthesisResult = guardComputer.computeGuards(cifSpec,
+                    umlLabelsRemovedOutputPath);
+            Path umlGuardsOutputPath = outputFolderPath.resolve(filePrefix + ".20.guardsadded.uml");
+            FileHelper.storeModel(umlToCifTranslator.getActivity().getModel(), umlGuardsOutputPath.toString());
+
+            Path cifSynthesisPath = outputFolderPath.resolve(filePrefix + ".03.ctrlsys.cif");
+            CIFDataSynthesisHelper.convertSynthesisResultToCif(cifSpec, cifSynthesisResult, cifSynthesisPath,
+                    outputFolderPath.toString());
+
+            // Check the activity for non-deterministic choices.
+            CheckNonDeterministicChoices.check(activity, umlToCifTranslator, warnings, cifBddSpec);
+
+            return;
+        }
 
         // Perform synthesis.
         CifDataSynthesisResult cifSynthesisResult = CIFDataSynthesisHelper.synthesize(cifBddSpec, settings);
@@ -398,7 +425,11 @@ public class FullSynthesisApp {
         Specification stateSpacePostSynthChain = CifFileHelper.loadCifSpec(cifStateSpacePath);
 
         // Get internal event sets for the synthesis and language equivalence translations.
-        Set<Event> synthesisInternalEvents = tracker.getInternalEvents(UmlToCifTranslationPurpose.SYNTHESIS);
+
+        // Get internal event sets for the synthesis or interface and language equivalence translations.
+        UmlToCifTranslationPurpose firstTranslationPurpose = tracker.isInterfaceActivity()
+                ? UmlToCifTranslationPurpose.INTERFACE : UmlToCifTranslationPurpose.SYNTHESIS;
+        Set<Event> synthesisInternalEvents = tracker.getInternalEvents(firstTranslationPurpose);
         synthesisInternalEvents.addAll(tracker.getRestoredDecisionMergeNodeEvents());
         Set<Event> languageEqInternalEvents = tracker
                 .getInternalEvents(UmlToCifTranslationPurpose.LANGUAGE_EQUIVALENCE);
@@ -406,9 +437,9 @@ public class FullSynthesisApp {
         // Filter the state annotations to keep only the external variables, check that external and internal events
         // cover the entire state space alphabets, and that they do not overlap.
         ModelPreparationResult result = StateAwareWeakLanguageEquivalenceHelper.prepareModels(stateSpaceGenerated,
-                tracker.getExternalEvents(UmlToCifTranslationPurpose.SYNTHESIS), synthesisInternalEvents,
-                stateSpacePostSynthChain, tracker.getExternalEvents(UmlToCifTranslationPurpose.LANGUAGE_EQUIVALENCE),
-                languageEqInternalEvents, translator.getVariableNames());
+                tracker.getExternalEvents(firstTranslationPurpose), synthesisInternalEvents, stateSpacePostSynthChain,
+                tracker.getExternalEvents(UmlToCifTranslationPurpose.LANGUAGE_EQUIVALENCE), languageEqInternalEvents,
+                translator.getVariableNames());
 
         // Get the two state space automata to compare.
         Automaton stateSpace1 = (Automaton)stateSpaceGenerated.getComponents().get(0);

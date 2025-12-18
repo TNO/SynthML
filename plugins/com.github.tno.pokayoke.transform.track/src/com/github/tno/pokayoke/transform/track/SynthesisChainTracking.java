@@ -96,6 +96,10 @@ public class SynthesisChainTracking {
         this.activity = activity;
     }
 
+    public boolean isInterfaceActivity() {
+        return PokaYokeUmlProfileUtil.isFormalActivity(activity);
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Section dealing with CIF events and the corresponding input UML elements.
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1168,7 +1172,7 @@ public class SynthesisChainTracking {
         }
 
         RedefinableElement umlElement = switch (purpose) {
-            case SYNTHESIS -> eventInfo.getUmlElement();
+            case SYNTHESIS, INTERFACE -> eventInfo.getUmlElement();
             case GUARD_COMPUTATION, LANGUAGE_EQUIVALENCE -> getOriginalUmlElement(eventInfo.getUmlElement());
             default -> throw new IllegalArgumentException("Unexpected translation purpose: " + purpose);
         };
@@ -1557,7 +1561,7 @@ public class SynthesisChainTracking {
 
         RedefinableElement umlElement = switch (purpose) {
             case SYNTHESIS -> eventInfo.getUmlElement();
-            case GUARD_COMPUTATION, LANGUAGE_EQUIVALENCE -> getOriginalUmlElement(
+            case GUARD_COMPUTATION, LANGUAGE_EQUIVALENCE, INTERFACE -> getOriginalUmlElement(
                     (ActivityNode)eventInfo.getUmlElement());
             default -> throw new IllegalArgumentException("Unexpected translation purpose: " + purpose);
         };
@@ -1644,7 +1648,9 @@ public class SynthesisChainTracking {
      */
     public boolean areEquivalentEvents(EventTraceInfo synthesisEventInfo, EventTraceInfo languageEqEventInfo) {
         // Sanity checks.
-        Verify.verify(synthesisEventInfo.getTranslationPurpose() == UmlToCifTranslationPurpose.SYNTHESIS,
+        Verify.verify(
+                synthesisEventInfo.getTranslationPurpose() == UmlToCifTranslationPurpose.SYNTHESIS
+                        || synthesisEventInfo.getTranslationPurpose() == UmlToCifTranslationPurpose.INTERFACE,
                 "The input event trace info must be related to a synthesis CIF event.");
         Verify.verify(languageEqEventInfo.getTranslationPurpose() == UmlToCifTranslationPurpose.LANGUAGE_EQUIVALENCE,
                 "The input event trace info must be related to a language equivalence CIF event.");
@@ -1726,9 +1732,10 @@ public class SynthesisChainTracking {
         // synthesis part for compatibility with the language equivalence checker methods.
         Set<Pair<List<Event>, List<Event>>> pairedEvents = new LinkedHashSet<>();
 
-        // Get the map for the external synthesis CIF events and their event trace info.
-        Map<Event, EventTraceInfo> externalSynthesisEventsMap = getExternalEventsMap(
-                UmlToCifTranslationPurpose.SYNTHESIS);
+        // Get the map for the external synthesis or interface CIF events and their event trace info.
+        UmlToCifTranslationPurpose firstTranslationPurpose = this.isInterfaceActivity()
+                ? UmlToCifTranslationPurpose.INTERFACE : UmlToCifTranslationPurpose.SYNTHESIS;
+        Map<Event, EventTraceInfo> externalSynthesisEventsMap = getExternalEventsMap(firstTranslationPurpose);
 
         // Get the map for the external language equivalence CIF events and their event trace info.
         Map<Event, EventTraceInfo> externalLanguageEqEventsMap = getExternalEventsMap(

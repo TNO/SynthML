@@ -83,12 +83,15 @@ public class GuardComputation {
         this.synthesisTracker = tracker;
     }
 
-    public void computeGuards(Specification specification, Path specPath) {
+    public CifDataSynthesisResult computeGuards(Specification specification, Path specPath) {
+        // Get translation purpose.
+        UmlToCifTranslationPurpose purpose = synthesisTracker.isInterfaceActivity()
+                ? UmlToCifTranslationPurpose.INTERFACE : UmlToCifTranslationPurpose.GUARD_COMPUTATION;
+
         // Obtain the mapping from UML (activity) elements to all the CIF start events created for them. Note that we
         // can have multiple of them in case we have 'or'-type nodes with multiple incoming and/or outgoing control
         // flows.
-        Map<RedefinableElement, List<Event>> startEventMap = reverse(
-                synthesisTracker.getStartEventMap(UmlToCifTranslationPurpose.GUARD_COMPUTATION));
+        Map<RedefinableElement, List<Event>> startEventMap = reverse(synthesisTracker.getStartEventMap(purpose));
 
         // Helper function for obtaining the single CIF start event of a given UML element.
         Function<RedefinableElement, Event> getSingleStartEvent = element -> {
@@ -248,6 +251,8 @@ public class GuardComputation {
         for (CifBddEdge edge: cifBddSpec.edges) {
             edge.freeBDDs();
         }
+
+        return synthResult;
     }
 
     /**

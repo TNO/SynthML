@@ -8,5 +8,5 @@ package com.github.tno.pokayoke.transform.track;
  * translations.
  */
 public enum UmlToCifTranslationPurpose {
-    SYNTHESIS, GUARD_COMPUTATION, LANGUAGE_EQUIVALENCE;
+    SYNTHESIS, GUARD_COMPUTATION, LANGUAGE_EQUIVALENCE, INTERFACE;
 }

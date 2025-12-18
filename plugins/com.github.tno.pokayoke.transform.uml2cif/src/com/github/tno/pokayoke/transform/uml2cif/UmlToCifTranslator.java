@@ -243,9 +243,11 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         // Validate the UML input model.
         //
         // Ideally, we check this always, as the UML models resulting from synthesis should also be valid. Currently, we
-        // do it only for the input to synthesis, as we generate some names during synthesis that are invalid. This is
-        // to be improved in the future.
-        if (translationPurpose == UmlToCifTranslationPurpose.SYNTHESIS) {
+        // do it only for the input to synthesis (also in case of interface activities), as we generate some names
+        // during synthesis that are invalid. This is to be improved in the future.
+        if (translationPurpose == UmlToCifTranslationPurpose.SYNTHESIS
+                || translationPurpose == UmlToCifTranslationPurpose.INTERFACE)
+        {
             ValidationHelper.validateModel(activity.getModel());
         }
 
@@ -254,7 +256,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         }
 
         // Flatten UML activities and normalize IDs.
-        if (translationPurpose == UmlToCifTranslationPurpose.SYNTHESIS) {
+        if (translationPurpose == UmlToCifTranslationPurpose.SYNTHESIS
+                || translationPurpose == UmlToCifTranslationPurpose.INTERFACE)
+        {
             FlattenUMLActivity flattener = new FlattenUMLActivity(activity.getModel());
             flattener.transform();
             FileHelper.normalizeIds(activity.getModel());
@@ -330,6 +334,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
         // Translate all postconditions of the input UML activity.
         switch (translationPurpose) {
+            case INTERFACE:
             case LANGUAGE_EQUIVALENCE:
             case SYNTHESIS: {
                 // Translate postconditions once, to get a single algebraic variable that represents the postcondition.
@@ -369,7 +374,10 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         }
 
         // Create extra requirements to ensure that, whenever the postcondition holds, no further steps can be taken.
-        if (translationPurpose != UmlToCifTranslationPurpose.LANGUAGE_EQUIVALENCE) {
+        if (translationPurpose == UmlToCifTranslationPurpose.SYNTHESIS
+                || (translationPurpose == UmlToCifTranslationPurpose.GUARD_COMPUTATION
+                        && !synthesisTracker.isInterfaceActivity()))
+        {
             List<Invariant> cifDisableConstraints = createDisableEventsWhenDoneRequirements();
             cifSpec.getInvariants().addAll(cifDisableConstraints);
         }
@@ -437,9 +445,12 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     private ActionTranslationResult translateAsAction(RedefinableElement umlElement, String name, boolean isAtomic,
             boolean controllableStartEvent, String entryGuard, String exitGuard)
     {
-        // For guard computation, force all start events to be controllable, as the structure of the synthesized UML
-        // activity is already fixed, and we just want to re-compute the guards as locally as possible.
-        if (translationPurpose == UmlToCifTranslationPurpose.GUARD_COMPUTATION) {
+        // For guard computation and interface synthesis, force all start events to be controllable, as the structure of
+        // the synthesized UML activity is already fixed, and we just want to re-compute the guards as locally as
+        // possible.
+        if (translationPurpose == UmlToCifTranslationPurpose.GUARD_COMPUTATION
+                || translationPurpose == UmlToCifTranslationPurpose.INTERFACE)
+        {
             controllableStartEvent = true;
         }
 
@@ -1228,7 +1239,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
                         // Sanity check: we must have found at least one start event.
                         Verify.verify(!cifStartEvents.isEmpty(), "Found no CIF start events for: " + umlOpaqueBehavior);
-                    } else if (translationPurpose == UmlToCifTranslationPurpose.GUARD_COMPUTATION) {
+                    } else if (translationPurpose == UmlToCifTranslationPurpose.GUARD_COMPUTATION
+                            || translationPurpose == UmlToCifTranslationPurpose.INTERFACE)
+                    {
                         // For guard computation, get the CIF events that refer to the opaque behavior as the original
                         // UML element.
                         cifStartEvents = synthesisTracker.getFinalizedElementStartEventsForOriginalElement(
@@ -1434,7 +1447,8 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
         // For guard computation, we have two postconditions. For the 'with structure' postcondition, include the
         // 'without structure' postcondition.
-        if (translationPurpose == UmlToCifTranslationPurpose.GUARD_COMPUTATION
+        if ((translationPurpose == UmlToCifTranslationPurpose.GUARD_COMPUTATION
+                || translationPurpose == UmlToCifTranslationPurpose.INTERFACE)
                 && kind == PostConditionKind.WITH_STRUCTURE)
         {
             Expression condition = getTranslatedPostcondition(PostConditionKind.WITHOUT_STRUCTURE);
@@ -1530,7 +1544,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 // we also want no tokens on control flows, except for the incoming control flow into the final node.
                 // That last case is handled later in this method, so that particular control flow is excluded here.
                 boolean isIncomingToFinalNode = entry.getKey().getTarget() instanceof ActivityFinalNode;
-                if (translationPurpose == UmlToCifTranslationPurpose.GUARD_COMPUTATION && isIncomingToFinalNode) {
+                if ((translationPurpose == UmlToCifTranslationPurpose.GUARD_COMPUTATION
+                        || translationPurpose == UmlToCifTranslationPurpose.INTERFACE) && isIncomingToFinalNode)
+                {
                     continue;
                 }
 
@@ -1607,7 +1623,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 }
 
                 // If there is only one postcondition, there is nothing to choose.
-                case LANGUAGE_EQUIVALENCE, SYNTHESIS -> PostConditionKind.SINGLE;
+                case LANGUAGE_EQUIVALENCE, SYNTHESIS, INTERFACE -> PostConditionKind.SINGLE;
             };
 
             // Get the associated postcondition algebraic variable.
