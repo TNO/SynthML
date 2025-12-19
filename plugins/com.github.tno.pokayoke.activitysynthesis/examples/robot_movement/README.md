@@ -22,6 +22,9 @@ To open the robot movement example in SynthML:
 
 In the _Outline_ view, you should now be able to see the contents of the UML model by clicking on the small arrow left of the `model.uml` file.
 Inside `<Model> Model`, you can double-click on `Model Class Diagram` to see a diagram of the UML class containing the variables, requirements, specification of the to-be-synthesized activity, etc., of the example.
+
+<img src="class_diagram.svg">
+
 The two robots are defined as variables `robot1` and `robot2`, which are of type `Location`, which is defined as an enumeration with literals for the eight locations (`LocA`, `LocB`, etc.)
 The Boolean variables `visitedA`, `visitedB`, etc., indicate whether the corresponding location has been visited.
 The `initiator` variable indicates which robot should make the first move.
