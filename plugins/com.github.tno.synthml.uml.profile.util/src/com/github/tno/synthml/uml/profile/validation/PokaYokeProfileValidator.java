@@ -687,8 +687,8 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                         UMLPackage.Literals.CALL_BEHAVIOR_ACTION__BEHAVIOR);
             }
 
-            if (!(cbAction.getBehavior() instanceof Activity activityElement
-                    && PokaYokeUmlProfileUtil.isFormalActivity(activityElement)))
+            if (cbAction.getBehavior() instanceof Activity activityElement
+                    && PokaYokeUmlProfileUtil.isFormalActivity(activityElement))
             {
                 error("Interface activities cannot be called.", node,
                         UMLPackage.Literals.CALL_BEHAVIOR_ACTION__BEHAVIOR);

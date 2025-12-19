@@ -1700,8 +1700,9 @@ public class SynthesisChainTracking {
         // Non-atomic start     start                  Non-merged (traces to single event) start + end  (need to trace)
         // Non-atomic end       end                    Non-merged (traces to single event) start + end  (need to trace)
         // @formatter:on
-        if (!transitionInfo.isMergedTransition() && (!PokaYokeUmlProfileUtil.isAtomic(languageEqOriginalUmlElement)
-                || PokaYokeUmlProfileUtil.isDeterministic(languageEqOriginalUmlElement)))
+        if (languageEqOriginalUmlElement instanceof OpaqueBehavior && !transitionInfo.isMergedTransition()
+                && (!PokaYokeUmlProfileUtil.isAtomic(languageEqOriginalUmlElement)
+                        || PokaYokeUmlProfileUtil.isDeterministic(languageEqOriginalUmlElement)))
         {
             Event languageEqSynthesisEvent = transitionInfo.getSingleCifEvent();
             EventTraceInfo thatSynthesisEventInfo = getEventTraceInfo(languageEqSynthesisEvent);
