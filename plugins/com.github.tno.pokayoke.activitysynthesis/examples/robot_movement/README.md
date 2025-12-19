@@ -46,3 +46,12 @@ To synthesize a concrete activity for `<Activity> controller` that satisfies its
 2. After a few seconds, activity synthesis will terminate. The synthesis algorithm might give a warning that the requirement `Requirement_LocF_visited` was not used. This is expected: no robot will move to location `LocF` since robot 2 already started there.
 3. The synthesized activity algorithm will have created the `output/1-controller` directory. In that directory, open the bottom-most UML file in that directory, `model.21.guardsadded.uml`.
 4. In that UML file, navigate to the `<Activity> controller` activity, right-click on it, click 'New Representation', and click 'controller Activity Diagram' to get a diagram representation of the synthesized activity.
+
+The synthesized activity shows that the two robots can operate concurrently, since their actions are in-between fork and join nodes.
+The action sequence of robot 1 depends on its starting location.
+The right action sequence is enforced by the incoming guards on the outgoing control flows of the decision node.
+(These incoming guards are equivalent to `robot1 = LocA` and `robot1 = LocC`, for the actions to move `robot1` to locations `A` and `C`, respectively.)
+Note that robot 1 can never start at location `B`, which is enforced by the incoming guard on the outgoing control flow of the initial node.
+(This incoming guard is equivalent to `robot1 != LocB`.)
+Finally, outgoing guards have been added to the incoming control flows of the first move actions, which ensure that the right robot moves first.
+(These outgoing guards are equivalent to `initiator != ROBOT1` and `initiator != ROBOT2`.)
