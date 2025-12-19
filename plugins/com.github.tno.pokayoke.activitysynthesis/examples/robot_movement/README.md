@@ -44,7 +44,7 @@ The exact pre- and postcondition expressions can be seen in the SynthML properti
 To synthesize a concrete activity for `<Activity> controller` that satisfies its pre- and postconditions as well as all requirements:
 1. Right click on the `model.uml` file, and click 'Perform synthesis'.
 2. After a few seconds, activity synthesis will terminate. The synthesis algorithm might give a warning that the requirement `Requirement_LocF_visited` was not used. This is expected: no robot will move to location `LocF` since robot 2 already started there.
-3. The synthesized activity algorithm will have created the `output/1-controller` directory. In that directory, open the bottom-most UML file in that directory, `model.21.guardsadded.uml`.
+3. The synthesized activity algorithm will have created the `output/1-controller` directory. In that directory, open the bottom-most UML file in that directory.
 4. In that UML file, navigate to the `<Activity> controller` activity, right-click on it, click 'New Representation', and click 'controller Activity Diagram' to get a diagram representation of the synthesized activity.
 
 The synthesized activity shows that the two robots can operate concurrently, since their actions are in-between fork and join nodes.
