@@ -29,7 +29,7 @@ The two robots are defined as variables `robot1` and `robot2`, which are of type
 The Boolean variables `visitedA`, `visitedB`, etc., indicate whether the corresponding location has been visited.
 The `initiator` variable indicates which robot should make the first move.
 
-In the _Outline view_, inside `<Class> System`, you can explore the actions for moving the robots.
+In the _Outline_ view, inside `<Class> System`, you can explore the actions for moving the robots.
 For example, `<<FormalElement>> <Opaque Behavior> robot1_A_to_B` moves `robot1` from location `LocA` to location `LocB`.
 This action has guard `robot1 = LocA`, and effects `robot1 := LocB, visitedB := true, initiator := IRRELEVANT`, as can be seen in the _SynthML_ tab as part of the _Properties_ view.
 
