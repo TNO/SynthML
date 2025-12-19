@@ -9,8 +9,8 @@
     xmlns:setup="http://www.eclipse.org/oomph/setup/1.0"
     xmlns:setup.p2="http://www.eclipse.org/oomph/setup/p2/1.0"
     xsi:schemaLocation="http://www.eclipse.org/oomph/setup/git/1.0 https://raw.githubusercontent.com/eclipse-oomph/oomph/master/setups/models/Git.ecore http://www.eclipse.org/oomph/setup/pde/1.0 https://raw.githubusercontent.com/eclipse-oomph/oomph/master/setups/models/PDE.ecore http://www.eclipse.org/oomph/setup/projects/1.0 https://raw.githubusercontent.com/eclipse-oomph/oomph/master/setups/models/Projects.ecore"
-    name="pokayoke"
-    label="PokaYoke">
+    name="synthml"
+    label="SynthML">
   <setupTask
       xsi:type="setup:VariableTask"
       name="eclipse-checkstyle.version.major"
@@ -25,9 +25,9 @@
       value="None"/>
   <setupTask
       xsi:type="setup:VariableTask"
-      name="com.github.tno.pokayoke.git.clone.url"
-      defaultValue="git@github.com:TNO/PokaYoke.git"
-      label="PokaYoke Git clone URL"/>
+      name="com.github.tno.synthml.git.clone.url"
+      defaultValue="git@github.com:TNO/SynthML.git"
+      label="SynthML Git clone URL"/>
   <setupTask
       xsi:type="setup:VariableTask"
       name="github.user.name"
@@ -219,8 +219,8 @@
   </setupTask>
   <setupTask
       xsi:type="git:GitCloneTask"
-      id="com.github.tno.pokayoke.git.clone"
-      remoteURI="${com.github.tno.pokayoke.git.clone.url}">
+      id="com.github.tno.synthml.git.clone"
+      remoteURI="${com.github.tno.synthml.git.clone.url}">
     <configSections
         name="user">
       <properties
@@ -240,8 +240,8 @@
   </setupTask>
   <setupTask
       xsi:type="setup:EclipseIniTask"
-      option="-Doomph.redirection.com.github.tno.pokayoke.git"
-      value="=file:/X:/PokaYoke/Oomph/com.github.tno.pokayoke.setup->${com.github.tno.pokayoke.git.clone.location|uri}/com.github.tno.pokayoke.setup"
+      option="-Doomph.redirection.com.github.tno.synthml.git"
+      value="=https://raw.githubusercontent.com/TNO/SynthML/${scope.project.stream.name}/com.github.tno.synthml.setup->${com.github.tno.synthml.git.clone.location|uri}/com.github.tno.synthml.setup"
       vm="true">
     <description>
       Set an Oomph redirection system property to redirect the
@@ -251,12 +251,12 @@
   <setupTask
       xsi:type="projects:ProjectsImportTask">
     <sourceLocator
-        rootFolder="${com.github.tno.pokayoke.git.clone.location}"
+        rootFolder="${com.github.tno.synthml.git.clone.location}"
         locateNestedProjects="true"/>
   </setupTask>
   <setupTask
       xsi:type="pde:TargetPlatformTask"
-      name="PokaYoke Target Platform"/>
+      name="SynthML Target Platform"/>
   <stream name="main"
       label="main"/>
   <logicalProjectContainer
