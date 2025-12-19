@@ -16,19 +16,19 @@ Furthermore, the synthesized activity should be deadlock-free, and be maximally 
 ## Opening the example in SynthML
 
 To open the robot movement example in SynthML:
-1. Create a new UML project in SynthML, via 'File' -> 'New' -> 'UML Project'.
-2. Open the SynthML viewpoint: right-click on the newly created UML project, click 'Viewpoints Selection', enable the 'A_SynthML' checkbox, and click 'OK'.
+1. Create a new UML project in SynthML, via _File_ -> _New_ -> _UML Project_.
+2. Open the SynthML viewpoint: right-click on the newly created UML project, click _Viewpoints Selection_, enable the _A_SynthML_ checkbox, and click _OK_.
 3. Copy and paste the `model.uml` and `representations.aird` files that are in this directory, to the newly created UML project, replacing the original two files in the UML project.
 
-In the Outline view, you should now be able to see the contents of the UML model by clicking on the small arrow left of the `model.uml` file.
+In the _Outline_ view, you should now be able to see the contents of the UML model by clicking on the small arrow left of the `model.uml` file.
 Inside `<Model> Model`, you can double-click on `Model Class Diagram` to see a diagram of the UML class containing the variables, requirements, specification of the to-be-synthesized activity, etc., of the example.
 The two robots are defined as variables `robot1` and `robot2`, which are of type `Location`, which is defined as an enumeration with literals for the eight locations (`LocA`, `LocB`, etc.)
 The Boolean variables `visitedA`, `visitedB`, etc., indicate whether the corresponding location has been visited.
 The `initiator` variable indicates which robot should make the first move.
 
-In the Outline view, inside `<Class> System`, you can explore the actions for moving the robots.
+In the _Outline view_, inside `<Class> System`, you can explore the actions for moving the robots.
 For example, `<<FormalElement>> <Opaque Behavior> robot1_A_to_B` moves `robot1` from location `LocA` to location `LocB`.
-This action has guard `robot1 = LocA`, and effects `robot1 := LocB, visitedB := true, initiator := IRRELEVANT`, as can be seen in the SynthML tab as part of the Properties view.
+This action has guard `robot1 = LocA`, and effects `robot1 := LocB, visitedB := true, initiator := IRRELEVANT`, as can be seen in the _SynthML_ tab as part of the _Properties_ view.
 
 Apart from the actions, you can also explore the requirements of the example system.
 For example, `Requirement_LocA_visited` expresses the requirement that any robot can only move to location `LocA` when that location has not yet been visited.
@@ -37,15 +37,15 @@ And `Requirement_ROBOT1_initiating` expresses that `robot1` can only move if `ro
 The to-be-synthesized activity is specified in `<Activity> controller`.
 This activity does not contain nodes nor control flows, but rather has preconditions and postconditions expressing what the activity must accomplish (i.e., letting the robots together visit every location exactly once).
 These pre- and postconditions are indicated as `<<SynthesisPrecondition>> <Constraint> precondition` and `<<Postcondition>> <Constraint> postcondition`, respectively.
-The exact pre- and postcondition expressions can be seen in the SynthML properties tab of these UML constraints.
+The exact pre- and postcondition expressions can be seen in the _SynthML_ properties tab of these UML constraints.
 
 ## Synthesis of the example system
 
 To synthesize a concrete activity for `<Activity> controller` that satisfies its pre- and postconditions as well as all requirements:
-1. Right click on the `model.uml` file, and click 'Perform synthesis'.
+1. Right click on the `model.uml` file, and click _Perform synthesis_.
 2. After a few seconds, activity synthesis will terminate. The synthesis algorithm might give a warning that the requirement `Requirement_LocF_visited` was not used. This is expected: no robot will move to location `LocF` since robot 2 already started there.
 3. The synthesized activity algorithm will have created the `output/1-controller` directory. In that directory, open the bottom-most UML file in that directory.
-4. In that UML file, navigate to the `<Activity> controller` activity, right-click on it, click 'New Representation', and click 'controller Activity Diagram' to get a diagram representation of the synthesized activity.
+4. In that UML file, navigate to the `<Activity> controller` activity, right-click on it, click _New Representation_, and click _controller Activity Diagram_ to get a diagram representation of the synthesized activity.
 
 The synthesized activity shows that the two robots can operate concurrently, since their actions are in-between fork and join nodes.
 The action sequence of robot 1 depends on its starting location.
