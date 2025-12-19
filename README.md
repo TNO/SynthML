@@ -1,6 +1,6 @@
 # SynthML
 
-SynthML is a tool for formal modeling, analysis, and synthesis of UML activities.
+SynthML is a tool designed for formal modeling, analysis, and synthesis of UML activities.
 The aim of SynthML is integrating Synthesis-Based Engineering (SBE) into UML 2.5 for the synthesis of supervisory controllers as UML activities.
 Such an integration lowers the need for architects and engineers in industry to learn new formalisms and dedicated tooling for SBE.
 Moreover, the synthesized supervisory controllers are presented as UML activities, which helps to make synthesis results more recognizable.
