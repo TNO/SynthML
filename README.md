@@ -18,7 +18,7 @@ For end users:
 - [Instructions for using SynthML](docs/synthml-instructions.pdf)
 
 For developers:
-- [Setting up a Poka Yoke development environment](docs/setup-development-environment.md)
+- [Setting up a SynthML development environment](docs/setup-development-environment.md)
 - [Development guidelines](docs/development-guidelines.md)
 - [The formal definition of the execution semantics of activities in SynthML](plugins/com.github.tno.pokayoke.activitysynthesis/docs/semantics.pdf)
 - [Detailed information on how the activity synthesis algorithm works](plugins/com.github.tno.pokayoke.activitysynthesis/docs/documentation.pdf)
