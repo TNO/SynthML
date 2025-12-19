@@ -112,7 +112,7 @@
                 </executions>
                 <configuration>
                     <configFile>
-                        ${session.executionRootDirectory}/pokayoke-formatter-profile.xml
+                        ${session.executionRootDirectory}/synthml-formatter-profile.xml
                     </configFile>
                     <directories>
                         <directory>src</directory>
