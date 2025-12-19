@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:SynthML="https://github.com/TNO/SynthML/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="_uulCQMUrEfCtoogyIzW8uQ" name="Model">
+    <packagedElement xmi:type="uml:Class" xmi:id="_zym80MUrEfCtoogyIzW8uQ" name="System" visibility="public" classifierBehavior="_hX3qYMUsEfCtoogyIzW8uQ" isActive="true">
+      <ownedRule xmi:id="_lx79oMudEfCAufuoD_BPhw" name="Requirement_ROBOT1_initiating">
+        <specification xmi:type="uml:OpaqueExpression" xmi:id="_-SjDINyoEfCl84Bqw0VM5Q">
+          <language>CIF</language>
+          <body>{robot1_C_to_A, robot1_A_to_B, robot1_A_to_C, robot1_C_to_B,robot1_B_to_D} needs initiator != ROBOT2</body>
+        </specification>
+      </ownedRule>
+      <ownedRule xmi:id="_ntSQAMudEfCAufuoD_BPhw" name="Requirement_ROBOT2_initiating">
+        <specification xmi:type="uml:OpaqueExpression" xmi:id="__rUM4NyoEfCl84Bqw0VM5Q">
+          <language>CIF</language>
+          <body>{robot2_F_to_G, robot2_G_to_E, robot2_E_to_H} needs initiator != ROBOT1</body>
+        </specification>
+      </ownedRule>
+      <ownedRule xmi:id="_FfKa0NypEfCl84Bqw0VM5Q" name="Requirement_LocA_visited">
+        <specification xmi:type="uml:OpaqueExpression" xmi:id="_J253INypEfCl84Bqw0VM5Q">
+          <language>CIF</language>
+          <body>{robot1_B_to_A, robot1_C_to_A, robot2_B_to_A, robot2_C_to_A} needs not visitedA</body>
+        </specification>
+      </ownedRule>
+      <ownedRule xmi:id="_MisH8NypEfCl84Bqw0VM5Q" name="Requirement_LocB_visited">
+        <specification xmi:type="uml:OpaqueExpression" xmi:id="_OduRQNypEfCl84Bqw0VM5Q">
+          <language>CIF</language>
+          <body>{robot1_A_to_B, robot1_C_to_B, robot1_D_to_B, robot1_E_to_B, robot2_A_to_B, robot2_C_to_B, robot2_D_to_B, robot2_E_to_B} needs not visitedB</body>
+        </specification>
+      </ownedRule>
+      <ownedRule xmi:id="_RfR9wNypEfCl84Bqw0VM5Q" name="Requirement_LocC_visited">
+        <specification xmi:type="uml:OpaqueExpression" xmi:id="_TZgOwNypEfCl84Bqw0VM5Q">
+          <language>CIF</language>
+          <body>{robot1_A_to_C, robot1_B_to_C, robot1_E_to_C, robot2_A_to_C, robot2_B_to_C, robot2_E_to_C} needs not visitedC</body>
+        </specification>
+      </ownedRule>
+      <ownedRule xmi:id="_VT--cNypEfCl84Bqw0VM5Q" name="Requirement_LocD_visited">
+        <specification xmi:type="uml:OpaqueExpression" xmi:id="_XJmcQNypEfCl84Bqw0VM5Q">
+          <language>CIF</language>
+          <body>{robot1_B_to_D, robot1_F_to_D, robot2_B_to_D, robot2_F_to_D} needs not visitedD</body>
+        </specification>
+      </ownedRule>
+      <ownedRule xmi:id="_X-LT0NypEfCl84Bqw0VM5Q" name="Requirement_LocE_visited">
+        <specification xmi:type="uml:OpaqueExpression" xmi:id="_Zov_QNypEfCl84Bqw0VM5Q">
+          <language>CIF</language>
+          <body>{robot1_B_to_E, robot1_C_to_E, robot1_G_to_E, robot1_H_to_E, robot2_B_to_E, robot2_C_to_E, robot2_G_to_E, robot2_H_to_E} needs not visitedE</body>
+        </specification>
+      </ownedRule>
+      <ownedRule xmi:id="_ajqvYNypEfCl84Bqw0VM5Q" name="Requirement_LocF_visited">
+        <specification xmi:type="uml:OpaqueExpression" xmi:id="_cgeaUNypEfCl84Bqw0VM5Q">
+          <language>CIF</language>
+          <body>{robot1_D_to_F, robot1_G_to_F, robot2_D_to_F, robot2_G_to_F} needs not visitedF</body>
+        </specification>
+      </ownedRule>
+      <ownedRule xmi:id="_dbuhoNypEfCl84Bqw0VM5Q" name="Requirement_LocG_visited">
+        <specification xmi:type="uml:OpaqueExpression" xmi:id="_fQd1sNypEfCl84Bqw0VM5Q">
+          <language>CIF</language>
+          <body>{robot1_E_to_G, robot1_F_to_G, robot2_E_to_G, robot2_F_to_G} needs not visitedG</body>
+        </specification>
+      </ownedRule>
+      <ownedRule xmi:id="_gHTXENypEfCl84Bqw0VM5Q" name="Requirement_LocH_visited">
+        <specification xmi:type="uml:OpaqueExpression" xmi:id="_iJClUNypEfCl84Bqw0VM5Q">
+          <language>CIF</language>
+          <body>{robot1_E_to_H, robot2_E_to_H} needs not visitedH</body>
+        </specification>
+      </ownedRule>
+      <ownedAttribute xmi:id="_Ham3IMUsEfCtoogyIzW8uQ" name="robot1" visibility="public" type="_2xP4MMUrEfCtoogyIzW8uQ">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_HaneMMUsEfCtoogyIzW8uQ" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_HaoFQMUsEfCtoogyIzW8uQ" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_JhfEEMUsEfCtoogyIzW8uQ" name="robot2" visibility="public" type="_2xP4MMUrEfCtoogyIzW8uQ">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_JhgSMMUsEfCtoogyIzW8uQ" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_JhgSMcUsEfCtoogyIzW8uQ" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_OfFmgMUsEfCtoogyIzW8uQ" name="visitedA" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_OfGNkMUsEfCtoogyIzW8uQ" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_OfGNkcUsEfCtoogyIzW8uQ" value="1"/>
+        <defaultValue xmi:type="uml:LiteralNull" xmi:id="_UDCXQMUsEfCtoogyIzW8uQ"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_U3yN8MUsEfCtoogyIzW8uQ" name="visitedB" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_U3y1AMUsEfCtoogyIzW8uQ" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_U3y1AcUsEfCtoogyIzW8uQ" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_WsOnEMUsEfCtoogyIzW8uQ" name="visitedC" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_WsPOIMUsEfCtoogyIzW8uQ" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_WsPOIcUsEfCtoogyIzW8uQ" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_YBuaYMUsEfCtoogyIzW8uQ" name="visitedD" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_YBvBcMUsEfCtoogyIzW8uQ" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_YBvBccUsEfCtoogyIzW8uQ" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_ZR_vcMUsEfCtoogyIzW8uQ" name="visitedE" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_ZSAWgMUsEfCtoogyIzW8uQ" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_ZSAWgcUsEfCtoogyIzW8uQ" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_akerAMUsEfCtoogyIzW8uQ" name="visitedF" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_akfSEMUsEfCtoogyIzW8uQ" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_akfSEcUsEfCtoogyIzW8uQ" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_bujRcMUsEfCtoogyIzW8uQ" name="visitedG" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_bujRccUsEfCtoogyIzW8uQ" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_bujRcsUsEfCtoogyIzW8uQ" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_c1kj4MUsEfCtoogyIzW8uQ" name="visitedH" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_c1lK8MUsEfCtoogyIzW8uQ" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_c1lK8cUsEfCtoogyIzW8uQ" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_ehS3AMucEfCAufuoD_BPhw" name="initiator" visibility="public" type="_Yc9WAMucEfCAufuoD_BPhw">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_ehTeEMucEfCAufuoD_BPhw" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_ehTeEcucEfCAufuoD_BPhw" value="1"/>
+      </ownedAttribute>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_hX3qYMUsEfCtoogyIzW8uQ" name="controller" isAbstract="true" postcondition="_i_0N4MVTEfCAf6IK_E8X7A" precondition="_dRXdUMVTEfCAf6IK_E8X7A">
+        <ownedRule xmi:id="_dRXdUMVTEfCAf6IK_E8X7A" name="precondition">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="_IVRO0MueEfCAufuoD_BPhw">
+            <language>CIF</language>
+            <body>(robot1 = LocA or robot1 = LocB or robot1 = LocC) and (robot2 = LocF) and (initiator != IRRELEVANT) and&#xD;
+(robot1 = LocA or robot2 = LocA) = visitedA and&#xD;
+(robot1 = LocB or robot2 = LocB) = visitedB and&#xD;
+(robot1 = LocC or robot2 = LocC) = visitedC and&#xD;
+(robot1 = LocD or robot2 = LocD) = visitedD and&#xD;
+(robot1 = LocE or robot2 = LocE) = visitedE and&#xD;
+(robot1 = LocF or robot2 = LocF) = visitedF and&#xD;
+(robot1 = LocG or robot2 = LocG) = visitedG and&#xD;
+(robot1 = LocH or robot2 = LocH) = visitedH&#xD;
+</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:id="_i_0N4MVTEfCAf6IK_E8X7A" name="postcondition">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="_j481UMVTEfCAf6IK_E8X7A">
+            <language>CIF</language>
+            <body>visitedA and visitedB and visitedC and visitedD and visitedE and visitedF and visitedG and visitedH</body>
+          </specification>
+        </ownedRule>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="robot1_A_to_B_behavior" name="robot1_A_to_B"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="robot1_A_to_C_behavior" name="robot1_A_to_C"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="robot1_B_to_A_behavior" name="robot1_B_to_A"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="robot1_B_to_C_behavior" name="robot1_B_to_C"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="robot1_B_to_D_behavior" name="robot1_B_to_D"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="robot1_B_to_E_behavior" name="robot1_B_to_E"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="robot1_C_to_A_behavior" name="robot1_C_to_A"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="robot1_C_to_B_behavior" name="robot1_C_to_B"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="robot1_C_to_E_behavior" name="robot1_C_to_E"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="robot1_D_to_B_behavior" name="robot1_D_to_B"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="robot1_D_to_F_behavior" name="robot1_D_to_F"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="robot1_E_to_B_behavior" name="robot1_E_to_B"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="robot1_E_to_C_behavior" name="robot1_E_to_C"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="robot1_E_to_G_behavior" name="robot1_E_to_G"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="robot1_E_to_H_behavior" name="robot1_E_to_H"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="robot1_F_to_D_behavior" name="robot1_F_to_D"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="robot1_F_to_G_behavior" name="robot1_F_to_G"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="robot1_G_to_E_behavior" name="robot1_G_to_E"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="robot1_G_to_F_behavior" name="robot1_G_to_F"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="robot1_H_to_E_behavior" name="robot1_H_to_E"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="robot2_A_to_B_behavior" name="robot2_A_to_B"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="robot2_A_to_C_behavior" name="robot2_A_to_C"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="robot2_B_to_A_behavior" name="robot2_B_to_A"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="robot2_B_to_C_behavior" name="robot2_B_to_C"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="robot2_B_to_D_behavior" name="robot2_B_to_D"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="robot2_B_to_E_behavior" name="robot2_B_to_E"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="robot2_C_to_A_behavior" name="robot2_C_to_A"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="robot2_C_to_B_behavior" name="robot2_C_to_B"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="robot2_C_to_E_behavior" name="robot2_C_to_E"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="robot2_D_to_B_behavior" name="robot2_D_to_B"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="robot2_D_to_F_behavior" name="robot2_D_to_F"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="robot2_E_to_B_behavior" name="robot2_E_to_B"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="robot2_E_to_C_behavior" name="robot2_E_to_C"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="robot2_E_to_G_behavior" name="robot2_E_to_G"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="robot2_E_to_H_behavior" name="robot2_E_to_H"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="robot2_F_to_D_behavior" name="robot2_F_to_D"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="robot2_F_to_G_behavior" name="robot2_F_to_G"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="robot2_G_to_E_behavior" name="robot2_G_to_E"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="robot2_G_to_F_behavior" name="robot2_G_to_F"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="robot2_H_to_E_behavior" name="robot2_H_to_E"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Enumeration" xmi:id="_2xP4MMUrEfCtoogyIzW8uQ" name="Location" visibility="public">
+      <ownedLiteral xmi:id="_4HJ7MMUrEfCtoogyIzW8uQ" name="LocA">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_4HJ7McUrEfCtoogyIzW8uQ"/>
+      </ownedLiteral>
+      <ownedLiteral xmi:id="_4pPUkMUrEfCtoogyIzW8uQ" name="LocB">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_4pQisMUrEfCtoogyIzW8uQ" value="1"/>
+      </ownedLiteral>
+      <ownedLiteral xmi:id="_5KJCMMUrEfCtoogyIzW8uQ" name="LocC">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_5KJpQMUrEfCtoogyIzW8uQ" value="2"/>
+      </ownedLiteral>
+      <ownedLiteral xmi:id="_5paYIMUrEfCtoogyIzW8uQ" name="LocD">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_5paYIcUrEfCtoogyIzW8uQ" value="3"/>
+      </ownedLiteral>
+      <ownedLiteral xmi:id="_6Gt_MMUrEfCtoogyIzW8uQ" name="LocE">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_6GumQMUrEfCtoogyIzW8uQ" value="4"/>
+      </ownedLiteral>
+      <ownedLiteral xmi:id="_60zNMMUrEfCtoogyIzW8uQ" name="LocF">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_60z0QMUrEfCtoogyIzW8uQ" value="5"/>
+      </ownedLiteral>
+      <ownedLiteral xmi:id="_7gICIMUrEfCtoogyIzW8uQ" name="LocG">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_7gIpMMUrEfCtoogyIzW8uQ" value="6"/>
+      </ownedLiteral>
+      <ownedLiteral xmi:id="_8E90kMUrEfCtoogyIzW8uQ" name="LocH">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_8E-boMUrEfCtoogyIzW8uQ" value="7"/>
+      </ownedLiteral>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Enumeration" xmi:id="_Yc9WAMucEfCAufuoD_BPhw" name="Initiator" visibility="public">
+      <ownedLiteral xmi:id="_a5u6cMucEfCAufuoD_BPhw" name="ROBOT1">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_a5vhgMucEfCAufuoD_BPhw"/>
+      </ownedLiteral>
+      <ownedLiteral xmi:id="_cAE3cMucEfCAufuoD_BPhw" name="ROBOT2">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_cAFegMucEfCAufuoD_BPhw" value="1"/>
+      </ownedLiteral>
+      <ownedLiteral xmi:id="_cx-OcMucEfCAufuoD_BPhw" name="IRRELEVANT">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_cx-1gMucEfCAufuoD_BPhw" value="2"/>
+      </ownedLiteral>
+    </packagedElement>
+    <profileApplication xmi:id="_IwqEEMUsEfCtoogyIzW8uQ">
+      <eAnnotations xmi:id="_IwuVgMUsEfCtoogyIzW8uQ" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/SynthML/#/"/>
+      </eAnnotations>
+      <appliedProfile href="platform:/plugin/com.github.tno.synthml.uml.profile.plugin/model/synthml.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+    </profileApplication>
+  </uml:Model>
+  <SynthML:FormalElement xmi:id="robot1_A_to_B_formalelement" guard="robot1 = LocA" base_RedefinableElement="robot1_A_to_B_behavior" atomic="true">
+    <effects>robot1 := LocB, visitedB := true, initiator := IRRELEVANT</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="robot1_A_to_C_formalelement" guard="robot1 = LocA" base_RedefinableElement="robot1_A_to_C_behavior" atomic="true">
+    <effects>robot1 := LocC, visitedC := true, initiator := IRRELEVANT</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="robot1_B_to_A_formalelement" guard="robot1 = LocB" base_RedefinableElement="robot1_B_to_A_behavior" atomic="true">
+    <effects>robot1 := LocA, visitedA := true, initiator := IRRELEVANT</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="robot1_B_to_C_formalelement" guard="robot1 = LocB" base_RedefinableElement="robot1_B_to_C_behavior" atomic="true">
+    <effects>robot1 := LocC, visitedC := true, initiator := IRRELEVANT</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="robot1_B_to_D_formalelement" guard="robot1 = LocB" base_RedefinableElement="robot1_B_to_D_behavior" atomic="true">
+    <effects>robot1 := LocD, visitedD := true, initiator := IRRELEVANT</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="robot1_B_to_E_formalelement" guard="robot1 = LocB" base_RedefinableElement="robot1_B_to_E_behavior" atomic="true">
+    <effects>robot1 := LocE, visitedE := true, initiator := IRRELEVANT</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="robot1_C_to_A_formalelement" guard="robot1 = LocC" base_RedefinableElement="robot1_C_to_A_behavior" atomic="true">
+    <effects>robot1 := LocA, visitedA := true, initiator := IRRELEVANT</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="robot1_C_to_B_formalelement" guard="robot1 = LocC" base_RedefinableElement="robot1_C_to_B_behavior" atomic="true">
+    <effects>robot1 := LocB, visitedB := true, initiator := IRRELEVANT</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="robot1_C_to_E_formalelement" guard="robot1 = LocC" base_RedefinableElement="robot1_C_to_E_behavior" atomic="true">
+    <effects>robot1 := LocE, visitedE := true, initiator := IRRELEVANT</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="robot1_D_to_B_formalelement" guard="robot1 = LocD" base_RedefinableElement="robot1_D_to_B_behavior" atomic="true">
+    <effects>robot1 := LocB, visitedB := true, initiator := IRRELEVANT</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="robot1_D_to_F_formalelement" guard="robot1 = LocD" base_RedefinableElement="robot1_D_to_F_behavior" atomic="true">
+    <effects>robot1 := LocF, visitedF := true, initiator := IRRELEVANT</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="robot1_E_to_B_formalelement" guard="robot1 = LocE" base_RedefinableElement="robot1_E_to_B_behavior" atomic="true">
+    <effects>robot1 := LocB, visitedB := true, initiator := IRRELEVANT</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="robot1_E_to_C_formalelement" guard="robot1 = LocE" base_RedefinableElement="robot1_E_to_C_behavior" atomic="true">
+    <effects>robot1 := LocC, visitedC := true, initiator := IRRELEVANT</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="robot1_E_to_G_formalelement" guard="robot1 = LocE" base_RedefinableElement="robot1_E_to_G_behavior" atomic="true">
+    <effects>robot1 := LocG, visitedG := true, initiator := IRRELEVANT</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="robot1_E_to_H_formalelement" guard="robot1 = LocE" base_RedefinableElement="robot1_E_to_H_behavior" atomic="true">
+    <effects>robot1 := LocH, visitedH := true, initiator := IRRELEVANT</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="robot1_F_to_D_formalelement" guard="robot1 = LocF" base_RedefinableElement="robot1_F_to_D_behavior" atomic="true">
+    <effects>robot1 := LocD, visitedD := true, initiator := IRRELEVANT</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="robot1_F_to_G_formalelement" guard="robot1 = LocF" base_RedefinableElement="robot1_F_to_G_behavior" atomic="true">
+    <effects>robot1 := LocG, visitedG := true, initiator := IRRELEVANT</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="robot1_G_to_E_formalelement" guard="robot1 = LocG" base_RedefinableElement="robot1_G_to_E_behavior" atomic="true">
+    <effects>robot1 := LocE, visitedE := true, initiator := IRRELEVANT</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="robot1_G_to_F_formalelement" guard="robot1 = LocG" base_RedefinableElement="robot1_G_to_F_behavior" atomic="true">
+    <effects>robot1 := LocF, visitedF := true, initiator := IRRELEVANT</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="robot1_H_to_E_formalelement" guard="robot1 = LocH" base_RedefinableElement="robot1_H_to_E_behavior" atomic="true">
+    <effects>robot1 := LocE, visitedE := true, initiator := IRRELEVANT</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="robot2_A_to_B_formalelement" guard="robot2 = LocA" base_RedefinableElement="robot2_A_to_B_behavior" atomic="true">
+    <effects>robot2 := LocB, visitedB := true, initiator := IRRELEVANT</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="robot2_A_to_C_formalelement" guard="robot2 = LocA" base_RedefinableElement="robot2_A_to_C_behavior" atomic="true">
+    <effects>robot2 := LocC, visitedC := true, initiator := IRRELEVANT</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="robot2_B_to_A_formalelement" guard="robot2 = LocB" base_RedefinableElement="robot2_B_to_A_behavior" atomic="true">
+    <effects>robot2 := LocA, visitedA := true, initiator := IRRELEVANT</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="robot2_B_to_C_formalelement" guard="robot2 = LocB" base_RedefinableElement="robot2_B_to_C_behavior" atomic="true">
+    <effects>robot2 := LocC, visitedC := true, initiator := IRRELEVANT</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="robot2_B_to_D_formalelement" guard="robot2 = LocB" base_RedefinableElement="robot2_B_to_D_behavior" atomic="true">
+    <effects>robot2 := LocD, visitedD := true, initiator := IRRELEVANT</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="robot2_B_to_E_formalelement" guard="robot2 = LocB" base_RedefinableElement="robot2_B_to_E_behavior" atomic="true">
+    <effects>robot2 := LocE, visitedE := true, initiator := IRRELEVANT</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="robot2_C_to_A_formalelement" guard="robot2 = LocC" base_RedefinableElement="robot2_C_to_A_behavior" atomic="true">
+    <effects>robot2 := LocA, visitedA := true, initiator := IRRELEVANT</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="robot2_C_to_B_formalelement" guard="robot2 = LocC" base_RedefinableElement="robot2_C_to_B_behavior" atomic="true">
+    <effects>robot2 := LocB, visitedB := true, initiator := IRRELEVANT</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="robot2_C_to_E_formalelement" guard="robot2 = LocC" base_RedefinableElement="robot2_C_to_E_behavior" atomic="true">
+    <effects>robot2 := LocE, visitedE := true, initiator := IRRELEVANT</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="robot2_D_to_B_formalelement" guard="robot2 = LocD" base_RedefinableElement="robot2_D_to_B_behavior" atomic="true">
+    <effects>robot2 := LocB, visitedB := true, initiator := IRRELEVANT</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="robot2_D_to_F_formalelement" guard="robot2 = LocD" base_RedefinableElement="robot2_D_to_F_behavior" atomic="true">
+    <effects>robot2 := LocF, visitedF := true, initiator := IRRELEVANT</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="robot2_E_to_B_formalelement" guard="robot2 = LocE" base_RedefinableElement="robot2_E_to_B_behavior" atomic="true">
+    <effects>robot2 := LocB, visitedB := true, initiator := IRRELEVANT</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="robot2_E_to_C_formalelement" guard="robot2 = LocE" base_RedefinableElement="robot2_E_to_C_behavior" atomic="true">
+    <effects>robot2 := LocC, visitedC := true, initiator := IRRELEVANT</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="robot2_E_to_G_formalelement" guard="robot2 = LocE" base_RedefinableElement="robot2_E_to_G_behavior" atomic="true">
+    <effects>robot2 := LocG, visitedG := true, initiator := IRRELEVANT</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="robot2_E_to_H_formalelement" guard="robot2 = LocE" base_RedefinableElement="robot2_E_to_H_behavior" atomic="true">
+    <effects>robot2 := LocH, visitedH := true, initiator := IRRELEVANT</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="robot2_F_to_D_formalelement" guard="robot2 = LocF" base_RedefinableElement="robot2_F_to_D_behavior" atomic="true">
+    <effects>robot2 := LocD, visitedD := true, initiator := IRRELEVANT</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="robot2_F_to_G_formalelement" guard="robot2 = LocF" base_RedefinableElement="robot2_F_to_G_behavior" atomic="true">
+    <effects>robot2 := LocG, visitedG := true, initiator := IRRELEVANT</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="robot2_G_to_E_formalelement" guard="robot2 = LocG" base_RedefinableElement="robot2_G_to_E_behavior" atomic="true">
+    <effects>robot2 := LocE, visitedE := true, initiator := IRRELEVANT</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="robot2_G_to_F_formalelement" guard="robot2 = LocG" base_RedefinableElement="robot2_G_to_F_behavior" atomic="true">
+    <effects>robot2 := LocF, visitedF := true, initiator := IRRELEVANT</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="robot2_H_to_E_formalelement" guard="robot2 = LocH" base_RedefinableElement="robot2_H_to_E_behavior" atomic="true">
+    <effects>robot2 := LocE, visitedE := true, initiator := IRRELEVANT</effects>
+  </SynthML:FormalElement>
+  <SynthML:SynthesisPrecondition xmi:id="_e5RPQMVTEfCAf6IK_E8X7A" base_Constraint="_dRXdUMVTEfCAf6IK_E8X7A"/>
+  <SynthML:Postcondition xmi:id="_justIMVTEfCAf6IK_E8X7A" base_Constraint="_i_0N4MVTEfCAf6IK_E8X7A"/>
+  <SynthML:Requirement xmi:id="_mkSAkMudEfCAufuoD_BPhw" base_Constraint="_lx79oMudEfCAufuoD_BPhw"/>
+  <SynthML:Requirement xmi:id="_og9vsMudEfCAufuoD_BPhw" base_Constraint="_ntSQAMudEfCAufuoD_BPhw"/>
+  <SynthML:Requirement xmi:id="_IbMHENypEfCl84Bqw0VM5Q" base_Constraint="_FfKa0NypEfCl84Bqw0VM5Q"/>
+  <SynthML:Requirement xmi:id="_NNq-oNypEfCl84Bqw0VM5Q" base_Constraint="_MisH8NypEfCl84Bqw0VM5Q"/>
+  <SynthML:Requirement xmi:id="_SGz30NypEfCl84Bqw0VM5Q" base_Constraint="_RfR9wNypEfCl84Bqw0VM5Q"/>
+  <SynthML:Requirement xmi:id="_V9kuANypEfCl84Bqw0VM5Q" base_Constraint="_VT--cNypEfCl84Bqw0VM5Q"/>
+  <SynthML:Requirement xmi:id="_Ya0MgNypEfCl84Bqw0VM5Q" base_Constraint="_X-LT0NypEfCl84Bqw0VM5Q"/>
+  <SynthML:Requirement xmi:id="_bOM6INypEfCl84Bqw0VM5Q" base_Constraint="_ajqvYNypEfCl84Bqw0VM5Q"/>
+  <SynthML:Requirement xmi:id="_eNVkwNypEfCl84Bqw0VM5Q" base_Constraint="_dbuhoNypEfCl84Bqw0VM5Q"/>
+  <SynthML:Requirement xmi:id="_g8lZQNypEfCl84Bqw0VM5Q" base_Constraint="_gHTXENypEfCl84Bqw0VM5Q"/>
+</xmi:XMI>
