@@ -16,6 +16,7 @@ For further information on the vision and approach for integrating SBE into UML-
 
 For end users:
 - [Instructions for using SynthML](docs/synthml-instructions.pdf)
+- [A activity synthesis example](plugins/com.github.tno.pokayoke.activitysynthesis/examples/robot_movement/README.md), consisting of two robots that must together visit a number of locations exactly once
 
 For developers:
 - [Setting up a SynthML development environment](docs/setup-development-environment.md)
