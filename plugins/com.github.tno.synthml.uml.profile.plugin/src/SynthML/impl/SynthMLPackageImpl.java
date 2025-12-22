@@ -6,6 +6,7 @@ import SynthML.FormalCallBehaviorAction;
 import SynthML.FormalConstraint;
 import SynthML.FormalControlFlow;
 import SynthML.FormalElement;
+import SynthML.Occurrence;
 import SynthML.Postcondition;
 import SynthML.Requirement;
 import SynthML.SynthMLFactory;
@@ -87,6 +88,13 @@ public class SynthMLPackageImpl extends EPackageImpl implements SynthMLPackage {
 	 * @generated
 	 */
 	private EClass postconditionEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass occurrenceEClass = null;
 
 	/**
 	 * Creates an instance of the model <b>Package</b>, registered with
@@ -329,6 +337,16 @@ public class SynthMLPackageImpl extends EPackageImpl implements SynthMLPackage {
 	 * @generated
 	 */
 	@Override
+	public EClass getOccurrence() {
+		return occurrenceEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public SynthMLFactory getSynthMLFactory() {
 		return (SynthMLFactory)getEFactoryInstance();
 	}
@@ -376,6 +394,8 @@ public class SynthMLPackageImpl extends EPackageImpl implements SynthMLPackage {
 		usagePreconditionEClass = createEClass(USAGE_PRECONDITION);
 
 		postconditionEClass = createEClass(POSTCONDITION);
+
+		occurrenceEClass = createEClass(OCCURRENCE);
 	}
 
 	/**
@@ -414,6 +434,7 @@ public class SynthMLPackageImpl extends EPackageImpl implements SynthMLPackage {
 		synthesisPreconditionEClass.getESuperTypes().add(this.getFormalConstraint());
 		usagePreconditionEClass.getESuperTypes().add(this.getFormalConstraint());
 		postconditionEClass.getESuperTypes().add(this.getFormalConstraint());
+		occurrenceEClass.getESuperTypes().add(this.getFormalConstraint());
 
 		// Initialize classes, features, and operations; add parameters
 		initEClass(formalElementEClass, FormalElement.class, "FormalElement", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -440,6 +461,8 @@ public class SynthMLPackageImpl extends EPackageImpl implements SynthMLPackage {
 		initEClass(usagePreconditionEClass, UsagePrecondition.class, "UsagePrecondition", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
 		initEClass(postconditionEClass, Postcondition.class, "Postcondition", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+
+		initEClass(occurrenceEClass, Occurrence.class, "Occurrence", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
 		// Create resource
 		createResource(eNS_URI);

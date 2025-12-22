@@ -85,6 +85,15 @@ public interface SynthMLFactory extends EFactory {
 	Postcondition createPostcondition();
 
 	/**
+	 * Returns a new object of class '<em>Occurrence</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Occurrence</em>'.
+	 * @generated
+	 */
+	Occurrence createOccurrence();
+
+	/**
 	 * Returns the package supported by this factory.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
