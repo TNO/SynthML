@@ -235,6 +235,7 @@
       <pages name="PR_PrimitiveTypePage" labelExpression="SynthML" domainClass="uml::PrimitiveType" groups="//@extensions.0/@categories.0/@groups.3"/>
       <pages name="PR_ActivityPage" labelExpression="SynthML" domainClass="uml::Activity"/>
       <pages name="PR_ConstraintPage" labelExpression="SynthML" domainClass="uml::Constraint" preconditionExpression="aql:not self.oclIsKindOf(uml::IntervalConstraint) and not self.eContainer().oclIsKindOf(uml::PrimitiveType)" groups="//@extensions.0/@categories.0/@groups.5"/>
+      <pages name="PR_OccurrencePage" labelExpression="SynthML" domainClass="uml::Constraint" preconditionExpression="aql:self.oclIsKindOf(uml::IntervalConstraint) and not self.eContainer().oclIsKindOf(uml::PrimitiveType)" groups="//@extensions.0/@categories.0/@groups.6"/>
       <groups name="PR_FormalElementGroup" labelExpression="General" semanticCandidateExpression="var:self">
         <controls xsi:type="properties:TextDescription" name="PR_AC_Name" labelExpression="Name:" helpExpression="The Name of the Action" valueExpression="feature:name">
           <initialOperation>
@@ -352,6 +353,23 @@
         <controls xsi:type="properties:TextAreaDescription" name="PR_C_Expression" labelExpression="Expression: " helpExpression="The expression of the constraint." valueExpression="service:self.getConstraintExpression()">
           <initialOperation>
             <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="service:self.setConstraintExpression(newValue)"/>
+          </initialOperation>
+        </controls>
+      </groups>
+      <groups name="PR_OccurrenceGroup" labelExpression="General" semanticCandidateExpression="var:self">
+        <controls xsi:type="properties:TextDescription" name="PR_OC_Name" labelExpression="Name:" helpExpression="The name of the constraint." valueExpression="feature:name">
+          <initialOperation>
+            <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="service:self.setName(newValue)"/>
+          </initialOperation>
+        </controls>
+        <controls xsi:type="properties:TextDescription" name="PR_OC_Max" labelExpression="Max:" helpExpression="The maximum number of times the constrained elements can be called." valueExpression="service:self.getIntervalConstraintMax()">
+          <initialOperation>
+            <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="service:self.setIntervalConstraintMax(newValue)"/>
+          </initialOperation>
+        </controls>
+        <controls xsi:type="properties:TextDescription" name="PR_OC_Min" labelExpression="Min:" helpExpression="The minimum number of times the constrained elements can be called." valueExpression="service:self.getIntervalConstraintMin()">
+          <initialOperation>
+            <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="service:self.setIntervalConstraintMin(newValue)"/>
           </initialOperation>
         </controls>
       </groups>
