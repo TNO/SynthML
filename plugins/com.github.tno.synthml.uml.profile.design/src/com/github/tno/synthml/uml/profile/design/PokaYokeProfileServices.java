@@ -33,6 +33,7 @@ import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.DataType;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Generalization;
+import org.eclipse.uml2.uml.IntervalConstraint;
 import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.ParameterableElement;
 import org.eclipse.uml2.uml.PrimitiveType;
@@ -712,5 +713,31 @@ public class PokaYokeProfileServices {
 
     public String getStereotypeName(Stereotype st) {
         return PokaYokeUmlProfileUtil.getStereotypeName(st);
+    }
+
+    public String getIntervalConstraintMax(IntervalConstraint constraint) {
+        return PokaYokeUmlProfileUtil.getIntervalConstraintMax(constraint);
+    }
+
+    public String getIntervalConstraintMin(IntervalConstraint constraint) {
+        return PokaYokeUmlProfileUtil.getIntervalConstraintMin(constraint);
+    }
+
+    public void setIntervalConstraintMax(IntervalConstraint constraint, String newValue) {
+        PokaYokeUmlProfileUtil.applyPokaYokeProfile(constraint);
+        PokaYokeUmlProfileUtil.setIntervalConstraintMax(constraint, newValue);
+
+        // Unapplying the stereotype does not refresh the viewer, not even when 'associated elements expression'
+        // is used in the odesign file. So we trigger a refresh here.
+        refresh(constraint);
+    }
+
+    public void setIntervalConstraintMin(IntervalConstraint constraint, String newValue) {
+        PokaYokeUmlProfileUtil.applyPokaYokeProfile(constraint);
+        PokaYokeUmlProfileUtil.setIntervalConstraintMin(constraint, newValue);
+
+        // Unapplying the stereotype does not refresh the viewer, not even when 'associated elements expression'
+        // is used in the odesign file. So we trigger a refresh here.
+        refresh(constraint);
     }
 }
