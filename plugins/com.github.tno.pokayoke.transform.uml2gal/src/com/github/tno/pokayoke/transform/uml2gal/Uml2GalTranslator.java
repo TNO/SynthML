@@ -4,7 +4,6 @@ package com.github.tno.pokayoke.transform.uml2gal;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -122,7 +121,7 @@ public class Uml2GalTranslator {
         FileHelper.normalizeIds(model);
 
         // Validate and flatten the model.
-        new FlattenUMLActivity(model, Set.of()).transform();
+        new FlattenUMLActivity(model).transform();
 
         // Prepend the name of the outer activity to the model elements in activities.
         NameHelper.prependOuterActivityNameToNodesAndEdgesInActivities(model);

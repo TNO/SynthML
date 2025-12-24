@@ -23,7 +23,6 @@ import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.MergeNode;
 import org.eclipse.uml2.uml.Model;
-import org.eclipse.uml2.uml.RedefinableElement;
 
 import com.github.tno.pokayoke.transform.common.ExprHelper;
 import com.github.tno.pokayoke.transform.common.FileHelper;
@@ -40,17 +39,14 @@ public class FlattenUMLActivity {
 
     private final StructureInfoHelper structureInfoHelper;
 
-    private final Set<RedefinableElement> nonCallableElements;
-
-    public FlattenUMLActivity(Model model, Set<RedefinableElement> nonCallableElements) {
+    public FlattenUMLActivity(Model model) {
         this.model = model;
         this.structureInfoHelper = new StructureInfoHelper();
-        this.nonCallableElements = nonCallableElements;
     }
 
     public static void transformFile(String sourcePath, String targetPath) throws IOException, CoreException {
         Model model = FileHelper.loadModel(sourcePath);
-        new FlattenUMLActivity(model, new Set.of()).transform();
+        new FlattenUMLActivity(model).transform();
         FileHelper.storeModel(model, targetPath);
     }
 
@@ -77,7 +73,7 @@ public class FlattenUMLActivity {
     }
 
     private void transform(Element element) {
-        if (element instanceof Activity activityElement && !nonCallableElements.contains(activityElement)) {
+        if (element instanceof Activity activityElement) {
             transformActivity(activityElement, null);
         } else if (element instanceof Class classElement) {
             classElement.getOwnedMembers().forEach(this::transform);
