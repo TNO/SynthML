@@ -613,6 +613,8 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     private Pair<Set<DiscVariable>, BiMap<Event, Edge>> translateConcreteActivity(Activity activity) {
         // Sanity check.
         Preconditions.checkArgument(!activity.isAbstract(), "Expected a concrete activity.");
+        Verify.verify(!nonCallableElements.contains(activity), String.format(
+                "Activity '%s' should not be translated to CIF since it cannot be called.", activity.getName()));
 
         // For the guard computation and language equivalence check, we are only concerned with the single activity
         // currently being synthesized. Therefore, we do not translate other activities than the one that is currently
