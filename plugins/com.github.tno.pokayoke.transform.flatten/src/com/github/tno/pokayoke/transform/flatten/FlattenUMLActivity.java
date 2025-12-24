@@ -50,7 +50,7 @@ public class FlattenUMLActivity {
 
     public static void transformFile(String sourcePath, String targetPath) throws IOException, CoreException {
         Model model = FileHelper.loadModel(sourcePath);
-        new FlattenUMLActivity(model, new LinkedHashSet<>()).transform();
+        new FlattenUMLActivity(model, new Set.of()).transform();
         FileHelper.storeModel(model, targetPath);
     }
 

@@ -256,7 +256,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             throw new RuntimeException("Translating parameterized activities to CIF is unsupported.");
         }
 
-        // Compute the UML element which cannot be called.
+        // Compute the UML elements that cannot be called.
         computeNonCallableElements();
 
         // Flatten UML activities and normalize IDs.
