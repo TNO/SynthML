@@ -1277,12 +1277,19 @@ public class SynthesisChainTracking {
             cifEventTraceInfo.put(event, newEventTraceInfo);
         }
 
-        // Remove activity nodes from the internal map and the corresponding transition and CIF event tracing info. Add
-        // the events to the internal map.
+        // Remove activity nodes from the internal map and the corresponding transition and CIF event tracing info.
         Set<Transition> transitionToRemove = nodesToRemove.stream().map(activityNodeToTransition::get)
                 .collect(Collectors.toSet());
-        Set<Event> eventsToRemove = transitionToRemove.stream()
+        Set<Event> tentativeEventsToRemove = transitionToRemove.stream()
                 .flatMap(t -> transitionTraceInfo.get(t).getCifEvents().stream()).collect(Collectors.toSet());
+
+        // Multiple Petri net transitions may reference the same CIF event: if any other transition refers to a CIF
+        // event that is marked for deletion, it should not be deleted.
+        Set<Transition> transitionsToKeep = Sets.difference(transitionTraceInfo.keySet(), transitionToRemove);
+        Set<Event> eventsToKeep = transitionsToKeep.stream()
+                .flatMap(t -> transitionTraceInfo.get(t).getCifEvents().stream()).collect(Collectors.toSet());
+        Set<Event> eventsToRemove = Sets.difference(tentativeEventsToRemove, eventsToKeep);
+
         restoredDecisionMergeNodeEvents.addAll(eventsToRemove);
         activityNodeToTransition.keySet().removeAll(nodesToRemove);
         transitionTraceInfo.keySet().removeAll(transitionToRemove);
