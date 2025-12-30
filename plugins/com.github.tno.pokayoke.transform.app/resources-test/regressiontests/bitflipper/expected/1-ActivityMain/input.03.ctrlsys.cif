@@ -9,10 +9,12 @@ plant automaton ActiveClass:
   alg bool precondition = not init;
   alg bool __precondition = precondition;
   alg bool postcondition = bit and init;
-  alg bool __postcondition__activeAction = __activeAction = 0;
-  alg bool __postcondition = postcondition and __postcondition__activeAction;
+  alg bool __postcondition_without_structure__activeAction = __activeAction = 0;
+  alg bool __postcondition_without_structure = postcondition and __postcondition_without_structure__activeAction;
+  alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure;
   initial __precondition;
-  marked __postcondition;
+  marked __postcondition_with_structure;
   location:
     initial;
     marked;
@@ -29,7 +31,7 @@ supervisor automaton sup:
     edge flip when true;
     edge initialize when true;
 end
-supervisor invariant ActiveClass.__postcondition disables flip;
-supervisor invariant ActiveClass.__postcondition disables initialize;
-supervisor invariant ActiveClass.__postcondition disables initialize__result_1;
-supervisor invariant ActiveClass.__postcondition disables initialize__result_2;
+supervisor invariant ActiveClass.__postcondition_without_structure disables flip;
+supervisor invariant ActiveClass.__postcondition_without_structure disables initialize;
+supervisor invariant ActiveClass.__postcondition_without_structure disables initialize__result_1;
+supervisor invariant ActiveClass.__postcondition_without_structure disables initialize__result_2;

@@ -6,9 +6,11 @@ plant automaton Context:
   alg bool Pre = not done;
   alg bool __precondition = Pre;
   alg bool Post = done;
-  alg bool __postcondition = Post;
+  alg bool __postcondition_without_structure = Post;
+  alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure;
   initial __precondition;
-  marked __postcondition;
+  marked __postcondition_with_structure;
   location:
     initial;
     marked;
@@ -22,4 +24,4 @@ supervisor automaton sup:
     marked;
     edge Action when true;
 end
-supervisor invariant Context.__postcondition disables Action;
+supervisor invariant Context.__postcondition_without_structure disables Action;

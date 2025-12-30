@@ -8,12 +8,14 @@ plant automaton Context:
   alg bool Pre = not done_a and not done_b;
   alg bool __precondition = Pre;
   alg bool Post = done_a and done_b;
-  alg bool __postcondition__nonAtomicActive__do_b = not __nonAtomicActive__do_b;
-  alg bool __postcondition__occurrences__36__do_a__22 = occurrences__36__do_a__22.__occurrences >= 0;
-  alg bool __postcondition__occurrences__36__do_b__24 = occurrences__36__do_b__24.__occurrences >= 0;
-  alg bool __postcondition = Post and __postcondition__nonAtomicActive__do_b and (__postcondition__occurrences__36__do_a__22 and __postcondition__occurrences__36__do_b__24);
+  alg bool __postcondition_without_structure__nonAtomicActive__do_b = not __nonAtomicActive__do_b;
+  alg bool __postcondition_without_structure__occurrences__36__do_a__22 = occurrences__36__do_a__22.__occurrences >= 0;
+  alg bool __postcondition_without_structure__occurrences__36__do_b__24 = occurrences__36__do_b__24.__occurrences >= 0;
+  alg bool __postcondition_without_structure = Post and __postcondition_without_structure__nonAtomicActive__do_b and (__postcondition_without_structure__occurrences__36__do_a__22 and __postcondition_without_structure__occurrences__36__do_b__24);
+  alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure;
   initial __precondition;
-  marked __postcondition;
+  marked __postcondition_with_structure;
   location:
     initial;
     marked;
@@ -37,6 +39,6 @@ requirement automaton occurrences__36__do_b__24:
     marked;
     edge do_b when __occurrences < 1 do __occurrences := __occurrences + 1;
 end
-requirement invariant Context.__postcondition disables do_a;
-requirement invariant Context.__postcondition disables do_b;
-requirement invariant Context.__postcondition disables do_b__na_result_1;
+requirement invariant Context.__postcondition_without_structure disables do_a;
+requirement invariant Context.__postcondition_without_structure disables do_b;
+requirement invariant Context.__postcondition_without_structure disables do_b__na_result_1;

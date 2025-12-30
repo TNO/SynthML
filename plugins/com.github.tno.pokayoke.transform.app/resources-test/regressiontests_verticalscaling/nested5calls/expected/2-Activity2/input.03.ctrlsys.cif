@@ -15,12 +15,14 @@ plant automaton Class1:
   alg bool precondition2 = not v2 and not v1;
   alg bool __precondition = precondition2;
   alg bool postcondition2 = v2 and v1;
-  alg bool __postcondition__nonAtomicActive____node__CallBehaviorAction__113 = not __nonAtomicActive____node__CallBehaviorAction__113;
-  alg bool __postcondition__controlflow__101 = not __controlflow__101;
-  alg bool __postcondition__controlflow__104 = not __controlflow__104;
-  alg bool __postcondition = postcondition2 and __postcondition__nonAtomicActive____node__CallBehaviorAction__113 and (__postcondition__controlflow__101 and __postcondition__controlflow__104);
+  alg bool __postcondition_without_structure__nonAtomicActive____node__CallBehaviorAction__113 = not __nonAtomicActive____node__CallBehaviorAction__113;
+  alg bool __postcondition_without_structure = postcondition2 and __postcondition_without_structure__nonAtomicActive____node__CallBehaviorAction__113;
+  alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
+  alg bool __postcondition_with_structure__controlflow__101 = not __controlflow__101;
+  alg bool __postcondition_with_structure__controlflow__104 = not __controlflow__104;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure and (__postcondition_with_structure__controlflow__101 and __postcondition_with_structure__controlflow__104);
   initial __precondition;
-  marked __postcondition;
+  marked __postcondition_with_structure;
   location:
     initial;
     marked;
@@ -35,11 +37,11 @@ supervisor automaton sup:
   location:
     initial;
     marked;
-    edge __node__InitialNode__109__0 when not Class1.__controlflow__101 and (not Class1.v1 and not Class1.__nonAtomicActive____node__CallBehaviorAction__113);
+    edge __node__InitialNode__109__0 when not Class1.__controlflow__101 and (not Class1.__nonAtomicActive____node__CallBehaviorAction__113 and not Class1.v1);
     edge flip2 when true;
 end
-supervisor invariant Class1.__postcondition disables flip2;
-supervisor invariant Class1.__postcondition disables __node__InitialNode__109__0;
-supervisor invariant Class1.__postcondition disables __node__ActivityFinalNode__111__0;
-supervisor invariant Class1.__postcondition disables __node__CallBehaviorAction__113;
-supervisor invariant Class1.__postcondition disables __node__CallBehaviorAction__113__na_result_1;
+supervisor invariant Class1.__postcondition_without_structure disables flip2;
+supervisor invariant Class1.__postcondition_without_structure disables __node__InitialNode__109__0;
+supervisor invariant Class1.__postcondition_with_structure disables __node__ActivityFinalNode__111__0;
+supervisor invariant Class1.__postcondition_with_structure disables __node__CallBehaviorAction__113;
+supervisor invariant Class1.__postcondition_with_structure disables __node__CallBehaviorAction__113__na_result_1;

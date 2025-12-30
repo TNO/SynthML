@@ -7,12 +7,14 @@ plant automaton Context:
   disc bool flipped = false;
   alg bool __precondition = true;
   alg bool postcondition = field2 and flipped;
-  alg bool __postcondition__occurrences__44__left__32 = occurrences__44__left__32.__occurrences >= 0;
-  alg bool __postcondition__occurrences__44__right__34 = occurrences__44__right__34.__occurrences >= 0;
-  alg bool __postcondition__occurrences__44__flip__36 = occurrences__44__flip__36.__occurrences >= 0;
-  alg bool __postcondition = postcondition and __postcondition__occurrences__44__left__32 and (__postcondition__occurrences__44__right__34 and __postcondition__occurrences__44__flip__36);
+  alg bool __postcondition_without_structure__occurrences__44__left__32 = occurrences__44__left__32.__occurrences >= 0;
+  alg bool __postcondition_without_structure__occurrences__44__right__34 = occurrences__44__right__34.__occurrences >= 0;
+  alg bool __postcondition_without_structure__occurrences__44__flip__36 = occurrences__44__flip__36.__occurrences >= 0;
+  alg bool __postcondition_without_structure = postcondition and __postcondition_without_structure__occurrences__44__left__32 and (__postcondition_without_structure__occurrences__44__right__34 and __postcondition_without_structure__occurrences__44__flip__36);
+  alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure;
   initial __precondition;
-  marked __postcondition;
+  marked __postcondition_with_structure;
   location:
     initial;
     marked;
@@ -44,6 +46,6 @@ requirement automaton occurrences__44__flip__36:
     marked;
     edge flip when __occurrences < 1 do __occurrences := __occurrences + 1;
 end
-requirement invariant Context.__postcondition disables left;
-requirement invariant Context.__postcondition disables right;
-requirement invariant Context.__postcondition disables flip;
+requirement invariant Context.__postcondition_without_structure disables left;
+requirement invariant Context.__postcondition_without_structure disables right;
+requirement invariant Context.__postcondition_without_structure disables flip;

@@ -18,16 +18,18 @@ plant automaton Class1:
   alg bool precondition = not p1;
   alg bool __precondition = precondition;
   alg bool postcondition = p1 or p2;
-  alg bool __postcondition__OneCall__30__ConcreteActivity__34 = OneCall__30__ConcreteActivity__34.__occurrences >= 0;
-  alg bool __postcondition__controlflow__36 = not __controlflow__36;
-  alg bool __postcondition__controlflow__40 = not __controlflow__40;
-  alg bool __postcondition__controlflow__44 = not __controlflow__44;
-  alg bool __postcondition__controlflow__47 = not __controlflow__47;
-  alg bool __postcondition__controlflow__50 = not __controlflow__50;
-  alg bool __postcondition__controlflow__54 = not __controlflow__54;
-  alg bool __postcondition = postcondition and __postcondition__OneCall__30__ConcreteActivity__34 and (__postcondition__controlflow__36 and __postcondition__controlflow__40) and (__postcondition__controlflow__44 and __postcondition__controlflow__47 and (__postcondition__controlflow__50 and __postcondition__controlflow__54));
+  alg bool __postcondition_without_structure__OneCall__30__ConcreteActivity__34 = OneCall__30__ConcreteActivity__34.__occurrences >= 0;
+  alg bool __postcondition_without_structure = postcondition and __postcondition_without_structure__OneCall__30__ConcreteActivity__34;
+  alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
+  alg bool __postcondition_with_structure__controlflow__36 = not __controlflow__36;
+  alg bool __postcondition_with_structure__controlflow__40 = not __controlflow__40;
+  alg bool __postcondition_with_structure__controlflow__44 = not __controlflow__44;
+  alg bool __postcondition_with_structure__controlflow__47 = not __controlflow__47;
+  alg bool __postcondition_with_structure__controlflow__50 = not __controlflow__50;
+  alg bool __postcondition_with_structure__controlflow__54 = not __controlflow__54;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure and (__postcondition_with_structure__controlflow__36 and __postcondition_with_structure__controlflow__40) and (__postcondition_with_structure__controlflow__44 and __postcondition_with_structure__controlflow__47 and (__postcondition_with_structure__controlflow__50 and __postcondition_with_structure__controlflow__54));
   initial __precondition;
-  marked __postcondition;
+  marked __postcondition_with_structure;
   location:
     initial;
     marked;
@@ -55,11 +57,11 @@ supervisor automaton sup:
     marked;
     edge __node__InitialNode__58__0 when true;
 end
-supervisor invariant Class1.__postcondition disables __node__InitialNode__58__0;
-supervisor invariant Class1.__postcondition disables __node__ActivityFinalNode__60__0;
-supervisor invariant Class1.__postcondition disables __node__OpaqueAction__62;
-supervisor invariant Class1.__postcondition disables __node__OpaqueAction__64;
-supervisor invariant Class1.__postcondition disables __node__DecisionNode__66__0;
-supervisor invariant Class1.__postcondition disables __node__DecisionNode__66__1;
-supervisor invariant Class1.__postcondition disables __node__MergeNode__68__0;
-supervisor invariant Class1.__postcondition disables __node__MergeNode__68__1;
+supervisor invariant Class1.__postcondition_without_structure disables __node__InitialNode__58__0;
+supervisor invariant Class1.__postcondition_with_structure disables __node__ActivityFinalNode__60__0;
+supervisor invariant Class1.__postcondition_with_structure disables __node__OpaqueAction__62;
+supervisor invariant Class1.__postcondition_with_structure disables __node__OpaqueAction__64;
+supervisor invariant Class1.__postcondition_with_structure disables __node__DecisionNode__66__0;
+supervisor invariant Class1.__postcondition_with_structure disables __node__DecisionNode__66__1;
+supervisor invariant Class1.__postcondition_with_structure disables __node__MergeNode__68__0;
+supervisor invariant Class1.__postcondition_with_structure disables __node__MergeNode__68__1;

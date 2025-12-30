@@ -21,13 +21,15 @@ plant automaton Class1:
   alg bool T_A2B_Synthesis = robot1Pos = Home and LocBProduct = None and LocAProduct != None;
   alg bool __precondition = T_A2B_Synthesis;
   alg bool T_A2B_Post = LocBProduct != None and robot1Pos = Home;
-  alg bool __postcondition__OneCall__110__PickProductAtLocA__120 = OneCall__110__PickProductAtLocA__120.__occurrences >= 0;
-  alg bool __postcondition__OneCall__110__Robot1MoveToLocA__116 = OneCall__110__Robot1MoveToLocA__116.__occurrences >= 0;
-  alg bool __postcondition__OneCall__110__Robot1MoveToLocB__122 = OneCall__110__Robot1MoveToLocB__122.__occurrences >= 0;
-  alg bool __postcondition__OneCall__110__HomeRobot1__118 = OneCall__110__HomeRobot1__118.__occurrences >= 0;
-  alg bool __postcondition = T_A2B_Post and __postcondition__OneCall__110__PickProductAtLocA__120 and (__postcondition__OneCall__110__Robot1MoveToLocA__116 and (__postcondition__OneCall__110__Robot1MoveToLocB__122 and __postcondition__OneCall__110__HomeRobot1__118));
+  alg bool __postcondition_without_structure__OneCall__110__PickProductAtLocA__120 = OneCall__110__PickProductAtLocA__120.__occurrences >= 0;
+  alg bool __postcondition_without_structure__OneCall__110__Robot1MoveToLocA__116 = OneCall__110__Robot1MoveToLocA__116.__occurrences >= 0;
+  alg bool __postcondition_without_structure__OneCall__110__Robot1MoveToLocB__122 = OneCall__110__Robot1MoveToLocB__122.__occurrences >= 0;
+  alg bool __postcondition_without_structure__OneCall__110__HomeRobot1__118 = OneCall__110__HomeRobot1__118.__occurrences >= 0;
+  alg bool __postcondition_without_structure = T_A2B_Post and __postcondition_without_structure__OneCall__110__PickProductAtLocA__120 and (__postcondition_without_structure__OneCall__110__Robot1MoveToLocA__116 and (__postcondition_without_structure__OneCall__110__Robot1MoveToLocB__122 and __postcondition_without_structure__OneCall__110__HomeRobot1__118));
+  alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure;
   initial __precondition;
-  marked __postcondition;
+  marked __postcondition_with_structure;
   location:
     initial;
     marked;
@@ -70,9 +72,9 @@ requirement automaton OneCall__110__HomeRobot1__118:
     marked;
     edge HomeRobot1 when __occurrences < 1 do __occurrences := __occurrences + 1;
 end
-requirement invariant Class1.__postcondition disables ReleaseProductAtLocB;
-requirement invariant Class1.__postcondition disables Robot1MoveToLocA;
-requirement invariant Class1.__postcondition disables HomeRobot1;
-requirement invariant Class1.__postcondition disables PickProductAtLocA;
-requirement invariant Class1.__postcondition disables Robot1MoveToLocB;
-requirement invariant Class1.__postcondition disables ReleaseProductAtLocC;
+requirement invariant Class1.__postcondition_without_structure disables ReleaseProductAtLocB;
+requirement invariant Class1.__postcondition_without_structure disables Robot1MoveToLocA;
+requirement invariant Class1.__postcondition_without_structure disables HomeRobot1;
+requirement invariant Class1.__postcondition_without_structure disables PickProductAtLocA;
+requirement invariant Class1.__postcondition_without_structure disables Robot1MoveToLocB;
+requirement invariant Class1.__postcondition_without_structure disables ReleaseProductAtLocC;

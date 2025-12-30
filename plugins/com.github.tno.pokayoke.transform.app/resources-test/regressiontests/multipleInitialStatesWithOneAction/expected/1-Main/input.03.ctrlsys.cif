@@ -3,9 +3,11 @@ plant automaton Context:
   disc bool field in any;
   alg bool __precondition = true;
   alg bool postcondition = field;
-  alg bool __postcondition = postcondition;
+  alg bool __postcondition_without_structure = postcondition;
+  alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure;
   initial __precondition;
-  marked __postcondition;
+  marked __postcondition_with_structure;
   location:
     initial;
     marked;
@@ -18,4 +20,4 @@ supervisor automaton sup:
     marked;
     edge action when true;
 end
-supervisor invariant Context.__postcondition disables action;
+supervisor invariant Context.__postcondition_without_structure disables action;

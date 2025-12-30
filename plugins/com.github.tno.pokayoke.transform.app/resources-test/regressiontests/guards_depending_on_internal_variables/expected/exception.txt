@@ -1,1 +1,1 @@
-ERROR: Expected the computed guard to be correct, without depending on internal variables.
+ERROR: Language equivalence check failed: State space 'post_synthesis_chain_state_space' contains 2 blocking state(s).

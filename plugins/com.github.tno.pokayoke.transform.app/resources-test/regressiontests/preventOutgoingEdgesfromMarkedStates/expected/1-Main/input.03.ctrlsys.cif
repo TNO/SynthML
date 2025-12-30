@@ -5,9 +5,11 @@ plant automaton Class:
   alg bool Pre = element = First;
   alg bool __precondition = Pre;
   alg bool Post = element = Second;
-  alg bool __postcondition = Post;
+  alg bool __postcondition_without_structure = Post;
+  alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure;
   initial __precondition;
-  marked __postcondition;
+  marked __postcondition_with_structure;
   location:
     initial;
     marked;
@@ -20,4 +22,4 @@ supervisor automaton sup:
     marked;
     edge change when true;
 end
-supervisor invariant Class.__postcondition disables change;
+supervisor invariant Class.__postcondition_without_structure disables change;

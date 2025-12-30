@@ -10,13 +10,15 @@ plant automaton Context:
   alg bool pre_goToFour = not init and count = 0;
   alg bool __precondition = pre_goToFour;
   alg bool post_goToFour = count = 4;
-  alg bool __postcondition__nonAtomicActive__initialize = not __nonAtomicActive__initialize;
-  alg bool __postcondition__occurrences_goToFour__83__initialize__38 = occurrences_goToFour__83__initialize__38.__occurrences >= 0;
-  alg bool __postcondition__occurrences_goToFour__83__incr1__41 = occurrences_goToFour__83__incr1__41.__occurrences >= 0;
-  alg bool __postcondition__occurrences_goToFour__83__incr2__44 = occurrences_goToFour__83__incr2__44.__occurrences >= 0;
-  alg bool __postcondition = post_goToFour and __postcondition__nonAtomicActive__initialize and (__postcondition__occurrences_goToFour__83__initialize__38 and (__postcondition__occurrences_goToFour__83__incr1__41 and __postcondition__occurrences_goToFour__83__incr2__44));
+  alg bool __postcondition_without_structure__nonAtomicActive__initialize = not __nonAtomicActive__initialize;
+  alg bool __postcondition_without_structure__occurrences_goToFour__83__initialize__38 = occurrences_goToFour__83__initialize__38.__occurrences >= 0;
+  alg bool __postcondition_without_structure__occurrences_goToFour__83__incr1__41 = occurrences_goToFour__83__incr1__41.__occurrences >= 0;
+  alg bool __postcondition_without_structure__occurrences_goToFour__83__incr2__44 = occurrences_goToFour__83__incr2__44.__occurrences >= 0;
+  alg bool __postcondition_without_structure = post_goToFour and __postcondition_without_structure__nonAtomicActive__initialize and (__postcondition_without_structure__occurrences_goToFour__83__initialize__38 and (__postcondition_without_structure__occurrences_goToFour__83__incr1__41 and __postcondition_without_structure__occurrences_goToFour__83__incr2__44));
+  alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure;
   initial __precondition;
-  marked __postcondition;
+  marked __postcondition_with_structure;
   location:
     initial;
     marked;
@@ -50,8 +52,8 @@ requirement automaton occurrences_goToFour__83__incr2__44:
     marked;
     edge incr2 when __occurrences < 2 do __occurrences := __occurrences + 1;
 end
-requirement invariant Context.__postcondition disables initialize;
-requirement invariant Context.__postcondition disables initialize__na_result_1;
-requirement invariant Context.__postcondition disables initialize__na_result_2;
-requirement invariant Context.__postcondition disables incr1;
-requirement invariant Context.__postcondition disables incr2;
+requirement invariant Context.__postcondition_without_structure disables initialize;
+requirement invariant Context.__postcondition_without_structure disables initialize__na_result_1;
+requirement invariant Context.__postcondition_without_structure disables initialize__na_result_2;
+requirement invariant Context.__postcondition_without_structure disables incr1;
+requirement invariant Context.__postcondition_without_structure disables incr2;

@@ -5,10 +5,12 @@ plant automaton Class:
   alg bool precond = element = First;
   alg bool __precondition = precond;
   alg bool postcond = element = Second;
-  alg bool __postcondition__happens_at_most_once__28__change__16 = happens_at_most_once__28__change__16.__occurrences >= 0;
-  alg bool __postcondition = postcond and __postcondition__happens_at_most_once__28__change__16;
+  alg bool __postcondition_without_structure__happens_at_most_once__28__change__16 = happens_at_most_once__28__change__16.__occurrences >= 0;
+  alg bool __postcondition_without_structure = postcond and __postcondition_without_structure__happens_at_most_once__28__change__16;
+  alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure;
   initial __precondition;
-  marked __postcondition;
+  marked __postcondition_with_structure;
   location:
     initial;
     marked;
@@ -29,4 +31,4 @@ supervisor automaton sup:
     marked;
     edge change when true;
 end
-supervisor invariant Class.__postcondition disables change;
+supervisor invariant Class.__postcondition_without_structure disables change;

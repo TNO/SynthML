@@ -11,13 +11,15 @@ plant automaton Context:
   disc bool __nonAtomicActive__flip;
   alg bool __precondition = true;
   alg bool postcondition = field2 and flipped;
-  alg bool __postcondition__nonAtomicActive__flip = not __nonAtomicActive__flip;
-  alg bool __postcondition__occurrences__50__left__38 = occurrences__50__left__38.__occurrences >= 0;
-  alg bool __postcondition__occurrences__50__right__40 = occurrences__50__right__40.__occurrences >= 0;
-  alg bool __postcondition__occurrences__50__flip__42 = occurrences__50__flip__42.__occurrences >= 0;
-  alg bool __postcondition = postcondition and __postcondition__nonAtomicActive__flip and (__postcondition__occurrences__50__left__38 and (__postcondition__occurrences__50__right__40 and __postcondition__occurrences__50__flip__42));
+  alg bool __postcondition_without_structure__nonAtomicActive__flip = not __nonAtomicActive__flip;
+  alg bool __postcondition_without_structure__occurrences__50__left__38 = occurrences__50__left__38.__occurrences >= 0;
+  alg bool __postcondition_without_structure__occurrences__50__right__40 = occurrences__50__right__40.__occurrences >= 0;
+  alg bool __postcondition_without_structure__occurrences__50__flip__42 = occurrences__50__flip__42.__occurrences >= 0;
+  alg bool __postcondition_without_structure = postcondition and __postcondition_without_structure__nonAtomicActive__flip and (__postcondition_without_structure__occurrences__50__left__38 and (__postcondition_without_structure__occurrences__50__right__40 and __postcondition_without_structure__occurrences__50__flip__42));
+  alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure;
   initial __precondition;
-  marked __postcondition;
+  marked __postcondition_with_structure;
   location:
     initial;
     marked;
@@ -60,8 +62,8 @@ supervisor automaton sup:
     edge left when true;
     edge right when true;
 end
-supervisor invariant Context.__postcondition disables left;
-supervisor invariant Context.__postcondition disables right;
-supervisor invariant Context.__postcondition disables flip;
-supervisor invariant Context.__postcondition disables flip__na_result_1;
-supervisor invariant Context.__postcondition disables flip__na_result_2;
+supervisor invariant Context.__postcondition_without_structure disables left;
+supervisor invariant Context.__postcondition_without_structure disables right;
+supervisor invariant Context.__postcondition_without_structure disables flip;
+supervisor invariant Context.__postcondition_without_structure disables flip__na_result_1;
+supervisor invariant Context.__postcondition_without_structure disables flip__na_result_2;

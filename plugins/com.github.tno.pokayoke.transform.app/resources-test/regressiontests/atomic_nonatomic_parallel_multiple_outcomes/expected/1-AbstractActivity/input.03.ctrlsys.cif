@@ -9,12 +9,14 @@ plant automaton Machine:
   alg bool Precondition = not a_executed and not b_executed;
   alg bool __precondition = Precondition;
   alg bool Postcondition = a_executed = true and b_executed = true;
-  alg bool __postcondition__nonAtomicActive__NonAtomicB = not __nonAtomicActive__NonAtomicB;
-  alg bool __postcondition__IntervalConstraintA__32__AtomicA__40 = IntervalConstraintA__32__AtomicA__40.__occurrences >= 0;
-  alg bool __postcondition__IntervalConstraintB__36__NonAtomicB__42 = IntervalConstraintB__36__NonAtomicB__42.__occurrences >= 0;
-  alg bool __postcondition = Postcondition and __postcondition__nonAtomicActive__NonAtomicB and (__postcondition__IntervalConstraintA__32__AtomicA__40 and __postcondition__IntervalConstraintB__36__NonAtomicB__42);
+  alg bool __postcondition_without_structure__nonAtomicActive__NonAtomicB = not __nonAtomicActive__NonAtomicB;
+  alg bool __postcondition_without_structure__IntervalConstraintA__32__AtomicA__40 = IntervalConstraintA__32__AtomicA__40.__occurrences >= 0;
+  alg bool __postcondition_without_structure__IntervalConstraintB__36__NonAtomicB__42 = IntervalConstraintB__36__NonAtomicB__42.__occurrences >= 0;
+  alg bool __postcondition_without_structure = Postcondition and __postcondition_without_structure__nonAtomicActive__NonAtomicB and (__postcondition_without_structure__IntervalConstraintA__32__AtomicA__40 and __postcondition_without_structure__IntervalConstraintB__36__NonAtomicB__42);
+  alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure;
   initial __precondition;
-  marked __postcondition;
+  marked __postcondition_with_structure;
   location:
     initial;
     marked;
@@ -47,7 +49,7 @@ supervisor automaton sup:
     edge AtomicA when true;
     edge NonAtomicB when true;
 end
-supervisor invariant Machine.__postcondition disables AtomicA;
-supervisor invariant Machine.__postcondition disables NonAtomicB;
-supervisor invariant Machine.__postcondition disables NonAtomicB__na_result_1;
-supervisor invariant Machine.__postcondition disables NonAtomicB__na_result_2;
+supervisor invariant Machine.__postcondition_without_structure disables AtomicA;
+supervisor invariant Machine.__postcondition_without_structure disables NonAtomicB;
+supervisor invariant Machine.__postcondition_without_structure disables NonAtomicB__na_result_1;
+supervisor invariant Machine.__postcondition_without_structure disables NonAtomicB__na_result_2;

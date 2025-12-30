@@ -5,12 +5,14 @@ plant automaton Class:
   alg bool precond = element = First;
   alg bool __precondition = precond;
   alg bool postcond = element = Second;
-  alg bool __postcondition = postcond;
+  alg bool __postcondition_without_structure = postcond;
+  alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure;
   initial __precondition;
-  marked __postcondition;
+  marked __postcondition_with_structure;
   location:
     initial;
     marked;
     edge change when element != Third do element := Second;
 end
-requirement invariant Class.__postcondition disables change;
+requirement invariant Class.__postcondition_without_structure disables change;

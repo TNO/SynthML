@@ -3,12 +3,14 @@ plant automaton Context:
   disc bool field in any;
   alg bool __precondition = true;
   alg bool postcondition = field;
-  alg bool __postcondition = postcondition;
+  alg bool __postcondition_without_structure = postcondition;
+  alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure;
   initial __precondition;
-  marked __postcondition;
+  marked __postcondition_with_structure;
   location:
     initial;
     marked;
     edge action when not field do field := true;
 end
-requirement invariant Context.__postcondition disables action;
+requirement invariant Context.__postcondition_without_structure disables action;

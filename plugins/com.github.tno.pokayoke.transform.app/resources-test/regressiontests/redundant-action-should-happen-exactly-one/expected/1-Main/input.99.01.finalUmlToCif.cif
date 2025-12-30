@@ -1,0 +1,41 @@
+uncontrollable __node__DecisionNode__59__0;
+uncontrollable __node__DecisionNode__59__1;
+uncontrollable __node__MergeNode__60__0;
+uncontrollable __node__MergeNode__60__1;
+uncontrollable __node__JoinNode__62;
+uncontrollable __node__ForkNode__63;
+uncontrollable __node__CallBehaviorAction__64;
+uncontrollable __node__CallBehaviorAction__65;
+uncontrollable __node__CallBehaviorAction__66;
+plant automaton Context:
+  disc bool field1 in any;
+  disc bool field2 = false;
+  disc bool __controlflow__44;
+  disc bool __controlflow__45;
+  disc bool __controlflow__47;
+  disc bool __controlflow__49;
+  disc bool __controlflow__50;
+  disc bool __controlflow__51;
+  disc bool __controlflow__52;
+  disc bool __controlflow__53;
+  disc bool __controlflow__54;
+  disc bool __controlflow__56 = true;
+  alg bool __token_on_first_controlflow = __controlflow__56;
+  alg bool __precondition = __token_on_first_controlflow;
+  alg bool __token_on_last_controlflow = __controlflow__54;
+  alg bool __postcondition = __token_on_last_controlflow;
+  initial __precondition;
+  marked __postcondition;
+  location:
+    initial;
+    marked;
+    edge __node__DecisionNode__59__0 when true, __controlflow__49, not __controlflow__45 do __controlflow__49 := false, __controlflow__45 := true;
+    edge __node__DecisionNode__59__1 when true, __controlflow__49, not __controlflow__47 do __controlflow__49 := false, __controlflow__47 := true;
+    edge __node__MergeNode__60__0 when true, __controlflow__51, true, not __controlflow__53 do __controlflow__51 := false, __controlflow__53 := true;
+    edge __node__MergeNode__60__1 when true, __controlflow__52, true, not __controlflow__53 do __controlflow__52 := false, __controlflow__53 := true;
+    edge __node__JoinNode__62 when true, __controlflow__50, __controlflow__53, not __controlflow__54 do __controlflow__50 := false, __controlflow__53 := false, __controlflow__54 := true;
+    edge __node__ForkNode__63 when true, __controlflow__56, true, not __controlflow__44, not __controlflow__49 do __controlflow__56 := false, __controlflow__44 := true, __controlflow__49 := true;
+    edge __node__CallBehaviorAction__64 when true, __controlflow__44, true, not __controlflow__50 do field1 := not field1, __controlflow__44 := false, __controlflow__50 := true;
+    edge __node__CallBehaviorAction__65 when not field1, __controlflow__45, true, not __controlflow__51 do field2 := true, __controlflow__45 := false, __controlflow__51 := true;
+    edge __node__CallBehaviorAction__66 when field1, __controlflow__47, true, not __controlflow__52 do field2 := true, __controlflow__47 := false, __controlflow__52 := true;
+end

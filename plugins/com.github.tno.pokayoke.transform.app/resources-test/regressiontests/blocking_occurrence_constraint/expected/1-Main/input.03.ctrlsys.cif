@@ -5,11 +5,13 @@ plant automaton Context:
   disc bool field2 = false;
   alg bool __precondition = true;
   alg bool postcondition = field2;
-  alg bool __postcondition__at_most_once__36__left__24 = at_most_once__36__left__24.__occurrences >= 0;
-  alg bool __postcondition__at_most_once__36__right__26 = at_most_once__36__right__26.__occurrences >= 0;
-  alg bool __postcondition = postcondition and (__postcondition__at_most_once__36__left__24 and __postcondition__at_most_once__36__right__26);
+  alg bool __postcondition_without_structure__at_most_once__36__left__24 = at_most_once__36__left__24.__occurrences >= 0;
+  alg bool __postcondition_without_structure__at_most_once__36__right__26 = at_most_once__36__right__26.__occurrences >= 0;
+  alg bool __postcondition_without_structure = postcondition and (__postcondition_without_structure__at_most_once__36__left__24 and __postcondition_without_structure__at_most_once__36__right__26);
+  alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure;
   initial __precondition;
-  marked __postcondition;
+  marked __postcondition_with_structure;
   location:
     initial;
     marked;
@@ -40,5 +42,5 @@ supervisor automaton sup:
     edge left when true;
     edge right when true;
 end
-supervisor invariant Context.__postcondition disables left;
-supervisor invariant Context.__postcondition disables right;
+supervisor invariant Context.__postcondition_without_structure disables left;
+supervisor invariant Context.__postcondition_without_structure disables right;

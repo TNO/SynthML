@@ -10,15 +10,17 @@ plant automaton Class1:
   alg bool precondition1 = not v1;
   alg bool __precondition = precondition1;
   alg bool postcondition1 = v1;
-  alg bool __postcondition__nonAtomicActive__flip1 = not __nonAtomicActive__flip1;
-  alg bool __postcondition = postcondition1 and __postcondition__nonAtomicActive__flip1;
+  alg bool __postcondition_without_structure__nonAtomicActive__flip1 = not __nonAtomicActive__flip1;
+  alg bool __postcondition_without_structure = postcondition1 and __postcondition_without_structure__nonAtomicActive__flip1;
+  alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure;
   initial __precondition;
-  marked __postcondition;
+  marked __postcondition_with_structure;
   location:
     initial;
     marked;
     edge flip1 when not v1, not __nonAtomicActive__flip1 do __nonAtomicActive__flip1 := true;
     edge flip1__na_result_1 when __nonAtomicActive__flip1 do v1 := true, __nonAtomicActive__flip1 := false;
 end
-requirement invariant Class1.__postcondition disables flip1;
-requirement invariant Class1.__postcondition disables flip1__na_result_1;
+requirement invariant Class1.__postcondition_without_structure disables flip1;
+requirement invariant Class1.__postcondition_without_structure disables flip1__na_result_1;

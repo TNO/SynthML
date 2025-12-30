@@ -20,13 +20,15 @@ plant automaton Class1:
   alg bool T_B2C_Synthesis = robot2Pos = Home and LocCProduct = None and LocBProduct != None;
   alg bool __precondition = T_B2C_Synthesis;
   alg bool T_B2C_Post = LocCProduct != None and robot2Pos = Home;
-  alg bool __postcondition__OneCall__243__Robot2MoveToLocB__255 = OneCall__243__Robot2MoveToLocB__255.__occurrences >= 0;
-  alg bool __postcondition__OneCall__243__PickProductAtLocB__258 = OneCall__243__PickProductAtLocB__258.__occurrences >= 0;
-  alg bool __postcondition__OneCall__243__Robot2MoveToLocC__261 = OneCall__243__Robot2MoveToLocC__261.__occurrences >= 0;
-  alg bool __postcondition__OneCall__243__HomeRobot2__249 = OneCall__243__HomeRobot2__249.__occurrences >= 0;
-  alg bool __postcondition = T_B2C_Post and __postcondition__OneCall__243__Robot2MoveToLocB__255 and (__postcondition__OneCall__243__PickProductAtLocB__258 and (__postcondition__OneCall__243__Robot2MoveToLocC__261 and __postcondition__OneCall__243__HomeRobot2__249));
+  alg bool __postcondition_without_structure__OneCall__243__Robot2MoveToLocB__255 = OneCall__243__Robot2MoveToLocB__255.__occurrences >= 0;
+  alg bool __postcondition_without_structure__OneCall__243__PickProductAtLocB__258 = OneCall__243__PickProductAtLocB__258.__occurrences >= 0;
+  alg bool __postcondition_without_structure__OneCall__243__Robot2MoveToLocC__261 = OneCall__243__Robot2MoveToLocC__261.__occurrences >= 0;
+  alg bool __postcondition_without_structure__OneCall__243__HomeRobot2__249 = OneCall__243__HomeRobot2__249.__occurrences >= 0;
+  alg bool __postcondition_without_structure = T_B2C_Post and __postcondition_without_structure__OneCall__243__Robot2MoveToLocB__255 and (__postcondition_without_structure__OneCall__243__PickProductAtLocB__258 and (__postcondition_without_structure__OneCall__243__Robot2MoveToLocC__261 and __postcondition_without_structure__OneCall__243__HomeRobot2__249));
+  alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure;
   initial __precondition;
-  marked __postcondition;
+  marked __postcondition_with_structure;
   location:
     initial;
     marked;
@@ -79,8 +81,8 @@ supervisor automaton sup:
     edge Robot2MoveToLocB when true;
     edge Robot2MoveToLocC when Class1.LocBProduct = None;
 end
-supervisor invariant Class1.__postcondition disables HomeRobot2;
-supervisor invariant Class1.__postcondition disables ReleaseProductAtLocC;
-supervisor invariant Class1.__postcondition disables Robot2MoveToLocB;
-supervisor invariant Class1.__postcondition disables PickProductAtLocB;
-supervisor invariant Class1.__postcondition disables Robot2MoveToLocC;
+supervisor invariant Class1.__postcondition_without_structure disables HomeRobot2;
+supervisor invariant Class1.__postcondition_without_structure disables ReleaseProductAtLocC;
+supervisor invariant Class1.__postcondition_without_structure disables Robot2MoveToLocB;
+supervisor invariant Class1.__postcondition_without_structure disables PickProductAtLocB;
+supervisor invariant Class1.__postcondition_without_structure disables Robot2MoveToLocC;
