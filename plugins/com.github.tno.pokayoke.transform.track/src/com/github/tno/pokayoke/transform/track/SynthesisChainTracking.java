@@ -1217,9 +1217,9 @@ public class SynthesisChainTracking {
     {
         // Sanity check: all nodes must be decision or merge nodes.
         Verify.verify(nodesToUpdate.stream().allMatch(n -> n instanceof DecisionNode || n instanceof MergeNode),
-                "Only decision or merge nodes are allowed to be restored.");
+                "Only decision or merge nodes are allowed to be updated.");
         Verify.verify(nodesToRemove.stream().allMatch(n -> n instanceof DecisionNode || n instanceof MergeNode),
-                "Only decision or merge nodes are allowed to be restored.");
+                "Only decision or merge nodes are allowed to be removed.");
 
         // Update the CIF event tracing info corresponding the nodes to be updated.
         Set<Transition> transitions = nodesToUpdate.stream().map(activityNodeToTransition::get)
