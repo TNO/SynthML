@@ -278,13 +278,13 @@ public class StateAwareWeakLanguageEquivalenceChecker {
             }
         }
 
+        // For each equivalent annotation, create a pair containing states of the first and second state space.
         for (Entry<StateAnnotationEqHashWrap, List<Location>> annotationToState: annotationsToStates.entrySet()) {
-            // Create pairs between states of the first and second state space.
             queue.add(new Pair<>(
                     annotationToState.getValue().stream().filter(s -> initialStates1.contains(s))
-                            .collect(Collectors.toSet()),
+                            .collect(Collectors.toCollection(LinkedHashSet::new)),
                     annotationToState.getValue().stream().filter(s -> initialStates2.contains(s))
-                            .collect(Collectors.toSet())));
+                            .collect(Collectors.toCollection(LinkedHashSet::new))));
         }
 
         // If any initial state is not paired in the queue, throw an error.
@@ -295,7 +295,7 @@ public class StateAwareWeakLanguageEquivalenceChecker {
             // Find initial states in the first model that are not in any pair.
             Set<Location> notPairedLocs1 = queue.stream()
                     .filter((Pair<Set<Location>, Set<Location>> p) -> p.right.isEmpty()).map(p -> p.left)
-                    .flatMap(Set::stream).collect(Collectors.toSet());
+                    .flatMap(Set::stream).collect(Collectors.toCollection(LinkedHashSet::new));
             if (!notPairedLocs1.isEmpty()) {
                 errors.add(String.format("The state space '%s' contains initial states that cannot be paired: %s.",
                         stateSpace1, String.join(", ", notPairedLocs1.stream().map(s -> s.getName()).toList())));
@@ -304,7 +304,7 @@ public class StateAwareWeakLanguageEquivalenceChecker {
             // Find initial states in the second model that are not in any pair.
             Set<Location> notPairedLocs2 = queue.stream()
                     .filter((Pair<Set<Location>, Set<Location>> p) -> p.left.isEmpty()).map(p -> p.right)
-                    .flatMap(Set::stream).collect(Collectors.toSet());
+                    .flatMap(Set::stream).collect(Collectors.toCollection(LinkedHashSet::new));
             if (!notPairedLocs2.isEmpty()) {
                 errors.add(String.format("The state space '%s' contains initial states that cannot be paired: %s.",
                         stateSpace2, String.join(", ", notPairedLocs2.stream().map(s -> s.getName()).toList())));
