@@ -805,23 +805,20 @@ public class PokaYokeUmlProfileUtil {
 
     private static LiteralInteger getLiteralInteger(Constraint constraint, int newValue) {
         // Create a new literal integer, if needed.
-        List<LiteralInteger> modelLiterals = getAllLiteralIntegersWithValue(constraint.getModel(), newValue);
+        LiteralInteger newLiteral = getFirstLiteralIntegersWithValue(constraint.getModel(), newValue);
 
-        LiteralInteger newLiteral;
-        if (modelLiterals.isEmpty()) {
+        if (newLiteral == null) {
             newLiteral = UMLFactory.eINSTANCE.createLiteralInteger();
             newLiteral.setValue(Integer.valueOf(newValue));
             constraint.getModel().getPackagedElements().add(newLiteral);
-        } else {
-            newLiteral = modelLiterals.get(0);
         }
 
         return newLiteral;
     }
 
-    private static List<LiteralInteger> getAllLiteralIntegersWithValue(Model model, int value) {
+    private static LiteralInteger getFirstLiteralIntegersWithValue(Model model, int value) {
         return model.getOwnedElements().stream()
                 .filter(e -> e instanceof LiteralInteger literalInteger && literalInteger.getValue() == value)
-                .map(LiteralInteger.class::cast).toList();
+                .findFirst().map(LiteralInteger.class::cast).orElse(null);
     }
 }
