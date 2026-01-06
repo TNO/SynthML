@@ -1,20 +1,19 @@
 controllable left;
 controllable right;
-controllable flip;
 automaton synthesis_state_space:
-  alphabet left, right, flip;
-  @state(at_most_once__36__left__24: "*", at_most_once__36__left__24.__occurrences: 0, at_most_once__36__right__26: "*", at_most_once__36__right__26.__occurrences: 0, blocking__40__flip__28: "*", blocking__40__flip__28.__occurrences: 0, Context: "*", Context.field1: false, Context.field2: false, sup: "*")
+  alphabet left, right;
+  @state(at_most_once__36__left__24: "*", at_most_once__36__left__24.__occurrences: 0, at_most_once__36__right__26: "*", at_most_once__36__right__26.__occurrences: 0, Context: "*", Context.field1: false, Context.field2: false, sup: "*")
   location loc1:
     initial;
     edge left goto loc3;
-  @state(at_most_once__36__left__24: "*", at_most_once__36__left__24.__occurrences: 0, at_most_once__36__right__26: "*", at_most_once__36__right__26.__occurrences: 0, blocking__40__flip__28: "*", blocking__40__flip__28.__occurrences: 0, Context: "*", Context.field1: true, Context.field2: false, sup: "*")
+  @state(at_most_once__36__left__24: "*", at_most_once__36__left__24.__occurrences: 0, at_most_once__36__right__26: "*", at_most_once__36__right__26.__occurrences: 0, Context: "*", Context.field1: true, Context.field2: false, sup: "*")
   location loc2:
     initial;
     edge right goto loc4;
-  @state(at_most_once__36__left__24: "*", at_most_once__36__left__24.__occurrences: 1, at_most_once__36__right__26: "*", at_most_once__36__right__26.__occurrences: 0, blocking__40__flip__28: "*", blocking__40__flip__28.__occurrences: 0, Context: "*", Context.field1: false, Context.field2: true, sup: "*")
+  @state(at_most_once__36__left__24: "*", at_most_once__36__left__24.__occurrences: 1, at_most_once__36__right__26: "*", at_most_once__36__right__26.__occurrences: 0, Context: "*", Context.field1: false, Context.field2: true, sup: "*")
   location loc3:
     marked;
-  @state(at_most_once__36__left__24: "*", at_most_once__36__left__24.__occurrences: 0, at_most_once__36__right__26: "*", at_most_once__36__right__26.__occurrences: 1, blocking__40__flip__28: "*", blocking__40__flip__28.__occurrences: 0, Context: "*", Context.field1: true, Context.field2: true, sup: "*")
+  @state(at_most_once__36__left__24: "*", at_most_once__36__left__24.__occurrences: 0, at_most_once__36__right__26: "*", at_most_once__36__right__26.__occurrences: 1, Context: "*", Context.field1: true, Context.field2: true, sup: "*")
   location loc4:
     marked;
 end

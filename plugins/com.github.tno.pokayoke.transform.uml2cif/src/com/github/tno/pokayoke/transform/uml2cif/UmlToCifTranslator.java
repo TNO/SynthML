@@ -145,6 +145,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     /** The mapping between pairs of incoming/outgoing edges of 'or'-type nodes and their corresponding start events. */
     private final BiMap<Pair<ActivityEdge, ActivityEdge>, Event> activityOrNodeMapping = HashBiMap.create();
 
+    /** The set of UML elements that cannot be called by the activity (e.g., limited by an occurrence constraint). */
+    private Set<RedefinableElement> nonCallableElements = new LinkedHashSet<>();
+
     public UmlToCifTranslator(CifContext context, Activity activity, UmlToCifTranslationPurpose purpose,
             SynthesisChainTracking tracker, List<String> warnings)
     {
@@ -261,6 +264,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         if (context.hasParameterizedActivities()) {
             throw new RuntimeException("Translating parameterized activities to CIF is unsupported.");
         }
+
+        // Compute the UML elements that cannot be called.
+        computeNonCallableElements();
 
         // Flatten UML activities and normalize IDs.
         if (translationPurpose == UmlToCifTranslationPurpose.SYNTHESIS) {
@@ -404,6 +410,10 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         BiMap<Event, Edge> eventEdges = HashBiMap.create();
 
         for (OpaqueBehavior umlBehavior: context.getAllOpaqueBehaviors()) {
+            // Do not translate an opaque behavior if it cannot be called.
+            if (nonCallableElements.contains(umlBehavior)) {
+                continue;
+            }
             ActionTranslationResult translationResult = translateAsAction(umlBehavior, umlBehavior.getName(),
                     PokaYokeUmlProfileUtil.isAtomic(umlBehavior), true, null, null);
             eventEdges.putAll(translationResult.eventEdges);
@@ -589,6 +599,11 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
         // Translate all concrete activities that are in context.
         for (Activity activity: context.getAllConcreteActivities()) {
+            // Do not translate an activity if it cannot be called.
+            if (nonCallableElements.contains(activity)) {
+                continue;
+            }
+
             Pair<Set<DiscVariable>, BiMap<Event, Edge>> result = translateConcreteActivity(activity);
             newVariables.addAll(result.left);
             newEventEdges.putAll(result.right);
@@ -607,6 +622,8 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     private Pair<Set<DiscVariable>, BiMap<Event, Edge>> translateConcreteActivity(Activity activity) {
         // Sanity check.
         Preconditions.checkArgument(!activity.isAbstract(), "Expected a concrete activity.");
+        Verify.verify(!nonCallableElements.contains(activity), String.format(
+                "Activity '%s' should not be translated to CIF since it cannot be called.", activity.getName()));
 
         // For the guard computation and language equivalence check, we are only concerned with the single activity
         // currently being synthesized. Therefore, we do not translate other activities than the one that is currently
@@ -1205,6 +1222,11 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             List<Automaton> cifAutomata = new ArrayList<>();
 
             for (Element umlElement: umlConstraint.getConstrainedElements()) {
+                // Do not create the interval automaton for an element that is not translated into the CIF model.
+                if (nonCallableElements.contains(umlElement)) {
+                    continue;
+                }
+
                 if (umlElement instanceof Activity umlActivity) {
                     if (!umlActivity.isAbstract()) {
                         // The constraints are considered at a local level: this activity *directly* calls the
@@ -1734,6 +1756,26 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         }
 
         return finalNodeConfig;
+    }
+
+    /**
+     * Gets all the UML elements which are constrained by an occurrence constraint whose upper limit is zero, hence
+     * should never be called.
+     */
+    private void computeNonCallableElements() {
+        for (Constraint umlConstraint: activity.getOwnedRules()) {
+            if (umlConstraint instanceof IntervalConstraint) {
+                ValueSpecification umlConstraintValue = umlConstraint.getSpecification();
+
+                if (umlConstraintValue instanceof Interval umlInterval
+                        && ((LiteralInteger)umlInterval.getMax()).getValue() == 0)
+                {
+                    for (Element umlElement: umlConstraint.getConstrainedElements()) {
+                        nonCallableElements.add((RedefinableElement)umlElement);
+                    }
+                }
+            }
+        }
     }
 
     /** Postcondition kind. */

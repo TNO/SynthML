@@ -1,10 +1,9 @@
 controllable left;
 controllable right;
-controllable flip;
 controllable __start;
 controllable __end;
 automaton minimal:
-  alphabet left, right, flip, __start, __end;
+  alphabet left, right, __start, __end;
   @state(projected: "s1")
   location s1:
     initial;
