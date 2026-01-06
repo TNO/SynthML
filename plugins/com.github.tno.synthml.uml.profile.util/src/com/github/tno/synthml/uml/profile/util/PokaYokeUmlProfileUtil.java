@@ -14,8 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
@@ -661,9 +659,31 @@ public class PokaYokeUmlProfileUtil {
         return (maxInt == null) ? "" : String.valueOf(maxInt);
     }
 
+    public static String getIntervalConstraintMin(IntervalConstraint constraint) {
+        ValueSpecification interval = constraint.getSpecification();
+
+        // If interval is 'null', i.e. yet to be set, return an empty string.
+        if (interval == null) {
+            return "";
+        }
+
+        Verify.verify(interval instanceof Interval,
+                String.format("Interval constraint '%s' must have an interval specification.", constraint.getName()));
+        Integer minInt = getIntervalMinValue((Interval)interval);
+        return (minInt == null) ? "" : String.valueOf(minInt);
+    }
+
     private static Integer getIntervalMaxValue(Interval interval) {
         if (interval.getMax() instanceof LiteralInteger maxInteger) {
             return maxInteger.getValue();
+        } else {
+            return null;
+        }
+    }
+
+    private static Integer getIntervalMinValue(Interval interval) {
+        if (interval.getMin() instanceof LiteralInteger minInteger) {
+            return minInteger.getValue();
         } else {
             return null;
         }
@@ -688,7 +708,7 @@ public class PokaYokeUmlProfileUtil {
 
         // If the given string is empty, remove the interval's maximum.
         if (maxValue.isEmpty()) {
-            if (interval != null && interval.getMax() != null) {
+            if (interval.getMax() != null) {
                 removeLiteralInteger((LiteralInteger)interval.getMax());
                 interval.setMax(null);
             }
@@ -698,8 +718,37 @@ public class PokaYokeUmlProfileUtil {
         setIntervalMax(constraint, interval, Integer.parseInt(maxValue));
     }
 
+    /**
+     * Sets the minimum value of the interval specification of the given interval constraint.
+     *
+     * @param constraint The interval constraint where to set the minimum interval bound.
+     * @param minValue The minimum value to set.
+     */
+    public static void setIntervalConstraintMin(IntervalConstraint constraint, String minValue) {
+        applyStereotype(constraint, getPokaYokeProfile(constraint).getOwnedStereotype(ST_OCCURRENCE));
+
+        if (Strings.isNullOrEmpty(minValue) && getIntervalConstraintMax(constraint).isEmpty()) {
+            PokaYokeUmlProfileUtil.unapplyStereotype(constraint, OCCURRENCE_STEREOTYPE);
+        }
+
+        // Get the constraint specification.
+        Interval interval = (constraint.getSpecification() == null) ? UMLFactory.eINSTANCE.createInterval()
+                : (Interval)constraint.getSpecification();
+
+        // If the given string is empty, remove the interval's minimum.
+        if (minValue.isEmpty()) {
+            if (interval.getMin() != null) {
+                removeLiteralInteger((LiteralInteger)interval.getMin());
+                interval.setMin(null);
+            }
+            return;
+        }
+
+        setIntervalMin(constraint, interval, Integer.parseInt(minValue));
+    }
+
     private static void removeLiteralInteger(LiteralInteger lit) {
-        Set<Interval> intervalsReferencing = findAllIntervalsReferencing(lit);
+        List<Interval> intervalsReferencing = findAllIntervalsReferencing(lit);
 
         // The literal integer can be destroyed if it is used in a single interval, provided that its max and min are
         // not both referencing it.
@@ -711,7 +760,7 @@ public class PokaYokeUmlProfileUtil {
         }
     }
 
-    private static Set<Interval> findAllIntervalsReferencing(LiteralInteger lit) {
+    private static List<Interval> findAllIntervalsReferencing(LiteralInteger lit) {
         List<IntervalConstraint> occurrenceConstraints = lit.getModel().getPackagedElements().stream()
                 // Get the model's class.
                 .filter(e -> e instanceof Classifier).map(Classifier.class::cast)
@@ -725,7 +774,7 @@ public class PokaYokeUmlProfileUtil {
         return occurrenceConstraints.stream()
                 .filter(o -> o.getSpecification() instanceof Interval interval
                         && (Objects.equals(interval.getMax(), lit) || Objects.equals(interval.getMin(), lit)))
-                .map(o -> o.getSpecification()).map(Interval.class::cast).collect(Collectors.toSet());
+                .map(o -> o.getSpecification()).map(Interval.class::cast).toList();
     }
 
     private static void setIntervalMax(Constraint constraint, Interval interval, int maxValue) {
@@ -738,6 +787,19 @@ public class PokaYokeUmlProfileUtil {
         }
 
         interval.setMax(maxLiteral);
+        constraint.setSpecification(interval);
+    }
+
+    private static void setIntervalMin(Constraint constraint, Interval interval, int minValue) {
+        LiteralInteger minLiteral = getLiteralInteger(constraint, minValue);
+
+        // Remove the old literal integer, if possible.
+        LiteralInteger currentIntegerBound = (LiteralInteger)interval.getMin();
+        if (currentIntegerBound != null && currentIntegerBound.getValue() != minValue) {
+            removeLiteralInteger(currentIntegerBound);
+        }
+
+        interval.setMin(minLiteral);
         constraint.setSpecification(interval);
     }
 
@@ -761,69 +823,5 @@ public class PokaYokeUmlProfileUtil {
         return model.getOwnedElements().stream()
                 .filter(e -> e instanceof LiteralInteger literalInteger && literalInteger.getValue() == value)
                 .map(LiteralInteger.class::cast).toList();
-    }
-
-    public static String getIntervalConstraintMin(IntervalConstraint constraint) {
-        ValueSpecification interval = constraint.getSpecification();
-
-        // If interval is 'null', i.e. yet to be set, return an empty string.
-        if (interval == null) {
-            return "";
-        }
-
-        Verify.verify(interval instanceof Interval,
-                String.format("Interval constraint '%s' must have an interval specification.", constraint.getName()));
-        Integer minInt = getIntervalMinValue((Interval)interval);
-        return (minInt == null) ? "" : String.valueOf(minInt);
-    }
-
-    private static Integer getIntervalMinValue(Interval interval) {
-        if (interval.getMin() instanceof LiteralInteger minInteger) {
-            return minInteger.getValue();
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Sets the minimum value of the interval specification of the given interval constraint.
-     *
-     * @param constraint The interval constraint where to set the minimum interval bound.
-     * @param minValue The minimum value to set.
-     */
-    public static void setIntervalConstraintMin(IntervalConstraint constraint, String minValue) {
-        applyStereotype(constraint, getPokaYokeProfile(constraint).getOwnedStereotype(ST_OCCURRENCE));
-
-        if (Strings.isNullOrEmpty(minValue) && getIntervalConstraintMax(constraint).isEmpty()) {
-            PokaYokeUmlProfileUtil.unapplyStereotype(constraint, OCCURRENCE_STEREOTYPE);
-        }
-
-        // Get the constraint specification.
-        Interval interval = (constraint.getSpecification() == null) ? UMLFactory.eINSTANCE.createInterval()
-                : (Interval)constraint.getSpecification();
-
-        // If the given string is empty, remove the interval's minimum.
-        if (minValue.isEmpty()) {
-            if (interval != null && interval.getMin() != null) {
-                removeLiteralInteger((LiteralInteger)interval.getMin());
-                interval.setMin(null);
-            }
-            return;
-        }
-
-        setIntervalMin(constraint, interval, Integer.parseInt(minValue));
-    }
-
-    private static void setIntervalMin(Constraint constraint, Interval interval, int minValue) {
-        LiteralInteger minLiteral = getLiteralInteger(constraint, minValue);
-
-        // Remove the old literal integer, if possible.
-        LiteralInteger currentIntegerBound = (LiteralInteger)interval.getMin();
-        if (currentIntegerBound != null && currentIntegerBound.getValue() != minValue) {
-            removeLiteralInteger(currentIntegerBound);
-        }
-
-        interval.setMin(minLiteral);
-        constraint.setSpecification(interval);
     }
 }
