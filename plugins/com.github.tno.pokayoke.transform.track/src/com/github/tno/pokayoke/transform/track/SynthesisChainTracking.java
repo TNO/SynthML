@@ -1217,9 +1217,9 @@ public class SynthesisChainTracking {
     {
         // Sanity check: all nodes must be decision or merge nodes.
         Verify.verify(nodesToUpdate.stream().allMatch(n -> n instanceof DecisionNode || n instanceof MergeNode),
-                "Only decision or merge nodes are allowed to be restored.");
+                "Only decision or merge nodes are allowed to be updated.");
         Verify.verify(nodesToRemove.stream().allMatch(n -> n instanceof DecisionNode || n instanceof MergeNode),
-                "Only decision or merge nodes are allowed to be restored.");
+                "Only decision or merge nodes are allowed to be removed.");
 
         // Update the CIF event tracing info corresponding the nodes to be updated.
         Set<Transition> transitions = nodesToUpdate.stream().map(activityNodeToTransition::get)
@@ -1240,8 +1240,16 @@ public class SynthesisChainTracking {
         // Remove activity nodes from the internal map and the corresponding transition and CIF event tracing info.
         Set<Transition> transitionToRemove = nodesToRemove.stream().map(activityNodeToTransition::get)
                 .collect(Collectors.toSet());
-        Set<Event> eventsToRemove = transitionToRemove.stream()
+        Set<Event> tentativeEventsToRemove = transitionToRemove.stream()
                 .flatMap(t -> transitionTraceInfo.get(t).getCifEvents().stream()).collect(Collectors.toSet());
+
+        // Multiple Petri net transitions may reference the same CIF event: if any other transition refers to a CIF
+        // event that is marked for deletion, it should not be deleted.
+        Set<Transition> transitionsToKeep = Sets.difference(transitionTraceInfo.keySet(), transitionToRemove);
+        Set<Event> eventsToKeep = transitionsToKeep.stream()
+                .flatMap(t -> transitionTraceInfo.get(t).getCifEvents().stream()).collect(Collectors.toSet());
+        Set<Event> eventsToRemove = Sets.difference(tentativeEventsToRemove, eventsToKeep);
+
         activityNodeToTransition.keySet().removeAll(nodesToRemove);
         transitionTraceInfo.keySet().removeAll(transitionToRemove);
         cifEventTraceInfo.keySet().removeAll(eventsToRemove);
