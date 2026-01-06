@@ -109,10 +109,13 @@ public class FullSynthesisApp {
             throw new RuntimeException("Synthesis of parameterized activities is unsupported.");
         }
 
+        int digits = (activities.size() / 10) + 1;
         for (int i = 0; i < activities.size(); i++) {
             Activity activity = activities.get(i);
             Preconditions.checkArgument(!Strings.isNullOrEmpty(activity.getName()), "Expected activities to be named.");
-            Path localOutputPath = outputFolderPath.resolve(String.format("%d-%s", i + 1, activity.getName()));
+            String formattedNumber = String.format("%0" + digits + "d", i + 1);
+            Path localOutputPath = outputFolderPath
+                    .resolve(String.format("%s-%s", formattedNumber, activity.getName()));
             Files.createDirectories(localOutputPath);
             performFullSynthesis(activity, filePrefix, localOutputPath, ctxManager, warnings);
         }
