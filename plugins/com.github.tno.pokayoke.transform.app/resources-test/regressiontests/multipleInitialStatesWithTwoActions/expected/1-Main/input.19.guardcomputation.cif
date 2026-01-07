@@ -1,0 +1,45 @@
+controllable __node__DecisionNode__33__0;
+controllable __node__DecisionNode__33__1;
+controllable __node__MergeNode__34__0;
+controllable __node__MergeNode__34__1;
+controllable __node__CallBehaviorAction__36;
+controllable __node__CallBehaviorAction__37;
+plant automaton Context:
+  disc bool field1 in any;
+  disc bool field2 = false;
+  disc bool __controlflow__26;
+  disc bool __controlflow__27;
+  disc bool __controlflow__28;
+  disc bool __controlflow__29;
+  disc bool __controlflow__30;
+  disc bool __controlflow__31 = true;
+  alg bool __token_on_first_controlflow = __controlflow__31;
+  alg bool __precondition = __token_on_first_controlflow;
+  alg bool postcondition = field2;
+  alg bool __postcondition_without_structure = postcondition;
+  alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
+  alg bool __postcondition_with_structure__controlflow__26 = not __controlflow__26;
+  alg bool __postcondition_with_structure__controlflow__27 = not __controlflow__27;
+  alg bool __postcondition_with_structure__controlflow__28 = not __controlflow__28;
+  alg bool __postcondition_with_structure__controlflow__29 = not __controlflow__29;
+  alg bool __postcondition_with_structure__controlflow__31 = not __controlflow__31;
+  alg bool __token_on_last_controlflow = __controlflow__30;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure and (__postcondition_with_structure__controlflow__26 and __postcondition_with_structure__controlflow__27) and (__postcondition_with_structure__controlflow__28 and __postcondition_with_structure__controlflow__29 and (__postcondition_with_structure__controlflow__31 and __token_on_last_controlflow));
+  initial __precondition;
+  marked __postcondition_with_structure;
+  location:
+    initial;
+    marked;
+    edge __node__DecisionNode__33__0 when true, __controlflow__31, not __controlflow__26 do __controlflow__31 := false, __controlflow__26 := true;
+    edge __node__DecisionNode__33__1 when true, __controlflow__31, not __controlflow__27 do __controlflow__31 := false, __controlflow__27 := true;
+    edge __node__MergeNode__34__0 when true, __controlflow__28, not __controlflow__30 do __controlflow__28 := false, __controlflow__30 := true;
+    edge __node__MergeNode__34__1 when true, __controlflow__29, not __controlflow__30 do __controlflow__29 := false, __controlflow__30 := true;
+    edge __node__CallBehaviorAction__36 when not field1, __controlflow__26, not __controlflow__28 do field2 := true, __controlflow__26 := false, __controlflow__28 := true;
+    edge __node__CallBehaviorAction__37 when field1, __controlflow__27, not __controlflow__29 do field2 := true, __controlflow__27 := false, __controlflow__29 := true;
+end
+requirement invariant Context.__postcondition_with_structure disables __node__DecisionNode__33__0;
+requirement invariant Context.__postcondition_with_structure disables __node__DecisionNode__33__1;
+requirement invariant Context.__postcondition_with_structure disables __node__MergeNode__34__0;
+requirement invariant Context.__postcondition_with_structure disables __node__MergeNode__34__1;
+requirement invariant Context.__postcondition_without_structure disables __node__CallBehaviorAction__36;
+requirement invariant Context.__postcondition_without_structure disables __node__CallBehaviorAction__37;

@@ -1,10 +1,9 @@
 controllable left;
 controllable right;
-controllable flip;
 controllable __start;
 controllable __end;
 automaton projected:
-  alphabet left, right, flip, __start, __end;
+  alphabet left, right, __start, __end;
   @state(synthesis_state_space: "__init")
   location s1:
     initial;

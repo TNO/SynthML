@@ -1,3 +1,12 @@
+////////////////////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2023-2025 TNO and Contributors to the GitHub community
+//
+// This program and the accompanying materials are made available under the terms of the
+// Eclipse Public License v2.0 which accompanies this distribution, and is available at
+// https://spdx.org/licenses/EPL-2.0.html
+//
+// SPDX-License-Identifier: EPL-2.0
+////////////////////////////////////////////////////////////////////////////////////////
 
 package com.github.tno.synthml.uml.profile.util;
 
@@ -33,6 +42,7 @@ import org.eclipse.uml2.uml.ValueSpecification;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.google.common.base.Strings;
+import com.google.common.base.Verify;
 
 import SynthML.FormalCallBehaviorAction;
 import SynthML.FormalConstraint;
@@ -514,6 +524,10 @@ public class PokaYokeUmlProfileUtil {
         }
     }
 
+    private static Stereotype getStereotype(Constraint constraint, String stereotypeName) {
+        return getPokaYokeProfile(constraint).getOwnedStereotype(stereotypeName);
+    }
+
     private static boolean isPreconditionConstraint(Constraint constraint) {
         return (constraint.eContainer() instanceof Activity activity)
                 && activity.getPreconditions().contains(constraint);
@@ -526,7 +540,7 @@ public class PokaYokeUmlProfileUtil {
             return false;
         }
 
-        return appliedStereotypes.get(0).equals(getStereotype(constraint, ST_SYNTHESIS_PRECONDITION));
+        return appliedStereotypes.get(0).getName().equals(ST_SYNTHESIS_PRECONDITION);
     }
 
     public static boolean isUsagePrecondition(Constraint constraint) {
@@ -536,7 +550,7 @@ public class PokaYokeUmlProfileUtil {
             return false;
         }
 
-        return appliedStereotypes.get(0).equals(getStereotype(constraint, ST_USAGE_PRECONDITION));
+        return appliedStereotypes.get(0).getName().equals(ST_USAGE_PRECONDITION);
     }
 
     private static boolean isPostconditionConstraint(Constraint constraint) {
@@ -546,10 +560,6 @@ public class PokaYokeUmlProfileUtil {
 
     private static boolean isClassRequirement(Constraint constraint) {
         return (constraint.eContainer() instanceof Classifier clazz) && clazz.getOwnedRules().contains(constraint);
-    }
-
-    private static Stereotype getStereotype(Constraint constraint, String stereotypeName) {
-        return getPokaYokeProfile(constraint).getOwnedStereotype(stereotypeName);
     }
 
     /**
@@ -606,5 +616,21 @@ public class PokaYokeUmlProfileUtil {
         } else {
             throw new IllegalArgumentException("Unexpected stereotype : " + st.getName());
         }
+    }
+
+    public static String getConstraintBodyExpression(Constraint constraint) {
+        if (!(constraint.getSpecification() instanceof OpaqueExpression)) {
+            throw new RuntimeException(
+                    String.format("Expected specification body of constraint '%s' to be an opaque expression.",
+                            constraint.getName()));
+        }
+        OpaqueExpression opaqueSpec = (OpaqueExpression)constraint.getSpecification();
+
+        // Sanity check: opaque expression must have one body.
+        Verify.verify(opaqueSpec.getBodies().size() == 1, String
+                .format("Expected specification of constraint '%s' to have a single body.", constraint.getName()));
+
+        // Return the opaque expression body.
+        return opaqueSpec.getBodies().get(0);
     }
 }

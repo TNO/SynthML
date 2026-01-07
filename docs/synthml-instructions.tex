@@ -1,3 +1,13 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Copyright (c) 2023-2025 TNO and Contributors to the GitHub community
+%%
+%% This program and the accompanying materials are made available under the terms of the
+%% Eclipse Public License v2.0 which accompanies this distribution, and is available at
+%% https://spdx.org/licenses/EPL-2.0.html
+%%
+%% SPDX-License-Identifier: EPL-2.0
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \documentclass{article}
 \usepackage{graphicx}
 
@@ -43,8 +53,9 @@ In the following, we refer to this model instance as the `model', unless otherwi
 \subsection{Create a Class}
 \label{subsec:class}
 
-A UML class represents a (sub)system that has state and behaviors. One of the behaviors of an \emph{active} UML class must be appointed the \emph{classifier} behavior of that class.
-An active class starts its classifier behavior (\eg an activity) as a direct consequence of its creation.
+A UML class represents a (sub)system that has state and behaviors. 
+Every class \emph{must} have a classifier behavior, which must be an activity, either abstract (see \S\ref{subsec:abstract-activity}) or concrete (\S\ref{subsec:concrete-activity}).
+An active class starts its classifier behavior as a direct consequence of its creation.
 There are several ways of creating a class in UML Designer. From the `Model Explorer' view,
 \begin{enumerate}
     \item Right click on the model $\to$ New Child $\to$ Packaged Element\footnotemark $\to$ Class. You may want to rename it with a meaningful name.
@@ -145,8 +156,23 @@ Activities can either be abstract (in order to be synthesized) or concrete (\ie 
 \end{enumerate}
 Note that a class can only have a single classifier behavior, and it \emph{must} be an activity. So if you'd add an additional activity, this should be added as an `Owned Behavior' instead.
 
-To be able to synthesize a meaningful activity, we must define a precondition (see \S\ref{subsubsec:precondition}) and a postcondition (see \S\ref{subsubsec:postcondition}),
-defining respectively the system states at the beginning and the end of the activity execution.
+\medskip
+
+To be able to synthesize a meaningful activity, we should define preconditions (see \S\ref{subsubsec:precondition}) and postconditions (see \S\ref{subsubsec:postcondition}), defining respectively the system states at the beginning and the end of the activity execution.
+When preconditions or postconditions are not defined, they default to `true'.
+We support two kinds of preconditions, namely \emph{synthesis} preconditions and \emph{usage} preconditions. 
+The synthesis preconditions are used by the synthesis algorithm to create the UML activity; usage preconditions are considered when the synthesized activity is called by another activity.
+
+The synthesis preconditions represent the ideal system state at the beginning of the activity.
+For instance, consider synthesizing an activity that transfers a product from station A to station B.
+A natural breakdown of this activity might be: there is a product at station A, a robot moves to station A, picks up the product, travels to station B (which is empty and ready), and finally releases the product.
+This represents an idealized scenario.
+What happens if station B is not empty at the beginning of this activity? 
+Should the activity wait until station B is available (a clearly sub-optimal solution), or should it also support this case?
+This is where usage preconditions come into play.
+They allow the synthesized activity to operate under a different set of initial condition than those assumed during the synthesis phase, taking into account that this called activity may run concurrently with other activities.
+These preconditions define a more common use of the activity: in this case, the usage precondition considers station B to be either empty or busy, while the synthesis preconditions assume an empty station B.
+
 Additionally, users can specify constraints, (see \S\ref{subsec:constraints}), defining additional requirements, and occurrence constraints (see \S\ref{subsec:occurrence}), limiting the number of times an element can be called by the activity.
 Finally, the synthesis procedure employs opaque behaviors (see \S\ref{subsec:opaque-behavior}) as building blocks to synthesize an activity.
 
@@ -158,12 +184,8 @@ Note that in UML Designer activities can also be added as a nested classifier. T
 \label{subsubsec:precondition}
 
 \begin{enumerate}
-\item Right click on the activity $\to$ New Child $\to$ Precondition.
-\item Right click on the Precondition $\to$ New Child $\to$ Constraint.
-\item Right click on the Constraint $\to$ New Child $\to$ Specification $\to$ Opaque Expression.
-\item Open the opaque expression in the `Properties' view. Delete the name, or leave it blank (this is optional, but may give nicer visualizations).
-\item In the `Properties' view, `Default' tab, double click on the `Body' field.
-\item In the new window, write on the `Value' field your precondition constraint. Click Add, then OK.
+\item Right click on the activity $\to$ New Child $\to$ Precondition $\to$ Constraint.
+\item Click on the `SynthML' tab, where you can specify the precondition name, kind (choose between `Synthesis precondition' and `Usage precondition') and the precondition expression. 
 \end{enumerate}
 
 We follow similar steps for creating postconditions.
@@ -174,12 +196,8 @@ We follow similar steps for creating postconditions.
 \label{subsubsec:postcondition}
 
 \begin{enumerate}
-\item Right click on the activity $\to$ New Child $\to$ Postcondition.
-\item Right click on the Postcondition $\to$ New Child $\to$ Constraint.
-\item Right click on the Constraint $\to$ New Child $\to$ Specification $\to$ Opaque Expression.
-\item Open the opaque expression in the `Properties' view. Delete the name, or leave it blank (this is optional, but may give nicer visualizations).
-\item In the `Properties' view, `Default' tab, double click on the `Body' field.
-\item In the new window, write on the `Value' field the postcondition constraint. Click Add, then OK.
+\item Right click on the activity $\to$ New Child $\to$ Postcondition $\to$ Constraint.
+\item Click on the `SynthML' tab, where you can specify the postcondition name, kind (choose `Postcondition') and the postcondition expression. 
 \end{enumerate}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -350,9 +368,7 @@ also requirements can be specified, to which all synthesized activities must adh
 To create a class constraint,
 \begin{enumerate}
     \item Right click on the Class $\to$ New Child $\to$ Owned Rule $\to$ Constraint.
-    \item Right click on the Constraint $\to$ New Child $\to$ Specification $\to$ Opaque Expression.
-    \item Open the opaque expression in the `Properties' view. Delete the name, or leave it blank (this is optional, but may give nicer visualizations).
-    \item In the `Properties' view, `Default' tab, double click on the `Body' field. The expression body can be several things:
+    \item Click on the `SynthML' tab, where you can specify the constraint name, kind (choose `Requirement') and the constraint expression. The expression body can be several things:
     \begin{itemize}
         \item A state invariant, \eg \texttt{field1 and not field2}.
         \item A state/event exclusion invariant, \eg \texttt{action1 needs field1 and not field2}, or \texttt{field1 and not field2 disables action1}.
@@ -433,12 +449,11 @@ To illustrate activity synthesis, let us now create a bit flipper model. In this
 and it flips it if it is false; does not need to do anything otherwise.
 We can use the following steps:
 \begin{enumerate}
-    \item Create a new UML project named BitFlipper.
-    \item Create an active class named ActiveClass.
+    \item Create a new UML project named `BitFlipper'.
+    \item Create an active class named `ActiveClass'.
     \item Create two boolean properties, named \texttt{init} and \texttt{bit}.
     Set the default value of \texttt{init} to false, and leave an empty field (meaning no default value) for \texttt{bit}.
-    \item Create an abstract activity as the ActiveClass classifier behavior, with precondition \verb#not init#,
-    and postcondition \verb#bit and init#.
+    \item Create an abstract activity as the `ActiveClass' classifier behavior, with synthesis precondition \verb#not init#, and postcondition \verb#bit and init#.
     \item Create an opaque behavior, named \texttt{initialize}, that models an initialization action, with guard \texttt{not init} and nondeterministic effects:
     \newline
     \verb#init := true, bit := true# \newline

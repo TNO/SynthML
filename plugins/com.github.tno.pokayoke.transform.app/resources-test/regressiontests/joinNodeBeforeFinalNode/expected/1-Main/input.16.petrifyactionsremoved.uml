@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:SynthML="https://github.com/TNO/SynthML/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="1" name="Model">
+    <packagedElement xmi:type="uml:Class" xmi:id="2" name="Example" visibility="public" classifierBehavior="20" isActive="true">
+      <ownedComment xmi:id="3">
+        <body>Original-ID-Path:2</body>
+      </ownedComment>
+      <ownedAttribute xmi:id="4" name="field1" visibility="public">
+        <ownedComment xmi:id="5">
+          <body>Original-ID-Path:3</body>
+        </ownedComment>
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="6" value="1">
+          <ownedComment xmi:id="7">
+            <body>Original-ID-Path:4</body>
+          </ownedComment>
+        </lowerValue>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="8" value="1">
+          <ownedComment xmi:id="9">
+            <body>Original-ID-Path:5</body>
+          </ownedComment>
+        </upperValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="10" name="field2" visibility="public">
+        <ownedComment xmi:id="11">
+          <body>Original-ID-Path:6</body>
+        </ownedComment>
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="12" value="1">
+          <ownedComment xmi:id="13">
+            <body>Original-ID-Path:7</body>
+          </ownedComment>
+        </lowerValue>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="14" value="1">
+          <ownedComment xmi:id="15">
+            <body>Original-ID-Path:8</body>
+          </ownedComment>
+        </upperValue>
+      </ownedAttribute>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="16" name="action1" isAbstract="true">
+        <ownedComment xmi:id="17">
+          <body>Original-ID-Path:9</body>
+        </ownedComment>
+        <body>not field1</body>
+        <body>field1 := true</body>
+        <body>field1 := false</body>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="18" name="action2">
+        <ownedComment xmi:id="19">
+          <body>Original-ID-Path:10</body>
+        </ownedComment>
+        <body>not field2</body>
+        <body>field2 := true</body>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="20" name="Main" postcondition="26" precondition="22" node="40 41 42 43 44 45 46 47 48">
+        <ownedComment xmi:id="21">
+          <body>Original-ID-Path:11</body>
+        </ownedComment>
+        <ownedRule xmi:id="22" name="precondition">
+          <ownedComment xmi:id="23">
+            <body>Original-ID-Path:12</body>
+          </ownedComment>
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="24" name="">
+            <ownedComment xmi:id="25">
+              <body>Original-ID-Path:13</body>
+            </ownedComment>
+            <language>CIF</language>
+            <body>not field1 and not field2</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:id="26" name="postcondition">
+          <ownedComment xmi:id="27">
+            <body>Original-ID-Path:14</body>
+          </ownedComment>
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="28" name="">
+            <ownedComment xmi:id="29">
+              <body>Original-ID-Path:15</body>
+            </ownedComment>
+            <language>CIF</language>
+            <body>field1 and field2</body>
+          </specification>
+        </ownedRule>
+        <edge xmi:type="uml:ControlFlow" xmi:id="30" name="Fork____start__to__action1/1" target="47" source="45"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="31" name="Fork____start__to__action2" target="48" source="45"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="32" name="action1/1__to__Merge__p4" target="41" source="47"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="33" name="action1__to__Merge__p4" target="41" source="46"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="34" name="Decision__p4__to__Join____end" target="44" source="42"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="35" name="Decision__p4__to__action1" target="46" source="42"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="36" name="Merge__p4__to__Decision__p4" target="42" source="41"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="37" name="action2__to__Join____end" target="44" source="48"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="38" name="Join____end__to__FinalNode__p6" target="43" source="44"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="39" name="InitialNode__p1__to__Fork____start" target="45" source="40"/>
+        <node xmi:type="uml:InitialNode" xmi:id="40" name="InitialNode__p1" outgoing="39"/>
+        <node xmi:type="uml:MergeNode" xmi:id="41" name="Merge__p4" incoming="32 33" outgoing="36"/>
+        <node xmi:type="uml:DecisionNode" xmi:id="42" name="Decision__p4" incoming="36" outgoing="34 35"/>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="43" name="FinalNode__p6" incoming="38"/>
+        <node xmi:type="uml:JoinNode" xmi:id="44" name="Join____end" incoming="34 37" outgoing="38"/>
+        <node xmi:type="uml:ForkNode" xmi:id="45" name="Fork____start" incoming="39" outgoing="30 31"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="46" name="action1" incoming="35" outgoing="33" behavior="16"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="47" name="action1" incoming="30" outgoing="32" behavior="16"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="48" name="action2" incoming="31" outgoing="37" behavior="18"/>
+      </ownedBehavior>
+    </packagedElement>
+    <profileApplication xmi:id="49">
+      <eAnnotations xmi:id="50" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/SynthML/#/"/>
+      </eAnnotations>
+      <appliedProfile href="platform:/plugin/com.github.tno.synthml.uml.profile.plugin/model/synthml.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+    </profileApplication>
+  </uml:Model>
+  <SynthML:FormalElement xmi:id="51" guard="not field1" base_RedefinableElement="16" atomic="true">
+    <effects>field1 := true</effects>
+    <effects>field1 := false</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="52" guard="not field2" base_RedefinableElement="18" atomic="true">
+    <effects>field2 := true</effects>
+  </SynthML:FormalElement>
+  <SynthML:SynthesisPrecondition xmi:id="53" base_Constraint="22"/>
+  <SynthML:Postcondition xmi:id="54" base_Constraint="26"/>
+</xmi:XMI>

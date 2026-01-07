@@ -1,3 +1,12 @@
+////////////////////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2023-2025 TNO and Contributors to the GitHub community
+//
+// This program and the accompanying materials are made available under the terms of the
+// Eclipse Public License v2.0 which accompanies this distribution, and is available at
+// https://spdx.org/licenses/EPL-2.0.html
+//
+// SPDX-License-Identifier: EPL-2.0
+////////////////////////////////////////////////////////////////////////////////////////
 
 package com.github.tno.pokayoke.transform.uml2cif;
 
@@ -66,6 +75,7 @@ import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.ValueSpecification;
 
+import com.github.tno.pokayoke.transform.common.ExprHelper;
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.transform.common.IDHelper;
 import com.github.tno.pokayoke.transform.common.ValidationHelper;
@@ -135,10 +145,13 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     /** The mapping between pairs of incoming/outgoing edges of 'or'-type nodes and their corresponding start events. */
     private final BiMap<Pair<ActivityEdge, ActivityEdge>, Event> activityOrNodeMapping = HashBiMap.create();
 
+    /** The set of UML elements that cannot be called by the activity (e.g., limited by an occurrence constraint). */
+    private Set<RedefinableElement> nonCallableElements = new LinkedHashSet<>();
+
     public UmlToCifTranslator(CifContext context, Activity activity, UmlToCifTranslationPurpose purpose,
-            SynthesisChainTracking tracker)
+            SynthesisChainTracking tracker, List<String> warnings)
     {
-        super(context, tracker, purpose);
+        super(context, tracker, purpose, warnings);
         this.activity = activity;
     }
 
@@ -251,6 +264,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         if (context.hasParameterizedActivities()) {
             throw new RuntimeException("Translating parameterized activities to CIF is unsupported.");
         }
+
+        // Compute the UML elements that cannot be called.
+        computeNonCallableElements();
 
         // Flatten UML activities and normalize IDs.
         if (translationPurpose == UmlToCifTranslationPurpose.SYNTHESIS) {
@@ -394,8 +410,12 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         BiMap<Event, Edge> eventEdges = HashBiMap.create();
 
         for (OpaqueBehavior umlBehavior: context.getAllOpaqueBehaviors()) {
+            // Do not translate an opaque behavior if it cannot be called.
+            if (nonCallableElements.contains(umlBehavior)) {
+                continue;
+            }
             ActionTranslationResult translationResult = translateAsAction(umlBehavior, umlBehavior.getName(),
-                    PokaYokeUmlProfileUtil.isAtomic(umlBehavior), true);
+                    PokaYokeUmlProfileUtil.isAtomic(umlBehavior), true, null, null);
             eventEdges.putAll(translationResult.eventEdges);
         }
 
@@ -429,10 +449,12 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
      * @param name The name of the action to create.
      * @param isAtomic Whether the UML element should be translated as an atomic action.
      * @param controllableStartEvent Whether the created CIF start event should be controllable.
+     * @param entryGuard The entry guard related to the UML element. Can be {@code null} if no such guard exists.
+     * @param exitGuard The exit guard related to the UML element. Can be {@code null} if no such guard exists.
      * @return An action translation result.
      */
     private ActionTranslationResult translateAsAction(RedefinableElement umlElement, String name, boolean isAtomic,
-            boolean controllableStartEvent)
+            boolean controllableStartEvent, String entryGuard, String exitGuard)
     {
         // For guard computation, force all start events to be controllable, as the structure of the synthesized UML
         // activity is already fixed, and we just want to re-compute the guards as locally as possible.
@@ -512,11 +534,13 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
             // Store the CIF event into the synthesis tracker as a start and end event with all its effects, hence set
             // the effect index to 'null'.
-            synthesisTracker.addCifEvent(cifStartEvent, translationPurpose, umlElement, null, true, true);
+            synthesisTracker.addCifEvent(cifStartEvent, translationPurpose, umlElement, null, true, true, entryGuard,
+                    exitGuard);
         } else {
             // Store the CIF event into the synthesis tracker as a start event without effects, hence set the effect
             // index to 'null'.
-            synthesisTracker.addCifEvent(cifStartEvent, translationPurpose, umlElement, null, true, false);
+            synthesisTracker.addCifEvent(cifStartEvent, translationPurpose, umlElement, null, true, false, entryGuard,
+                    null);
 
             // In all other cases, add uncontrollable events and edges to end the action. Make an uncontrollable event
             // and corresponding edge for every effect (there is at least one).
@@ -541,7 +565,8 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 newEventEdges.put(cifEndEvent, cifEndEdge);
 
                 // Store the CIF event into the synthesis tracker.
-                synthesisTracker.addCifEvent(cifEndEvent, translationPurpose, umlElement, i, false, true);
+                synthesisTracker.addCifEvent(cifEndEvent, translationPurpose, umlElement, i, false, true, null,
+                        exitGuard);
             }
         }
 
@@ -574,6 +599,11 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
         // Translate all concrete activities that are in context.
         for (Activity activity: context.getAllConcreteActivities()) {
+            // Do not translate an activity if it cannot be called.
+            if (nonCallableElements.contains(activity)) {
+                continue;
+            }
+
             Pair<Set<DiscVariable>, BiMap<Event, Edge>> result = translateConcreteActivity(activity);
             newVariables.addAll(result.left);
             newEventEdges.putAll(result.right);
@@ -592,6 +622,8 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     private Pair<Set<DiscVariable>, BiMap<Event, Edge>> translateConcreteActivity(Activity activity) {
         // Sanity check.
         Preconditions.checkArgument(!activity.isAbstract(), "Expected a concrete activity.");
+        Verify.verify(!nonCallableElements.contains(activity), String.format(
+                "Activity '%s' should not be translated to CIF since it cannot be called.", activity.getName()));
 
         // For the guard computation and language equivalence check, we are only concerned with the single activity
         // currently being synthesized. Therefore, we do not translate other activities than the one that is currently
@@ -782,10 +814,16 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     private BiMap<Event, Edge> translateActivityAndNode(ActivityNode node, boolean isAtomic,
             boolean controllableStartEvents)
     {
+        // Get the relevant guards for the CIF event.
+        String entryGuardConjunction = ExprHelper.conjoinExprs(
+                node.getIncomings().stream().map(e -> PokaYokeUmlProfileUtil.getOutgoingGuard(e)).toList());
+        String exitGuardConjunction = ExprHelper.conjoinExprs(
+                node.getOutgoings().stream().map(e -> PokaYokeUmlProfileUtil.getIncomingGuard(e)).toList());
+
         // Translate the UML activity node as an action.
         String actionName = getActionNameForActivityNode(node);
         ActionTranslationResult translationResult = translateAsAction(node, actionName, isAtomic,
-                controllableStartEvents);
+                controllableStartEvents, entryGuardConjunction, exitGuardConjunction);
 
         // Collect the CIF start and end events of the translated UML activity node.
         Event startEvent = translationResult.startEvent;
@@ -842,10 +880,14 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             ActivityEdge incoming = pair.left;
             ActivityEdge outgoing = pair.right;
 
+            // Get the relevant guards for the CIF event.
+            String entryGuard = (incoming == null) ? null : PokaYokeUmlProfileUtil.getOutgoingGuard(incoming);
+            String exitGuard = (outgoing == null) ? null : PokaYokeUmlProfileUtil.getIncomingGuard(outgoing);
+
             // Translate the UML activity node for the current control flow pair, as an action.
             String actionName = String.format("%s__%d", getActionNameForActivityNode(node), count);
             ActionTranslationResult translationResult = translateAsAction(node, actionName, isAtomic,
-                    controllableStartEvents);
+                    controllableStartEvents, entryGuard, exitGuard);
             count++;
 
             // Collect the CIF start and end events of the translated UML activity node.
@@ -966,12 +1008,13 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 update.setValue(CifValueUtils.makeTrue());
                 endEdge.getUpdates().add(update);
 
-                // If the current control flow has an incoming guard, then add it as an extra guard for ending node
-                // execution. Moreover, in that case, we require that the UML activity node has been translated as an
-                // atomic deterministic action and it has no defined effects, which is needed to adhere to the execution
-                // semantics of activities. In practice, the UML activity node is likely a UML decision node and thus
-                // is atomic, deterministic, and has no effects. There are some validation checks just to be sure.
-                if (PokaYokeUmlProfileUtil.getIncomingGuard(outgoing) != null) {
+                // If the current control flow has a non-trivial incoming guard, then add it as an extra guard for
+                // ending node execution. Moreover, in that case, we require that the UML activity node has been
+                // translated as an atomic deterministic action and it has no defined effects, which is needed to adhere
+                // to the execution semantics of activities. In practice, the UML activity node is likely a UML decision
+                // node and thus is atomic, deterministic, and has no effects. There are some validation checks just to
+                // be sure.
+                if (!ExprHelper.isNullOrTriviallyTrue(PokaYokeUmlProfileUtil.getIncomingGuard(outgoing))) {
                     Verify.verify(endEdge.equals(startEdge),
                             "Expected the activity node to have been translated as an atomic deterministic action.");
                     Verify.verify(!PokaYokeUmlProfileUtil.isSetEffects(outgoing.getSource()),
@@ -1179,6 +1222,11 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             List<Automaton> cifAutomata = new ArrayList<>();
 
             for (Element umlElement: umlConstraint.getConstrainedElements()) {
+                // Do not create the interval automaton for an element that is not translated into the CIF model.
+                if (nonCallableElements.contains(umlElement)) {
+                    continue;
+                }
+
                 if (umlElement instanceof Activity umlActivity) {
                     if (!umlActivity.isAbstract()) {
                         // The constraints are considered at a local level: this activity *directly* calls the
@@ -1708,6 +1756,26 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         }
 
         return finalNodeConfig;
+    }
+
+    /**
+     * Gets all the UML elements which are constrained by an occurrence constraint whose upper limit is zero, hence
+     * should never be called.
+     */
+    private void computeNonCallableElements() {
+        for (Constraint umlConstraint: activity.getOwnedRules()) {
+            if (umlConstraint instanceof IntervalConstraint) {
+                ValueSpecification umlConstraintValue = umlConstraint.getSpecification();
+
+                if (umlConstraintValue instanceof Interval umlInterval
+                        && ((LiteralInteger)umlInterval.getMax()).getValue() == 0)
+                {
+                    for (Element umlElement: umlConstraint.getConstrainedElements()) {
+                        nonCallableElements.add((RedefinableElement)umlElement);
+                    }
+                }
+            }
+        }
     }
 
     /** Postcondition kind. */

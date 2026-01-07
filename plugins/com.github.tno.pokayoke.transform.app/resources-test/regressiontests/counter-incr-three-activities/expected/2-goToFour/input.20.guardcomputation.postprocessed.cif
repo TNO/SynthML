@@ -1,0 +1,131 @@
+controllable __node__DecisionNode__152__0;
+controllable __node__DecisionNode__152__1;
+controllable __node__DecisionNode__152__2;
+controllable __node__DecisionNode__152__3;
+controllable __node__MergeNode__153__0;
+controllable __node__MergeNode__153__1;
+controllable __node__MergeNode__154__0;
+controllable __node__MergeNode__154__1;
+controllable __node__MergeNode__154__2;
+controllable __node__CallBehaviorAction__156;
+controllable __node__CallBehaviorAction__157;
+controllable __node__CallBehaviorAction__158;
+controllable __node__CallBehaviorAction__159;
+controllable __node__CallBehaviorAction__160;
+controllable __node__CallBehaviorAction__161;
+controllable __node__CallBehaviorAction__162;
+uncontrollable __node__CallBehaviorAction__162__na_result_1;
+uncontrollable __node__CallBehaviorAction__162__na_result_2;
+plant automaton Context:
+  disc bool init in any;
+  disc int[0..5] count in any;
+  disc bool __controlflow__137;
+  disc bool __controlflow__138;
+  disc bool __controlflow__139;
+  disc bool __controlflow__140;
+  disc bool __controlflow__141;
+  disc bool __controlflow__142;
+  disc bool __controlflow__143;
+  disc bool __controlflow__144;
+  disc bool __controlflow__145;
+  disc bool __controlflow__146;
+  disc bool __controlflow__147;
+  disc bool __controlflow__148;
+  disc bool __controlflow__149;
+  disc bool __controlflow__150 = true;
+  disc bool __nonAtomicActive____node__CallBehaviorAction__162;
+  alg bool pre_goToFour = not init and count = 0;
+  alg bool __token_on_first_controlflow = __controlflow__150;
+  alg bool __precondition = pre_goToFour and __token_on_first_controlflow;
+  alg bool post_goToFour = count = 4;
+  alg bool __postcondition_without_structure__nonAtomicActive____node__CallBehaviorAction__162 = not __nonAtomicActive____node__CallBehaviorAction__162;
+  alg bool __postcondition_without_structure__occurrences_goToFour_twice__125__initialize__38 = occurrences_goToFour_twice__125__initialize__38.__occurrences >= 0;
+  alg bool __postcondition_without_structure__occurrences_goToFour_twice__125__incr1__41 = occurrences_goToFour_twice__125__incr1__41.__occurrences >= 0;
+  alg bool __postcondition_without_structure__occurrences_goToFour_twice__125__incr2__44 = occurrences_goToFour_twice__125__incr2__44.__occurrences >= 0;
+  alg bool __postcondition_without_structure = post_goToFour and __postcondition_without_structure__nonAtomicActive____node__CallBehaviorAction__162 and (__postcondition_without_structure__occurrences_goToFour_twice__125__initialize__38 and (__postcondition_without_structure__occurrences_goToFour_twice__125__incr1__41 and __postcondition_without_structure__occurrences_goToFour_twice__125__incr2__44));
+  alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
+  alg bool __postcondition_with_structure__controlflow__137 = not __controlflow__137;
+  alg bool __postcondition_with_structure__controlflow__138 = not __controlflow__138;
+  alg bool __postcondition_with_structure__controlflow__139 = not __controlflow__139;
+  alg bool __postcondition_with_structure__controlflow__140 = not __controlflow__140;
+  alg bool __postcondition_with_structure__controlflow__141 = not __controlflow__141;
+  alg bool __postcondition_with_structure__controlflow__142 = not __controlflow__142;
+  alg bool __postcondition_with_structure__controlflow__143 = not __controlflow__143;
+  alg bool __postcondition_with_structure__controlflow__144 = not __controlflow__144;
+  alg bool __postcondition_with_structure__controlflow__145 = not __controlflow__145;
+  alg bool __postcondition_with_structure__controlflow__146 = not __controlflow__146;
+  alg bool __postcondition_with_structure__controlflow__147 = not __controlflow__147;
+  alg bool __postcondition_with_structure__controlflow__148 = not __controlflow__148;
+  alg bool __postcondition_with_structure__controlflow__150 = not __controlflow__150;
+  alg bool __token_on_last_controlflow = __controlflow__149;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure and (__postcondition_with_structure__controlflow__137 and __postcondition_with_structure__controlflow__138) and (__postcondition_with_structure__controlflow__139 and __postcondition_with_structure__controlflow__140 and (__postcondition_with_structure__controlflow__141 and __postcondition_with_structure__controlflow__142)) and (__postcondition_with_structure__controlflow__143 and __postcondition_with_structure__controlflow__144 and (__postcondition_with_structure__controlflow__145 and __postcondition_with_structure__controlflow__146) and (__postcondition_with_structure__controlflow__147 and __postcondition_with_structure__controlflow__148 and (__postcondition_with_structure__controlflow__150 and __token_on_last_controlflow)));
+  initial __precondition;
+  marked __postcondition_with_structure;
+  location:
+    initial;
+    marked;
+    edge __node__DecisionNode__152__0 when true, __controlflow__141, not __controlflow__137 do __controlflow__141 := false, __controlflow__137 := true;
+    edge __node__DecisionNode__152__1 when true, __controlflow__141, not __controlflow__138 do __controlflow__141 := false, __controlflow__138 := true;
+    edge __node__DecisionNode__152__2 when true, __controlflow__141, not __controlflow__139 do __controlflow__141 := false, __controlflow__139 := true;
+    edge __node__DecisionNode__152__3 when true, __controlflow__141, not __controlflow__140 do __controlflow__141 := false, __controlflow__140 := true;
+    edge __node__MergeNode__153__0 when true, __controlflow__143, not __controlflow__145 do __controlflow__143 := false, __controlflow__145 := true;
+    edge __node__MergeNode__153__1 when true, __controlflow__144, not __controlflow__145 do __controlflow__144 := false, __controlflow__145 := true;
+    edge __node__MergeNode__154__0 when true, __controlflow__146, not __controlflow__149 do __controlflow__146 := false, __controlflow__149 := true;
+    edge __node__MergeNode__154__1 when true, __controlflow__147, not __controlflow__149 do __controlflow__147 := false, __controlflow__149 := true;
+    edge __node__MergeNode__154__2 when true, __controlflow__148, not __controlflow__149 do __controlflow__148 := false, __controlflow__149 := true;
+    edge __node__CallBehaviorAction__156 when init, __controlflow__145, not __controlflow__146 do count := count + 1, __controlflow__145 := false, __controlflow__146 := true;
+    edge __node__CallBehaviorAction__157 when init, __controlflow__139, not __controlflow__143 do count := count + 1, __controlflow__139 := false, __controlflow__143 := true;
+    edge __node__CallBehaviorAction__158 when init, __controlflow__137, not __controlflow__142 do count := count + 1, __controlflow__137 := false, __controlflow__142 := true;
+    edge __node__CallBehaviorAction__159 when init, __controlflow__142, not __controlflow__148 do count := count + 2, __controlflow__142 := false, __controlflow__148 := true;
+    edge __node__CallBehaviorAction__160 when init, __controlflow__140, not __controlflow__147 do count := count + 2, __controlflow__140 := false, __controlflow__147 := true;
+    edge __node__CallBehaviorAction__161 when init, __controlflow__138, not __controlflow__144 do count := count + 2, __controlflow__138 := false, __controlflow__144 := true;
+    edge __node__CallBehaviorAction__162 when not init, __controlflow__150, not __controlflow__141, not __nonAtomicActive____node__CallBehaviorAction__162 do __controlflow__150 := false, __nonAtomicActive____node__CallBehaviorAction__162 := true;
+    edge __node__CallBehaviorAction__162__na_result_1 when not __controlflow__141, __nonAtomicActive____node__CallBehaviorAction__162 do init := true, count := 1, __controlflow__141 := true, __nonAtomicActive____node__CallBehaviorAction__162 := false;
+    edge __node__CallBehaviorAction__162__na_result_2 when not __controlflow__141, __nonAtomicActive____node__CallBehaviorAction__162 do init := true, count := 2, __controlflow__141 := true, __nonAtomicActive____node__CallBehaviorAction__162 := false;
+end
+requirement automaton occurrences_goToFour_twice__125__initialize__38:
+  disc int[0..2] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+    edge __node__CallBehaviorAction__162 when __occurrences < 2 do __occurrences := __occurrences + 1;
+end
+requirement automaton occurrences_goToFour_twice__125__incr1__41:
+  disc int[0..2] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+    edge __node__CallBehaviorAction__156 when __occurrences < 2 do __occurrences := __occurrences + 1;
+    edge __node__CallBehaviorAction__157 when __occurrences < 2 do __occurrences := __occurrences + 1;
+    edge __node__CallBehaviorAction__158 when __occurrences < 2 do __occurrences := __occurrences + 1;
+end
+requirement automaton occurrences_goToFour_twice__125__incr2__44:
+  disc int[0..2] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+    edge __node__CallBehaviorAction__159 when __occurrences < 2 do __occurrences := __occurrences + 1;
+    edge __node__CallBehaviorAction__160 when __occurrences < 2 do __occurrences := __occurrences + 1;
+    edge __node__CallBehaviorAction__161 when __occurrences < 2 do __occurrences := __occurrences + 1;
+end
+requirement invariant Context.__postcondition_with_structure disables __node__DecisionNode__152__0;
+requirement invariant Context.__postcondition_with_structure disables __node__DecisionNode__152__1;
+requirement invariant Context.__postcondition_with_structure disables __node__DecisionNode__152__2;
+requirement invariant Context.__postcondition_with_structure disables __node__DecisionNode__152__3;
+requirement invariant Context.__postcondition_with_structure disables __node__MergeNode__153__0;
+requirement invariant Context.__postcondition_with_structure disables __node__MergeNode__153__1;
+requirement invariant Context.__postcondition_with_structure disables __node__MergeNode__154__0;
+requirement invariant Context.__postcondition_with_structure disables __node__MergeNode__154__1;
+requirement invariant Context.__postcondition_with_structure disables __node__MergeNode__154__2;
+requirement invariant Context.__postcondition_without_structure disables __node__CallBehaviorAction__156;
+requirement invariant Context.__postcondition_without_structure disables __node__CallBehaviorAction__157;
+requirement invariant Context.__postcondition_without_structure disables __node__CallBehaviorAction__158;
+requirement invariant Context.__postcondition_without_structure disables __node__CallBehaviorAction__159;
+requirement invariant Context.__postcondition_without_structure disables __node__CallBehaviorAction__160;
+requirement invariant Context.__postcondition_without_structure disables __node__CallBehaviorAction__161;
+requirement invariant Context.__postcondition_without_structure disables __node__CallBehaviorAction__162;
+requirement invariant Context.__postcondition_with_structure disables __node__CallBehaviorAction__162__na_result_1;
+requirement invariant Context.__postcondition_with_structure disables __node__CallBehaviorAction__162__na_result_2;

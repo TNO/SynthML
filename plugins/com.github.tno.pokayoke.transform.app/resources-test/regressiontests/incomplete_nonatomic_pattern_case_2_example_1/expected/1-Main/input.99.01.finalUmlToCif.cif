@@ -27,8 +27,8 @@ plant automaton Context:
     marked;
     edge __node__OpaqueAction__50 when not done_a and not done_b, __controlflow__47, true, not __controlflow__44 do __controlflow__47 := false, __controlflow__44 := true;
     edge __node__OpaqueAction__51 when true, __controlflow__49, true, not __controlflow__46 do done_b := true, __controlflow__49 := false, __controlflow__46 := true;
-    edge __node__DecisionNode__53__0 when true, __controlflow__44, not __controlflow__40, true do __controlflow__44 := false, __controlflow__40 := true;
-    edge __node__DecisionNode__53__1 when true, __controlflow__44, not __controlflow__42, true do __controlflow__44 := false, __controlflow__42 := true;
+    edge __node__DecisionNode__53__0 when true, __controlflow__44, not __controlflow__40 do __controlflow__44 := false, __controlflow__40 := true;
+    edge __node__DecisionNode__53__1 when true, __controlflow__44, not __controlflow__42 do __controlflow__44 := false, __controlflow__42 := true;
     edge __node__CallBehaviorAction__55 when not done_a and not done_b, __controlflow__40, true, not __controlflow__45 do done_a := true, __controlflow__40 := false, __controlflow__45 := true;
     edge __node__MergeNode__56__0 when true, __controlflow__42, true, not __controlflow__49 do __controlflow__42 := false, __controlflow__49 := true;
     edge __node__MergeNode__56__1 when true, __controlflow__45, true, not __controlflow__49 do __controlflow__45 := false, __controlflow__49 := true;

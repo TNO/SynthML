@@ -1,3 +1,12 @@
+////////////////////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2023-2025 TNO and Contributors to the GitHub community
+//
+// This program and the accompanying materials are made available under the terms of the
+// Eclipse Public License v2.0 which accompanies this distribution, and is available at
+// https://spdx.org/licenses/EPL-2.0.html
+//
+// SPDX-License-Identifier: EPL-2.0
+////////////////////////////////////////////////////////////////////////////////////////
 
 package com.github.tno.pokayoke.transform.app;
 
@@ -48,6 +57,7 @@ import com.github.tno.pokayoke.transform.cif2petrify.CifFileHelper;
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.transform.flatten.CompositeDataTypeFlattener;
 import com.github.tno.pokayoke.transform.petrify.PetrifyHelper;
+import com.github.tno.pokayoke.transform.petrify2uml.ConcreteActivityRestorer;
 import com.github.tno.pokayoke.transform.petrify2uml.PNML2UMLTranslator;
 import com.github.tno.pokayoke.transform.petrify2uml.PNMLUMLFileHelper;
 import com.github.tno.pokayoke.transform.petrify2uml.PetrifyOutput2PNMLTranslator;
@@ -99,10 +109,13 @@ public class FullSynthesisApp {
             throw new RuntimeException("Synthesis of parameterized activities is unsupported.");
         }
 
+        int digits = (activities.size() / 10) + 1;
         for (int i = 0; i < activities.size(); i++) {
             Activity activity = activities.get(i);
             Preconditions.checkArgument(!Strings.isNullOrEmpty(activity.getName()), "Expected activities to be named.");
-            Path localOutputPath = outputFolderPath.resolve(String.format("%d-%s", i + 1, activity.getName()));
+            String formattedNumber = String.format("%0" + digits + "d", i + 1);
+            Path localOutputPath = outputFolderPath
+                    .resolve(String.format("%s-%s", formattedNumber, activity.getName()));
             Files.createDirectories(localOutputPath);
             performFullSynthesis(activity, filePrefix, localOutputPath, ctxManager, warnings);
         }
@@ -113,11 +126,11 @@ public class FullSynthesisApp {
     {
         // Instantiate the tracker that indicates how results from intermediate steps of the activity synthesis chain
         // relate to the input UML.
-        SynthesisChainTracking tracker = new SynthesisChainTracking();
+        SynthesisChainTracking tracker = new SynthesisChainTracking(activity);
 
         // Translate the UML specification to a CIF specification.
         UmlToCifTranslator umlToCifTranslator = new UmlToCifTranslator(ctxManager.getGlobalContext(), activity,
-                UmlToCifTranslationPurpose.SYNTHESIS, tracker);
+                UmlToCifTranslationPurpose.SYNTHESIS, tracker, warnings);
         Specification cifSpec = umlToCifTranslator.translate();
         Path cifSpecPath = outputFolderPath.resolve(filePrefix + ".01.cif");
         try {
@@ -264,17 +277,24 @@ public class FullSynthesisApp {
         petriNet2Activity.translate(petriNet, tracker);
         FileHelper.storeModel(activity.getModel(), umlOutputPath.toString());
 
+        // Restore the control flow guards of a called concrete activity and the decision or merge patterns deriving
+        // from the translation of a decision or merge node located in a called concrete activity.
+        Path restoredActivityOutputPath = outputFolderPath.resolve(filePrefix + ".14.concrete_activity_restored.uml");
+        ConcreteActivityRestorer restorer = new ConcreteActivityRestorer(activity, tracker);
+        restorer.restore();
+        FileHelper.storeModel(activity.getModel(), restoredActivityOutputPath.toString());
+
         // Finalize the opaque actions of the activity. Transform opaque actions into call behaviors when they
         // correspond to atomic opaque behaviors or non-atomic ones that have been re-written in the previous step. For
         // non-atomic ones that couldn't be rewritten, add guards (for start action) and effects (for end actions).
         Path opaqueActionsFinalizedOutputPath = outputFolderPath
-                .resolve(filePrefix + ".14.opaque_actions_finalized.uml");
+                .resolve(filePrefix + ".15.opaque_actions_finalized.uml");
         PostProcessActivity.finalizeOpaqueActions(activity, tracker, warnings);
         FileHelper.storeModel(activity.getModel(), opaqueActionsFinalizedOutputPath.toString());
 
         // Remove the temporary actions that were added to the CIF specification for petrification.
         Path temporaryActionsRemovedUMLOutputPath = outputFolderPath
-                .resolve(filePrefix + ".15.petrifyactionsremoved.uml");
+                .resolve(filePrefix + ".16.petrifyactionsremoved.uml");
         PostProcessActivity.removeOpaqueActions(activity, tracker.getTemporaryPetrificationActions());
         FileHelper.storeModel(activity.getModel(), temporaryActionsRemovedUMLOutputPath.toString());
 
@@ -282,19 +302,19 @@ public class FullSynthesisApp {
         tracker.removeTemporaryPetrificationActions();
 
         // Post-process the activity to simplify it.
-        Path umlSimplifiedOutputPath = outputFolderPath.resolve(filePrefix + ".16.simplified.uml");
+        Path umlSimplifiedOutputPath = outputFolderPath.resolve(filePrefix + ".17.simplified.uml");
         PostProcessActivity.simplify(activity);
         FileHelper.storeModel(activity.getModel(), umlSimplifiedOutputPath.toString());
 
         // Post-process the activity to remove the names of edges and nodes.
-        Path umlLabelsRemovedOutputPath = outputFolderPath.resolve(filePrefix + ".17.labelsremoved.uml");
+        Path umlLabelsRemovedOutputPath = outputFolderPath.resolve(filePrefix + ".18.labelsremoved.uml");
         PostProcessActivity.removeNodesEdgesNames(activity);
         FileHelper.storeModel(activity.getModel(), umlLabelsRemovedOutputPath.toString());
 
         // Translating synthesized activity to CIF, for guard computation.
-        Path umlActivityToCifPath = outputFolderPath.resolve(filePrefix + ".18.guardcomputation.cif");
+        Path umlActivityToCifPath = outputFolderPath.resolve(filePrefix + ".19.guardcomputation.cif");
         UmlToCifTranslator umlActivityToCifTranslator = new UmlToCifTranslator(ctxManager.getGlobalContext(), activity,
-                UmlToCifTranslationPurpose.GUARD_COMPUTATION, tracker);
+                UmlToCifTranslationPurpose.GUARD_COMPUTATION, tracker, warnings);
         Specification cifTranslatedActivity = umlActivityToCifTranslator.translate();
         try {
             AppEnv.registerSimple();
@@ -308,7 +328,7 @@ public class FullSynthesisApp {
         ElimIfUpdates elimIfUpdatesGuardComputation = new ElimIfUpdates();
         elimIfUpdatesGuardComputation.transform(cifTranslatedActivity);
         Path cifPostProcessedGuardComputation = outputFolderPath
-                .resolve(filePrefix + ".19.guardcomputation.postprocessed.cif");
+                .resolve(filePrefix + ".20.guardcomputation.postprocessed.cif");
         try {
             AppEnv.registerSimple();
             CifWriter.writeCifSpec(cifTranslatedActivity, makePathPair(cifPostProcessedGuardComputation),
@@ -320,7 +340,7 @@ public class FullSynthesisApp {
         // Computing guards.
         new GuardComputation(umlActivityToCifTranslator, tracker).computeGuards(cifTranslatedActivity,
                 umlActivityToCifPath);
-        Path umlGuardsOutputPath = outputFolderPath.resolve(filePrefix + ".20.guardsadded.uml");
+        Path umlGuardsOutputPath = outputFolderPath.resolve(filePrefix + ".21.guardsadded.uml");
         FileHelper.storeModel(umlActivityToCifTranslator.getActivity().getModel(), umlGuardsOutputPath.toString());
 
         // Check the activity for non-deterministic choices.
@@ -328,7 +348,8 @@ public class FullSynthesisApp {
 
         // Perform the language equivalence check between the CIF model generated by the state space exploration and the
         // translation to CIF of the final UML model. Throws a runtime error if models are non-equivalent.
-        performLanguageEquivalenceCheck(filePrefix, outputFolderPath, umlToCifTranslator, tracker, ctxManager);
+        performLanguageEquivalenceCheck(filePrefix, outputFolderPath, umlToCifTranslator, tracker, ctxManager,
+                warnings);
     }
 
     private static Pair<String, Set<String>> getPreservedAndRemovedEventNames(Specification spec,
@@ -352,8 +373,8 @@ public class FullSynthesisApp {
     }
 
     private static void performLanguageEquivalenceCheck(String filePrefix, Path localOutputPath,
-            UmlToCifTranslator translator, SynthesisChainTracking tracker, CifContextManager ctxManager)
-            throws CoreException
+            UmlToCifTranslator translator, SynthesisChainTracking tracker, CifContextManager ctxManager,
+            List<String> warnings) throws CoreException
     {
         // Load state space UML file.
         Specification stateSpaceGenerated = CifFileHelper
@@ -361,7 +382,7 @@ public class FullSynthesisApp {
 
         // Translate final UML model to CIF and get its state space.
         UmlToCifTranslator umlToCifTranslatorPostSynth = new UmlToCifTranslator(ctxManager.getGlobalContext(),
-                translator.getActivity(), UmlToCifTranslationPurpose.LANGUAGE_EQUIVALENCE, tracker);
+                translator.getActivity(), UmlToCifTranslationPurpose.LANGUAGE_EQUIVALENCE, tracker, warnings);
         Specification cifSpec = umlToCifTranslatorPostSynth.translate();
         Path cifSpecPath = localOutputPath.resolve(filePrefix + ".99.01.finalUmlToCif.cif");
         try {

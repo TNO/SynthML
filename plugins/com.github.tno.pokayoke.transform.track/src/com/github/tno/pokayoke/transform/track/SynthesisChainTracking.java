@@ -1,3 +1,12 @@
+////////////////////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2023-2025 TNO and Contributors to the GitHub community
+//
+// This program and the accompanying materials are made available under the terms of the
+// Eclipse Public License v2.0 which accompanies this distribution, and is available at
+// https://spdx.org/licenses/EPL-2.0.html
+//
+// SPDX-License-Identifier: EPL-2.0
+////////////////////////////////////////////////////////////////////////////////////////
 
 package com.github.tno.pokayoke.transform.track;
 
@@ -15,9 +24,12 @@ import java.util.stream.Collectors;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.common.java.Pair;
 import org.eclipse.escet.common.java.Sets;
+import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.ControlNode;
+import org.eclipse.uml2.uml.DecisionNode;
+import org.eclipse.uml2.uml.MergeNode;
 import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.RedefinableElement;
@@ -43,6 +55,9 @@ import fr.lip6.move.pnml.ptnet.Transition;
  * </p>
  */
 public class SynthesisChainTracking {
+    /** The activity being synthesized. */
+    private final Activity activity;
+
     /**
      * The map from CIF events to their tracing info. Gets updated as the activity synthesis chain rewrites, removes, or
      * add events.
@@ -65,6 +80,12 @@ public class SynthesisChainTracking {
      */
     private final Map<ActivityNode, Transition> activityNodeToTransition = new LinkedHashMap<>();
 
+    /** The map from a new decision node created from a Petri net place, to its child nodes. */
+    private final Map<DecisionNode, Set<ActivityNode>> newDecisionNodeToChildNodes = new LinkedHashMap<>();
+
+    /** The map from a new merge node created from a Petri net place, to its parent nodes. */
+    private final Map<MergeNode, Set<ActivityNode>> newMergeNodeToParentNodes = new LinkedHashMap<>();
+
     /** The map from the finalized UML elements to the non-finalized opaque actions they originate from. */
     private final Map<RedefinableElement, OpaqueAction> finalizedElementToAction = new LinkedHashMap<>();
 
@@ -72,6 +93,11 @@ public class SynthesisChainTracking {
         START_OPAQUE_BEHAVIOR, END_OPAQUE_BEHAVIOR, COMPLETE_OPAQUE_BEHAVIOR, START_SHADOW, END_SHADOW, COMPLETE_SHADOW,
         START_OPAQUE_ACTION, END_OPAQUE_ACTION, COMPLETE_OPAQUE_ACTION, START_CALL_BEHAVIOR, END_CALL_BEHAVIOR,
         COMPLETE_CALL_BEHAVIOR, CONTROL_NODE;
+    }
+
+    public SynthesisChainTracking(Activity activity) {
+        Verify.verify(activity != null, "Activity to track cannot be 'null'.");
+        this.activity = activity;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -89,11 +115,14 @@ public class SynthesisChainTracking {
      *     as for start-only events. End-only events must have a non-negative integer effect index.
      * @param isStartEvent {@code true} if the event represents a start event, {@code false} otherwise.
      * @param isEndEvent {@code true} if the event represents an end event, {@code false} otherwise.
+     * @param entryGuard The entry guard, or {@code null} if no such guard exists.
+     * @param exitGuard The exit guard, or {@code null} if no such guard exists.
      */
     public void addCifEvent(Event cifEvent, UmlToCifTranslationPurpose purpose, RedefinableElement umlElement,
-            Integer effectIdx, boolean isStartEvent, boolean isEndEvent)
+            Integer effectIdx, boolean isStartEvent, boolean isEndEvent, String entryGuard, String exitGuard)
     {
-        cifEventTraceInfo.put(cifEvent, new EventTraceInfo(purpose, umlElement, effectIdx, isStartEvent, isEndEvent));
+        cifEventTraceInfo.put(cifEvent,
+                new EventTraceInfo(purpose, umlElement, effectIdx, isStartEvent, isEndEvent, entryGuard, exitGuard));
     }
 
     /**
@@ -372,21 +401,37 @@ public class SynthesisChainTracking {
             }
         }
 
-        // Remove the CIF event trace info for the events that are to be removed.
-        cifEventTraceInfo.keySet().removeAll(eventsToRemove);
-
         // Handle the start events to be updated: if all the corresponding end events have been removed, update its CIF
         // event trace info to also make it an end event.
         for (Event startEvent: startEventsToUpdate) {
             // If all end events have been removed, update the CIF event trace info.
             if (startEndEventsMap.get(startEvent).stream().allMatch(e -> eventsToRemove.contains(e))) {
-                // Create a new 'EventTraceInfo' with 'isEndEvent' set to 'true' and overwrite the info in the map.
+                // Sanity check: start event should have a 'null' exit guard.
+                Verify.verify(getEventTraceInfo(startEvent).getExitGuard() == null,
+                        String.format("Start event '%s' has non-'null' exit guard.", startEvent.getName()));
+
+                // Get the exit guard for all end events.
+                Set<String> exitGuards = startEndEventsMap.get(startEvent).stream()
+                        .map(e -> getEventTraceInfo(e).getExitGuard()).collect(Collectors.toSet());
+                Verify.verify(exitGuards.size() == 1,
+                        String.format("Found more than one exit guard for start event '%s'.", startEvent.getName()));
+                Verify.verify(
+                        startEndEventsMap.get(startEvent).stream().map(e -> getEventTraceInfo(e).getEntryGuard())
+                                .allMatch(g -> g == null),
+                        String.format("The end events of '%s' have non-'null' entry guard.", startEvent.getName()));
+
+                // Create a new 'EventTraceInfo' with 'isEndEvent' set to 'true', the exit guard is derived from the end
+                // events, and overwrite the info in the map.
                 EventTraceInfo oldEventTraceInfo = getEventTraceInfo(startEvent);
                 EventTraceInfo newEventTraceInfo = new EventTraceInfo(oldEventTraceInfo.getTranslationPurpose(),
-                        oldEventTraceInfo.getUmlElement(), oldEventTraceInfo.getEffectIdx(), true, true);
+                        oldEventTraceInfo.getUmlElement(), oldEventTraceInfo.getEffectIdx(), true, true,
+                        oldEventTraceInfo.getEntryGuard(), exitGuards.iterator().next());
                 cifEventTraceInfo.put(startEvent, newEventTraceInfo);
             }
         }
+
+        // Remove the CIF event trace info for the events that are to be removed.
+        cifEventTraceInfo.keySet().removeAll(eventsToRemove);
     }
 
     /** Tracing information related to a CIF event. */
@@ -410,6 +455,20 @@ public class SynthesisChainTracking {
         private final boolean isEndEvent;
 
         /**
+         * The entry guard of a CIF event represents the outgoing guard of the incoming edge of the activity node
+         * related to the CIF event. Can be {@code null} if there is no such guard and for CIF events that do not derive
+         * from any concrete activity node, e.g. opaque behaviors.
+         */
+        private final String entryGuard;
+
+        /**
+         * The exit guard of a CIF event represents the incoming guard of the outgoing edge of the activity node related
+         * to the CIF event. Can be {@code null} if there is no such guard and for CIF events that do not derive from
+         * any concrete activity node, e.g. opaque behaviors.
+         */
+        private final String exitGuard;
+
+        /**
          * Constructs a new {@link EventTraceInfo}.
          *
          * @param purpose The translation purpose.
@@ -418,9 +477,11 @@ public class SynthesisChainTracking {
          *     as for start-only events. End-only events must have a non-negative integer effect index.
          * @param isStartEvent {@code true} if the event represents a start event, {@code false} otherwise.
          * @param isEndEvent {@code true} if the event represents an end event, {@code false} otherwise.
+         * @param entryGuard The entry guard, or {@code null} if no such guard exists.
+         * @param exitGuard The exit guard, or {@code null} if no such guard exists.
          */
         private EventTraceInfo(UmlToCifTranslationPurpose purpose, RedefinableElement umlElement, Integer effectIdx,
-                boolean isStartEvent, boolean isEndEvent)
+                boolean isStartEvent, boolean isEndEvent, String entryGuard, String exitGuard)
         {
             Verify.verify(isStartEvent || isEndEvent, "Event must be a either start event, or an end event, or both.");
             Verify.verify((effectIdx != null) == (!isStartEvent && isEndEvent),
@@ -435,6 +496,8 @@ public class SynthesisChainTracking {
             this.effectIdx = effectIdx;
             this.isStartEvent = isStartEvent;
             this.isEndEvent = isEndEvent;
+            this.entryGuard = entryGuard;
+            this.exitGuard = exitGuard;
         }
 
         /**
@@ -481,6 +544,24 @@ public class SynthesisChainTracking {
          */
         private boolean isEndEvent() {
             return isEndEvent;
+        }
+
+        /**
+         * Returns the entry guard, or {@code null} if no such guard exists.
+         *
+         * @return The entry guard, or {@code null}.
+         */
+        public String getEntryGuard() {
+            return entryGuard;
+        }
+
+        /**
+         * Returns the exit guard, or {@code null} if no such guard exists.
+         *
+         * @return The exit guard, or {code null}.
+         */
+        public String getExitGuard() {
+            return exitGuard;
         }
 
         /**
@@ -826,15 +907,15 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Returns the Petri net transition tracing info corresponding to the input opaque action.
+     * Returns the Petri net transition tracing info corresponding to the input activity node.
      *
-     * @param action The opaque action.
-     * @return The transition tracing info related to the opaque action.
+     * @param node The activity node.
+     * @return The transition tracing info related to the activity node.
      */
-    private TransitionTraceInfo getTransitionTraceInfo(OpaqueAction action) {
-        Transition transition = activityNodeToTransition.get(action);
+    private TransitionTraceInfo getTransitionTraceInfo(ActivityNode node) {
+        Transition transition = activityNodeToTransition.get(node);
         Verify.verifyNotNull(transition, String
-                .format("Opaque action '%s' does not have a corresponding Petri net transition.", action.getName()));
+                .format("Activity node '%s' does not have a corresponding Petri net transition.", node.getName()));
         TransitionTraceInfo transitionInfo = transitionTraceInfo.get(transition);
         Verify.verifyNotNull(transitionInfo,
                 String.format("Transition '%s' does not have any tracing info.", transition.getName().getText()));
@@ -921,6 +1002,44 @@ public class SynthesisChainTracking {
      */
     public int getEffectIdx(OpaqueAction action) {
         return getTransitionTraceInfo(action).getEffectIdx();
+    }
+
+    /**
+     * Return the entry guard of the given node, or {@code null} if there is no such guard.
+     *
+     * @param node The activity node.
+     * @return The entry guard of the given node, or {@code null} if there is no such guard.
+     */
+    public String getEntryGuard(ActivityNode node) {
+        // Find the CIF events related to the given node.
+        Set<Event> cifEvents = getTransitionTraceInfo(node).getCifEvents();
+
+        // Find the start event, and get the entry guard.
+        Set<String> entryGuards = cifEvents.stream().map(e -> getEventTraceInfo(e))
+                .filter(e -> e != null && e.isStartEvent()).map(e -> e.getEntryGuard()).collect(Collectors.toSet());
+        Verify.verify(entryGuards.size() <= 1,
+                String.format("Found multiple entry guards of node '%s'.", node.getName()));
+
+        return entryGuards.isEmpty() ? null : entryGuards.iterator().next();
+    }
+
+    /**
+     * Return the exit guard of the given node, or {@code null} if there is no such guard.
+     *
+     * @param node The activity node.
+     * @return The exit guard of the given node, or {@code null} if there is no such guard.
+     */
+    public String getExitGuard(ActivityNode node) {
+        // Find the CIF events related to the given node.
+        Set<Event> cifEvents = getTransitionTraceInfo(node).getCifEvents();
+
+        // Find the end events, and get the exit guards.
+        Set<String> exitGuards = cifEvents.stream().map(e -> getEventTraceInfo(e))
+                .filter(e -> e != null && e.isEndEvent()).map(e -> e.getExitGuard()).collect(Collectors.toSet());
+        Verify.verify(exitGuards.size() <= 1,
+                String.format("Found multiple exit guards of node '%s'.", node.getName()));
+
+        return exitGuards.isEmpty() ? null : exitGuards.iterator().next();
     }
 
     /**
@@ -1014,19 +1133,14 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Checks whether the given non-{@code null} UML element belongs to the elements contained in the synthesized UML
-     * activity.
+     * Checks whether the given non-{@code null} UML element belongs to the UML activity being synthesized.
      *
      * @param umlElement The non-{@code null} UML element to check.
-     * @return {@code true} if the input element belongs to the synthesized activity, {@code false} otherwise.
+     * @return {@code true} if the input element belongs to the UML activity being synthesized, {@code false} otherwise.
      */
     public boolean belongsToSynthesizedActivity(RedefinableElement umlElement) {
         Verify.verifyNotNull(umlElement, "Element cannot be 'null'.");
-
-        return cifEventTraceInfo.values().stream()
-                .anyMatch(info -> !info.getTranslationPurpose().equals(UmlToCifTranslationPurpose.SYNTHESIS)
-                        && info.getUmlElement() instanceof RedefinableElement cifEventUmlElement
-                        && cifEventUmlElement.equals(umlElement));
+        return umlElement.eContainer().equals(activity);
     }
 
     /**
@@ -1043,6 +1157,108 @@ public class SynthesisChainTracking {
 
         Transition transition = activityNodeToTransition.get(node);
         return (transition == null) ? null : getUmlElement(transition);
+    }
+
+    /**
+     * Stores the new decision or merge node created as the translation of a Petri net place, and its child or parent
+     * node respectively, for later handling.
+     *
+     * @param newNode The new decision or merge node introduced as a translation of a Petri net place.
+     * @param activityNode The child or parent node of {@code newNode}, if {@code newNode} is a decision or merge node,
+     *     respectively.
+     */
+    public void addDecisionOrMergePatternNodes(ActivityNode newNode, ActivityNode activityNode) {
+        if (newNode instanceof DecisionNode decisionNode) {
+            newDecisionNodeToChildNodes.computeIfAbsent(decisionNode, k -> new LinkedHashSet<>()).add(activityNode);
+        } else if (newNode instanceof MergeNode mergeNode) {
+            newMergeNodeToParentNodes.computeIfAbsent(mergeNode, k -> new LinkedHashSet<>()).add(activityNode);
+        } else {
+            throw new RuntimeException(
+                    String.format("Node '%s' is neither a decision nor a merge node.", newNode.getName()));
+        }
+    }
+
+    /**
+     * Returns the map from the new decision node created as the translation of a Petri net place, and its child nodes.
+     *
+     * @return The map from new decision node to their child nodes.
+     */
+    public Map<DecisionNode, Set<ActivityNode>> getDecisionChildNodes() {
+        return newDecisionNodeToChildNodes;
+    }
+
+    /**
+     * Returns the map from the new merge node created as the translation of a Petri net place, and its parent nodes.
+     *
+     * @return The map from new merge node to their parent nodes.
+     */
+    public Map<MergeNode, Set<ActivityNode>> getMergeParentNodes() {
+        return newMergeNodeToParentNodes;
+    }
+
+    /**
+     * Updates the event tracing information for the specified decision or merge nodes. This method performs the
+     * following steps:
+     * <ul>
+     * <li>Sets the entry and exit guards of the given nodes to {@code null}, indicating that the node has been restored
+     * and now represents the merging of multiple activity nodes derived from a single decision or merge node in a
+     * called concrete activity.</li>
+     * <li>Ensures that only one CIF event and one Petri net transition are kept, since all merged nodes refer to the
+     * same original UML element. Tracking multiple transitions and events is unnecessary. Thus, this method deletes all
+     * other related nodes from the tracker, along with their associated Petri net transitions and CIF events, as they
+     * are now redundant.</li>
+     * </ul>
+     *
+     * @param nodesToUpdate The set of activity nodes to update.
+     * @param nodesToRemove The set of UML elements to be removed.
+     */
+    public void updateConcreteDecisionMergeNodesAndEdges(List<ActivityNode> nodesToUpdate,
+            List<ActivityNode> nodesToRemove)
+    {
+        // Sanity check: all nodes must be decision or merge nodes.
+        Verify.verify(nodesToUpdate.stream().allMatch(n -> n instanceof DecisionNode || n instanceof MergeNode),
+                "Only decision or merge nodes are allowed to be updated.");
+        Verify.verify(nodesToRemove.stream().allMatch(n -> n instanceof DecisionNode || n instanceof MergeNode),
+                "Only decision or merge nodes are allowed to be removed.");
+
+        // Update the CIF event tracing info corresponding the nodes to be updated.
+        Set<Transition> transitions = nodesToUpdate.stream().map(activityNodeToTransition::get)
+                .collect(Collectors.toSet());
+        Set<Event> eventsToUpdate = transitions.stream()
+                .flatMap(t -> transitionTraceInfo.get(t).getCifEvents().stream()).collect(Collectors.toSet());
+
+        for (Event event: eventsToUpdate) {
+            // Create a new 'EventTraceInfo' where the entry guard and the exit guard are both 'null', to identify that
+            // the restoring is done.
+            EventTraceInfo oldEventTraceInfo = getEventTraceInfo(event);
+            EventTraceInfo newEventTraceInfo = new EventTraceInfo(oldEventTraceInfo.getTranslationPurpose(),
+                    oldEventTraceInfo.getUmlElement(), oldEventTraceInfo.getEffectIdx(),
+                    oldEventTraceInfo.isStartEvent(), oldEventTraceInfo.isEndEvent(), null, null);
+            cifEventTraceInfo.put(event, newEventTraceInfo);
+        }
+
+        // Remove activity nodes from the internal map and the corresponding transition and CIF event tracing info.
+        Set<Transition> transitionToRemove = nodesToRemove.stream().map(activityNodeToTransition::get)
+                .collect(Collectors.toSet());
+        Set<Event> tentativeEventsToRemove = transitionToRemove.stream()
+                .flatMap(t -> transitionTraceInfo.get(t).getCifEvents().stream()).collect(Collectors.toSet());
+
+        // Multiple Petri net transitions may reference the same CIF event: if any other transition refers to a CIF
+        // event that is marked for deletion, it should not be deleted.
+        Set<Transition> transitionsToKeep = Sets.difference(transitionTraceInfo.keySet(), transitionToRemove);
+        Set<Event> eventsToKeep = transitionsToKeep.stream()
+                .flatMap(t -> transitionTraceInfo.get(t).getCifEvents().stream()).collect(Collectors.toSet());
+        Set<Event> eventsToRemove = Sets.difference(tentativeEventsToRemove, eventsToKeep);
+
+        activityNodeToTransition.keySet().removeAll(nodesToRemove);
+        transitionTraceInfo.keySet().removeAll(transitionToRemove);
+        cifEventTraceInfo.keySet().removeAll(eventsToRemove);
+        newDecisionNodeToChildNodes.keySet().removeAll(nodesToRemove);
+        newDecisionNodeToChildNodes.values().forEach(v -> v.removeAll(nodesToRemove));
+        newMergeNodeToParentNodes.keySet().removeAll(nodesToRemove);
+        newMergeNodeToParentNodes.values().forEach(v -> v.removeAll(nodesToRemove));
+        atomicNonDeterministicEventTraceInfoMap.keySet().removeAll(eventsToRemove);
+        atomicNonDeterministicEventTraceInfoMap.values().stream().forEach(v -> v.keySet().removeAll(eventsToRemove));
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

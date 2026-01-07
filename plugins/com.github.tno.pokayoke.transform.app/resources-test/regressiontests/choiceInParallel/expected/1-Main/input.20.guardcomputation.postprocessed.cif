@@ -1,0 +1,134 @@
+enum UnknownDrink = Coffee, Tea, Unknown;
+controllable __node__DecisionNode__74__0;
+controllable __node__DecisionNode__74__1;
+controllable __node__MergeNode__75__0;
+controllable __node__MergeNode__75__1;
+controllable __node__JoinNode__77;
+controllable __node__ForkNode__78;
+controllable __node__CallBehaviorAction__79;
+controllable __node__CallBehaviorAction__80;
+controllable __node__CallBehaviorAction__81;
+uncontrollable __node__CallBehaviorAction__81__result_1;
+uncontrollable __node__CallBehaviorAction__81__result_2;
+controllable __node__CallBehaviorAction__82;
+controllable __node__CallBehaviorAction__83;
+controllable __node__CallBehaviorAction__84;
+plant automaton Context:
+  disc bool Is_Computer_Ready = false;
+  disc bool Is_Computer_On = false;
+  disc UnknownDrink Coffee_or_Tea = Unknown;
+  disc bool Has_Drank_Coffee_or_Tea = false;
+  disc bool Is_Ready_to_Work = false;
+  disc bool __controlflow__60;
+  disc bool __controlflow__61;
+  disc bool __controlflow__62;
+  disc bool __controlflow__63;
+  disc bool __controlflow__64;
+  disc bool __controlflow__65;
+  disc bool __controlflow__66;
+  disc bool __controlflow__67;
+  disc bool __controlflow__68;
+  disc bool __controlflow__69;
+  disc bool __controlflow__70;
+  disc bool __controlflow__71;
+  disc bool __controlflow__72 = true;
+  disc int[0..1] __activeAction;
+  alg bool __token_on_first_controlflow = __controlflow__72;
+  alg bool __precondition = __token_on_first_controlflow;
+  alg bool postcondition = Is_Computer_On and Is_Computer_Ready and Has_Drank_Coffee_or_Tea and Is_Ready_to_Work;
+  alg bool __postcondition_without_structure__activeAction = __activeAction = 0;
+  alg bool __postcondition_without_structure__happens_at_most_once__56__Turn_Computer_On__85 = happens_at_most_once__56__Turn_Computer_On__85.__occurrences >= 0;
+  alg bool __postcondition_without_structure__happens_at_most_once__56__Drink_Coffee__89 = happens_at_most_once__56__Drink_Coffee__89.__occurrences >= 0;
+  alg bool __postcondition_without_structure__happens_at_most_once__56__Drink_Tea__91 = happens_at_most_once__56__Drink_Tea__91.__occurrences >= 0;
+  alg bool __postcondition_without_structure__happens_at_most_once__56__Start_Working__93 = happens_at_most_once__56__Start_Working__93.__occurrences >= 0;
+  alg bool __postcondition_without_structure__happens_at_most_once__56__Starting_Computer__87 = happens_at_most_once__56__Starting_Computer__87.__occurrences >= 0;
+  alg bool __postcondition_without_structure = postcondition and (__postcondition_without_structure__activeAction and __postcondition_without_structure__happens_at_most_once__56__Turn_Computer_On__85) and (__postcondition_without_structure__happens_at_most_once__56__Drink_Coffee__89 and __postcondition_without_structure__happens_at_most_once__56__Drink_Tea__91 and (__postcondition_without_structure__happens_at_most_once__56__Start_Working__93 and __postcondition_without_structure__happens_at_most_once__56__Starting_Computer__87));
+  alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
+  alg bool __postcondition_with_structure__controlflow__60 = not __controlflow__60;
+  alg bool __postcondition_with_structure__controlflow__61 = not __controlflow__61;
+  alg bool __postcondition_with_structure__controlflow__62 = not __controlflow__62;
+  alg bool __postcondition_with_structure__controlflow__63 = not __controlflow__63;
+  alg bool __postcondition_with_structure__controlflow__64 = not __controlflow__64;
+  alg bool __postcondition_with_structure__controlflow__65 = not __controlflow__65;
+  alg bool __postcondition_with_structure__controlflow__66 = not __controlflow__66;
+  alg bool __postcondition_with_structure__controlflow__67 = not __controlflow__67;
+  alg bool __postcondition_with_structure__controlflow__68 = not __controlflow__68;
+  alg bool __postcondition_with_structure__controlflow__69 = not __controlflow__69;
+  alg bool __postcondition_with_structure__controlflow__70 = not __controlflow__70;
+  alg bool __postcondition_with_structure__controlflow__72 = not __controlflow__72;
+  alg bool __token_on_last_controlflow = __controlflow__71;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure and (__postcondition_with_structure__controlflow__60 and __postcondition_with_structure__controlflow__61) and (__postcondition_with_structure__controlflow__62 and __postcondition_with_structure__controlflow__63 and (__postcondition_with_structure__controlflow__64 and __postcondition_with_structure__controlflow__65)) and (__postcondition_with_structure__controlflow__66 and (__postcondition_with_structure__controlflow__67 and __postcondition_with_structure__controlflow__68) and (__postcondition_with_structure__controlflow__69 and __postcondition_with_structure__controlflow__70 and (__postcondition_with_structure__controlflow__72 and __token_on_last_controlflow)));
+  initial __precondition;
+  marked __postcondition_with_structure;
+  location:
+    initial;
+    marked;
+    edge __node__DecisionNode__74__0 when true, __controlflow__64, not __controlflow__62, __activeAction = 0 do __controlflow__64 := false, __controlflow__62 := true;
+    edge __node__DecisionNode__74__1 when true, __controlflow__64, not __controlflow__63, __activeAction = 0 do __controlflow__64 := false, __controlflow__63 := true;
+    edge __node__MergeNode__75__0 when true, __controlflow__66, not __controlflow__68, __activeAction = 0 do __controlflow__66 := false, __controlflow__68 := true;
+    edge __node__MergeNode__75__1 when true, __controlflow__67, not __controlflow__68, __activeAction = 0 do __controlflow__67 := false, __controlflow__68 := true;
+    edge __node__JoinNode__77 when true, __controlflow__65, __controlflow__68, not __controlflow__69, __activeAction = 0 do __controlflow__65 := false, __controlflow__68 := false, __controlflow__69 := true;
+    edge __node__ForkNode__78 when true, __controlflow__70, not __controlflow__60, not __controlflow__61, __activeAction = 0 do __controlflow__70 := false, __controlflow__60 := true, __controlflow__61 := true;
+    edge __node__CallBehaviorAction__79 when not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Coffee, __controlflow__62, not __controlflow__66, __activeAction = 0 do Has_Drank_Coffee_or_Tea := true, Coffee_or_Tea := Unknown, __controlflow__62 := false, __controlflow__66 := true;
+    edge __node__CallBehaviorAction__80 when not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Tea, __controlflow__63, not __controlflow__67, __activeAction = 0 do Has_Drank_Coffee_or_Tea := true, Coffee_or_Tea := Unknown, __controlflow__63 := false, __controlflow__67 := true;
+    edge __node__CallBehaviorAction__81 when Is_Computer_On and not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Unknown, __controlflow__60, not __controlflow__64, __activeAction = 0 do __controlflow__60 := false, __activeAction := 1;
+    edge __node__CallBehaviorAction__81__result_1 when not __controlflow__64, __activeAction = 1 do Coffee_or_Tea := Coffee, __controlflow__64 := true, __activeAction := 0;
+    edge __node__CallBehaviorAction__81__result_2 when not __controlflow__64, __activeAction = 1 do Coffee_or_Tea := Tea, __controlflow__64 := true, __activeAction := 0;
+    edge __node__CallBehaviorAction__82 when Has_Drank_Coffee_or_Tea and Is_Computer_Ready, __controlflow__69, not __controlflow__71, __activeAction = 0 do Is_Ready_to_Work := true, __controlflow__69 := false, __controlflow__71 := true;
+    edge __node__CallBehaviorAction__83 when not Is_Computer_Ready and Is_Computer_On, __controlflow__61, not __controlflow__65, __activeAction = 0 do Is_Computer_Ready := true, __controlflow__61 := false, __controlflow__65 := true;
+    edge __node__CallBehaviorAction__84 when not Is_Computer_Ready and not Is_Computer_On, __controlflow__72, not __controlflow__70, __activeAction = 0 do Is_Computer_On := true, __controlflow__72 := false, __controlflow__70 := true;
+end
+requirement automaton happens_at_most_once__56__Turn_Computer_On__85:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+    edge __node__CallBehaviorAction__84 when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+requirement automaton happens_at_most_once__56__Drink_Coffee__89:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+    edge __node__CallBehaviorAction__79 when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+requirement automaton happens_at_most_once__56__Drink_Tea__91:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+    edge __node__CallBehaviorAction__80 when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+requirement automaton happens_at_most_once__56__Start_Working__93:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+    edge __node__CallBehaviorAction__82 when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+requirement automaton happens_at_most_once__56__Starting_Computer__87:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+    edge __node__CallBehaviorAction__83 when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+requirement invariant Context.__postcondition_with_structure disables __node__DecisionNode__74__0;
+requirement invariant Context.__postcondition_with_structure disables __node__DecisionNode__74__1;
+requirement invariant Context.__postcondition_with_structure disables __node__MergeNode__75__0;
+requirement invariant Context.__postcondition_with_structure disables __node__MergeNode__75__1;
+requirement invariant Context.__postcondition_with_structure disables __node__JoinNode__77;
+requirement invariant Context.__postcondition_with_structure disables __node__ForkNode__78;
+requirement invariant Context.__postcondition_without_structure disables __node__CallBehaviorAction__79;
+requirement invariant Context.__postcondition_without_structure disables __node__CallBehaviorAction__80;
+requirement invariant Context.__postcondition_without_structure disables __node__CallBehaviorAction__81;
+requirement invariant Context.__postcondition_with_structure disables __node__CallBehaviorAction__81__result_1;
+requirement invariant Context.__postcondition_with_structure disables __node__CallBehaviorAction__81__result_2;
+requirement invariant Context.__postcondition_without_structure disables __node__CallBehaviorAction__82;
+requirement invariant Context.__postcondition_without_structure disables __node__CallBehaviorAction__83;
+requirement invariant Context.__postcondition_without_structure disables __node__CallBehaviorAction__84;

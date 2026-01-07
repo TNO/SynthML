@@ -71,12 +71,12 @@ plant automaton Context:
     edge __node__DecisionNode__324__1 when true, __controlflow__300, not __controlflow__294, count = 1 or (count = 3 or count = 5) do __controlflow__300 := false, __controlflow__294 := true;
     edge __node__DecisionNode__324__2 when true, __controlflow__300, not __controlflow__296, count = 0 or (count = 2 or count = 4) do __controlflow__300 := false, __controlflow__296 := true;
     edge __node__DecisionNode__324__3 when true, __controlflow__300, not __controlflow__298, count = 0 or (count = 2 or count = 4) do __controlflow__300 := false, __controlflow__298 := true;
-    edge __node__DecisionNode__325__0 when true, __controlflow__305, not __controlflow__301, true do __controlflow__305 := false, __controlflow__301 := true;
-    edge __node__DecisionNode__325__1 when true, __controlflow__305, not __controlflow__303, true do __controlflow__305 := false, __controlflow__303 := true;
+    edge __node__DecisionNode__325__0 when true, __controlflow__305, not __controlflow__301 do __controlflow__305 := false, __controlflow__301 := true;
+    edge __node__DecisionNode__325__1 when true, __controlflow__305, not __controlflow__303 do __controlflow__305 := false, __controlflow__303 := true;
     edge __node__MergeNode__326__0 when true, __controlflow__306, true, not __controlflow__312 do __controlflow__306 := false, __controlflow__312 := true;
     edge __node__MergeNode__326__1 when true, __controlflow__307, true, not __controlflow__312 do __controlflow__307 := false, __controlflow__312 := true;
-    edge __node__DecisionNode__327__0 when true, __controlflow__312, not __controlflow__308, true do __controlflow__312 := false, __controlflow__308 := true;
-    edge __node__DecisionNode__327__1 when true, __controlflow__312, not __controlflow__310, true do __controlflow__312 := false, __controlflow__310 := true;
+    edge __node__DecisionNode__327__0 when true, __controlflow__312, not __controlflow__308 do __controlflow__312 := false, __controlflow__308 := true;
+    edge __node__DecisionNode__327__1 when true, __controlflow__312, not __controlflow__310 do __controlflow__312 := false, __controlflow__310 := true;
     edge __node__MergeNode__328__0 when true, __controlflow__313, true, not __controlflow__316 do __controlflow__313 := false, __controlflow__316 := true;
     edge __node__MergeNode__328__1 when true, __controlflow__314, true, not __controlflow__316 do __controlflow__314 := false, __controlflow__316 := true;
     edge __node__MergeNode__328__2 when true, __controlflow__315, true, not __controlflow__316 do __controlflow__315 := false, __controlflow__316 := true;

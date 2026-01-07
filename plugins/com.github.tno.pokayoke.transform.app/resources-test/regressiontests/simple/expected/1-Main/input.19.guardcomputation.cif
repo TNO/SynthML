@@ -1,0 +1,135 @@
+enum RobotLocation = Location1, Location2;
+enum UnknownBool = True, False, Unknown;
+controllable __node__MergeNode__96__0;
+controllable __node__MergeNode__96__1;
+controllable __node__DecisionNode__97__0;
+controllable __node__DecisionNode__97__1;
+controllable __node__ForkNode__98;
+controllable __node__JoinNode__99;
+controllable __node__CallBehaviorAction__100;
+uncontrollable __node__CallBehaviorAction__100__result_1;
+uncontrollable __node__CallBehaviorAction__100__result_2;
+controllable __node__CallBehaviorAction__101;
+controllable __node__CallBehaviorAction__102;
+controllable __node__CallBehaviorAction__103;
+controllable __node__CallBehaviorAction__104;
+controllable __node__CallBehaviorAction__105;
+controllable __node__CallBehaviorAction__106;
+plant automaton Context:
+  disc bool robotPrepared = false;
+  disc bool location2Prepared = false;
+  disc RobotLocation robotLocation = Location1;
+  disc bool robotHasProduct = true;
+  disc bool location2HasProduct = false;
+  disc UnknownBool productCorrectlyPlaced = Unknown;
+  disc bool __controlflow__80;
+  disc bool __controlflow__81;
+  disc bool __controlflow__82;
+  disc bool __controlflow__83;
+  disc bool __controlflow__84;
+  disc bool __controlflow__85;
+  disc bool __controlflow__86;
+  disc bool __controlflow__87;
+  disc bool __controlflow__88;
+  disc bool __controlflow__89;
+  disc bool __controlflow__90;
+  disc bool __controlflow__91;
+  disc bool __controlflow__92;
+  disc bool __controlflow__93 = true;
+  disc int[0..1] __activeAction;
+  alg bool __token_on_first_controlflow = __controlflow__93;
+  alg bool __precondition = __token_on_first_controlflow;
+  alg bool postcondition = not robotHasProduct and robotLocation = Location1 and location2HasProduct and productCorrectlyPlaced = True;
+  alg bool __postcondition_without_structure__activeAction = __activeAction = 0;
+  alg bool __postcondition_without_structure__happen_at_most_once__76__prepare_robot__107 = happen_at_most_once__76__prepare_robot__107.__occurrences >= 0;
+  alg bool __postcondition_without_structure__happen_at_most_once__76__robot_move_to_location2__111 = happen_at_most_once__76__robot_move_to_location2__111.__occurrences >= 0;
+  alg bool __postcondition_without_structure__happen_at_most_once__76__robot_release_product_at_location2__115 = happen_at_most_once__76__robot_release_product_at_location2__115.__occurrences >= 0;
+  alg bool __postcondition_without_structure__happen_at_most_once__76__prepare_location2__117 = happen_at_most_once__76__prepare_location2__117.__occurrences >= 0;
+  alg bool __postcondition_without_structure = postcondition and (__postcondition_without_structure__activeAction and __postcondition_without_structure__happen_at_most_once__76__prepare_robot__107) and (__postcondition_without_structure__happen_at_most_once__76__robot_move_to_location2__111 and (__postcondition_without_structure__happen_at_most_once__76__robot_release_product_at_location2__115 and __postcondition_without_structure__happen_at_most_once__76__prepare_location2__117));
+  alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
+  alg bool __postcondition_with_structure__controlflow__80 = not __controlflow__80;
+  alg bool __postcondition_with_structure__controlflow__81 = not __controlflow__81;
+  alg bool __postcondition_with_structure__controlflow__82 = not __controlflow__82;
+  alg bool __postcondition_with_structure__controlflow__83 = not __controlflow__83;
+  alg bool __postcondition_with_structure__controlflow__84 = not __controlflow__84;
+  alg bool __postcondition_with_structure__controlflow__85 = not __controlflow__85;
+  alg bool __postcondition_with_structure__controlflow__86 = not __controlflow__86;
+  alg bool __postcondition_with_structure__controlflow__87 = not __controlflow__87;
+  alg bool __postcondition_with_structure__controlflow__88 = not __controlflow__88;
+  alg bool __postcondition_with_structure__controlflow__89 = not __controlflow__89;
+  alg bool __postcondition_with_structure__controlflow__90 = not __controlflow__90;
+  alg bool __postcondition_with_structure__controlflow__91 = not __controlflow__91;
+  alg bool __postcondition_with_structure__controlflow__93 = not __controlflow__93;
+  alg bool __token_on_last_controlflow = __controlflow__92;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure and (__postcondition_with_structure__controlflow__80 and __postcondition_with_structure__controlflow__81) and (__postcondition_with_structure__controlflow__82 and __postcondition_with_structure__controlflow__83 and (__postcondition_with_structure__controlflow__84 and __postcondition_with_structure__controlflow__85)) and (__postcondition_with_structure__controlflow__86 and __postcondition_with_structure__controlflow__87 and (__postcondition_with_structure__controlflow__88 and __postcondition_with_structure__controlflow__89) and (__postcondition_with_structure__controlflow__90 and __postcondition_with_structure__controlflow__91 and (__postcondition_with_structure__controlflow__93 and __token_on_last_controlflow)));
+  initial __precondition;
+  marked __postcondition_with_structure;
+  requirement invariant Req1: __node__CallBehaviorAction__105 needs robotLocation = Location1 and location2Prepared;
+  requirement invariant Req2: __node__CallBehaviorAction__104 needs robotLocation = Location2;
+  requirement invariant Req3: __node__CallBehaviorAction__103 needs robotLocation = Location2;
+  location:
+    initial;
+    marked;
+    edge __node__MergeNode__96__0 when true, __controlflow__85, not __controlflow__87, __activeAction = 0 do __controlflow__85 := false, __controlflow__87 := true;
+    edge __node__MergeNode__96__1 when true, __controlflow__86, not __controlflow__87, __activeAction = 0 do __controlflow__86 := false, __controlflow__87 := true;
+    edge __node__DecisionNode__97__0 when true, __controlflow__90, not __controlflow__88, __activeAction = 0 do __controlflow__90 := false, __controlflow__88 := true;
+    edge __node__DecisionNode__97__1 when true, __controlflow__90, not __controlflow__89, __activeAction = 0 do __controlflow__90 := false, __controlflow__89 := true;
+    edge __node__ForkNode__98 when true, __controlflow__93, not __controlflow__80, not __controlflow__81, __activeAction = 0 do __controlflow__93 := false, __controlflow__80 := true, __controlflow__81 := true;
+    edge __node__JoinNode__99 when true, __controlflow__82, __controlflow__83, not __controlflow__91, __activeAction = 0 do __controlflow__82 := false, __controlflow__83 := false, __controlflow__91 := true;
+    edge __node__CallBehaviorAction__100 when location2Prepared and location2HasProduct and productCorrectlyPlaced = Unknown, __controlflow__87, not __controlflow__90, __activeAction = 0 do __controlflow__87 := false, __activeAction := 1;
+    edge __node__CallBehaviorAction__100__result_1 when not __controlflow__90, __activeAction = 1 do productCorrectlyPlaced := True, __controlflow__90 := true, __activeAction := 0;
+    edge __node__CallBehaviorAction__100__result_2 when not __controlflow__90, __activeAction = 1 do productCorrectlyPlaced := False, __controlflow__90 := true, __activeAction := 0;
+    edge __node__CallBehaviorAction__101 when not location2Prepared, __controlflow__80, not __controlflow__82, __activeAction = 0 do location2Prepared := true, __controlflow__80 := false, __controlflow__82 := true;
+    edge __node__CallBehaviorAction__102 when not robotPrepared, __controlflow__81, not __controlflow__83, __activeAction = 0 do robotPrepared := true, __controlflow__81 := false, __controlflow__83 := true;
+    edge __node__CallBehaviorAction__103 when robotPrepared and productCorrectlyPlaced = False, __controlflow__88, not __controlflow__85, __activeAction = 0 do productCorrectlyPlaced := Unknown, __controlflow__88 := false, __controlflow__85 := true;
+    edge __node__CallBehaviorAction__104 when robotPrepared, __controlflow__89, not __controlflow__92, __activeAction = 0 do robotLocation := Location1, __controlflow__89 := false, __controlflow__92 := true;
+    edge __node__CallBehaviorAction__105 when robotPrepared, __controlflow__91, not __controlflow__84, __activeAction = 0 do robotLocation := Location2, __controlflow__91 := false, __controlflow__84 := true;
+    edge __node__CallBehaviorAction__106 when robotPrepared and robotLocation = Location2, __controlflow__84, not __controlflow__86, __activeAction = 0 do robotHasProduct := false, location2HasProduct := true, __controlflow__84 := false, __controlflow__86 := true;
+end
+requirement automaton happen_at_most_once__76__prepare_robot__107:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+    edge __node__CallBehaviorAction__102 when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+requirement automaton happen_at_most_once__76__robot_move_to_location2__111:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+    edge __node__CallBehaviorAction__105 when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+requirement automaton happen_at_most_once__76__robot_release_product_at_location2__115:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+    edge __node__CallBehaviorAction__106 when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+requirement automaton happen_at_most_once__76__prepare_location2__117:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+    edge __node__CallBehaviorAction__101 when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+requirement invariant Context.__postcondition_with_structure disables __node__MergeNode__96__0;
+requirement invariant Context.__postcondition_with_structure disables __node__MergeNode__96__1;
+requirement invariant Context.__postcondition_with_structure disables __node__DecisionNode__97__0;
+requirement invariant Context.__postcondition_with_structure disables __node__DecisionNode__97__1;
+requirement invariant Context.__postcondition_with_structure disables __node__ForkNode__98;
+requirement invariant Context.__postcondition_with_structure disables __node__JoinNode__99;
+requirement invariant Context.__postcondition_without_structure disables __node__CallBehaviorAction__100;
+requirement invariant Context.__postcondition_with_structure disables __node__CallBehaviorAction__100__result_1;
+requirement invariant Context.__postcondition_with_structure disables __node__CallBehaviorAction__100__result_2;
+requirement invariant Context.__postcondition_without_structure disables __node__CallBehaviorAction__101;
+requirement invariant Context.__postcondition_without_structure disables __node__CallBehaviorAction__102;
+requirement invariant Context.__postcondition_without_structure disables __node__CallBehaviorAction__103;
+requirement invariant Context.__postcondition_without_structure disables __node__CallBehaviorAction__104;
+requirement invariant Context.__postcondition_without_structure disables __node__CallBehaviorAction__105;
+requirement invariant Context.__postcondition_without_structure disables __node__CallBehaviorAction__106;

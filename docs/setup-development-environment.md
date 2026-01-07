@@ -1,4 +1,4 @@
-# Setting up a Poka Yoke development environment
+# Setting up a SynthML development environment
 
 ## Prerequisites
 
@@ -29,7 +29,7 @@ The following steps can be used to generate an SSH key using the Eclipse install
 
 ## Setup
 
-Use the following steps to set up an Eclipse development environment for Poka Yoke development:
+Use the following steps to set up an Eclipse development environment for SynthML development:
 
 1. Download the Eclipse Installer, from https://eclipse.org/downloads.
 2. Run the Eclipse Installer.
@@ -37,9 +37,9 @@ Use the following steps to set up an Eclipse development environment for Poka Yo
    * In case you haven't yet configured SSH keys, consider following the steps described above in the prerequisites, for generating SSH keys within the Eclipse installer.
 4. Select `Eclipse Platform`, `2024-09` and `JRE 21.* - https://download.eclipse.org/justj/jres/21/updates/release/latest`.
 5. Click `Next`.
-6. Use the green plus button to add `file:/X:/PokaYoke/Oomph/com.github.tno.pokayoke.setup`.
+6. Use the green plus button to add `https://raw.githubusercontent.com/TNO/SynthML/main/com.github.tno.synthml.setup`.
   Choose `Catalog: Eclipse Projects` in the dropdown box.
-7. Select `PokaYoke` and press `Next`.
+7. Select `SynthML` and press `Next`.
 8. Enable `Show all variables` and configure `Root install folder`, `Installation folder name`, `GitHub account full name` and `GitHub account email address`.
 9. Click `Next` and then click `Finish`.
 10. When the installer asks trusting licenses and content, accept all licenses and trust all content from all authorities.

@@ -1,3 +1,12 @@
+////////////////////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2023-2025 TNO and Contributors to the GitHub community
+//
+// This program and the accompanying materials are made available under the terms of the
+// Eclipse Public License v2.0 which accompanies this distribution, and is available at
+// https://spdx.org/licenses/EPL-2.0.html
+//
+// SPDX-License-Identifier: EPL-2.0
+////////////////////////////////////////////////////////////////////////////////////////
 
 package com.github.tno.pokayoke.transform.uml2cameo;
 
@@ -196,10 +205,10 @@ public class UMLToCameoTransformer {
             }
         }
 
-        // Make sure the class does not contain an attribute named 'active'.
-        Preconditions.checkArgument(
-                contextClass.getOwnedAttributes().stream().noneMatch(a -> a.getName().equals("active")),
-                "Expected no attribute named 'active' to already exist in the single class of the model.");
+        // Make sure the class does not contain identically named attributes, and create the new properties.
+        addNewStringProperty("active", contextClass);
+        addNewStringProperty("call_stack", contextClass);
+        addNewStringProperty("csv_export_location", contextClass);
 
         // Obtain the activity that the single class within the model should have, as classifier behavior.
         Activity mainActivity = (Activity)contextClass.getClassifierBehavior();
@@ -225,21 +234,11 @@ public class UMLToCameoTransformer {
         model.getPackagedElements().add(acquireEvent);
 
         // Create the activity that handles lock acquisition.
-        Activity lockHandlerActivity = ActivityHelper.createLockHanderActivity(acquireEvent);
+        Activity lockHandlerActivity = ActivityHelper.createLockHanderActivity(acquireEvent, ctxManager);
         lockHandlerActivity.setName("lockhandler");
         lockClass.getOwnedBehaviors().add(lockHandlerActivity);
 
         // 3. Transform the single class within the model.
-
-        // Create the static property that indicates the current owner of the lock (if any).
-        Property activeProperty = FileHelper.FACTORY.createProperty();
-        activeProperty.setIsStatic(true);
-        activeProperty.setName("active");
-        activeProperty.setType(UmlPrimitiveType.STRING.load(lockClass));
-        LiteralString activePropertyDefaultValue = FileHelper.FACTORY.createLiteralString();
-        activePropertyDefaultValue.setValue("");
-        activeProperty.setDefaultValue(activePropertyDefaultValue);
-        contextClass.getOwnedAttributes().add(activeProperty);
 
         // Transform all opaque behaviors within the model.
         for (OpaqueBehavior behavior: getNestedOpaqueBehaviorsOf(model)) {
@@ -287,6 +286,37 @@ public class UMLToCameoTransformer {
         if (pokaYokeUmlProfile != null) {
             model.unapplyProfile(pokaYokeUmlProfile);
         }
+    }
+
+    /**
+     * Adds a new static {@code String}-typed property to the given UML class, with an empty-string default.
+     *
+     * <p>
+     * Precondition: the class must not already define an attribute with the same name.
+     * </p>
+     *
+     * @param propertyName The UML property name to add. Must not already exist in {@code contextClass}.
+     * @param contextClass The UML class to which the property is added.
+     * @throws IllegalArgumentException If an attribute with {@code propertyName} already exists.
+     */
+    private void addNewStringProperty(String propertyName, Class contextClass) {
+        // Verify the class does not already declare an attribute with the requested name.
+        Preconditions.checkArgument(
+                contextClass.getOwnedAttributes().stream().noneMatch(a -> a.getName().equals(propertyName)),
+                String.format("Expected no attribute named '%s' to already exist in the single class of the model.",
+                        propertyName));
+
+        // Create a static String-typed property with an empty-string default value.
+        Property property = FileHelper.FACTORY.createProperty();
+        property.setIsStatic(true);
+        property.setName(propertyName);
+        property.setType(UmlPrimitiveType.STRING.load(contextClass));
+
+        LiteralString defaultValueLiteral = FileHelper.FACTORY.createLiteralString();
+        defaultValueLiteral.setValue("");
+        property.setDefaultValue(defaultValueLiteral);
+
+        contextClass.getOwnedAttributes().add(property);
     }
 
     /**

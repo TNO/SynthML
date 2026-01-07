@@ -1,9 +1,20 @@
+////////////////////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2023-2025 TNO and Contributors to the GitHub community
+//
+// This program and the accompanying materials are made available under the terms of the
+// Eclipse Public License v2.0 which accompanies this distribution, and is available at
+// https://spdx.org/licenses/EPL-2.0.html
+//
+// SPDX-License-Identifier: EPL-2.0
+////////////////////////////////////////////////////////////////////////////////////////
 
 package com.github.tno.pokayoke.transform.flatten;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.CoreException;
@@ -22,11 +33,13 @@ import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.MergeNode;
 import org.eclipse.uml2.uml.Model;
 
+import com.github.tno.pokayoke.transform.common.ExprHelper;
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.transform.common.IDHelper;
 import com.github.tno.pokayoke.transform.common.NameHelper;
 import com.github.tno.pokayoke.transform.common.StructureInfoHelper;
 import com.github.tno.pokayoke.transform.common.ValidationHelper;
+import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.github.tno.synthml.uml.profile.util.UMLActivityUtils;
 
 /** Flattens nested UML activities. */
@@ -151,6 +164,20 @@ public class FlattenUMLActivity {
                     callBehaviorActionToReplace.getIncomings().get(0).setTarget(initialNodeSub);
                     initialNodeSub.setActivity(parentActivity);
                     initialNodeSub.setName(initialNode.getName());
+
+                    // If the activity has any usage preconditions, conjunct them with the incoming guard of the
+                    // outgoing edge.
+                    Set<String> activityPreconditions = childBehaviorCopy.getPreconditions().stream()
+                            .filter(p -> PokaYokeUmlProfileUtil.isUsagePrecondition(p))
+                            .map(up -> PokaYokeUmlProfileUtil.getConstraintBodyExpression(up))
+                            .collect(Collectors.toCollection(LinkedHashSet::new));
+                    activityPreconditions
+                            .add(PokaYokeUmlProfileUtil.getIncomingGuard(initialNodeSub.getOutgoings().get(0)));
+                    Set<String> filteredPreconditions = activityPreconditions.stream()
+                            .filter(p -> !ExprHelper.isNullOrTriviallyTrue(p))
+                            .collect(Collectors.toCollection(LinkedHashSet::new));
+                    PokaYokeUmlProfileUtil.setIncomingGuard(initialNodeSub.getOutgoings().get(0),
+                            ExprHelper.conjoinExprs(filteredPreconditions));
 
                     // Destroy the initial node.
                     initialNode.destroy();

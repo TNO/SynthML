@@ -23,7 +23,7 @@ plant automaton Machine:
   location:
     initial;
     marked;
-    edge __node__JoinNode__50 when true, __controlflow__42, __controlflow__43, not __controlflow__44, true do __controlflow__42 := false, __controlflow__43 := false, __controlflow__44 := true;
+    edge __node__JoinNode__50 when true, __controlflow__42, __controlflow__43, not __controlflow__44 do __controlflow__42 := false, __controlflow__43 := false, __controlflow__44 := true;
     edge __node__ForkNode__51 when true, __controlflow__46, true, not __controlflow__40, not __controlflow__41 do __controlflow__46 := false, __controlflow__40 := true, __controlflow__41 := true;
     edge __node__CallBehaviorAction__52 when true, __controlflow__40, true, not __controlflow__42 do a_executed := true, __controlflow__40 := false, __controlflow__42 := true;
     edge __node__CallBehaviorAction__53 when true, __controlflow__41, true, not __controlflow__43, not __nonAtomicActive____node__CallBehaviorAction__53 do __controlflow__41 := false, __nonAtomicActive____node__CallBehaviorAction__53 := true;

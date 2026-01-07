@@ -1,9 +1,20 @@
+////////////////////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2023-2025 TNO and Contributors to the GitHub community
+//
+// This program and the accompanying materials are made available under the terms of the
+// Eclipse Public License v2.0 which accompanies this distribution, and is available at
+// https://spdx.org/licenses/EPL-2.0.html
+//
+// SPDX-License-Identifier: EPL-2.0
+////////////////////////////////////////////////////////////////////////////////////////
 
 package com.github.tno.pokayoke.transform.uml2cameo;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.Range;
 import org.eclipse.uml2.uml.AcceptEventAction;
@@ -176,7 +187,7 @@ public class ActivityHelper {
         // Define the requester value specification node.
         OpaqueAction requesterValueNode = FileHelper.FACTORY.createOpaqueAction();
         requesterValueNode.setActivity(activity);
-        requesterValueNode.getBodies().add("import uuid\r\n" + "requester = \'" + name + "_\' + str(uuid.uuid4())");
+        requesterValueNode.getBodies().add("import uuid\n" + "requester = \'" + name + "_\' + str(uuid.uuid4())");
         requesterValueNode.getLanguages().add("Python");
         OutputPin requesterValueOutput = requesterValueNode.createOutputValue("requester",
                 UmlPrimitiveType.STRING.load(acquire));
@@ -247,8 +258,19 @@ public class ActivityHelper {
         guardAndEffectNode.setActivity(activity);
         guardAndEffectNode.getLanguages().add("Python");
         String randomImport = effects.size() > 1 ? "import random\n" : "";
-        String guardAndEffectBody = String.format("%sguard = %s\n%s\nactive = ''\nisSuccessful = guard", randomImport,
-                guard, effectBody);
+        String updateCallStackPy = """
+                current_exec = [tmp__e for tmp__e in self.execution if tmp__e.refSession == _session_][0]
+                tmp__chain = []
+                while current_exec:
+                    tmp__s = str(current_exec)
+                    tmp__s = tmp__s[:tmp__s.rfind('@')] if '@' in tmp__s else tmp__s
+                    if tmp__s.endswith('(classifier behavior)'):
+                        tmp__s = tmp__s[:-len('(classifier behavior)')]
+                    tmp__chain.insert(0, tmp__s)
+                    current_exec = current_exec.parentExecution
+                call_stack = '->'.join(tmp__chain)""";
+        String guardAndEffectBody = String.format("%sguard = %s\n%s\nactive = ''\nisSuccessful = guard\n%s",
+                randomImport, guard, effectBody, updateCallStackPy);
         guardAndEffectNode.getBodies().add(guardAndEffectBody);
         OutputPin guardAndEffectOutput = guardAndEffectNode.createOutputValue("isSuccessful",
                 UmlPrimitiveType.BOOLEAN.load(acquire));
@@ -416,9 +438,10 @@ public class ActivityHelper {
      * updating the shared variable 'active' accordingly, in a loop.
      *
      * @param acquireEvent The acquire signal event to listen to.
+     * @param ctxManager The context manager for retrieving the properties to log.
      * @return The created lock handling activity.
      */
-    public static Activity createLockHanderActivity(SignalEvent acquireEvent) {
+    public static Activity createLockHanderActivity(SignalEvent acquireEvent, CifContextManager ctxManager) {
         Signal acquireSignal = acquireEvent.getSignal();
         Property acquireParameter = acquireSignal.getOwnedAttributes().get(0);
 
@@ -438,6 +461,25 @@ public class ActivityHelper {
         initToOuterMergeFlow.setActivity(activity);
         initToOuterMergeFlow.setSource(initNode);
         initToOuterMergeFlow.setTarget(outerMergeNode);
+
+        // Create a Python list of all property names to record.
+        List<String> csvLogColumns = Stream.concat(Stream.of("call_stack"), ctxManager.getGlobalContext()
+                .getAllDeclaredProperties().stream().map(property -> property.getName()).sorted()).toList();
+
+        // Define the log file creator node.
+        String collectStatePy = csvLogColumns.stream().map(name -> "str(globals()['" + name + "'])")
+                .collect(Collectors.joining(","));
+        String createNewLogFilePy = """
+                import os
+                from datetime import datetime
+                if not os.path.exists('SynthML-Cameo-logs'):
+                    os.makedirs('SynthML-Cameo-logs')
+                csv_export_location = 'SynthML-Cameo-logs/log ' + datetime.now().strftime('%%Y-%%m-%%d %%H-%%M-%%S.%%f') + '.csv'
+                with open(csv_export_location, 'w') as f:
+                    f.write('%s\\n')
+                    f.write(','.join([%s]) + '\\n')"""
+                .formatted(String.join(",", csvLogColumns), collectStatePy);
+        insertEffectsActivity(initToOuterMergeFlow, "init_logs", createNewLogFilePy);
 
         // Define the node that accepts acquire signals.
         AcceptEventAction acceptAcquireNode = FileHelper.FACTORY.createAcceptEventAction();
@@ -535,6 +577,11 @@ public class ActivityHelper {
         decisionToWaitGuard.getLanguages().add("Python");
         decisionToOuterMergeFlow.setGuard(decisionToWaitGuard);
 
+        String appendStateToCSVPy = """
+                with open(csv_export_location, 'a') as f:
+                    f.write(','.join([%s]) + '\\n')""".formatted(collectStatePy);
+        insertEffectsActivity(decisionToOuterMergeFlow, "log_state", appendStateToCSVPy);
+
         // Define the control flow between the decision node and the inner merge node.
         ControlFlow decisionToInnerMergeFlow = FileHelper.FACTORY.createControlFlow();
         decisionToInnerMergeFlow.setActivity(activity);
@@ -546,6 +593,62 @@ public class ActivityHelper {
         decisionToInnerMergeFlow.setGuard(decisionToInnerMergeGuard);
 
         return activity;
+    }
+
+    /**
+     * Inserts an activity that evaluates Python effects at the given {@link ControlFlow}.
+     *
+     * @param insertLocation The control flow into which the new activity is inserted.
+     * @param name The name of the new activity.
+     * @param effectsBody The Python effects body.
+     */
+    private static void insertEffectsActivity(ControlFlow insertLocation, String name, String effectsBody) {
+        Activity parentActivity = insertLocation.getActivity();
+
+        // Create the activity.
+        Activity effectsActivity = FileHelper.FACTORY.createActivity();
+        effectsActivity.setName(name);
+        parentActivity.getOwnedBehaviors().add(effectsActivity);
+
+        // Define the initial node.
+        InitialNode initNode = FileHelper.FACTORY.createInitialNode();
+        initNode.setActivity(effectsActivity);
+
+        // Define the node to evaluate the effects.
+        OpaqueAction effectsNode = FileHelper.FACTORY.createOpaqueAction();
+        effectsNode.setActivity(effectsActivity);
+        effectsNode.getLanguages().add("Python");
+        effectsNode.getBodies().add(effectsBody);
+
+        // Define the final node.
+        ActivityFinalNode finalNode = FileHelper.FACTORY.createActivityFinalNode();
+        finalNode.setActivity(effectsActivity);
+
+        // Define the control flow between the initial node and the effects node.
+        ControlFlow initToEffectsFlow = FileHelper.FACTORY.createControlFlow();
+        initToEffectsFlow.setActivity(effectsActivity);
+        initToEffectsFlow.setSource(initNode);
+        initToEffectsFlow.setTarget(effectsNode);
+
+        // Define the control flow between the effects node and the final node.
+        ControlFlow effectsToFinalFlow = FileHelper.FACTORY.createControlFlow();
+        effectsToFinalFlow.setActivity(effectsActivity);
+        effectsToFinalFlow.setSource(effectsNode);
+        effectsToFinalFlow.setTarget(finalNode);
+
+        // Create the call behavior node that calls the activity we just created.
+        CallBehaviorAction callNode = FileHelper.FACTORY.createCallBehaviorAction();
+        callNode.setActivity(parentActivity);
+        callNode.setBehavior(effectsActivity);
+
+        // Define the control flow between the call behavior node and the original target node.
+        ControlFlow callToTargetFlow = FileHelper.FACTORY.createControlFlow();
+        callToTargetFlow.setActivity(parentActivity);
+        callToTargetFlow.setSource(callNode);
+        callToTargetFlow.setTarget(insertLocation.getTarget());
+
+        // Update the target of the pre-existing control flow.
+        insertLocation.setTarget(callNode);
     }
 
     /**

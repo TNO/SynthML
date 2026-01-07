@@ -38,7 +38,7 @@ plant automaton Machine:
   location:
     initial;
     marked;
-    edge __node__JoinNode__72 when true, __controlflow__64, __controlflow__65, not __controlflow__66, true, __activeAction = 0 do __controlflow__64 := false, __controlflow__65 := false, __controlflow__66 := true;
+    edge __node__JoinNode__72 when true, __controlflow__64, __controlflow__65, not __controlflow__66, __activeAction = 0 do __controlflow__64 := false, __controlflow__65 := false, __controlflow__66 := true;
     edge __node__ForkNode__73 when true, __controlflow__68, true, not __controlflow__60, not __controlflow__61, __activeAction = 0 do __controlflow__68 := false, __controlflow__60 := true, __controlflow__61 := true;
     edge __node__CallBehaviorAction__74 when a_executed = true, __controlflow__62, true, not __controlflow__64, __activeAction = 0 do __controlflow__62 := false, __activeAction := 1;
     edge __node__CallBehaviorAction__74__result_1 when not __controlflow__64, __activeAction = 1 do b_executed := true, __controlflow__64 := true, __activeAction := 0;

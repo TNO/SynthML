@@ -1,0 +1,20 @@
+controllable flip;
+controllable ImpossibleBehavior;
+controllable __start;
+controllable __end;
+automaton projected:
+  alphabet flip, ImpossibleBehavior, __start, __end;
+  @state(synthesis_state_space: "__init")
+  location s1:
+    initial;
+    edge __start goto s2;
+  @state(synthesis_state_space: "loc1")
+  location s2:
+    edge flip goto s3;
+  @state(synthesis_state_space: "loc2")
+  location s3:
+    edge __end goto s4;
+  @state(synthesis_state_space: "__done")
+  location s4:
+    marked;
+end

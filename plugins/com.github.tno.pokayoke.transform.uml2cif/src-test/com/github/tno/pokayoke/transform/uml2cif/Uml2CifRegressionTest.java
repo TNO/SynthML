@@ -1,8 +1,18 @@
+////////////////////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2023-2025 TNO and Contributors to the GitHub community
+//
+// This program and the accompanying materials are made available under the terms of the
+// Eclipse Public License v2.0 which accompanies this distribution, and is available at
+// https://spdx.org/licenses/EPL-2.0.html
+//
+// SPDX-License-Identifier: EPL-2.0
+////////////////////////////////////////////////////////////////////////////////////////
 
 package com.github.tno.pokayoke.transform.uml2cif;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -69,7 +79,8 @@ public class Uml2CifRegressionTest extends RegressionTest {
 
             // Translate the current UML activity to a CIF specification.
             Specification cifSpecification = new UmlToCifTranslator(context, activity,
-                    UmlToCifTranslationPurpose.SYNTHESIS, new SynthesisChainTracking()).translate();
+                    UmlToCifTranslationPurpose.SYNTHESIS, new SynthesisChainTracking(activity), new ArrayList<>())
+                            .translate();
 
             // Store the translated CIF specification.
             try {

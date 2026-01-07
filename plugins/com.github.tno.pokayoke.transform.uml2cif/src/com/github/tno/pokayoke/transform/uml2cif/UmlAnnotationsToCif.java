@@ -1,3 +1,12 @@
+////////////////////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2023-2025 TNO and Contributors to the GitHub community
+//
+// This program and the accompanying materials are made available under the terms of the
+// Eclipse Public License v2.0 which accompanies this distribution, and is available at
+// https://spdx.org/licenses/EPL-2.0.html
+//
+// SPDX-License-Identifier: EPL-2.0
+////////////////////////////////////////////////////////////////////////////////////////
 
 package com.github.tno.pokayoke.transform.uml2cif;
 
@@ -276,8 +285,11 @@ public class UmlAnnotationsToCif extends ACifObjectWalker<Object> {
                         String.format("UML element '%s' does not belong to the CIF context.", event));
                 List<Event> cifEvents = synthesisTracker.getStartEventsCorrespondingToOriginalUmlElement(umlElement,
                         translationPurpose);
-                Verify.verify(cifEvents.size() > 0, String
-                        .format("Could not find any CIF event corresponding to a UML element called '%s'.", event));
+
+                if (cifEvents.size() == 0) {
+                    // If there are no CIF events related to the these events, skip the translation.
+                    continue;
+                }
 
                 for (Event cifEvent: cifEvents) {
                     Invariant cifInvariant = CifConstructors.newInvariant();

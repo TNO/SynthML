@@ -1,3 +1,12 @@
+////////////////////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2023-2025 TNO and Contributors to the GitHub community
+//
+// This program and the accompanying materials are made available under the terms of the
+// Eclipse Public License v2.0 which accompanies this distribution, and is available at
+// https://spdx.org/licenses/EPL-2.0.html
+//
+// SPDX-License-Identifier: EPL-2.0
+////////////////////////////////////////////////////////////////////////////////////////
 
 package com.github.tno.pokayoke.transform.uml2cif;
 
@@ -66,6 +75,9 @@ public abstract class ModelToCifTranslator {
      */
     protected final SynthesisChainTracking synthesisTracker;
 
+    /** A list of warnings to notify the user of, which is modified in-place. */
+    protected final List<String> warnings;
+
     /**
      * Constructs a new {@link ModelToCifTranslator}.
      *
@@ -73,15 +85,17 @@ public abstract class ModelToCifTranslator {
      * @param tracker The tracker that indicates how results from intermediate steps of the activity synthesis chain
      *     relate to the input UML.
      * @param purpose The translation purpose.
+     * @param warnings Any warnings to notify the user of, which is modified in-place.
      */
-    public ModelToCifTranslator(CifContext context, SynthesisChainTracking tracker,
-            UmlToCifTranslationPurpose purpose)
+    public ModelToCifTranslator(CifContext context, SynthesisChainTracking tracker, UmlToCifTranslationPurpose purpose,
+            List<String> warnings)
     {
         this.context = context;
         this.translationPurpose = purpose;
         this.synthesisTracker = tracker;
         this.translator = new UmlAnnotationsToCif(context, enumMap, enumLiteralMap, variableMap, tracker,
                 translationPurpose);
+        this.warnings = warnings;
     }
 
     /**
@@ -274,7 +288,13 @@ public abstract class ModelToCifTranslator {
      * @return The CIF requirement invariants.
      */
     protected List<Invariant> getInvariants(Constraint constraint) {
-        return translateInvariant(CifParserHelper.parseInvariant(constraint));
+        List<Invariant> result = translateInvariant(CifParserHelper.parseInvariant(constraint));
+        if (result.isEmpty()) {
+            warnings.add(String.format(
+                    "Constraint '%s' was not translated, since its constrained elements are not used in the synthesized activity.",
+                    constraint.getName()));
+        }
+        return result;
     }
 
     /**
@@ -284,9 +304,7 @@ public abstract class ModelToCifTranslator {
      * @return The translated CIF invariant.
      */
     private List<Invariant> translateInvariant(AInvariant invariant) {
-        List<Invariant> result = translator.translate(invariant);
-        Verify.verify(!result.isEmpty(), "Expected at least one translated invariant but got none.");
-        return result;
+        return translator.translate(invariant);
     }
 
     /**
