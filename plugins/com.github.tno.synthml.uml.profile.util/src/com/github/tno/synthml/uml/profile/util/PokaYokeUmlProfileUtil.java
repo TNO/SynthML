@@ -698,7 +698,7 @@ public class PokaYokeUmlProfileUtil {
     public static void setIntervalConstraintMax(IntervalConstraint constraint, String maxValue) {
         applyStereotype(constraint, getPokaYokeProfile(constraint).getOwnedStereotype(ST_OCCURRENCE));
 
-        if (Strings.isNullOrEmpty(maxValue) && getIntervalConstraintMin(constraint).isEmpty()) {
+        if (maxValue.isEmpty() && getIntervalConstraintMin(constraint).isEmpty()) {
             PokaYokeUmlProfileUtil.unapplyStereotype(constraint, OCCURRENCE_STEREOTYPE);
         }
 
@@ -727,7 +727,7 @@ public class PokaYokeUmlProfileUtil {
     public static void setIntervalConstraintMin(IntervalConstraint constraint, String minValue) {
         applyStereotype(constraint, getPokaYokeProfile(constraint).getOwnedStereotype(ST_OCCURRENCE));
 
-        if (Strings.isNullOrEmpty(minValue) && getIntervalConstraintMax(constraint).isEmpty()) {
+        if (minValue.isEmpty() && getIntervalConstraintMax(constraint).isEmpty()) {
             PokaYokeUmlProfileUtil.unapplyStereotype(constraint, OCCURRENCE_STEREOTYPE);
         }
 
