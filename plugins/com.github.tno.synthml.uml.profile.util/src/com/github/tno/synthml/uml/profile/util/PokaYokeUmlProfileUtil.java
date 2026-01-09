@@ -12,6 +12,7 @@ package com.github.tno.synthml.uml.profile.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.emf.common.util.ECollections;
@@ -27,8 +28,12 @@ import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.Element;
+import org.eclipse.uml2.uml.Interval;
+import org.eclipse.uml2.uml.IntervalConstraint;
 import org.eclipse.uml2.uml.LiteralBoolean;
+import org.eclipse.uml2.uml.LiteralInteger;
 import org.eclipse.uml2.uml.LiteralNull;
+import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.Package;
@@ -48,6 +53,7 @@ import SynthML.FormalCallBehaviorAction;
 import SynthML.FormalConstraint;
 import SynthML.FormalControlFlow;
 import SynthML.FormalElement;
+import SynthML.Occurrence;
 import SynthML.Postcondition;
 import SynthML.Requirement;
 import SynthML.SynthMLPackage;
@@ -84,6 +90,8 @@ public class PokaYokeUmlProfileUtil {
 
     public static final String ST_POSTCONDITION = SynthMLPackage.Literals.POSTCONDITION.getName();
 
+    public static final String ST_OCCURRENCE = SynthMLPackage.Literals.OCCURRENCE.getName();
+
     /** Qualified name for the {@link SynthMLPackage Poka Yoke} profile. */
     public static final String POKA_YOKE_PROFILE = SynthMLPackage.eNAME;
 
@@ -117,6 +125,9 @@ public class PokaYokeUmlProfileUtil {
 
     /** Qualified name for the {@link Postcondition} stereotype. */
     public static final String POSTCONDITION_STEREOTYPE = POKA_YOKE_PROFILE + NamedElement.SEPARATOR + ST_POSTCONDITION;
+
+    /** Qualified name for the {@link Occurrence} stereotype. */
+    public static final String OCCURRENCE_STEREOTYPE = POKA_YOKE_PROFILE + NamedElement.SEPARATOR + ST_OCCURRENCE;
 
     private PokaYokeUmlProfileUtil() {
         // Empty for utility classes
@@ -632,5 +643,182 @@ public class PokaYokeUmlProfileUtil {
 
         // Return the opaque expression body.
         return opaqueSpec.getBodies().get(0);
+    }
+
+    public static String getIntervalConstraintMax(IntervalConstraint constraint) {
+        ValueSpecification interval = constraint.getSpecification();
+
+        // If interval is 'null', i.e. yet to be set, return an empty string.
+        if (interval == null) {
+            return "";
+        }
+
+        Verify.verify(interval instanceof Interval,
+                String.format("Interval constraint '%s' must have an interval specification.", constraint.getName()));
+        Integer maxInt = getIntervalMaxValue((Interval)interval);
+        return (maxInt == null) ? "" : String.valueOf(maxInt);
+    }
+
+    public static String getIntervalConstraintMin(IntervalConstraint constraint) {
+        ValueSpecification interval = constraint.getSpecification();
+
+        // If interval is 'null', i.e. yet to be set, return an empty string.
+        if (interval == null) {
+            return "";
+        }
+
+        Verify.verify(interval instanceof Interval,
+                String.format("Interval constraint '%s' must have an interval specification.", constraint.getName()));
+        Integer minInt = getIntervalMinValue((Interval)interval);
+        return (minInt == null) ? "" : String.valueOf(minInt);
+    }
+
+    private static Integer getIntervalMaxValue(Interval interval) {
+        if (interval.getMax() instanceof LiteralInteger maxInteger) {
+            return maxInteger.getValue();
+        } else {
+            return null;
+        }
+    }
+
+    private static Integer getIntervalMinValue(Interval interval) {
+        if (interval.getMin() instanceof LiteralInteger minInteger) {
+            return minInteger.getValue();
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Sets the maximum value of the interval specification of the given interval constraint.
+     *
+     * @param constraint The interval constraint where to set the maximum interval bound.
+     * @param maxValue The maximum value to set.
+     */
+    public static void setIntervalConstraintMax(IntervalConstraint constraint, String maxValue) {
+        applyStereotype(constraint, getPokaYokeProfile(constraint).getOwnedStereotype(ST_OCCURRENCE));
+
+        if (maxValue.isEmpty() && getIntervalConstraintMin(constraint).isEmpty()) {
+            PokaYokeUmlProfileUtil.unapplyStereotype(constraint, OCCURRENCE_STEREOTYPE);
+        }
+
+        // Get the constraint specification.
+        Interval interval = (constraint.getSpecification() == null) ? UMLFactory.eINSTANCE.createInterval()
+                : (Interval)constraint.getSpecification();
+
+        // If the given string is empty, remove the interval's maximum.
+        if (maxValue.isEmpty()) {
+            if (interval.getMax() != null) {
+                removeLiteralInteger((LiteralInteger)interval.getMax());
+                interval.setMax(null);
+            }
+            return;
+        }
+
+        setIntervalMax(constraint, interval, Integer.parseInt(maxValue));
+    }
+
+    /**
+     * Sets the minimum value of the interval specification of the given interval constraint.
+     *
+     * @param constraint The interval constraint where to set the minimum interval bound.
+     * @param minValue The minimum value to set.
+     */
+    public static void setIntervalConstraintMin(IntervalConstraint constraint, String minValue) {
+        applyStereotype(constraint, getPokaYokeProfile(constraint).getOwnedStereotype(ST_OCCURRENCE));
+
+        if (minValue.isEmpty() && getIntervalConstraintMax(constraint).isEmpty()) {
+            PokaYokeUmlProfileUtil.unapplyStereotype(constraint, OCCURRENCE_STEREOTYPE);
+        }
+
+        // Get the constraint specification.
+        Interval interval = (constraint.getSpecification() == null) ? UMLFactory.eINSTANCE.createInterval()
+                : (Interval)constraint.getSpecification();
+
+        // If the given string is empty, remove the interval's minimum.
+        if (minValue.isEmpty()) {
+            if (interval.getMin() != null) {
+                removeLiteralInteger((LiteralInteger)interval.getMin());
+                interval.setMin(null);
+            }
+            return;
+        }
+
+        setIntervalMin(constraint, interval, Integer.parseInt(minValue));
+    }
+
+    private static void removeLiteralInteger(LiteralInteger lit) {
+        List<Interval> intervalsReferencing = findAllIntervalsReferencing(lit);
+
+        // The literal integer can be destroyed if it is used in a single interval, provided that its max and min are
+        // not both referencing it.
+        if (intervalsReferencing.size() == 1) {
+            Interval interval = intervalsReferencing.iterator().next();
+            if (!Objects.equals(interval.getMax(), interval.getMin())) {
+                lit.destroy();
+            }
+        }
+    }
+
+    private static List<Interval> findAllIntervalsReferencing(LiteralInteger lit) {
+        List<IntervalConstraint> occurrenceConstraints = lit.getModel().getPackagedElements().stream()
+                // Get the model's class.
+                .filter(e -> e instanceof Classifier).map(Classifier.class::cast)
+                // Get all activities.
+                .flatMap(c -> c.getOwnedElements().stream().filter(e -> e instanceof Activity))
+                .map(Activity.class::cast)
+                // Get all occurrence constraints.
+                .flatMap(a -> a.getOwnedElements().stream().filter(e -> e instanceof IntervalConstraint))
+                .map(IntervalConstraint.class::cast).toList();
+
+        return occurrenceConstraints.stream()
+                .filter(o -> o.getSpecification() instanceof Interval interval
+                        && (Objects.equals(interval.getMax(), lit) || Objects.equals(interval.getMin(), lit)))
+                .map(o -> o.getSpecification()).map(Interval.class::cast).toList();
+    }
+
+    private static void setIntervalMax(Constraint constraint, Interval interval, int maxValue) {
+        LiteralInteger maxLiteral = getLiteralInteger(constraint, maxValue);
+
+        // Remove the old literal integer, if possible.
+        LiteralInteger currentIntegerBound = (LiteralInteger)interval.getMax();
+        if (currentIntegerBound != null && currentIntegerBound.getValue() != maxValue) {
+            removeLiteralInteger(currentIntegerBound);
+        }
+
+        interval.setMax(maxLiteral);
+        constraint.setSpecification(interval);
+    }
+
+    private static void setIntervalMin(Constraint constraint, Interval interval, int minValue) {
+        LiteralInteger minLiteral = getLiteralInteger(constraint, minValue);
+
+        // Remove the old literal integer, if possible.
+        LiteralInteger currentIntegerBound = (LiteralInteger)interval.getMin();
+        if (currentIntegerBound != null && currentIntegerBound.getValue() != minValue) {
+            removeLiteralInteger(currentIntegerBound);
+        }
+
+        interval.setMin(minLiteral);
+        constraint.setSpecification(interval);
+    }
+
+    private static LiteralInteger getLiteralInteger(Constraint constraint, int newValue) {
+        // Create a new literal integer, if needed.
+        LiteralInteger newLiteral = getFirstLiteralIntegersWithValue(constraint.getModel(), newValue);
+
+        if (newLiteral == null) {
+            newLiteral = UMLFactory.eINSTANCE.createLiteralInteger();
+            newLiteral.setValue(Integer.valueOf(newValue));
+            constraint.getModel().getPackagedElements().add(newLiteral);
+        }
+
+        return newLiteral;
+    }
+
+    private static LiteralInteger getFirstLiteralIntegersWithValue(Model model, int value) {
+        return model.getOwnedElements().stream()
+                .filter(e -> e instanceof LiteralInteger literalInteger && literalInteger.getValue() == value)
+                .findFirst().map(LiteralInteger.class::cast).orElse(null);
     }
 }

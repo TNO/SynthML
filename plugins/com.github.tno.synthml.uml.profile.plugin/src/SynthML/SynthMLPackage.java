@@ -397,6 +397,43 @@ public interface SynthMLPackage extends EPackage {
 	 */
 	int POSTCONDITION_OPERATION_COUNT = FORMAL_CONSTRAINT_OPERATION_COUNT + 0;
 
+	/**
+	 * The meta object id for the '{@link SynthML.impl.OccurrenceImpl <em>Occurrence</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see SynthML.impl.OccurrenceImpl
+	 * @see SynthML.impl.SynthMLPackageImpl#getOccurrence()
+	 * @generated
+	 */
+	int OCCURRENCE = 8;
+
+	/**
+	 * The feature id for the '<em><b>Base Constraint</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int OCCURRENCE__BASE_CONSTRAINT = FORMAL_CONSTRAINT__BASE_CONSTRAINT;
+
+	/**
+	 * The number of structural features of the '<em>Occurrence</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int OCCURRENCE_FEATURE_COUNT = FORMAL_CONSTRAINT_FEATURE_COUNT + 0;
+
+	/**
+	 * The number of operations of the '<em>Occurrence</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int OCCURRENCE_OPERATION_COUNT = FORMAL_CONSTRAINT_OPERATION_COUNT + 0;
+
 
 	/**
 	 * Returns the meta object for class '{@link SynthML.FormalElement <em>Formal Element</em>}'.
@@ -578,6 +615,16 @@ public interface SynthMLPackage extends EPackage {
 	EClass getPostcondition();
 
 	/**
+	 * Returns the meta object for class '{@link SynthML.Occurrence <em>Occurrence</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Occurrence</em>'.
+	 * @see SynthML.Occurrence
+	 * @generated
+	 */
+	EClass getOccurrence();
+
+	/**
 	 * Returns the factory that creates the instances of the model.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -751,6 +798,16 @@ public interface SynthMLPackage extends EPackage {
 		 * @generated
 		 */
 		EClass POSTCONDITION = eINSTANCE.getPostcondition();
+
+		/**
+		 * The meta object literal for the '{@link SynthML.impl.OccurrenceImpl <em>Occurrence</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see SynthML.impl.OccurrenceImpl
+		 * @see SynthML.impl.SynthMLPackageImpl#getOccurrence()
+		 * @generated
+		 */
+		EClass OCCURRENCE = eINSTANCE.getOccurrence();
 
 	}
 

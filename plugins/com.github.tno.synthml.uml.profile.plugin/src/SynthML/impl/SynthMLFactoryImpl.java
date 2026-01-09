@@ -63,6 +63,7 @@ public class SynthMLFactoryImpl extends EFactoryImpl implements SynthMLFactory {
 			case SynthMLPackage.SYNTHESIS_PRECONDITION: return createSynthesisPrecondition();
 			case SynthMLPackage.USAGE_PRECONDITION: return createUsagePrecondition();
 			case SynthMLPackage.POSTCONDITION: return createPostcondition();
+			case SynthMLPackage.OCCURRENCE: return createOccurrence();
 			default:
 				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -143,6 +144,17 @@ public class SynthMLFactoryImpl extends EFactoryImpl implements SynthMLFactory {
 	public Postcondition createPostcondition() {
 		PostconditionImpl postcondition = new PostconditionImpl();
 		return postcondition;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public Occurrence createOccurrence() {
+		OccurrenceImpl occurrence = new OccurrenceImpl();
+		return occurrence;
 	}
 
 	/**

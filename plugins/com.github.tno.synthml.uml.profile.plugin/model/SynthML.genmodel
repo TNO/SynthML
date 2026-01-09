@@ -28,5 +28,6 @@
     <genClasses ecoreClass="SynthML.ecore#//SynthesisPrecondition"/>
     <genClasses ecoreClass="SynthML.ecore#//UsagePrecondition"/>
     <genClasses ecoreClass="SynthML.ecore#//Postcondition"/>
+    <genClasses ecoreClass="SynthML.ecore#//Occurrence"/>
   </genPackages>
 </genmodel:GenModel>

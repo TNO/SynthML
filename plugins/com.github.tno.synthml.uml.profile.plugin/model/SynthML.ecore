@@ -32,4 +32,5 @@
   <eClassifiers xsi:type="ecore:EClass" name="SynthesisPrecondition" eSuperTypes="#//FormalConstraint"/>
   <eClassifiers xsi:type="ecore:EClass" name="UsagePrecondition" eSuperTypes="#//FormalConstraint"/>
   <eClassifiers xsi:type="ecore:EClass" name="Postcondition" eSuperTypes="#//FormalConstraint"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Occurrence" eSuperTypes="#//FormalConstraint"/>
 </ecore:EPackage>
