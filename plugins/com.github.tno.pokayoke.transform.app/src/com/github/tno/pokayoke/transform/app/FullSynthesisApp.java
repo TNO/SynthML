@@ -252,7 +252,7 @@ public class FullSynthesisApp {
         Path petrifyErrorPath = outputFolderPath.resolve("petrify.err");
         PetrifyHelper.convertToPetriNet(petrifyInputPath, petrifyOutputPath,
                 ExecutableHelper.getExecutable("petrify", "com.github.tno.pokayoke.transform.distribution", "bin"),
-                petrifyLogPath, petrifyErrorPath, 20);
+                petrifyLogPath, petrifyErrorPath, 120);
 
         // Load Petrify output.
         List<String> petrifyOutput = PetrifyHelper.readFile(petrifyOutputPath.toString());

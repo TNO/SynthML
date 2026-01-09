@@ -108,7 +108,7 @@ public class PetrifyHelper {
         command.add(parentPath.relativize(petrifyOutputPath).toString());
 
         // When this option is used, Petrify tries to produce the best possible result.
-        command.add("-opt");
+//        command.add("-opt");
 
         if (produceFreeChoiceResult) {
             // Produce a free choice Petri Net, which may lead to more intuitive activity synthesis results.
