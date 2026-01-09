@@ -305,7 +305,9 @@ public class PNML2UMLTranslator {
         // Transform any fork or join pattern in any relevant activity node.
         for (ActivityNode node: activityNodes) {
             // Add join and fork only for opaque actions or control nodes that belong to a concrete activity.
-            if (node instanceof OpaqueAction || tracker.isRelatedToControlNodeOfCalledActivity(node)) {
+            if (node instanceof OpaqueAction
+                    || (tracker != null && tracker.isRelatedToControlNodeOfCalledActivity(node)))
+            {
                 Preconditions.checkArgument(!node.getIncomings().isEmpty(), "Expected at least one incoming edge.");
                 Preconditions.checkArgument(!node.getOutgoings().isEmpty(), "Expected at least one outgoing edge.");
 
@@ -322,7 +324,7 @@ public class PNML2UMLTranslator {
                 }
             } else {
                 // Sanity check: the node is a new node, created at this stage.
-                Verify.verify(!tracker.belongsToSynthesizedActivity(node),
+                Verify.verify(tracker == null || tracker.belongsToSynthesizedActivity(node),
                         String.format(
                                 "Node '%s' belongs to the synthesized activity but it is not translated "
                                         + "as an opaque action and it is not a control node of a concrete activity.",
