@@ -225,6 +225,12 @@ public class FullSynthesisApp {
             Path umlGuardsOutputPath = outputFolderPath.resolve(filePrefix + ".20.guardsadded.uml");
             FileHelper.storeModel(umlToCifTranslator.getActivity().getModel(), umlGuardsOutputPath.toString());
 
+            // End timer for guard computation.
+            long endGuardComputationTime = System.currentTimeMillis();
+            execTime = ((double)endGuardComputationTime - startSynthesisTime) / 1000;
+            timeLog.add(String.valueOf(execTime));
+            System.out.println("Actual guard computation took: " + String.valueOf(execTime) + " seconds.");
+
             Path cifSynthesisPath = outputFolderPath.resolve(filePrefix + ".03.ctrlsys.cif");
             CIFDataSynthesisHelper.convertSynthesisResultToCif(cifSpec, cifSynthesisResult, cifSynthesisPath,
                     outputFolderPath.toString());
@@ -235,7 +241,8 @@ public class FullSynthesisApp {
             // Check the activity for non-deterministic choices.
             CheckNonDeterministicChoices.check(activity, umlToCifTranslator, warnings, cifBddSpec);
 
-            return "";
+            // Join the times and the activity name, and return the string for later storage.
+            return String.join(", ", timeLog);
         }
 
         // Perform synthesis.
