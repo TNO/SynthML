@@ -190,7 +190,8 @@ public class FullSynthesisApp {
         }
 
         // Get CIF/BDD specification.
-        CifDataSynthesisSettings settings = CIFDataSynthesisHelper.getSynthesisSettings();
+        boolean bwReachFirst = activity.getName().endsWith("_bwReachFirst") || activity.getName().endsWith("_bw");
+        CifDataSynthesisSettings settings = CIFDataSynthesisHelper.getSynthesisSettings(bwReachFirst);
         CifBddSpec cifBddSpec = CIFDataSynthesisHelper.getCifBddSpec(cifSpec,
                 cifPostProcessedSpecPath.toAbsolutePath().toString(), settings);
 
