@@ -189,6 +189,23 @@ public class FullSynthesisApp {
             AppEnv.unregisterApplication();
         }
 
+        // Restrict the UML properties default values according to the activity precondition, if possible.
+        Path cifAnalyzedSpecPath = outputFolderPath.resolve(filePrefix + ".02a.restricted.cif");
+        InitialValuesRestricter.restrict(cifSpec, umlToCifTranslator, cifAnalyzedSpecPath);
+        try {
+            AppEnv.registerSimple();
+            CifWriter.writeCifSpec(cifSpec, makePathPair(cifAnalyzedSpecPath), outputFolderPath.toString());
+        } finally {
+            AppEnv.unregisterApplication();
+        }
+
+        // End UML to CIF timer, start timer for data-based synthesis.
+        long endUmlToCifTime = System.currentTimeMillis();
+        double execTime = ((double)endUmlToCifTime - startUmlToCifTime) / 1000;
+        timeLog.add(String.valueOf(execTime));
+        System.out.println("UML to CIF translation took: " + String.valueOf(execTime) + " seconds.");
+        long startSynthesisTime = System.currentTimeMillis();
+
         // Get CIF/BDD specification.
         boolean bwReachFirst = activity.getName().endsWith("_bwReachFirst") || activity.getName().endsWith("_bw");
         CifDataSynthesisSettings settings = CIFDataSynthesisHelper.getSynthesisSettings(bwReachFirst);
@@ -519,7 +536,7 @@ public class FullSynthesisApp {
         }
 
         // Restrict the UML properties default values according to the activity precondition, if possible.
-        Path restrictedInitialPredSpecPath = localOutputPath.resolve(filePrefix + "99.01a.analyzed.cif");
+        Path restrictedInitialPredSpecPath = localOutputPath.resolve(filePrefix + "99.01a.restricted.cif");
         InitialValuesRestricter.restrict(cifSpec, umlToCifTranslatorPostSynth, restrictedInitialPredSpecPath);
         try {
             AppEnv.registerSimple();
