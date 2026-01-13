@@ -51,9 +51,10 @@ public class InitialValuesRestricter {
         BDDFactory factory = CifToBddConverter.createFactory(settings, new ArrayList<>(), new ArrayList<>());
         CifBddSpec cifBddSpec = converter.convert(specification, settings, factory);
 
-        // Find the CIF variables which can take only a single initial value given the activity's preconditions.
-        Map<DiscVariable, Expression> varsToSingleValue = findSingleInitialValueVariables(cifBddSpec, translator,
-                converter, cifBddSpec.initialPlantInv.id());
+        // Find the CIF variables which can take only a restricted set of initial values given the activity's
+        // preconditions.
+        Map<DiscVariable, List<Expression>> varsToInitialValues = findReducedInitialValueVariables(cifBddSpec,
+                translator, converter, cifBddSpec.initialPlantInv.id());
 
         // Get CIF plant.
         List<Automaton> cifPlants = specification.getComponents().stream()
@@ -62,27 +63,26 @@ public class InitialValuesRestricter {
         Verify.verify(cifPlants.size() == 1, "Found more than one plant automaton.");
         Automaton cifPlant = cifPlants.get(0);
 
-        // Set a new default value for all variables with just one possible initial value.
-        for (Entry<DiscVariable, Expression> entry: varsToSingleValue.entrySet()) {
+        // Set a new default value for all variables found.
+        for (Entry<DiscVariable, List<Expression>> entry: varsToInitialValues.entrySet()) {
             DiscVariable cifVariable = entry.getKey();
-            Expression value = entry.getValue();
+            List<Expression> values = entry.getValue();
 
-            // Remove old CIF variable (with multiple possible initial values) from the plant, update the CIF variable
-            // with the new default value, and add it back to the plant.
+            // Remove old CIF variable from the plant, update the CIF variable with the new default values, and add it
+            // back to the plant.
             cifPlant.getDeclarations().remove(cifVariable);
-            cifVariable.setValue(CifConstructors.newVariableValue(null, ImmutableList.of(value)));
+            cifVariable.setValue(CifConstructors.newVariableValue(null, ImmutableList.copyOf(values)));
             cifPlant.getDeclarations().add(cifVariable);
         }
     }
 
-    private static Map<DiscVariable, Expression> findSingleInitialValueVariables(CifBddSpec cifBddSpec,
+    private static Map<DiscVariable, List<Expression>> findReducedInitialValueVariables(CifBddSpec cifBddSpec,
             UmlToCifTranslator translator, CifToBddConverter converter, BDD initialPlantInv)
     {
-        Map<DiscVariable, Expression> varsToSingleValue = new LinkedHashMap<>();
+        Map<DiscVariable, List<Expression>> varsToValues = new LinkedHashMap<>();
         for (DiscVariable cifVariable: translator.getPropertyMap().values()) {
             List<Expression> allPossibleValues = CifValueUtils.getPossibleValues(cifVariable.getType());
 
-            allPossibleValuesLoop:
             for (Expression value: allPossibleValues) {
                 // Get CIF/BDD variable.
                 int varIdx = CifToBddConverter.getDiscVarIdx(cifBddSpec.variables, cifVariable);
@@ -99,25 +99,23 @@ public class InitialValuesRestricter {
 
                 // If the conjunction is not 'false', store the CIF variable.
                 if (!presentInInitialPred.isZero()) {
-                    if (varsToSingleValue.keySet().contains(cifVariable)) {
-                        // The variable has more than one possible initial value. Remove the variable from the set, and
-                        // skip to next property/CIF variable.
-                        varsToSingleValue.remove(cifVariable);
-                        break allPossibleValuesLoop;
-                    } else {
-                        varsToSingleValue.put(cifVariable, value);
-                    }
+                    varsToValues.computeIfAbsent(cifVariable, k -> new ArrayList<>()).add(value);
                 }
+            }
+
+            // Remove variables that can take any value.
+            if (varsToValues.get(cifVariable).size() == allPossibleValues.size()) {
+                varsToValues.remove(cifVariable);
             }
         }
 
-        return varsToSingleValue;
+        return varsToValues;
     }
 
     private static BDD createVarEqualValueBDD(CifBddSpec cifBddSpec, CifToBddConverter converter,
             CifBddDiscVariable var, Expression value)
     {
-        // This method is inspired by CifToBddConverter#convertInit.
+        // This method is inspired by CifToBddConverter.convertInit.
 
         BDD pred = cifBddSpec.factory.zero();
 
