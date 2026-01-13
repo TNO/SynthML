@@ -1,7 +1,10 @@
 
 package com.github.tno.pokayoke.transform.app;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,9 +13,12 @@ import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
@@ -67,6 +73,7 @@ import com.github.tno.synthml.uml.profile.cif.CifContextManager;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import com.google.common.base.Verify;
 
 import fr.lip6.move.pnml.ptnet.PetriNet;
 import fr.lip6.move.pnml.ptnet.Transition;
@@ -106,6 +113,9 @@ public class FullSynthesisApp {
             throw new RuntimeException("Synthesis of parameterized activities is unsupported.");
         }
 
+        // Get synthesis settings from file.
+        Map<String, Map<String, String>> activitiesToSynthSettings = readSynthesisSettings(inputPath);
+
         // Initial string containing the macro-steps of the synthesis chain that are being measured.
         List<String> activityTimeLog = new ArrayList<>();
         String timeLog = ", UML to CIF, Synthesis, Exploration, Petri net prep, Petri net synthesis, "
@@ -123,21 +133,26 @@ public class FullSynthesisApp {
         }
         writer.close();
 
+        int digits = (activities.size() / 10) + 1;
         for (int i = 0; i < activities.size(); i++) {
             Activity activity = activities.get(i);
             Preconditions.checkArgument(!Strings.isNullOrEmpty(activity.getName()), "Expected activities to be named.");
-            int digits = (activities.size() / 10) + 1;
             String formattedNumber = String.format("%0" + digits + "d", i + 1);
             Path localOutputPath = outputFolderPath
                     .resolve(String.format("%s-%s", formattedNumber, activity.getName()));
             Files.createDirectories(localOutputPath);
 
-            String execTimes = performFullSynthesis(activity, filePrefix, localOutputPath, ctxManager, warnings);
+            // Get synthesis settings, if present.
+            Map<String, String> activitySynthSettings = activitiesToSynthSettings.getOrDefault(activity.getName(),
+                    new LinkedHashMap<>());
+
+            // Perform UML activity synthesis.
+            String execTimes = performFullSynthesis(activity, filePrefix, localOutputPath, ctxManager,
+                    activitySynthSettings, warnings);
             activityTimeLog.add(execTimes);
 
             // Write (update) the execution times for the current activity.
             try (FileWriter writerUpdate = new FileWriter(timeLogFileName, true)) {
-                // true for append mode
                 writerUpdate.write(execTimes);
                 writerUpdate.write("\n");
             } catch (IOException e) {
@@ -148,7 +163,8 @@ public class FullSynthesisApp {
     }
 
     public static String performFullSynthesis(Activity activity, String filePrefix, Path outputFolderPath,
-            CifContextManager ctxManager, List<String> warnings) throws IOException, CoreException
+            CifContextManager ctxManager, Map<String, String> synthSettings, List<String> warnings)
+            throws IOException, CoreException
     {
         // List to store the activity synthesis times.
         List<String> timeLog = new ArrayList<>();
@@ -156,7 +172,8 @@ public class FullSynthesisApp {
 
         // Start timer for UML to CIF translation.
         System.out.println("----------------------------------------------------------------");
-        System.out.println("Synthesizing activity " + activity.getName());
+        System.out.println("Synthesizing activity: " + activity.getName());
+        System.out.println("Using synthesis settings: " + synthSettings);
         long startUmlToCifTime = System.currentTimeMillis();
 
         // Instantiate the tracker that indicates how results from intermediate steps of the activity synthesis chain
@@ -207,12 +224,15 @@ public class FullSynthesisApp {
         long startSynthesisTime = System.currentTimeMillis();
 
         // Get CIF/BDD specification.
-        boolean bwReachFirst = activity.getName().endsWith("_bwReachFirst") || activity.getName().endsWith("_bw");
-        CifDataSynthesisSettings settings = CIFDataSynthesisHelper.getSynthesisSettings(bwReachFirst);
+        CifDataSynthesisSettings settings = CIFDataSynthesisHelper.getSynthesisSettings(synthSettings);
         CifBddSpec cifBddSpec = CIFDataSynthesisHelper.getCifBddSpec(cifSpec,
                 cifPostProcessedSpecPath.toAbsolutePath().toString(), settings);
 
         if (tracker.isInterfaceActivity()) {
+            // Debug UML output.
+            Path debugUmlFile = outputFolderPath.resolve(filePrefix + ".00.debug.uml");
+            FileHelper.storeModel(activity.getModel(), debugUmlFile.toString());
+
             // Post-process the activity to remove the names of edges and nodes.
             Path umlLabelsRemovedOutputPath = outputFolderPath.resolve(filePrefix + ".17.labelsremoved.uml");
             PostProcessActivity.removeNodesEdgesNames(activity);
@@ -220,7 +240,7 @@ public class FullSynthesisApp {
 
             // Computing guards.
             GuardComputation guardComputer = new GuardComputation(umlToCifTranslator, tracker);
-            CifDataSynthesisResult cifSynthesisResult = guardComputer.computeGuards(cifSpec,
+            CifDataSynthesisResult cifSynthesisResult = guardComputer.computeGuards(cifSpec, synthSettings,
                     umlLabelsRemovedOutputPath);
             Path umlGuardsOutputPath = outputFolderPath.resolve(filePrefix + ".20.guardsadded.uml");
             FileHelper.storeModel(umlToCifTranslator.getActivity().getModel(), umlGuardsOutputPath.toString());
@@ -469,7 +489,7 @@ public class FullSynthesisApp {
         long startGuardComputationTime = System.currentTimeMillis();
 
         // Computing guards.
-        new GuardComputation(umlActivityToCifTranslator, tracker).computeGuards(cifTranslatedActivity,
+        new GuardComputation(umlActivityToCifTranslator, tracker).computeGuards(cifTranslatedActivity, synthSettings,
                 umlActivityToCifPath);
         Path umlGuardsOutputPath = outputFolderPath.resolve(filePrefix + ".21.guardsadded.uml");
         FileHelper.storeModel(umlActivityToCifTranslator.getActivity().getModel(), umlGuardsOutputPath.toString());
@@ -598,5 +618,42 @@ public class FullSynthesisApp {
 
     private static PathPair makePathPair(Path path) {
         return new PathPair(path.toString(), path.toAbsolutePath().toString());
+    }
+
+    private static Map<String, Map<String, String>> readSynthesisSettings(Path inputPath) {
+        // Read file with synthesis settings, if present.
+        File file = new File(inputPath.getParent().toString(), "synth_settings.txt");
+        Map<String, Map<String, String>> activitiesToSynthSettings = new LinkedHashMap<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] synthSetting = line.split(",");
+                Verify.verify(synthSetting.length == 2,
+                        "The synthesis setting file format is: name_activity , synthesis_settings. "
+                                + "Found an issue in line: " + line);
+
+                // Parse synthesis settings.
+                Map<String, String> settings = new LinkedHashMap<>();
+                Pattern pattern = Pattern.compile("(--[A-Za-z0-9][\\w-]*)(?:" + // group 1: --key
+                        "\\s*=\\s*|\\s+)" + // separator: = or space
+                        "(?:\"([^\"]*)\"|'([^']*)'|(\\S+))" // group 2/3/4: value (double-quoted | single-quoted |
+                                                            // bare)
+                );
+
+                Matcher matcher = pattern.matcher(synthSetting[1]);
+                while (matcher.find()) {
+                    String key = matcher.group(1);
+                    String value = (matcher.group(2) != null) ? matcher.group(2)
+                            : (matcher.group(3) != null) ? matcher.group(3) : matcher.group(4);
+                    settings.put(key, value);
+                }
+
+                activitiesToSynthSettings.put(synthSetting[0], settings);
+            }
+        } catch (IOException e) {
+            System.out.println("No synthesis settings file found.");
+        }
+
+        return activitiesToSynthSettings;
     }
 }

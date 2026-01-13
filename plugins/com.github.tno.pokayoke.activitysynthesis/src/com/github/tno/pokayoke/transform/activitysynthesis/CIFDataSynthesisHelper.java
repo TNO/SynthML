@@ -5,6 +5,7 @@ import static org.eclipse.escet.common.java.Lists.list;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.escet.cif.bdd.conversion.CifToBddConverter;
 import org.eclipse.escet.cif.bdd.spec.CifBddSpec;
@@ -27,12 +28,55 @@ public class CIFDataSynthesisHelper {
     private CIFDataSynthesisHelper() {
     }
 
-    public static CifDataSynthesisSettings getSynthesisSettings() {
+    public static CifDataSynthesisSettings getSynthesisSettings(Map<String, String> synthSetting) {
+        // Define the configuration for performing data-based synthesis and symbolic reachability searches.
         CifDataSynthesisSettings settings = new CifDataSynthesisSettings();
-        settings.setDoForwardReach(true);
-//        settings.setFixedPointComputationsOrder(FixedPointComputationsOrder.REACH_NONBLOCK_CTRL);
-        settings.setFixedPointComputationsOrder(FixedPointComputationsOrder.NONBLOCK_CTRL_REACH);
-        settings.setBddOpCacheRatio(2); // This makes larger activities/vertical scaling run faster.
+
+        if (synthSetting.containsKey("--forward-reach")) {
+            settings.setDoForwardReach(Boolean.valueOf(synthSetting.get("--forward-reach")));
+        } else {
+            settings.setDoForwardReach(true); // Get correct and intuitive result.
+        }
+
+        if (synthSetting.containsKey("--fixed-point-order")) {
+            String fpo = synthSetting.get("--fixed-point-order");
+
+            switch (fpo) {
+                case "ctrl-nonblock-reach" -> {
+                    settings.setFixedPointComputationsOrder(FixedPointComputationsOrder.CTRL_NONBLOCK_REACH);
+                }
+                case "ctrl-reach-nonblock" -> {
+                    settings.setFixedPointComputationsOrder(FixedPointComputationsOrder.CTRL_REACH_NONBLOCK);
+                }
+                case "nonblock-ctrl-reach" -> {
+                    settings.setFixedPointComputationsOrder(FixedPointComputationsOrder.NONBLOCK_CTRL_REACH);
+                }
+                case "nonblock-reach-ctrl" -> {
+                    settings.setFixedPointComputationsOrder(FixedPointComputationsOrder.NONBLOCK_REACH_CTRL);
+                }
+                case "reach-ctrl-nonblock" -> {
+                    settings.setFixedPointComputationsOrder(FixedPointComputationsOrder.REACH_CTRL_NONBLOCK);
+                }
+                case "reach-nonblock-ctrl" -> {
+                    settings.setFixedPointComputationsOrder(FixedPointComputationsOrder.REACH_NONBLOCK_CTRL);
+                }
+                default -> {
+                    throw new IllegalArgumentException("Unexpected fixed point order: " + fpo);
+                }
+            }
+        } else {
+            // Best performance.
+            settings.setFixedPointComputationsOrder(FixedPointComputationsOrder.REACH_NONBLOCK_CTRL);
+        }
+
+        if (synthSetting.containsKey("--bdd-table")) {
+            settings.setBddInitNodeTableSize(Integer.valueOf(synthSetting.get("--bdd-table")));
+        }
+
+        if (synthSetting.containsKey("--bdd-cache-ratio")) {
+            settings.setBddOpCacheRatio(Double.valueOf(synthSetting.get("--bdd-cache-ratio")));
+        }
+
         return settings;
     }
 

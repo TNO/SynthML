@@ -27,7 +27,6 @@ import org.eclipse.escet.cif.datasynth.CifDataSynthesisResult;
 import org.eclipse.escet.cif.datasynth.CifDataSynthesisTiming;
 import org.eclipse.escet.cif.datasynth.settings.CifDataSynthesisFree;
 import org.eclipse.escet.cif.datasynth.settings.CifDataSynthesisSettings;
-import org.eclipse.escet.cif.datasynth.settings.FixedPointComputationsOrder;
 import org.eclipse.escet.cif.metamodel.cif.Specification;
 import org.eclipse.escet.cif.metamodel.cif.declarations.DiscVariable;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
@@ -83,7 +82,9 @@ public class GuardComputation {
         this.synthesisTracker = tracker;
     }
 
-    public CifDataSynthesisResult computeGuards(Specification specification, Path specPath) {
+    public CifDataSynthesisResult computeGuards(Specification specification, Map<String, String> synthSetting,
+            Path specPath)
+    {
         // Get translation purpose.
         UmlToCifTranslationPurpose purpose = synthesisTracker.isInterfaceActivity()
                 ? UmlToCifTranslationPurpose.INTERFACE : UmlToCifTranslationPurpose.GUARD_COMPUTATION;
@@ -106,9 +107,7 @@ public class GuardComputation {
         BiMap<Pair<ActivityEdge, ActivityEdge>, Event> activityOrNodeMapping = translator.getActivityOrNodeMapping();
 
         // Define the configuration for performing data-based synthesis and symbolic reachability searches.
-        CifDataSynthesisSettings settings = new CifDataSynthesisSettings();
-        settings.setDoForwardReach(true); // Get correct and intuitive result.
-        settings.setFixedPointComputationsOrder(FixedPointComputationsOrder.REACH_NONBLOCK_CTRL); // Best performance.
+        CifDataSynthesisSettings settings = CIFDataSynthesisHelper.getSynthesisSettings(synthSetting);
 
         // Configure to not free certain BDDs, as we still need them after synthesis.
         Set<CifBddFree> cifBddFrees = EnumSet.allOf(CifBddFree.class);
