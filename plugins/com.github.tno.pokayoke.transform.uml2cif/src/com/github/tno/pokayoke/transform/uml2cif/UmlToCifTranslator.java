@@ -338,6 +338,12 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         cifPlant.getDeclarations().add(preconditionVariable);
         cifPlant.getInitials().add(getTranslatedPrecondition());
 
+        // If the concrete activity does not have a final node, it is cyclic. If it is cyclic, it must be an interface.
+        boolean isCyclicActivity = !activity.isAbstract()
+                && activity.getNodes().stream().noneMatch(n -> n instanceof ActivityFinalNode);
+        Verify.verify(!isCyclicActivity || translationPurpose == UmlToCifTranslationPurpose.INTERFACE,
+                "Only interface activities can be cyclic.");
+
         // Translate all postconditions of the input UML activity.
         switch (translationPurpose) {
             case LANGUAGE_EQUIVALENCE: {
@@ -345,9 +351,18 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 break;
             }
             case SYNTHESIS:
-            case INTERFACE:
             case GUARD_COMPUTATION: {
                 translateDoubleKindPostconditions(cifNonAtomicVars, cifAtomicityVar, cifPlant);
+                break;
+            }
+            case INTERFACE: {
+                if (!isCyclicActivity) {
+                    // Translate usual postconditions with two kinds if the activity is not cyclic.
+                    translateDoubleKindPostconditions(cifNonAtomicVars, cifAtomicityVar, cifPlant);
+                } else {
+                    // Translate only user-defined postconditions.
+                    translateUserDefinedPostconditions(cifPlant);
+                }
                 break;
             }
             default:
@@ -896,8 +911,14 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
      * @param node The activity node.
      * @return The action name of the given activity node.
      */
-    private static String getActionNameForActivityNode(ActivityNode node) {
-        return String.format("%s__%s__%s", NODE_PREFIX, node.eClass().getName(), IDHelper.getID(node));
+    private String getActionNameForActivityNode(ActivityNode node) {
+//        return String.format("%s__%s__%s", NODE_PREFIX, node.eClass().getName(), IDHelper.getID(node));
+
+        return (node instanceof ControlNode)
+                ? String.format("%s__%s__%s__%s", NODE_PREFIX, activity.getName(), node.eClass().getName(),
+                        IDHelper.getID(node))
+                : String.format("%s__%s__%s__%s", NODE_PREFIX, activity.getName(), node.getName(),
+                        IDHelper.getID(node));
     }
 
     /**
@@ -1811,6 +1832,21 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         cifPlant.getDeclarations().add(postconditionsWithStructure.right);
 
         cifPlant.getMarkeds().add(getTranslatedPostcondition(PostConditionKind.WITH_STRUCTURE));
+    }
+
+    private void translateUserDefinedPostconditions(Automaton cifPlant) {
+        List<AlgVariable> postconditionVars = new ArrayList<>();
+        postconditionVars.addAll(translateUserSpecifiedPrePostconditions(activity.getPostconditions()));
+
+        // Combine the user-specified and/or additional postconditions.
+        AlgVariable postconditionVar = combinePrePostconditionVariables(postconditionVars,
+                PostConditionKind.SINGLE.prefix);
+
+        cifPlant.getDeclarations().addAll(postconditionVars);
+        postconditionVariables.put(PostConditionKind.SINGLE, postconditionVar);
+        cifPlant.getDeclarations().add(postconditionVar);
+
+        cifPlant.getMarkeds().add(getTranslatedPostcondition(PostConditionKind.SINGLE));
     }
 
     /** Postcondition kind. */
