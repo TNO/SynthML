@@ -341,40 +341,15 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         // Translate all postconditions of the input UML activity.
         switch (translationPurpose) {
             case LANGUAGE_EQUIVALENCE: {
-                // Translate postconditions once, to get a single algebraic variable that represents the postcondition.
-                // It is used as marking predicate, and later also to disable events when the postcondition holds.
-                Pair<List<AlgVariable>, AlgVariable> postconditions = translatePostconditions(cifNonAtomicVars,
-                        cifAtomicityVar, PostConditionKind.SINGLE);
-                cifPlant.getDeclarations().addAll(postconditions.left);
-                postconditionVariables.put(PostConditionKind.SINGLE, postconditions.right);
-                cifPlant.getDeclarations().add(postconditions.right);
-
-                cifPlant.getMarkeds().add(getTranslatedPostcondition(PostConditionKind.SINGLE));
+                translateSingleKindPostconditions(cifNonAtomicVars, cifAtomicityVar, cifPlant);
                 break;
             }
-
             case SYNTHESIS:
             case INTERFACE:
             case GUARD_COMPUTATION: {
-                // Translate postconditions twice, once to determine the postcondition without structure, and once to
-                // determine the postcondition with structure. Both are later used for disable different events when
-                // different postconditions hold. The postcondition with structure is used as marking predicate.
-                Pair<List<AlgVariable>, AlgVariable> postconditionsWithoutStructure = translatePostconditions(
-                        cifNonAtomicVars, cifAtomicityVar, PostConditionKind.WITHOUT_STRUCTURE);
-                cifPlant.getDeclarations().addAll(postconditionsWithoutStructure.left);
-                postconditionVariables.put(PostConditionKind.WITHOUT_STRUCTURE, postconditionsWithoutStructure.right);
-                cifPlant.getDeclarations().add(postconditionsWithoutStructure.right);
-
-                Pair<List<AlgVariable>, AlgVariable> postconditionsWithStructure = translatePostconditions(
-                        cifNonAtomicVars, cifAtomicityVar, PostConditionKind.WITH_STRUCTURE);
-                cifPlant.getDeclarations().addAll(postconditionsWithStructure.left);
-                postconditionVariables.put(PostConditionKind.WITH_STRUCTURE, postconditionsWithStructure.right);
-                cifPlant.getDeclarations().add(postconditionsWithStructure.right);
-
-                cifPlant.getMarkeds().add(getTranslatedPostcondition(PostConditionKind.WITH_STRUCTURE));
+                translateDoubleKindPostconditions(cifNonAtomicVars, cifAtomicityVar, cifPlant);
                 break;
             }
-
             default:
                 throw new AssertionError("Unknown translation purpose: " + translationPurpose);
         }
@@ -1801,6 +1776,41 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 }
             }
         }
+    }
+
+    private void translateSingleKindPostconditions(List<DiscVariable> cifNonAtomicVars, DiscVariable cifAtomicityVar,
+            Automaton cifPlant)
+    {
+        // Translate postconditions once, to get a single algebraic variable that represents the postcondition.
+        // It is used as marking predicate, and later also to disable events when the postcondition holds.
+        Pair<List<AlgVariable>, AlgVariable> postconditions = translatePostconditions(cifNonAtomicVars, cifAtomicityVar,
+                PostConditionKind.SINGLE);
+        cifPlant.getDeclarations().addAll(postconditions.left);
+        postconditionVariables.put(PostConditionKind.SINGLE, postconditions.right);
+        cifPlant.getDeclarations().add(postconditions.right);
+
+        cifPlant.getMarkeds().add(getTranslatedPostcondition(PostConditionKind.SINGLE));
+    }
+
+    private void translateDoubleKindPostconditions(List<DiscVariable> cifNonAtomicVars, DiscVariable cifAtomicityVar,
+            Automaton cifPlant)
+    {
+        // Translate postconditions twice, once to determine the postcondition without structure, and once to
+        // determine the postcondition with structure. Both are later used for disable different events when
+        // different postconditions hold. The postcondition with structure is used as marking predicate.
+        Pair<List<AlgVariable>, AlgVariable> postconditionsWithoutStructure = translatePostconditions(cifNonAtomicVars,
+                cifAtomicityVar, PostConditionKind.WITHOUT_STRUCTURE);
+        cifPlant.getDeclarations().addAll(postconditionsWithoutStructure.left);
+        postconditionVariables.put(PostConditionKind.WITHOUT_STRUCTURE, postconditionsWithoutStructure.right);
+        cifPlant.getDeclarations().add(postconditionsWithoutStructure.right);
+
+        Pair<List<AlgVariable>, AlgVariable> postconditionsWithStructure = translatePostconditions(cifNonAtomicVars,
+                cifAtomicityVar, PostConditionKind.WITH_STRUCTURE);
+        cifPlant.getDeclarations().addAll(postconditionsWithStructure.left);
+        postconditionVariables.put(PostConditionKind.WITH_STRUCTURE, postconditionsWithStructure.right);
+        cifPlant.getDeclarations().add(postconditionsWithStructure.right);
+
+        cifPlant.getMarkeds().add(getTranslatedPostcondition(PostConditionKind.WITH_STRUCTURE));
     }
 
     /** Postcondition kind. */
