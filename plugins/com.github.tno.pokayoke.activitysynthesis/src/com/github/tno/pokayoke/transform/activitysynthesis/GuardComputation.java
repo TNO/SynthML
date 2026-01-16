@@ -157,6 +157,11 @@ public class GuardComputation {
                     CifBddEdge edge = getCorrespondingEdge.apply(activityOrNodeMapping.get(pair));
                     BDD guard = computeGuard(edge, controlledStates, internalVars);
 
+                    if (guard.isZero()) {
+                        synthesisTracker.addWarning(String.format(
+                                "Computed a 'false' guard outgoing from decision node '%s'.", edge.event.getName()));
+                    }
+
                     List<String> guards = Arrays
                             .asList(PokaYokeUmlProfileUtil.getIncomingGuard(pair.right), toUmlGuard(guard, cifBddSpec))
                             .stream().filter(g -> !ExprHelper.isNullOrTriviallyTrue(g)).toList();
@@ -167,6 +172,11 @@ public class GuardComputation {
                 for (Pair<ActivityEdge, ActivityEdge> pair: getControlFlowPairs(node)) {
                     CifBddEdge edge = getCorrespondingEdge.apply(activityOrNodeMapping.get(pair));
                     BDD guard = computeGuard(edge, controlledStates, internalVars);
+
+                    if (guard.isZero()) {
+                        synthesisTracker.addWarning(String
+                                .format("Computed a 'false' guard incoming to merge node '%s'.", edge.event.getName()));
+                    }
 
                     List<String> guards = Arrays
                             .asList(PokaYokeUmlProfileUtil.getOutgoingGuard(pair.left), toUmlGuard(guard, cifBddSpec))
@@ -179,6 +189,11 @@ public class GuardComputation {
                 CifBddEdge edge = getCorrespondingEdge.apply(getSingleStartEvent.apply(node));
                 BDD guard = computeGuard(edge, controlledStates, internalVars);
 
+                if (guard.isZero()) {
+                    synthesisTracker.addWarning(String.format("Computed a 'false' guard incoming to fork node '%s'.",
+                            edge.event.getName()));
+                }
+
                 List<String> guards = Arrays
                         .asList(PokaYokeUmlProfileUtil.getOutgoingGuard(incoming), toUmlGuard(guard, cifBddSpec))
                         .stream().filter(g -> !ExprHelper.isNullOrTriviallyTrue(g)).toList();
@@ -188,6 +203,11 @@ public class GuardComputation {
                 ActivityEdge outgoing = Lists.single(node.getOutgoings());
                 CifBddEdge edge = getCorrespondingEdge.apply(getSingleStartEvent.apply(node));
                 BDD guard = computeGuard(edge, controlledStates, internalVars);
+
+                if (guard.isZero()) {
+                    synthesisTracker.addWarning(String.format("Computed a 'false' guard outgoing from join node '%s'.",
+                            edge.event.getName()));
+                }
 
                 List<String> guards = Arrays
                         .asList(PokaYokeUmlProfileUtil.getIncomingGuard(outgoing), toUmlGuard(guard, cifBddSpec))
@@ -202,6 +222,10 @@ public class GuardComputation {
                 BDD controlledGuard = uncontrolledGuard.and(controlledStates);
                 BDD guard = computeGuard(uncontrolledGuard, controlledGuard, internalVars);
                 controlledGuard.free();
+
+                if (guard.isZero()) {
+                    synthesisTracker.addWarning("Computed a 'false' guard for activity's initial node.");
+                }
 
                 List<String> guards = Arrays
                         .asList(PokaYokeUmlProfileUtil.getIncomingGuard(outgoing), toUmlGuard(guard, cifBddSpec))
@@ -223,6 +247,10 @@ public class GuardComputation {
                 Verify.verify(guard.isOne());
                 controlledGuard.free();
 
+                if (guard.isZero()) {
+                    synthesisTracker.addWarning("Computed a 'false' guard for activity's final node.");
+                }
+
                 List<String> guards = Arrays
                         .asList(PokaYokeUmlProfileUtil.getOutgoingGuard(incoming), toUmlGuard(guard, cifBddSpec))
                         .stream().filter(g -> !ExprHelper.isNullOrTriviallyTrue(g)).toList();
@@ -232,6 +260,11 @@ public class GuardComputation {
                 ActivityEdge incoming = Lists.single(node.getIncomings());
                 CifBddEdge edge = getCorrespondingEdge.apply(getSingleStartEvent.apply(node));
                 BDD guard = computeGuard(edge, controlledStates, internalVars);
+
+                if (guard.isZero()) {
+                    synthesisTracker.addWarning(String.format("Computed a 'false' guard incoming to action node '%s'.",
+                            edge.event.getName()));
+                }
 
                 List<String> guards = Arrays
                         .asList(PokaYokeUmlProfileUtil.getOutgoingGuard(incoming), toUmlGuard(guard, cifBddSpec))
@@ -325,7 +358,7 @@ public class GuardComputation {
         // there must then be something in the structure of the synthesized activity that disables the action sequence.
         // But the activity structure follows from the state space of the earlier synthesized supervisor. Contradiction.
         if (guard.isZero()) {
-            throw new RuntimeException("Expected the computed guard to be satisfiable, but got 'false'.");
+//            throw new RuntimeException("Expected the computed guard to be satisfiable, but got 'false'.");
         }
 
         return guard;
