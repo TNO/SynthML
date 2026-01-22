@@ -23,7 +23,7 @@
     <stringAttribute key="org.eclipse.jdt.launching.JRE_CONTAINER" value="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-21"/>
     <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl} -consoleLog --launcher.defaultAction openFile --launcher.appendVmargs"/>
     <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.pde.ui.workbenchClasspathProvider"/>
-    <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dorg.eclipse.swt.graphics.Resource.reportNonDisposed=true -Dosgi.requiredJavaVersion=21 -Declipse.p2.unsignedPolicy=allow -Djava.net.preferIPv4Stack=true -Dfile.encoding=UTF-8 -Xmx8g -XX:+UseG1GC -XX:+UseStringDeduplication --add-modules=ALL-SYSTEM -Declipse.e4.inject.javax.warning=false"/>
+    <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dorg.eclipse.swt.graphics.Resource.reportNonDisposed=true -Dosgi.requiredJavaVersion=21 -Declipse.p2.unsignedPolicy=allow -Djava.net.preferIPv4Stack=true -Dfile.encoding=UTF-8 -Xmx12g -XX:+UseG1GC -XX:+UseStringDeduplication --add-modules=ALL-SYSTEM -Declipse.e4.inject.javax.warning=false"/>
     <stringAttribute key="pde.version" value="3.3"/>
     <stringAttribute key="product" value="com.github.tno.pokayoke.product.branding.product"/>
     <stringAttribute key="productFile" value="\com.github.tno.pokayoke.product\eclipse.product"/>
