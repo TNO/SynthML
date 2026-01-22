@@ -704,7 +704,10 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                         node.getClass().getSimpleName(), node.getIncomings().size()), node,
                         UMLPackage.Literals.ACTIVITY_NODE__INCOMING);
             }
-            if (node.getOutgoings().size() != 1) {
+            if (node.getOutgoings().size() != 1
+                    && !PokaYokeUmlProfileUtil.isFormalActivity((Activity)node.eContainer()))
+            {
+                // Interface activities might have call behaviors without an outgoing edge.
                 error(String.format("Node of type '%s' should have exactly one outgoing edge, but got %s.",
                         node.getClass().getSimpleName(), node.getOutgoings().size()), node,
                         UMLPackage.Literals.ACTIVITY_NODE__OUTGOING);
