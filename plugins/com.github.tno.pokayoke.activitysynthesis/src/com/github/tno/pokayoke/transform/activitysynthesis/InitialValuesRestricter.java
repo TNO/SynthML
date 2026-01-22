@@ -104,7 +104,7 @@ public class InitialValuesRestricter {
             }
 
             // Remove variables that can take any value.
-            if (varsToValues.get(cifVariable).size() == allPossibleValues.size()) {
+            if (varsToValues.getOrDefault(cifVariable, new ArrayList<>()).size() == allPossibleValues.size()) {
                 varsToValues.remove(cifVariable);
             }
         }
