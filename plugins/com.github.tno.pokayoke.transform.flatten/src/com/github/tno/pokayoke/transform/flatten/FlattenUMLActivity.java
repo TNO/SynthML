@@ -50,15 +50,16 @@ public class FlattenUMLActivity {
 
     public static void transformFile(String sourcePath, String targetPath) throws IOException, CoreException {
         Model model = FileHelper.loadModel(sourcePath);
-        new FlattenUMLActivity(model, new LinkedHashSet<>()).transform();
+        new FlattenUMLActivity(model, new LinkedHashSet<>()).transform(true);
         FileHelper.storeModel(model, targetPath);
     }
 
-    public void transform() throws CoreException {
+    public void transform(boolean validate) throws CoreException {
         // Check whether the model has the expected structure, particularly that no double underscores exist in the
         // names of relevant model elements.
-        ValidationHelper.validateModel(model);
-
+        if (validate) {
+            ValidationHelper.validateModel(model);
+        }
         // Give each element a name.
         NameHelper.giveNameToModelElements(model);
 
@@ -186,7 +187,10 @@ public class FlattenUMLActivity {
                     // outgoing edge.
                     MergeNode finalNodeSub = FileHelper.FACTORY.createMergeNode();
                     finalNode.getIncomings().get(0).setTarget(finalNodeSub);
-                    callBehaviorActionToReplace.getOutgoings().get(0).setSource(finalNodeSub);
+                    if (!callBehaviorActionToReplace.getOutgoings().isEmpty()) {
+                        // Interface activities may call some activities without an outgoing control flow.
+                        callBehaviorActionToReplace.getOutgoings().get(0).setSource(finalNodeSub);
+                    }
                     finalNodeSub.setActivity(parentActivity);
                     finalNodeSub.setName(finalNode.getName());
 

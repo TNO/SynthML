@@ -122,7 +122,7 @@ public class Uml2GalTranslator {
         FileHelper.normalizeIds(model);
 
         // Validate and flatten the model.
-        new FlattenUMLActivity(model, new LinkedHashSet<>()).transform();
+        new FlattenUMLActivity(model, new LinkedHashSet<>()).transform(true);
 
         // Prepend the name of the outer activity to the model elements in activities.
         NameHelper.prependOuterActivityNameToNodesAndEdgesInActivities(model);

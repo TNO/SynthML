@@ -246,11 +246,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         // Validate the UML input model.
         //
         // Ideally, we check this always, as the UML models resulting from synthesis should also be valid. Currently, we
-        // do it only for the input to synthesis (also in case of interface activities), as we generate some names
-        // during synthesis that are invalid. This is to be improved in the future.
-        if (translationPurpose == UmlToCifTranslationPurpose.SYNTHESIS
-                || translationPurpose == UmlToCifTranslationPurpose.INTERFACE)
-        {
+        // do it only for the input to synthesis, as we generate some names during synthesis that are invalid. This
+        // is to be improved in the future.
+        if (translationPurpose == UmlToCifTranslationPurpose.SYNTHESIS) {
             ValidationHelper.validateModel(activity.getModel());
         }
 
@@ -266,7 +264,8 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 || translationPurpose == UmlToCifTranslationPurpose.INTERFACE)
         {
             FlattenUMLActivity flattener = new FlattenUMLActivity(activity.getModel(), nonCallableElements);
-            flattener.transform();
+            Boolean validate = translationPurpose == UmlToCifTranslationPurpose.SYNTHESIS;
+            flattener.transform(validate);
             FileHelper.normalizeIds(activity.getModel());
         }
 
