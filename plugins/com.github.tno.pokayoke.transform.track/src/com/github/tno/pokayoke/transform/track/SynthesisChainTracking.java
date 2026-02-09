@@ -346,20 +346,32 @@ public class SynthesisChainTracking {
     public List<Event> getStartEventsCorrespondingToOriginalUmlElement(RedefinableElement umlElement,
             UmlToCifTranslationPurpose purpose)
     {
-        List<Event> cifEvents;
-        if (purpose == UmlToCifTranslationPurpose.SYNTHESIS) {
-            cifEvents = getStartEventMap(purpose).entrySet().stream()
-                    .filter(e -> e.getValue() instanceof RedefinableElement element && element.equals(umlElement))
-                    .map(Map.Entry::getKey).toList();
-        } else {
-            cifEvents = getStartEventMap(purpose).entrySet().stream()
-                    .filter(e -> e.getValue() instanceof RedefinableElement element
-                            // Check the original UML element.
-                            && getOriginalUmlElement(element) != null
-                            && getOriginalUmlElement(element).equals(umlElement))
-                    .map(Map.Entry::getKey).toList();
+        switch (purpose) {
+            case SYNTHESIS: {
+                return getStartEventMap(purpose).entrySet().stream()
+                        .filter(e -> e.getValue() instanceof RedefinableElement element && element.equals(umlElement))
+                        .map(Map.Entry::getKey).toList();
+            }
+            case GUARD_COMPUTATION:
+            case LANGUAGE_EQUIVALENCE: {
+                return getStartEventMap(purpose).entrySet().stream()
+                        .filter(e -> e.getValue() instanceof RedefinableElement element
+                                // Check the original UML element.
+                                && getOriginalUmlElement(element) != null
+                                && getOriginalUmlElement(element).equals(umlElement))
+                        .map(Map.Entry::getKey).toList();
+            }
+            case INTERFACE: {
+                return getStartEventMap(purpose).entrySet().stream()
+                        .filter(e -> e.getValue() instanceof CallBehaviorAction cbAction
+                                // Check the called UML element.
+                                && cbAction.getBehavior().equals(umlElement))
+                        .map(Map.Entry::getKey).toList();
+            }
+
+            default:
+                throw new IllegalArgumentException("Unexpected translation purpose: " + purpose);
         }
-        return cifEvents;
     }
 
     /**
