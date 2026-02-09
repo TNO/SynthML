@@ -72,6 +72,7 @@ import com.github.tno.synthml.uml.profile.cif.CifContext;
 import com.github.tno.synthml.uml.profile.cif.CifContextManager;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Predicate;
 import com.google.common.base.Strings;
 import com.google.common.base.Verify;
 
@@ -527,13 +528,21 @@ public class FullSynthesisApp {
     {
         List<Event> events = CifCollectUtils.collectEvents(spec, new ArrayList<>());
 
+        // Returns 'false' if the node is a control node based on its name.
+        Predicate<Event> eliminateControlNodes = event -> {
+            String name = event.getName();
+            return !name.contains("_ForkNode_") && !name.contains("_JoinNode_") && !name.contains("_MergeNode_")
+                    && !name.contains("_ActivityInitialNode_") && !name.contains("_ActivityFinalNode_");
+        };
+
         // Preserve controllable events and all events that are *not* the end of an atomic non-deterministic action.
-        // This merges (folds) the non-deterministic result events of an atomic action into the single start event. The
-        // choice is based on the nodes name: in the future we might want to refer directly to the nodes instead of
-        // using a string comparison.
-        List<String> preservedEventNames = events.stream().filter(
-                event -> event.getControllable() || !tracker.isAtomicNonDeterministicEndEventName(event.getName()))
-                .map(event -> CifTextUtils.getAbsName(event, false)).toList();
+        // This merges (folds) the non-deterministic result events of an atomic action into the single start event.
+        // Further, control nodes are also removed. The choice is based on the nodes name: in the future we might want
+        // to refer directly to the nodes instead of using a string comparison.
+        List<String> preservedEventNames = events.stream()
+                .filter(event -> event.getControllable()
+                        || !tracker.isAtomicNonDeterministicEndEventName(event.getName()))
+                .filter(eliminateControlNodes).map(event -> CifTextUtils.getAbsName(event, false)).toList();
 
         // Get the removed events names (end of atomic non-deterministic actions).
         Set<String> removedEventNames = events.stream().filter(event -> !preservedEventNames.contains(event.getName()))
