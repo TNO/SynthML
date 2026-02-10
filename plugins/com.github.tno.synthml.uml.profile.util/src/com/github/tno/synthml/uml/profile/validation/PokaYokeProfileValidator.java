@@ -544,8 +544,12 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                 .filter(IntervalConstraint.class::isInstance).map(IntervalConstraint.class::cast)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
 
-        if (!members.equals(Sets.union(preAndPostconditions, intervalConstraints))) {
-            error("Activity should contain only precondition, postcondition, and interval constraint members.",
+        Set<Constraint> activityRequirements = activity.getOwnedRules().stream()
+                .filter(r -> CifContext.isActivityRequirement(r)).map(Constraint.class::cast)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+
+        if (!members.equals(Sets.union(Sets.union(preAndPostconditions, intervalConstraints), activityRequirements))) {
+            error("Activity should contain only precondition, postcondition, constraints and interval constraint members.",
                     UMLPackage.Literals.NAMESPACE__MEMBER);
         }
 
@@ -1003,7 +1007,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
 
         if (CifContext.isActivityPrePostconditionConstraint(constraint)) {
             checkValidActivityPrePostconditionConstraint(constraint);
-        } else if (CifContext.isClassConstraint(constraint)) {
+        } else if (CifContext.isClassConstraint(constraint) || (CifContext.isActivityRequirement(constraint))) {
             checkValidClassConstraint(constraint);
         } else if (CifContext.isOccurrenceConstraint(constraint)) {
             checkValidOccurrenceConstraint((IntervalConstraint)constraint);
