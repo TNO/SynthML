@@ -1008,7 +1008,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         if (CifContext.isActivityPrePostconditionConstraint(constraint)) {
             checkValidActivityPrePostconditionConstraint(constraint);
         } else if (CifContext.isClassConstraint(constraint) || (CifContext.isActivityRequirement(constraint))) {
-            checkValidClassConstraint(constraint);
+            checkValidClassOrActivityConstraint(constraint);
         } else if (CifContext.isOccurrenceConstraint(constraint)) {
             checkValidOccurrenceConstraint((IntervalConstraint)constraint);
         } else if (CifContext.isPrimitiveTypeConstraint(constraint)) {
@@ -1062,7 +1062,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
     }
 
-    private void checkValidClassConstraint(Constraint constraint) {
+    private void checkValidClassOrActivityConstraint(Constraint constraint) {
         // Check that the constraint has the right stereotype applied.
         List<Stereotype> stereotypes = constraint.getAppliedStereotypes();
 
