@@ -1072,7 +1072,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             return;
         }
 
-        if (!stereotypes.get(0).getName().equals(PokaYokeUmlProfileUtil.ST_CLASS_REQUIREMENT)) {
+        if (!stereotypes.get(0).getName().equals(PokaYokeUmlProfileUtil.ST_REQUIREMENT)) {
             error(String.format("Constraint '%s' must have a requirement stereotype applied.", constraint.getName()),
                     UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
             return;

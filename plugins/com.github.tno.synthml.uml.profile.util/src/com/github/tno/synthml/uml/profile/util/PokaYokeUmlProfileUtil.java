@@ -82,7 +82,7 @@ public class PokaYokeUmlProfileUtil {
 
     private static final String ST_FORMAL_CONSTRAINT = SynthMLPackage.Literals.FORMAL_CONSTRAINT.getName();
 
-    public static final String ST_CLASS_REQUIREMENT = SynthMLPackage.Literals.REQUIREMENT.getName();
+    public static final String ST_REQUIREMENT = SynthMLPackage.Literals.REQUIREMENT.getName();
 
     public static final String ST_SYNTHESIS_PRECONDITION = SynthMLPackage.Literals.SYNTHESIS_PRECONDITION.getName();
 
@@ -112,8 +112,7 @@ public class PokaYokeUmlProfileUtil {
             + ST_FORMAL_CONSTRAINT;
 
     /** Qualified name for the {@link Requirement} stereotype. */
-    public static final String REQUIREMENT_STEREOTYPE = POKA_YOKE_PROFILE + NamedElement.SEPARATOR
-            + ST_CLASS_REQUIREMENT;
+    public static final String REQUIREMENT_STEREOTYPE = POKA_YOKE_PROFILE + NamedElement.SEPARATOR + ST_REQUIREMENT;
 
     /** Qualified name for the {@link SynthesisPrecondition} stereotype. */
     public static final String SYNTHESIS_PRECONDITION_STEREOTYPE = POKA_YOKE_PROFILE + NamedElement.SEPARATOR
@@ -529,7 +528,7 @@ public class PokaYokeUmlProfileUtil {
         } else if (isPostconditionConstraint(constraint)) {
             return List.of(getStereotype(constraint, ST_POSTCONDITION));
         } else if (isClassRequirement(constraint)) {
-            return List.of(getStereotype(constraint, ST_CLASS_REQUIREMENT));
+            return List.of(getStereotype(constraint, ST_REQUIREMENT));
         } else {
             return List.of();
         }
@@ -592,7 +591,7 @@ public class PokaYokeUmlProfileUtil {
     }
 
     private static String getQualifiedStereotypeName(String stereotypeName) {
-        if (ST_CLASS_REQUIREMENT.equals(stereotypeName)) {
+        if (ST_REQUIREMENT.equals(stereotypeName)) {
             return REQUIREMENT_STEREOTYPE;
         } else if (ST_SYNTHESIS_PRECONDITION.equals(stereotypeName)) {
             return SYNTHESIS_PRECONDITION_STEREOTYPE;
@@ -616,7 +615,7 @@ public class PokaYokeUmlProfileUtil {
 
     public static String getStereotypeName(Stereotype st) {
         // Returns a slightly better formatted name for the preconditions.
-        if (st.getName().equals(ST_CLASS_REQUIREMENT)) {
+        if (st.getName().equals(ST_REQUIREMENT)) {
             return "Requirement";
         } else if (st.getName().equals(ST_SYNTHESIS_PRECONDITION)) {
             return "Synthesis precondition";
