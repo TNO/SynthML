@@ -1,0 +1,49 @@
+digraph pattern {
+    center=1;
+    size="7.250000,10.700000";
+    fontsize=12
+    ranksep = 0.3
+    node [height=0.1,width=0.1];
+    node [shape=plaintext];
+	
+    r0 [label="",shape=plaintext,height=0.0,width=0.0];
+    r1 [label="",shape=plaintext,height=0.0,width=0.0];
+	r2 [label="",shape=plaintext,height=0.0,width=0.0];
+	r3 [label="",shape=plaintext,height=0.0,width=0.0];
+    r0 -> r1 -> r2 -> r3 [style=invis];
+
+	{rank = same; r0 dummy0 dummy1;}
+    {rank = same; r1 t0;}
+    {rank = same; r2 p0;}
+	{rank = same; r3 dummy2 dummy3 dummy4 dummy5;}
+	
+    /* transitions */
+
+    t0 [label=<A>];
+    t0 [shape=box];
+    t0 [fontcolor=black];
+
+    /* places */
+
+    p0 [label="p0",fontsize=10];
+    p0 [shape=circle,width=0.25,height=0.25,fixedsize=true];
+
+	/* dummy places */
+	
+	dummy0 [label="...",fontsize=14];
+	dummy1 [label="...",fontsize=14];
+	dummy2 [label="...",fontsize=14];
+	dummy3 [label="...",fontsize=14];
+	dummy4 [label="...",fontsize=14];
+	dummy5 [label="...",fontsize=14];
+
+    /* arcs */ 
+
+	dummy0 -> t0;
+	dummy1 -> t0;
+    t0 -> p0;
+	p0 -> dummy2;
+	p0 -> dummy3;
+	p0 -> dummy4;
+	p0 -> dummy5;
+}
