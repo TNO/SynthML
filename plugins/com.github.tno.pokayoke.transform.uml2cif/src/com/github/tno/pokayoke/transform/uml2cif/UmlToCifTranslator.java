@@ -1664,7 +1664,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
         // Translate activity requirements.
         for (Constraint umlConstraint: activity.getOwnedRules()) {
-            if (CifContext.isActivityRequirement(umlConstraint)) {
+            if (CifContext.isActivityRequirementConstraint(umlConstraint)) {
                 cifInvariants.addAll(translateRequirement(umlConstraint));
             }
         }

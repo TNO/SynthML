@@ -267,7 +267,7 @@ public interface CifContext {
         return constraint.getContext() instanceof Activity a && a.getPostconditions().contains(constraint);
     }
 
-    public static boolean isActivityRequirement(Constraint constraint) {
+    public static boolean isActivityRequirementConstraint(Constraint constraint) {
         return constraint.getContext() instanceof Activity activity
                 // It is the correct type of constraint.
                 && !(constraint instanceof DurationConstraint) && !(constraint instanceof InteractionConstraint)
