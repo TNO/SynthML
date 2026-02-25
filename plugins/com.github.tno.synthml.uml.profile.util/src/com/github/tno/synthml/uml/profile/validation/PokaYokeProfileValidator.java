@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.escet.cif.parser.ast.AInvariant;
 import org.eclipse.escet.cif.parser.ast.automata.AAssignmentUpdate;
@@ -548,7 +549,10 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                 .filter(r -> PokaYokeUmlProfileUtil.isRequirementConstraint(r)).map(Constraint.class::cast)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
 
-        if (!members.equals(Sets.union(Sets.union(preAndPostconditions, intervalConstraints), activityRequirements))) {
+        Set<Constraint> allowedConstraints = Stream.of(preAndPostconditions, intervalConstraints, activityRequirements)
+                .flatMap(Set::stream).collect(Collectors.toSet());
+
+        if (!members.equals(allowedConstraints)) {
             error("Activity should contain only precondition, postcondition, constraints and interval constraint members.",
                     UMLPackage.Literals.NAMESPACE__MEMBER);
         }
