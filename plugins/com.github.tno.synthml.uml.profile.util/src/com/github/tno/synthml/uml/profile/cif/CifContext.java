@@ -21,18 +21,15 @@ import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.DataType;
-import org.eclipse.uml2.uml.DurationConstraint;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Enumeration;
 import org.eclipse.uml2.uml.EnumerationLiteral;
-import org.eclipse.uml2.uml.InteractionConstraint;
 import org.eclipse.uml2.uml.IntervalConstraint;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Property;
-import org.eclipse.uml2.uml.TimeConstraint;
 
 import com.github.tno.synthml.uml.profile.util.PokaYokeTypeUtil;
 
@@ -265,16 +262,6 @@ public interface CifContext {
 
     public static boolean isActivityPostconditionConstraint(Constraint constraint) {
         return constraint.getContext() instanceof Activity a && a.getPostconditions().contains(constraint);
-    }
-
-    public static boolean isActivityRequirementConstraint(Constraint constraint) {
-        return constraint.getContext() instanceof Activity activity
-                // It is the correct type of constraint.
-                && !(constraint instanceof DurationConstraint) && !(constraint instanceof InteractionConstraint)
-                && !(constraint instanceof IntervalConstraint) && !(constraint instanceof TimeConstraint)
-                // It is neither a precondition nor a postcondition.
-                && !activity.getPreconditions().contains(constraint)
-                && !activity.getPostconditions().contains(constraint);
     }
 
     public static boolean isClassConstraint(Constraint constraint) {
