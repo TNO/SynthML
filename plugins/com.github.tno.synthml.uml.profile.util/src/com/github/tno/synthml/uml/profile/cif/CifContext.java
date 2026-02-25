@@ -267,6 +267,16 @@ public interface CifContext {
         return constraint.getContext() instanceof Activity a && a.getPostconditions().contains(constraint);
     }
 
+    public static boolean isActivityRequirement(Constraint constraint) {
+        return constraint.getContext() instanceof Activity activity
+                // It is the correct type of constraint.
+                && !(constraint instanceof DurationConstraint) && !(constraint instanceof InteractionConstraint)
+                && !(constraint instanceof IntervalConstraint) && !(constraint instanceof TimeConstraint)
+                // It is neither a precondition nor a postcondition.
+                && !activity.getPreconditions().contains(constraint)
+                && !activity.getPostconditions().contains(constraint);
+    }
+
     public static boolean isClassConstraint(Constraint constraint) {
         return constraint.getContext() instanceof Class clazz && !(clazz instanceof Behavior);
     }
@@ -277,16 +287,6 @@ public interface CifContext {
 
     public static boolean isPrimitiveTypeConstraint(Constraint constraint) {
         return constraint.getContext() instanceof PrimitiveType;
-    }
-
-    public static boolean isActivityRequirement(Constraint constraint) {
-        return constraint.getContext() instanceof Activity activity
-                // It is the correct type of constraint.
-                && !(constraint instanceof DurationConstraint) && !(constraint instanceof InteractionConstraint)
-                && !(constraint instanceof IntervalConstraint) && !(constraint instanceof TimeConstraint)
-                // It is neither a precondition nor a postcondition.
-                && !activity.getPreconditions().contains(constraint)
-                && !activity.getPostconditions().contains(constraint);
     }
 
     default boolean hasAbstractActivities() {
