@@ -1649,7 +1649,8 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     }
 
     /**
-     * Translates all UML class constraints that are in context to CIF requirement invariants.
+     * Translates all UML class constraints that are in context and all activity's constraints to CIF requirement
+     * invariants.
      *
      * @return The translated CIF requirement invariants.
      */
