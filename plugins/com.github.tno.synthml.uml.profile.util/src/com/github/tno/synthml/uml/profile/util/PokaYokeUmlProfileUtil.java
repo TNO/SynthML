@@ -563,6 +563,16 @@ public class PokaYokeUmlProfileUtil {
         return appliedStereotypes.get(0).getName().equals(ST_USAGE_PRECONDITION);
     }
 
+    public static boolean isRequirementConstraint(Constraint constraint) {
+        List<Stereotype> appliedStereotypes = constraint.getAppliedStereotypes();
+
+        if (appliedStereotypes.isEmpty()) {
+            return false;
+        }
+
+        return appliedStereotypes.get(0).getName().equals(ST_REQUIREMENT);
+    }
+
     private static boolean isPostconditionConstraint(Constraint constraint) {
         return (constraint.eContainer() instanceof Activity activity)
                 && activity.getPostconditions().contains(constraint);
