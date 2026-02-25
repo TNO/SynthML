@@ -1664,7 +1664,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
         // Translate activity requirements.
         for (Constraint umlConstraint: activity.getOwnedRules()) {
-            if (CifContext.isActivityRequirementConstraint(umlConstraint)) {
+            if (PokaYokeUmlProfileUtil.isRequirementConstraint(umlConstraint)) {
                 cifInvariants.addAll(translateRequirement(umlConstraint));
             }
         }
