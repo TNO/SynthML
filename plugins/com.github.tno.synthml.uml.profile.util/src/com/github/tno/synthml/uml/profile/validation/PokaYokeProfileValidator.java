@@ -549,7 +549,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                 .filter(r -> PokaYokeUmlProfileUtil.isRequirementConstraint(r)).map(Constraint.class::cast)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
 
-        Set<Constraint> allowedConstraints = Stream.of(preAndPostconditions, intervalConstraints, activityRequirements)
+        Set<Constraint> allowedMembers = Stream.of(preAndPostconditions, intervalConstraints, activityRequirements)
                 .flatMap(Set::stream).collect(Collectors.toSet());
 
         if (!members.equals(allowedConstraints)) {
@@ -1012,7 +1012,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         if (CifContext.isActivityPrePostconditionConstraint(constraint)) {
             checkValidActivityPrePostconditionConstraint(constraint);
         } else if (CifContext.isClassConstraint(constraint)
-                || (PokaYokeUmlProfileUtil.isRequirementConstraint(constraint)))
+                || PokaYokeUmlProfileUtil.isRequirementConstraint(constraint))
         {
             checkValidRequirementConstraint(constraint);
         } else if (CifContext.isOccurrenceConstraint(constraint)) {
