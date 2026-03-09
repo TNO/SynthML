@@ -522,12 +522,12 @@ public class PokaYokeUmlProfileUtil {
      * @return A list of supported stereotypes for the given constraint.
      */
     public static List<Stereotype> getSupportedConstraintStereotypes(Constraint constraint) {
-        if (isPreconditionConstraint(constraint)) {
+        if (isContainedAsActivityPrecondition(constraint)) {
             return List.of(getStereotype(constraint, ST_SYNTHESIS_PRECONDITION),
                     getStereotype(constraint, ST_USAGE_PRECONDITION));
-        } else if (isPostconditionConstraint(constraint)) {
+        } else if (isContainedAsActivityPostcondition(constraint)) {
             return List.of(getStereotype(constraint, ST_POSTCONDITION));
-        } else if (isClassRequirementConstraint(constraint)) {
+        } else if (isContainedAsClassOrActivityOwnedRule(constraint)) {
             return List.of(getStereotype(constraint, ST_REQUIREMENT));
         } else {
             return List.of();
@@ -538,17 +538,17 @@ public class PokaYokeUmlProfileUtil {
         return getPokaYokeProfile(constraint).getOwnedStereotype(stereotypeName);
     }
 
-    private static boolean isPreconditionConstraint(Constraint constraint) {
+    private static boolean isContainedAsActivityPrecondition(Constraint constraint) {
         return (constraint.eContainer() instanceof Activity activity)
                 && activity.getPreconditions().contains(constraint);
     }
 
-    private static boolean isPostconditionConstraint(Constraint constraint) {
+    private static boolean isContainedAsActivityPostcondition(Constraint constraint) {
         return (constraint.eContainer() instanceof Activity activity)
                 && activity.getPostconditions().contains(constraint);
     }
 
-    private static boolean isClassRequirementConstraint(Constraint constraint) {
+    private static boolean isContainedAsClassOrActivityOwnedRule(Constraint constraint) {
         return (constraint.eContainer() instanceof Classifier clazz) && clazz.getOwnedRules().contains(constraint);
     }
 
