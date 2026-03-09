@@ -552,7 +552,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         Set<Constraint> allowedMembers = Stream.of(preAndPostconditions, intervalConstraints, activityRequirements)
                 .flatMap(Set::stream).collect(Collectors.toSet());
 
-        if (!members.equals(allowedConstraints)) {
+        if (!members.equals(allowedMembers)) {
             error("Activity should contain only precondition, postcondition, constraints and interval constraint members.",
                     UMLPackage.Literals.NAMESPACE__MEMBER);
         }
