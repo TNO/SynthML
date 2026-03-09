@@ -28,7 +28,6 @@ import org.eclipse.uml2.uml.IntervalConstraint;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.OpaqueBehavior;
-import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Property;
 
 import com.github.tno.synthml.uml.profile.util.PokaYokeTypeUtil;
@@ -270,10 +269,6 @@ public interface CifContext {
 
     public static boolean isOccurrenceConstraint(Constraint constraint) {
         return constraint.getContext() instanceof Activity && constraint instanceof IntervalConstraint;
-    }
-
-    public static boolean isPrimitiveTypeConstraint(Constraint constraint) {
-        return constraint.getContext() instanceof PrimitiveType;
     }
 
     default boolean hasAbstractActivities() {

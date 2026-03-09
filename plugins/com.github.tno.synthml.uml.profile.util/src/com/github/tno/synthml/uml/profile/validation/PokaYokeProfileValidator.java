@@ -229,8 +229,8 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                 .getReferenceableElementsInclDuplicates();
         for (Map.Entry<String, List<NamedElement>> entry: referenceableElementsInclDuplicates.entrySet()) {
             // Skip primitive type constraints, that always have the same fixed name.
-            if (entry.getValue().stream()
-                    .allMatch(t -> t instanceof Constraint constr && CifContext.isPrimitiveTypeConstraint(constr)))
+            if (entry.getValue().stream().allMatch(
+                    t -> t instanceof Constraint constr && PokaYokeUmlProfileUtil.isPrimitiveTypeConstraint(constr)))
             {
                 continue;
             }
