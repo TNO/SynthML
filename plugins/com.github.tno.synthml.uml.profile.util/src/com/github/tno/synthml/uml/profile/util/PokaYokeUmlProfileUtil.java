@@ -552,7 +552,7 @@ public class PokaYokeUmlProfileUtil {
         return (constraint.eContainer() instanceof Classifier clazz) && clazz.getOwnedRules().contains(constraint);
     }
 
-    public static boolean isSynthesisPrecondition(Constraint constraint) {
+    public static boolean isSynthesisPreconditionConstraint(Constraint constraint) {
         List<Stereotype> appliedStereotypes = constraint.getAppliedStereotypes();
 
         if (appliedStereotypes.isEmpty()) {
@@ -562,7 +562,7 @@ public class PokaYokeUmlProfileUtil {
         return appliedStereotypes.get(0).getName().equals(ST_SYNTHESIS_PRECONDITION);
     }
 
-    public static boolean isUsagePrecondition(Constraint constraint) {
+    public static boolean isUsagePreconditionConstraint(Constraint constraint) {
         List<Stereotype> appliedStereotypes = constraint.getAppliedStereotypes();
 
         if (appliedStereotypes.isEmpty()) {

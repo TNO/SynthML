@@ -791,7 +791,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 List<Constraint> preOrPostConditions;
                 if (addPreconditions) {
                     preOrPostConditions = node.getActivity().getPreconditions().stream()
-                            .filter(p -> PokaYokeUmlProfileUtil.isUsagePrecondition(p)).toList();
+                            .filter(p -> PokaYokeUmlProfileUtil.isUsagePreconditionConstraint(p)).toList();
                 } else {
                     preOrPostConditions = node.getActivity().getPostconditions();
                 }
@@ -1383,7 +1383,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     private Pair<List<AlgVariable>, AlgVariable> translatePreconditions() {
         // Translate the user-specified synthesis preconditions of the activity.
         List<Constraint> synthesisPreconditions = activity.getPreconditions().stream()
-                .filter(p -> PokaYokeUmlProfileUtil.isSynthesisPrecondition(p)).toList();
+                .filter(p -> PokaYokeUmlProfileUtil.isSynthesisPreconditionConstraint(p)).toList();
         List<AlgVariable> preconditionVars = translateUserSpecifiedPrePostconditions(synthesisPreconditions);
 
         // Add the synthesized activity's initial node configuration.
