@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.function.Predicate;
 
 import org.eclipse.uml2.uml.Activity;
-import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.ControlFlow;
@@ -248,22 +247,6 @@ public interface CifContext {
 
     default boolean hasConstraints(Predicate<Constraint> predicate) {
         return getDeclaredElements().stream().anyMatch(e -> e instanceof Constraint c && predicate.test(c));
-    }
-
-    public static boolean isActivityPrePostconditionConstraint(Constraint constraint) {
-        return isActivityPreconditionConstraint(constraint) || isActivityPostconditionConstraint(constraint);
-    }
-
-    public static boolean isActivityPreconditionConstraint(Constraint constraint) {
-        return constraint.getContext() instanceof Activity a && a.getPreconditions().contains(constraint);
-    }
-
-    public static boolean isActivityPostconditionConstraint(Constraint constraint) {
-        return constraint.getContext() instanceof Activity a && a.getPostconditions().contains(constraint);
-    }
-
-    public static boolean isClassConstraint(Constraint constraint) {
-        return constraint.getContext() instanceof Class clazz && !(clazz instanceof Behavior);
     }
 
     default boolean hasAbstractActivities() {
