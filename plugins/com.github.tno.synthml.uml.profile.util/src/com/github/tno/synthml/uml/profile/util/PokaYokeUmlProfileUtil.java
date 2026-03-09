@@ -543,6 +543,15 @@ public class PokaYokeUmlProfileUtil {
                 && activity.getPreconditions().contains(constraint);
     }
 
+    private static boolean isPostconditionConstraint(Constraint constraint) {
+        return (constraint.eContainer() instanceof Activity activity)
+                && activity.getPostconditions().contains(constraint);
+    }
+
+    private static boolean isClassRequirementConstraint(Constraint constraint) {
+        return (constraint.eContainer() instanceof Classifier clazz) && clazz.getOwnedRules().contains(constraint);
+    }
+
     public static boolean isSynthesisPrecondition(Constraint constraint) {
         List<Stereotype> appliedStereotypes = constraint.getAppliedStereotypes();
 
@@ -571,15 +580,6 @@ public class PokaYokeUmlProfileUtil {
         }
 
         return appliedStereotypes.get(0).getName().equals(ST_REQUIREMENT);
-    }
-
-    private static boolean isPostconditionConstraint(Constraint constraint) {
-        return (constraint.eContainer() instanceof Activity activity)
-                && activity.getPostconditions().contains(constraint);
-    }
-
-    private static boolean isClassRequirementConstraint(Constraint constraint) {
-        return (constraint.eContainer() instanceof Classifier clazz) && clazz.getOwnedRules().contains(constraint);
     }
 
     /**
