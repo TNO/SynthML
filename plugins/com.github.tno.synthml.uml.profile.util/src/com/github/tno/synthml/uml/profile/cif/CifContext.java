@@ -24,7 +24,6 @@ import org.eclipse.uml2.uml.DataType;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Enumeration;
 import org.eclipse.uml2.uml.EnumerationLiteral;
-import org.eclipse.uml2.uml.IntervalConstraint;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.OpaqueBehavior;
@@ -265,10 +264,6 @@ public interface CifContext {
 
     public static boolean isClassConstraint(Constraint constraint) {
         return constraint.getContext() instanceof Class clazz && !(clazz instanceof Behavior);
-    }
-
-    public static boolean isOccurrenceConstraint(Constraint constraint) {
-        return constraint.getContext() instanceof Activity && constraint instanceof IntervalConstraint;
     }
 
     default boolean hasAbstractActivities() {
