@@ -1009,15 +1009,15 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     private void checkValidConstraint(Constraint constraint) {
         checkNamingConventions(constraint, NamingConvention.IDENTIFIER);
 
-        if (CifContext.isActivityPrePostconditionConstraint(constraint)) {
-            checkValidActivityPrePostconditionConstraint(constraint);
-        } else if (CifContext.isClassConstraint(constraint)
-                || PokaYokeUmlProfileUtil.isRequirementConstraint(constraint))
+        if (PokaYokeUmlProfileUtil.isContainedAsActivityPrecondition(constraint)
+                || PokaYokeUmlProfileUtil.isContainedAsActivityPostcondition(constraint))
         {
+            checkValidActivityPrePostconditionConstraint(constraint);
+        } else if (PokaYokeUmlProfileUtil.isContainedAsClassOrActivityOwnedRule(constraint)) {
             checkValidRequirementConstraint(constraint);
-        } else if (CifContext.isOccurrenceConstraint(constraint)) {
+        } else if (PokaYokeUmlProfileUtil.isContainedAsActivityOccurrenceConstraint(constraint)) {
             checkValidOccurrenceConstraint((IntervalConstraint)constraint);
-        } else if (CifContext.isPrimitiveTypeConstraint(constraint)) {
+        } else if (PokaYokeUmlProfileUtil.isPrimitiveTypeConstraint(constraint)) {
             // The constraints for primitive types are validated in #checkValidPrimitiveType(PrimitiveType)
         } else {
             error("Unsupported constraint", UMLPackage.Literals.CONSTRAINT__CONTEXT);

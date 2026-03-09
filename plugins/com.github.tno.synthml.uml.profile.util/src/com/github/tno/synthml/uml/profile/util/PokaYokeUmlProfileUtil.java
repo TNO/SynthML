@@ -37,6 +37,7 @@ import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.Package;
+import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Profile;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.RedefinableElement;
@@ -538,18 +539,26 @@ public class PokaYokeUmlProfileUtil {
         return getPokaYokeProfile(constraint).getOwnedStereotype(stereotypeName);
     }
 
-    private static boolean isContainedAsActivityPrecondition(Constraint constraint) {
+    public static boolean isContainedAsActivityPrecondition(Constraint constraint) {
         return (constraint.eContainer() instanceof Activity activity)
                 && activity.getPreconditions().contains(constraint);
     }
 
-    private static boolean isContainedAsActivityPostcondition(Constraint constraint) {
+    public static boolean isContainedAsActivityPostcondition(Constraint constraint) {
         return (constraint.eContainer() instanceof Activity activity)
                 && activity.getPostconditions().contains(constraint);
     }
 
-    private static boolean isContainedAsClassOrActivityOwnedRule(Constraint constraint) {
+    public static boolean isContainedAsClassOrActivityOwnedRule(Constraint constraint) {
         return (constraint.eContainer() instanceof Classifier clazz) && clazz.getOwnedRules().contains(constraint);
+    }
+
+    public static boolean isContainedAsActivityOccurrenceConstraint(Constraint constraint) {
+        return constraint.getContext() instanceof Activity && constraint instanceof IntervalConstraint;
+    }
+
+    public static boolean isPrimitiveTypeConstraint(Constraint constraint) {
+        return constraint.getContext() instanceof PrimitiveType;
     }
 
     public static boolean isSynthesisPreconditionConstraint(Constraint constraint) {
