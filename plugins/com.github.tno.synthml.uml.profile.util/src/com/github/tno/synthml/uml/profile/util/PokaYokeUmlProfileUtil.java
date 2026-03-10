@@ -550,7 +550,8 @@ public class PokaYokeUmlProfileUtil {
     }
 
     public static boolean isContainedAsClassOrActivityOwnedRule(Constraint constraint) {
-        return (constraint.eContainer() instanceof Classifier clazz) && clazz.getOwnedRules().contains(constraint);
+        // Activity is a sub-type of Classifier.
+        return constraint.eContainer() instanceof Classifier clazz && clazz.getOwnedRules().contains(constraint);
     }
 
     public static boolean isContainedAsActivityOccurrenceConstraint(Constraint constraint) {
