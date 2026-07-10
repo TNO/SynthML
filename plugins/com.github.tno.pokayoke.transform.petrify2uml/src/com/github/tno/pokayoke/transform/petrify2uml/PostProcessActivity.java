@@ -138,6 +138,7 @@ public class PostProcessActivity {
                 // Get the kind of action, and finalize the opaque action accordingly.
                 ActionKind actionKind = tracker.getActionKind(action);
                 RedefinableElement umlElement = tracker.getUmlElement(action);
+                String newElementName = getNewElementName(umlElement, activity);
 
                 switch (actionKind) {
                     case COMPLETE_OPAQUE_BEHAVIOR -> {
@@ -145,7 +146,7 @@ public class PostProcessActivity {
                         CallBehaviorAction callAction = UML_FACTORY.createCallBehaviorAction();
                         callAction.setBehavior((OpaqueBehavior)umlElement);
                         callAction.setActivity(activity);
-                        callAction.setName(action.getName());
+                        callAction.setName(newElementName);
 
                         // Store the finalized UML element in the synthesis chain tracker.
                         tracker.addFinalizedUmlElement(callAction, action);
@@ -162,7 +163,7 @@ public class PostProcessActivity {
                     case START_OPAQUE_BEHAVIOR -> {
                         // The action is the start of a non-merged non-atomic opaque behavior. Add its guards to the
                         // opaque action. Set the atomicity property to 'true'.
-                        action.setName(umlElement.getName() + UmlToCifTranslator.START_ACTION_SUFFIX);
+                        action.setName(newElementName + UmlToCifTranslator.START_ACTION_SUFFIX);
                         PokaYokeUmlProfileUtil.setAtomic(action, true);
                         PokaYokeUmlProfileUtil.setGuard(action, PokaYokeUmlProfileUtil.getGuard(umlElement));
 
@@ -183,7 +184,7 @@ public class PostProcessActivity {
                         CallBehaviorAction callAction = UML_FACTORY.createCallBehaviorAction();
                         callAction.setBehavior(((CallBehaviorAction)umlElement).getBehavior());
                         callAction.setActivity(activity);
-                        callAction.setName(action.getName());
+                        callAction.setName(newElementName);
 
                         // Store the finalized UML element in the synthesis chain tracker.
                         tracker.addFinalizedUmlElement(callAction, action);
@@ -199,7 +200,7 @@ public class PostProcessActivity {
                         // The opaque action represents the start of a non-rewritten call behavior that calls a
                         // non-atomic opaque behavior. Add the guards of the called opaque behavior to the opaque
                         // action. Set the atomicity property to 'true'.
-                        action.setName(action.getName() + UmlToCifTranslator.START_ACTION_SUFFIX);
+                        action.setName(newElementName + UmlToCifTranslator.START_ACTION_SUFFIX);
                         PokaYokeUmlProfileUtil.setAtomic(action, true);
                         PokaYokeUmlProfileUtil.setGuard(action,
                                 PokaYokeUmlProfileUtil.getGuard(((CallBehaviorAction)umlElement).getBehavior()));
@@ -220,7 +221,7 @@ public class PostProcessActivity {
                         PokaYokeUmlProfileUtil.setGuard(action, PokaYokeUmlProfileUtil.getGuard(umlElement));
                         PokaYokeUmlProfileUtil.setEffects(action, PokaYokeUmlProfileUtil.getEffects(umlElement));
                         PokaYokeUmlProfileUtil.setAtomic(action, PokaYokeUmlProfileUtil.isAtomic(umlElement));
-                        action.setName(action.getName());
+                        action.setName(newElementName);
 
                         // Store the finalized UML element in the synthesis chain tracker.
                         tracker.addFinalizedUmlElement(action, action);
@@ -232,7 +233,7 @@ public class PostProcessActivity {
                         // Add the original UML element's guard. Set the atomicity property to 'true'.
                         PokaYokeUmlProfileUtil.setGuard(action, PokaYokeUmlProfileUtil.getGuard(umlElement));
                         PokaYokeUmlProfileUtil.setAtomic(action, true);
-                        action.setName(action.getName() + UmlToCifTranslator.START_ACTION_SUFFIX);
+                        action.setName(newElementName + UmlToCifTranslator.START_ACTION_SUFFIX);
 
                         // Store the finalized UML element in the synthesis chain tracker.
                         tracker.addFinalizedUmlElement(action, action);
@@ -250,7 +251,7 @@ public class PostProcessActivity {
                         PokaYokeUmlProfileUtil.setGuard(action, PokaYokeUmlProfileUtil.getGuard(umlElement));
                         PokaYokeUmlProfileUtil.setEffects(action, PokaYokeUmlProfileUtil.getEffects(umlElement));
                         PokaYokeUmlProfileUtil.setAtomic(action, PokaYokeUmlProfileUtil.isAtomic(umlElement));
-                        action.setName(action.getName());
+                        action.setName(newElementName);
 
                         // Store the finalized UML element in the synthesis chain tracker.
                         tracker.addFinalizedUmlElement(action, action);
@@ -262,7 +263,7 @@ public class PostProcessActivity {
                         // call. Add the original UML element's guard. Set the atomicity property to 'true'.
                         PokaYokeUmlProfileUtil.setGuard(action, PokaYokeUmlProfileUtil.getGuard(umlElement));
                         PokaYokeUmlProfileUtil.setAtomic(action, true);
-                        action.setName(action.getName() + UmlToCifTranslator.START_ACTION_SUFFIX);
+                        action.setName(newElementName + UmlToCifTranslator.START_ACTION_SUFFIX);
 
                         // Store the finalized UML element in the synthesis chain tracker.
                         tracker.addFinalizedUmlElement(action, action);
@@ -281,10 +282,11 @@ public class PostProcessActivity {
 
                         // The action is the end of a non-merged non-atomic UML element. Rename the current action,
                         // set the atomicity property to 'true', set its guard to 'true', and retain the original
-                        // relevant effect.
+                        // relevant effect. In the renaming we use (effectIdx + 1) because the tracker is 0-indexed
+                        // while the actions names are 1-indexed.
                         int effectIdx = tracker.getEffectIdx(action);
-                        action.setName(action.getName().replace(UmlToCifTranslator.NONATOMIC_OUTCOME_SUFFIX,
-                                UmlToCifTranslator.END_ACTION_SUFFIX));
+                        action.setName(
+                                newElementName + UmlToCifTranslator.END_ACTION_SUFFIX + String.valueOf(effectIdx + 1));
                         PokaYokeUmlProfileUtil.setAtomic(action, true);
                         PokaYokeUmlProfileUtil.setGuard(action, "true");
 
@@ -319,6 +321,21 @@ public class PostProcessActivity {
             {
                 throw new RuntimeException("Found unexpected node type: " + node.getClass().getSimpleName());
             }
+        }
+    }
+
+    /**
+     * Creates a new name for the given UML element and its container activity, without the use of double underscores.
+     *
+     * @param umlElement The UML element to rename.
+     * @param activity The container activity.
+     * @return The new element's name.
+     */
+    private static String getNewElementName(RedefinableElement umlElement, Activity activity) {
+        if (umlElement instanceof OpaqueBehavior || umlElement.eContainer().equals(activity)) {
+            return umlElement.getName();
+        } else {
+            return ((Activity)umlElement.eContainer()).getName() + "_" + umlElement.getName();
         }
     }
 }
