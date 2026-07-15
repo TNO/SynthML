@@ -111,7 +111,7 @@ public class RedundantDecisionForkMergePattern {
                 // (1) find the set of all target merge nodes connected by a control flow without guards, and that do
                 // not correspond to the translation of an activity final node of a called concrete activity,
                 // (2) check whether the number of target nodes is the same as the number of fork nodes,
-                // (3) check whether all target nodes are merge nodes,
+                // (3) check whether all target nodes are merge nodes, and
                 // (4) check whether all fork nodes that we previously iterated over target the same merge nodes.
                 Set<MergeNode> mergeNodes = new LinkedHashSet<>();
 

@@ -35,7 +35,7 @@ import com.google.common.base.Preconditions;
  * A <i>redundant decision-merge pattern</i> is a pattern where the activity branches and after that directly merges.
  * This pattern consists of a decision node and a merge node, such that all control flows from the decision node go
  * directly to the merge node, have only trivial guards, with nothing in between. Further, The decision and merge node
- * must not correspond to the translation of a concrete activity initial and final nodes, respectively. Every such
+ * must not correspond to the translation of a concrete activity initial and final node, respectively. Every such
  * pattern can be rewritten by removing the decision node and possibly the merge node (depending on whether it has other
  * incoming control flows), and redirecting the outgoing control flow of the decision node to the proper target node.
  * </p>

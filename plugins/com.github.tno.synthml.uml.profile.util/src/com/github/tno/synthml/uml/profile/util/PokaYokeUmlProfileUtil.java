@@ -152,7 +152,7 @@ public class PokaYokeUmlProfileUtil {
      * Returns {@code true} if the control flow has non-trivial (i.e. null or true) guards.
      *
      * @param controlFlow The control flow to interrogate.
-     * @return {@code true} if the control flow has non-trivial guards.
+     * @return {@code true} if the control flow has non-trivial guards, {@code false} otherwise.
      */
     public static boolean isGuardedControlFlow(ControlFlow controlFlow) {
         return !ExprHelper.isNullOrTriviallyTrue(PokaYokeUmlProfileUtil.getIncomingGuard(controlFlow))
