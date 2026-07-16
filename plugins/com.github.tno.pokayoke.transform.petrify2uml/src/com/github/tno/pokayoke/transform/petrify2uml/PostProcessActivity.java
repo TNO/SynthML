@@ -138,6 +138,10 @@ public class PostProcessActivity {
                 // Get the kind of action, and finalize the opaque action accordingly.
                 ActionKind actionKind = tracker.getActionKind(action);
                 RedefinableElement umlElement = tracker.getUmlElement(action);
+
+                // Get the name for the finalized UML element. If the current node is a duplicate of a node belonging to
+                // a called concrete activity, get a new name (without double underscores); if the current node has been
+                // generated for the synthesized activity, keep its current name.
                 String newElementName = getNewElementName(umlElement, activity);
 
                 switch (actionKind) {
@@ -325,17 +329,19 @@ public class PostProcessActivity {
     }
 
     /**
-     * Creates a new name for the given UML element and its container activity, without the use of double underscores.
+     * Creates a new name for the given UML element if it does not belong to the synthesized activity. The new name is
+     * the concatenation of the UML element's container activity and its current name, without the use of double
+     * underscores.
      *
      * @param umlElement The UML element to rename.
-     * @param activity The container activity.
+     * @param synthesizedActivity The synthesized activity.
      * @return The new element's name.
      */
-    private static String getNewElementName(RedefinableElement umlElement, Activity activity) {
-        if (umlElement instanceof OpaqueBehavior || umlElement.eContainer().equals(activity)) {
-            return umlElement.getName();
-        } else {
+    private static String getNewElementName(RedefinableElement umlElement, Activity synthesizedActivity) {
+        if (umlElement.eContainer() instanceof Activity && !umlElement.eContainer().equals(synthesizedActivity)) {
             return ((Activity)umlElement.eContainer()).getName() + "_" + umlElement.getName();
+        } else {
+            return umlElement.getName();
         }
     }
 }
