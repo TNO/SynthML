@@ -329,9 +329,9 @@ public class PostProcessActivity {
     }
 
     /**
-     * Creates a new name for the given UML element if it does not belong to the synthesized activity. The new name is
-     * the concatenation of the UML element's container activity and its current name, without the use of double
-     * underscores.
+     * Creates a new name for the given UML element in case that element belongs to an activity but not the given
+     * synthesized activity. The new name is the concatenation of the UML element's container activity and its current
+     * name, without the use of double underscores.
      *
      * @param umlElement The UML element to rename.
      * @param synthesizedActivity The synthesized activity.
