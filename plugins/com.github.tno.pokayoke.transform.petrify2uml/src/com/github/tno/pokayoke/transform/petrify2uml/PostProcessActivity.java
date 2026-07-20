@@ -338,8 +338,8 @@ public class PostProcessActivity {
      * @return The new element's name.
      */
     private static String getNewElementName(RedefinableElement umlElement, Activity synthesizedActivity) {
-        if (umlElement.eContainer() instanceof Activity && !umlElement.eContainer().equals(synthesizedActivity)) {
-            return ((Activity)umlElement.eContainer()).getName() + "_" + umlElement.getName();
+        if (umlElement.eContainer() instanceof Activity activity && !activity.equals(synthesizedActivity)) {
+            return activity.getName() + "_" + umlElement.getName();
         } else {
             return umlElement.getName();
         }
