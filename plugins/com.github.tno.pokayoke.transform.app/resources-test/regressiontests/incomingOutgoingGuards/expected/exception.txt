@@ -1,1 +1,1 @@
-ERROR: Found non-temporary actions with double underscore in their name.
+ERROR: Event '__node__OpaqueAction__48' is not an end-only event.
