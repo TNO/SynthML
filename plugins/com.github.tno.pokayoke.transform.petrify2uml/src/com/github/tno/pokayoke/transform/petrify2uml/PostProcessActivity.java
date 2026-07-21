@@ -338,7 +338,7 @@ public class PostProcessActivity {
      * @return The new element's name.
      */
     private static String getNewElementName(RedefinableElement umlElement, Activity synthesizedActivity) {
-        Verify.verify(!umlElement.getName().contains("__"),
+        Preconditions.checkArgument(!umlElement.getName().contains("__"),
                 "The name of UML element " + umlElement.getName() + " contains double underscores.");
 
         if (umlElement.eContainer() instanceof Activity activity && !activity.equals(synthesizedActivity)) {
