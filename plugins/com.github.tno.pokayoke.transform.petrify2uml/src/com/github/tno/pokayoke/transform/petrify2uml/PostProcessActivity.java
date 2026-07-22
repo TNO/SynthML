@@ -333,14 +333,11 @@ public class PostProcessActivity {
      * synthesized activity. The new name is the concatenation of the UML element's container activity and its current
      * name, without the use of double underscores.
      *
-     * @param umlElement The UML element to rename. Its name should not contain double underscores.
+     * @param umlElement The UML element to rename.
      * @param synthesizedActivity The synthesized activity.
      * @return The new element's name.
      */
     private static String getNewElementName(RedefinableElement umlElement, Activity synthesizedActivity) {
-        Preconditions.checkArgument(!umlElement.getName().contains("__"),
-                "The name of UML element " + umlElement.getName() + " contains double underscores.");
-
         if (umlElement.eContainer() instanceof Activity activity && !activity.equals(synthesizedActivity)) {
             return activity.getName() + "_" + umlElement.getName();
         } else {

@@ -1081,7 +1081,9 @@ public class SynthesisChainTracking {
         Set<OpaqueAction> actionsToRemove = new LinkedHashSet<>();
         Set<Transition> transitionsToRemove = new LinkedHashSet<>();
         for (Entry<ActivityNode, Transition> entry: activityNodeToTransition.entrySet()) {
-            if (entry.getKey() instanceof OpaqueAction action && action.getName().contains("__")) {
+            if (entry.getKey() instanceof OpaqueAction action
+                    && (action.getName().equals("__start") || action.getName().equals("__end")))
+            {
                 actionsToRemove.add(action);
                 transitionsToRemove.add(entry.getValue());
             }
