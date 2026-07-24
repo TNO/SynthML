@@ -29,6 +29,7 @@ import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.UMLFactory;
 
 import com.github.tno.pokayoke.transform.common.ExprHelper;
+import com.github.tno.pokayoke.transform.common.NameHelper;
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.DoubleMergePattern;
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.EquivalentActionsIntoMergePattern;
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.RedundantDecisionForkMergePattern;
@@ -139,10 +140,9 @@ public class PostProcessActivity {
                 ActionKind actionKind = tracker.getActionKind(action);
                 RedefinableElement umlElement = tracker.getUmlElement(action);
 
-                // Get the name for the finalized UML element. If the current node is a duplicate of a node belonging to
-                // a called concrete activity, get a new name (without double underscores); if the current node has been
-                // generated for the synthesized activity, keep its current name.
-                String newElementName = getNewElementName(umlElement, activity);
+                // Remove double underscores from UML elements' names in case they belong to a called concrete activity.
+                // Potential naming conflicts are corrected outside of the for-loop.
+                String newElementName = umlElement.getName().replace("__", "_");
 
                 switch (actionKind) {
                     case COMPLETE_OPAQUE_BEHAVIOR -> {
@@ -326,22 +326,8 @@ public class PostProcessActivity {
                 throw new RuntimeException("Found unexpected node type: " + node.getClass().getSimpleName());
             }
         }
-    }
 
-    /**
-     * Creates a new name for the given UML element in case that element belongs to an activity but not the given
-     * synthesized activity. The new name is the concatenation of the UML element's container activity and its current
-     * name, without the use of double underscores.
-     *
-     * @param umlElement The UML element to rename.
-     * @param synthesizedActivity The synthesized activity.
-     * @return The new element's name.
-     */
-    private static String getNewElementName(RedefinableElement umlElement, Activity synthesizedActivity) {
-        if (umlElement.eContainer() instanceof Activity activity && !activity.equals(synthesizedActivity)) {
-            return activity.getName() + "_" + umlElement.getName();
-        } else {
-            return umlElement.getName();
-        }
+        // Ensure that there are no naming conflicts after the replacement of the double underscores.
+        NameHelper.ensureUniqueNameForNodesAndEdges(activity);
     }
 }
