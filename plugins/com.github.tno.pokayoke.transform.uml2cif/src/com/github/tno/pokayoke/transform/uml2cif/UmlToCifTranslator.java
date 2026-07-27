@@ -345,8 +345,26 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
         // Translate all postconditions of the input UML activity.
         switch (translationPurpose) {
-            case LANGUAGE_EQUIVALENCE:
             case SYNTHESIS: {
+                // Translate postconditions twice, once to determine the postcondition without structure, and once to
+                // determine the postcondition with structure. Both are later used for disable different events when
+                // different postconditions hold. The postcondition with structure is used as marking predicate.
+                Pair<List<AlgVariable>, AlgVariable> postconditionsWithoutStructure = translatePostconditions(
+                        cifNonAtomicVars, cifAtomicityVar, PostConditionKind.WITHOUT_STRUCTURE);
+                cifPlant.getDeclarations().addAll(postconditionsWithoutStructure.left);
+                postconditionVariables.put(PostConditionKind.WITHOUT_STRUCTURE, postconditionsWithoutStructure.right);
+                cifPlant.getDeclarations().add(postconditionsWithoutStructure.right);
+
+                Pair<List<AlgVariable>, AlgVariable> postconditionsWithStructure = translatePostconditions(
+                        cifNonAtomicVars, cifAtomicityVar, PostConditionKind.WITH_STRUCTURE);
+                cifPlant.getDeclarations().addAll(postconditionsWithStructure.left);
+                postconditionVariables.put(PostConditionKind.WITH_STRUCTURE, postconditionsWithStructure.right);
+                cifPlant.getDeclarations().add(postconditionsWithStructure.right);
+
+                cifPlant.getMarkeds().add(getTranslatedPostcondition(PostConditionKind.WITH_STRUCTURE));
+                break;
+            }
+            case LANGUAGE_EQUIVALENCE: {
                 // Translate postconditions once, to get a single algebraic variable that represents the postcondition.
                 // It is used as marking predicate, and later also to disable events when the postcondition holds.
                 Pair<List<AlgVariable>, AlgVariable> postconditions = translatePostconditions(cifNonAtomicVars,
