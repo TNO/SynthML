@@ -1479,9 +1479,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         // Initialize the list of postcondition variables for the partial conditions.
         List<AlgVariable> postconditionVars = new ArrayList<>();
 
-        // For guard computation, we have two postconditions. For the 'with structure' postcondition, include the
-        // 'without structure' postcondition.
-        if (translationPurpose == UmlToCifTranslationPurpose.GUARD_COMPUTATION
+        // For synthesis and guard computation, we have two postconditions. For the 'with structure' postcondition,
+        // include the 'without structure' postcondition.
+        if (translationPurpose != UmlToCifTranslationPurpose.LANGUAGE_EQUIVALENCE
                 && kind == PostConditionKind.WITH_STRUCTURE)
         {
             Expression condition = getTranslatedPostcondition(PostConditionKind.WITHOUT_STRUCTURE);
@@ -1653,8 +1653,23 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                     }
                 }
 
+                case SYNTHESIS -> {
+                    // If the CIF event refers to a "new" element (e.g., an opaque behavior) or to the initial node of a
+                    // concrete activity, we should prevent taking it once the postconditions are met. If the node
+                    // represents something else, i.e., a non-initial node of a concrete activity, we must allow taking
+                    // the event (to complete the execution of the concrete activity) even after the postconditions are
+                    // met.
+                    if (synthesisTracker.refersToNewlySynthesizedElement(cifEvent, translationPurpose)
+                            || synthesisTracker.representsActivityInitialNode(cifEvent, translationPurpose))
+                    {
+                        yield PostConditionKind.WITHOUT_STRUCTURE;
+                    } else {
+                        yield PostConditionKind.WITH_STRUCTURE;
+                    }
+                }
+
                 // If there is only one postcondition, there is nothing to choose.
-                case LANGUAGE_EQUIVALENCE, SYNTHESIS -> PostConditionKind.SINGLE;
+                case LANGUAGE_EQUIVALENCE -> PostConditionKind.SINGLE;
             };
 
             // Get the associated postcondition algebraic variable.
