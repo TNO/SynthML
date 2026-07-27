@@ -1147,6 +1147,33 @@ public class SynthesisChainTracking {
     }
 
     /**
+     * Return {@code true} if the CIF event corresponds to a UML element that is contained in the synthesized activity.
+     * The method concerns the original UML model elements, hence the guard computation and language equivalence cases
+     * use the original UML element. If the UML element is {@code null}, it is assumed that the CIF events corresponds
+     * to a new UML element created purposely for the given activity, so the method returns {@code true}. Similarly if
+     * the UML element is an opaque behavior, it is assumed that the CIF event represents a call behavior created for
+     * the given activity, hence the method returns {@code true}.
+     *
+     * @param cifEvent The CIF event.
+     * @param purpose The translation purpose.
+     * @return {@code true} if the CIF event corresponds to a UML element that does belong to the synthesized activity.
+     */
+    public boolean refersToNewlySynthesizedElement(Event cifEvent, UmlToCifTranslationPurpose purpose) {
+        EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
+        if (eventInfo == null) {
+            return true;
+        }
+
+        RedefinableElement umlElement = switch (purpose) {
+            case SYNTHESIS -> eventInfo.getUmlElement();
+            case GUARD_COMPUTATION, LANGUAGE_EQUIVALENCE -> getOriginalUmlElement(eventInfo.getUmlElement());
+            default -> throw new IllegalArgumentException("Unexpected translation purpose: " + purpose);
+        };
+
+        return umlElement instanceof OpaqueBehavior || belongsToSynthesizedActivity(umlElement);
+    }
+
+    /**
      * Returns the original UML element for which the given activity node in the synthesized activity was created, or
      * {@code null} if no such element exists.
      *
