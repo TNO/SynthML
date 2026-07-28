@@ -1577,10 +1577,20 @@ public class SynthesisChainTracking {
         }
 
         RedefinableElement umlElement = switch (purpose) {
-            case SYNTHESIS -> eventInfo.getUmlElement();
-            case GUARD_COMPUTATION, LANGUAGE_EQUIVALENCE -> getOriginalUmlElement(
-                    (ActivityNode)eventInfo.getUmlElement());
-            default -> throw new IllegalArgumentException("Unexpected translation purpose: " + purpose);
+            case SYNTHESIS -> {
+                yield eventInfo.getUmlElement();
+            }
+            case GUARD_COMPUTATION, LANGUAGE_EQUIVALENCE -> {
+                if (eventInfo.getUmlElement() instanceof ActivityNode node) {
+                    yield getOriginalUmlElement(node);
+                } else {
+                    throw new RuntimeException(
+                            "UML element " + eventInfo.getUmlElement().getName() + " is not an activity node.");
+                }
+            }
+            default -> {
+                throw new IllegalArgumentException("Unexpected translation purpose: " + purpose);
+            }
         };
 
         return umlElement instanceof InitialNode;
