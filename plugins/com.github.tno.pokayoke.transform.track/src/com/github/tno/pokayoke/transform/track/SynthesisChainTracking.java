@@ -155,7 +155,9 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Returns the events corresponding to the given set of UML elements, based on the indicated translation purpose.
+     * Returns the events corresponding to the given set of UML elements, based on the indicated translation purpose. If
+     * the purpose is guard computation or language equivalence, the method returns the CIF events related to the
+     * original UML-to_CIF conversion earlier in the synthesis chain.
      *
      * @param umlElements The set of UML elements, to find the related CIF events. Each UML element must be
      *     non-{@code null}.
@@ -1164,16 +1166,17 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Returns {@code true} if the given CIF event corresponds to a UML element that is contained in the synthesized activity.
-     * The method concerns the original UML model elements, hence the guard computation and language equivalence cases
-     * use the original UML element. If the UML element is {@code null}, it is assumed that the CIF events corresponds
-     * to a new UML element created purposely for the given activity, so the method returns {@code true}. Similarly if
-     * the UML element is an opaque behavior, it is assumed that the CIF event represents a call behavior created for
-     * the given activity, hence the method returns {@code true}.
+     * Returns {@code true} if the given CIF event corresponds to a UML element that is contained in the synthesized
+     * activity. The method concerns the original UML model elements, hence the guard computation and language
+     * equivalence cases use the original UML element. If the UML element is {@code null}, it is assumed that the CIF
+     * events corresponds to a new UML element created purposely for the given activity, so the method returns
+     * {@code true}. Similarly if the UML element is an opaque behavior, it is assumed that the CIF event represents a
+     * call behavior created for the given activity, hence the method returns {@code true}.
      *
      * @param cifEvent The CIF event.
      * @param purpose The translation purpose.
-     * @return {@code true} if the CIF event corresponds to a UML element that does belong to the synthesized activity, {@code false} otherwise.
+     * @return {@code true} if the CIF event corresponds to a UML element that does belong to the synthesized activity,
+     *     {@code false} otherwise.
      */
     public boolean refersToNewlySynthesizedElement(Event cifEvent, UmlToCifTranslationPurpose purpose) {
         EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
