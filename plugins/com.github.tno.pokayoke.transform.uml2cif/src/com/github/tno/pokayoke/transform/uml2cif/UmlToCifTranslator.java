@@ -1621,7 +1621,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                         // element within a called concrete activity; the only exception is when a node represents the
                         // start of an activity, which should not be called after reaching a marked state.
                         yield PostConditionKind.WITH_STRUCTURE;
-                    } else if (synthesisTracker.isStartOfOriginalOpaqueAction(cifEvent, translationPurpose)
+                    } else if (synthesisTracker.isStartOfOriginalAction(cifEvent, translationPurpose)
                             || synthesisTracker.representsActivityInitialNode(cifEvent, translationPurpose))
                     {
                         // As soon as the user-defined postconditions etc hold, we should no longer allow starting any

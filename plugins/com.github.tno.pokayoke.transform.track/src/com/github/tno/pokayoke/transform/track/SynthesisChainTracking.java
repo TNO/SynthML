@@ -1496,7 +1496,7 @@ public class SynthesisChainTracking {
      * @return {@code true} if the CIF event corresponds to the start of an original opaque behavior, opaque action or
      *     call behavior action; {@code false} otherwise.
      */
-    public boolean isStartOfOriginalOpaqueAction(Event cifEvent, UmlToCifTranslationPurpose purpose) {
+    public boolean isStartOfOriginalAction(Event cifEvent, UmlToCifTranslationPurpose purpose) {
         // Precondition check.
         Verify.verify(purpose != UmlToCifTranslationPurpose.SYNTHESIS,
                 "Reference to original UML element is undefined for synthesis translation.");
