@@ -1481,9 +1481,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
         // For synthesis and guard computation, we have two postconditions. For the 'with structure' postcondition,
         // include the 'without structure' postcondition.
-        if (translationPurpose != UmlToCifTranslationPurpose.LANGUAGE_EQUIVALENCE
-                && kind == PostConditionKind.WITH_STRUCTURE)
-        {
+        if (kind == PostConditionKind.WITH_STRUCTURE) {
             Expression condition = getTranslatedPostcondition(PostConditionKind.WITHOUT_STRUCTURE);
             AlgVariable cifAlgVar = CifConstructors.newAlgVariable(null, kind.prefix + "__without_structure", null,
                     CifConstructors.newBoolType(), condition);
