@@ -1576,9 +1576,7 @@ public class SynthesisChainTracking {
         }
 
         RedefinableElement umlElement = switch (purpose) {
-            case SYNTHESIS -> {
-                yield eventInfo.getUmlElement();
-            }
+            case SYNTHESIS -> eventInfo.getUmlElement();
             case GUARD_COMPUTATION, LANGUAGE_EQUIVALENCE -> {
                 if (eventInfo.getUmlElement() instanceof ActivityNode node) {
                     yield getOriginalUmlElement(node);
