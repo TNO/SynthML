@@ -1626,7 +1626,13 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             // Determine which postcondition to use.
             PostConditionKind kind = switch (translationPurpose) {
                 case GUARD_COMPUTATION -> {
-                    if (!synthesisTracker.representsActivityInitialNode(cifEvent, translationPurpose)
+                    if (// If the event represents the initial node of a concrete activity we cannot call it once the
+                        // postconditions are reached.
+                    !synthesisTracker.representsActivityInitialNode(cifEvent, translationPurpose)
+                            // If the event represents an internal node, e.g. a decision/merge node, or a final node,
+                            // but not an initial node (previous condition), let the execution finish.
+                            // Or, if the event represents a node from a concrete activity, but not the initial node
+                            // (previous condition), let the execution finish.
                             && (synthesisTracker.getEventTraceInfo(cifEvent).isInternal()
                                     || !synthesisTracker.refersToNewlySynthesizedElement(cifEvent, translationPurpose)))
                     {
