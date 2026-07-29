@@ -347,7 +347,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         switch (translationPurpose) {
             case SYNTHESIS: {
                 // Translate postconditions twice, once to determine the postcondition without structure, and once to
-                // determine the postcondition with structure. Both are later used for disable different events when
+                // determine the postcondition with structure. Both are later used to disable different events when
                 // different postconditions hold. The postcondition with structure is used as marking predicate.
                 Pair<List<AlgVariable>, AlgVariable> postconditionsWithoutStructure = translatePostconditions(
                         cifNonAtomicVars, cifAtomicityVar, PostConditionKind.WITHOUT_STRUCTURE);
@@ -379,7 +379,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
             case GUARD_COMPUTATION: {
                 // Translate postconditions twice, once to determine the postcondition without structure, and once to
-                // determine the postcondition with structure. Both are later used for disable different events when
+                // determine the postcondition with structure. Both are later used to disable different events when
                 // different postconditions hold. The postcondition with structure is used as marking predicate.
                 Pair<List<AlgVariable>, AlgVariable> postconditionsWithoutStructure = translatePostconditions(
                         cifNonAtomicVars, cifAtomicityVar, PostConditionKind.WITHOUT_STRUCTURE);
@@ -1632,7 +1632,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                     {
                         // We must allow internal actions after the user-defined postconditions etc hold, to ensure
                         // that the token can still pass through merge/join/etc nodes and the token can still reach
-                        // the incoming control flow to the final place. Similarly, if the CIF event relates to an
+                        // the incoming control flow to the final node. Similarly, if the CIF event relates to an
                         // element within a called concrete activity; the only exception is when a node represents the
                         // start of an activity, which should not be called after reaching a marked state.
                         yield PostConditionKind.WITH_STRUCTURE;
@@ -1640,7 +1640,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                             || synthesisTracker.representsActivityInitialNode(cifEvent, translationPurpose))
                     {
                         // As soon as the user-defined postconditions etc hold, we should no longer allow starting any
-                        // of the actions that the user defined or a concrete activity.
+                        // of the actions that the user defined or calling a concrete activity.
                         yield PostConditionKind.WITHOUT_STRUCTURE;
                     } else {
                         // We must allow finishing non-atomic/non-deterministic actions.
