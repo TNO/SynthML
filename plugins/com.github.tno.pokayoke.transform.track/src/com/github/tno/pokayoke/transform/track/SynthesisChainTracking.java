@@ -156,6 +156,7 @@ public class SynthesisChainTracking {
 
     /**
      * Returns the events corresponding to the given set of UML elements, based on the indicated translation purpose. If
+     * the purpose is guard computation or language equivalence, the method returns the CIF events related to the
      * original UML-to-CIF conversion earlier in the synthesis chain.
      *
      * @param umlElements The set of UML elements, to find the related CIF events. Each UML element must be
