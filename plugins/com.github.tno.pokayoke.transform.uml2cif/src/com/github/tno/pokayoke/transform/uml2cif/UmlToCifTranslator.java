@@ -1605,21 +1605,23 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             // Determine which postcondition to use.
             PostConditionKind kind = switch (translationPurpose) {
                 case GUARD_COMPUTATION -> {
-                    if (// If the event represents the initial node of a concrete activity we cannot call it once the
-                        // postconditions are reached.
-                    !synthesisTracker.representsActivityInitialNode(cifEvent, translationPurpose)
-                            // If the event represents an internal node, e.g. a decision/merge node, or a final node,
-                            // but not an initial node (previous condition), let the execution finish.
-                            // Or, if the event represents a node from a concrete activity, but not the initial node
-                            // (previous condition), let the execution finish.
-                            && (synthesisTracker.getEventTraceInfo(cifEvent).isInternal()
-                                    || !synthesisTracker.refersToNewlySynthesizedElement(cifEvent, translationPurpose)))
+                    if (synthesisTracker.getEventTraceInfo(cifEvent).isInternal()
+                            && !synthesisTracker.representsActivityInitialNode(cifEvent, translationPurpose))
                     {
                         // We must allow internal actions after the user-defined postconditions etc hold, to ensure
-                        // that the token can still pass through merge/join/etc nodes and the token can still reach
-                        // the incoming control flow to the final node. Similarly, if the CIF event relates to an
-                        // element within a called concrete activity; the only exception is when a node represents the
-                        // start of an activity, which should not be called after reaching a marked state.
+                        // that the token can still pass through merge/join/final/etc nodes and the token can still
+                        // reach the incoming control flow to the final node. The only exception is when a node
+                        // represents the start of an activity, which should not be called after reaching a marked
+                        // state.
+                        yield PostConditionKind.WITH_STRUCTURE;
+                    } else if (!synthesisTracker.refersToNewlySynthesizedElement(cifEvent, translationPurpose)
+                            && !synthesisTracker.representsActivityInitialNode(cifEvent, translationPurpose))
+                    {
+                        // We must allow nodes of a called concrete activity after the user-defined postconditions etc
+                        // hold, to ensure that the token can still pass through the whole activity and the token can
+                        // still reach the incoming control flow to the final node. The only exception is when a node
+                        // represents the start of an activity, which should not be called after reaching a marked
+                        // state.
                         yield PostConditionKind.WITH_STRUCTURE;
                     } else if (synthesisTracker.isStartOfOriginalAction(cifEvent, translationPurpose)
                             || synthesisTracker.representsActivityInitialNode(cifEvent, translationPurpose))
