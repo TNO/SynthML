@@ -1617,11 +1617,11 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                     } else if (!synthesisTracker.refersToNewlySynthesizedElement(cifEvent, translationPurpose)
                             && !synthesisTracker.representsActivityInitialNode(cifEvent, translationPurpose))
                     {
-                        // We must allow nodes of a called concrete activity to be executed after the user-defined postconditions etc
-                        // hold, to ensure that the token can still pass through the whole activity and the token can
-                        // still reach the incoming control flow to the final node. The only exception is when a node
-                        // represents the start of an activity, which should not be called after reaching a marked
-                        // state.
+                        // We must allow nodes of a called concrete activity to be executed after the user-defined
+                        // postconditions etc hold, to ensure that the token can still pass through the whole activity
+                        // and the token can still reach the incoming control flow to the final node. The only exception
+                        // is when a node represents the start of an activity, which should not be called after reaching
+                        // a marked state.
                         yield PostConditionKind.WITH_STRUCTURE;
                     } else if (synthesisTracker.isStartOfOriginalAction(cifEvent, translationPurpose)
                             || synthesisTracker.representsActivityInitialNode(cifEvent, translationPurpose))
