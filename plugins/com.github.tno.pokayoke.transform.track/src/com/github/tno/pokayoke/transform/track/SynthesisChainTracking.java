@@ -1190,7 +1190,9 @@ public class SynthesisChainTracking {
             default -> throw new IllegalArgumentException("Unexpected translation purpose: " + purpose);
         };
 
-        return umlElement instanceof OpaqueBehavior || belongsToSynthesizedActivity(umlElement);
+        boolean belongsToSynthesizedActivity = (umlElement == null) ? true : belongsToSynthesizedActivity(umlElement);
+
+        return umlElement instanceof OpaqueBehavior || belongsToSynthesizedActivity;
     }
 
     /**
