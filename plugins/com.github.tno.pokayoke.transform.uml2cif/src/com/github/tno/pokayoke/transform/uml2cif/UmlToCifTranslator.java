@@ -1605,30 +1605,22 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             // Determine which postcondition to use.
             PostConditionKind kind = switch (translationPurpose) {
                 case GUARD_COMPUTATION -> {
-                    if (synthesisTracker.getEventTraceInfo(cifEvent).isInternal()
-                            && !synthesisTracker.representsActivityInitialNode(cifEvent, translationPurpose))
-                    {
-                        // We must allow internal actions after the user-defined postconditions etc hold, to ensure
-                        // that the token can still pass through merge/join/final/etc nodes and the token can still
-                        // reach the incoming control flow to the final node. The only exception is when a node
-                        // represents the start of an activity, which should not be called after reaching a marked
-                        // state.
-                        yield PostConditionKind.WITH_STRUCTURE;
-                    } else if (!synthesisTracker.refersToNewlySynthesizedElement(cifEvent, translationPurpose)
-                            && !synthesisTracker.representsActivityInitialNode(cifEvent, translationPurpose))
-                    {
-                        // We must allow nodes of a called concrete activity to be executed after the user-defined
-                        // postconditions etc hold, to ensure that the token can still pass through the whole activity
-                        // and the token can still reach the incoming control flow to the final node. The only exception
-                        // is when a node represents the start of an activity, which should not be called after reaching
-                        // a marked state.
-                        yield PostConditionKind.WITH_STRUCTURE;
-                    } else if (synthesisTracker.isStartOfOriginalAction(cifEvent, translationPurpose)
+                    if ((synthesisTracker.refersToNewlySynthesizedElement(cifEvent, translationPurpose)
+                            && synthesisTracker.isStartOfOriginalAction(cifEvent, translationPurpose))
                             || synthesisTracker.representsActivityInitialNode(cifEvent, translationPurpose))
                     {
                         // As soon as the user-defined postconditions etc hold, we should no longer allow starting any
-                        // of the actions that the user defined or calling a concrete activity.
+                        // of the actions that the user defined or calling (the initial node of) a concrete activity.
                         yield PostConditionKind.WITHOUT_STRUCTURE;
+                    } else if (synthesisTracker.getEventTraceInfo(cifEvent).isInternal()
+                            || !synthesisTracker.refersToNewlySynthesizedElement(cifEvent, translationPurpose))
+                    {
+                        // We must allow internal actions after the user-defined postconditions etc hold, to ensure
+                        // that the token can still pass through merge/join/etc or concrete activity nodes and the token
+                        // can still reach the incoming control flow to the final node. The only exception is when a
+                        // node represents the start of an activity, which should not be called after reaching a marked
+                        // state.
+                        yield PostConditionKind.WITH_STRUCTURE;
                     } else {
                         // We must allow finishing non-atomic/non-deterministic actions.
                         Verify.verify(
