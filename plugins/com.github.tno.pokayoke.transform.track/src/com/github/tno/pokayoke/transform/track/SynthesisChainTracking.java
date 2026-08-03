@@ -1577,9 +1577,7 @@ public class SynthesisChainTracking {
                             "UML element " + eventInfo.getUmlElement().getName() + " is not an activity node.");
                 }
             }
-            default -> {
-                throw new IllegalArgumentException("Unexpected translation purpose: " + purpose);
-            }
+            default -> throw new IllegalArgumentException("Unexpected translation purpose: " + purpose);
         };
 
         return umlElement instanceof InitialNode;
