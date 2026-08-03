@@ -36,7 +36,7 @@ import com.google.common.base.Preconditions;
  * <p>
  * A <i>redundant decision-fork-merge pattern</i> is a pattern where, after doing some decision node, the activity
  * branches into <i>N</i> different paths, which all fork and all merge again into the same <i>N</i> merge nodes, and
- * all control flows in between have trivial guards. Further, The decision and merge node must not correspond to the
+ * all control flows in between have trivial guards. Further, the decision and merge node must not correspond to the
  * translation of a concrete activity initial and final nodes, respectively. This pattern is redundant, since the
  * decision node and all <i>N</i> fork and merge nodes can be replaced by a single fork node.
  * </p>
