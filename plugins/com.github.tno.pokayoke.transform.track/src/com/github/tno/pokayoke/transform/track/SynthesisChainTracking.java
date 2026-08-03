@@ -1170,7 +1170,7 @@ public class SynthesisChainTracking {
      * @return {@code true} if the CIF event corresponds to a UML element that does belong to the synthesized activity,
      *     {@code false} otherwise.
      */
-    public boolean refersToNewlySynthesizedElement(Event cifEvent, UmlToCifTranslationPurpose purpose) {
+    public boolean belongsToExistingConcreteActivity(Event cifEvent, UmlToCifTranslationPurpose purpose) {
         EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
         if (eventInfo == null) {
             return true;

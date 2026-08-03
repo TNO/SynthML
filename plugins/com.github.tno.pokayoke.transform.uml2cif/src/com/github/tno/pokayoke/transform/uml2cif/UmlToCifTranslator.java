@@ -1605,7 +1605,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             // Determine which postcondition to use.
             PostConditionKind kind = switch (translationPurpose) {
                 case GUARD_COMPUTATION -> {
-                    if ((synthesisTracker.refersToNewlySynthesizedElement(cifEvent, translationPurpose)
+                    if ((synthesisTracker.belongsToExistingConcreteActivity(cifEvent, translationPurpose)
                             && synthesisTracker.isStartOfOriginalAction(cifEvent, translationPurpose))
                             || synthesisTracker.representsActivityInitialNode(cifEvent, translationPurpose))
                     {
@@ -1613,7 +1613,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                         // of the actions that the user defined or calling (the initial node of) a concrete activity.
                         yield PostConditionKind.WITHOUT_STRUCTURE;
                     } else if (synthesisTracker.getEventTraceInfo(cifEvent).isInternal()
-                            || !synthesisTracker.refersToNewlySynthesizedElement(cifEvent, translationPurpose))
+                            || !synthesisTracker.belongsToExistingConcreteActivity(cifEvent, translationPurpose))
                     {
                         // We must allow internal actions after the user-defined postconditions etc hold, to ensure
                         // that the token can still pass through merge/join/etc or concrete activity nodes and the token
@@ -1637,7 +1637,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                     // represents something else, i.e., a non-initial node of a concrete activity, we must allow taking
                     // the event (to complete the execution of the concrete activity) even after the postconditions are
                     // met.
-                    if (synthesisTracker.refersToNewlySynthesizedElement(cifEvent, translationPurpose)
+                    if (synthesisTracker.belongsToExistingConcreteActivity(cifEvent, translationPurpose)
                             || synthesisTracker.representsActivityInitialNode(cifEvent, translationPurpose))
                     {
                         yield PostConditionKind.WITHOUT_STRUCTURE;
