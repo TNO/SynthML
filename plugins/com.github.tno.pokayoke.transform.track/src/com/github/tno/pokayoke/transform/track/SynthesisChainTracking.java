@@ -1480,7 +1480,8 @@ public class SynthesisChainTracking {
     /**
      * Returns {@code true} if the given CIF event has been created for a finalized UML element during the guard
      * computation or language equivalence check phase, which corresponds to a CIF event created for the synthesis phase
-     * that represents the start event of an original opaque behavior, opaque action or call behavior action.
+     * that represents the start event of an original SynthML action (UML opaque behavior, UML opaque action or UML call
+     * behavior action).
      *
      * @param cifEvent The CIF event.
      * @param purpose The translation purpose.
@@ -1497,9 +1498,9 @@ public class SynthesisChainTracking {
         Verify.verifyNotNull(finalizedEventInfo, String.format(
                 "Event '%s' does not have any tracing info referring to the finalized UML model.", cifEvent.getName()));
         RedefinableElement finalizedUmlElement = finalizedEventInfo.getUmlElement();
-        return (getOriginalUmlElement(finalizedUmlElement) instanceof OpaqueBehavior
-                || getOriginalUmlElement(finalizedUmlElement) instanceof OpaqueAction
-                || getOriginalUmlElement(finalizedUmlElement) instanceof CallBehaviorAction)
+        RedefinableElement originalUmlElement = getOriginalUmlElement(finalizedUmlElement);
+        return (originalUmlElement instanceof OpaqueBehavior || originalUmlElement instanceof OpaqueAction
+                || originalUmlElement instanceof CallBehaviorAction)
                 && isRelatedToStartOfOriginalElement(finalizedEventInfo);
     }
 
