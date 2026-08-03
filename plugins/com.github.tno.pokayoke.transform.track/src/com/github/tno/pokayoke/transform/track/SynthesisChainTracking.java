@@ -1158,12 +1158,8 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Returns {@code true} if the given CIF event corresponds to a UML element that is contained in the synthesized
-     * activity. The method concerns the original UML model elements, hence the guard computation and language
-     * equivalence cases use the original UML element. If the UML element is {@code null}, it is assumed that the CIF
-     * events corresponds to a new UML element created purposely for the given activity, so the method returns
-     * {@code true}. Similarly if the UML element is an opaque behavior, it is assumed that the CIF event represents a
-     * call behavior created for the given activity, hence the method returns {@code true}.
+     * Returns {@code true} if the given CIF event corresponds to a UML element that is contained in an existing
+     * concrete activity.
      *
      * @param cifEvent The CIF event.
      * @param purpose The translation purpose.
@@ -1182,6 +1178,8 @@ public class SynthesisChainTracking {
             default -> throw new IllegalArgumentException("Unexpected translation purpose: " + purpose);
         };
 
+        // If the UML element is 'null', it is assumed that the CIF events corresponds to a new UML element created
+        // purposely for the given activity, so returns 'false'.
         return umlElement != null && !belongsToSynthesizedActivity(umlElement);
     }
 
