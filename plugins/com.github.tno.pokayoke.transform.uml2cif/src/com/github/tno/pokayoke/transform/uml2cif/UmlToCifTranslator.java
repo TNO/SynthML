@@ -1460,8 +1460,8 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         // Initialize the list of postcondition variables for the partial conditions.
         List<AlgVariable> postconditionVars = new ArrayList<>();
 
-        // For synthesis and guard computation, we have two postconditions. For the 'with structure' postcondition,
-        // include the 'without structure' postcondition.
+        // For some purposes, we have two postconditions (one 'with' and one 'without' structure). For the 'with
+        // structure' postcondition, include the 'without structure' postcondition.
         if (kind == PostConditionKind.WITH_STRUCTURE) {
             Expression condition = getTranslatedPostcondition(PostConditionKind.WITHOUT_STRUCTURE);
             AlgVariable cifAlgVar = CifConstructors.newAlgVariable(null, kind.prefix + "__without_structure", null,
@@ -1619,8 +1619,8 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                         // We must allow internal actions after the user-defined postconditions etc hold, to ensure
                         // that the token can still pass through merge/join/etc or concrete activity nodes and the token
                         // can still reach the incoming control flow to the final node. The only exception is when a
-                        // node represents the start of an activity, which should not be called after reaching a marked
-                        // state.
+                        // node represents the start of an activity, which should not be called after satisfying the
+                        // user-defined postconditions etc.
                         yield PostConditionKind.WITH_STRUCTURE;
                     } else {
                         // We must allow finishing non-atomic/non-deterministic actions.
