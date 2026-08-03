@@ -209,7 +209,6 @@ public class GuardComputation {
                 BDD guard = computeGuard(uncontrolledGuard, controlledGuard, internalVars);
                 Verify.verify(guard.isOne());
                 controlledGuard.free();
-
                 addOutgoingGuard(incoming, toUmlGuard(guard, cifBddSpec));
             } else if (node instanceof CallBehaviorAction || node instanceof OpaqueAction) {
                 // Compute an outgoing guard for the (single) incoming control flow of the action node.
@@ -438,8 +437,8 @@ public class GuardComputation {
     }
 
     /**
-     * Updates the activity edge's incoming guard with the conjunction of the given guard and any existing incoming
-     * guards. Filters out any trivial guard.
+     * Replace the activity edge's incoming guard by the conjunction of the existing incoming guard and the given guard.
+     * Filters out any trivial guards.
      *
      * @param edge The activity edge.
      * @param guard The guard to add.
@@ -451,8 +450,8 @@ public class GuardComputation {
     }
 
     /**
-     * Updates the activity edge's outgoing guard with the conjunction of the given guard and any existing outgoing
-     * guards. Filters out any trivial guard.
+     * Replace the activity edge's outgoing guard by the conjunction of the existing outgoing guard and the given guard.
+     * Filters out any trivial guards.
      *
      * @param edge The activity edge.
      * @param guard The guard to add.
