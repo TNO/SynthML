@@ -1632,11 +1632,11 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 }
 
                 case SYNTHESIS -> {
-                    // If the CIF event refers to a "new" element (e.g., an opaque behavior) or to the initial node of a
-                    // concrete activity, we should prevent taking it once the postconditions are met. If the node
-                    // represents something else, i.e., a non-initial node of a concrete activity, we must allow taking
-                    // the event (to complete the execution of the concrete activity) even after the postconditions are
-                    // met.
+                    // If the CIF event refers to an element that does not belong to a concrete activity or if it refers
+                    // to the initial node of a concrete activity, we should prevent taking it once the postconditions
+                    // are met. Else, if the node represents something else, i.e., a non-initial node of a concrete
+                    // activity, we must allow taking the event (to complete the execution of the concrete activity)
+                    // even after the postconditions are met.
                     if (!synthesisTracker.belongsToExistingConcreteActivity(cifEvent, translationPurpose)
                             || synthesisTracker.representsExistingConcreteActivityInitialNode(cifEvent,
                                     translationPurpose))
