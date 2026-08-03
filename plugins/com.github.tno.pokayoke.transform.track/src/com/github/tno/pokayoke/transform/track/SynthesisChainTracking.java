@@ -155,9 +155,8 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Returns the events corresponding to the given set of UML elements, based on the indicated translation purpose. If
-     * the purpose is guard computation or language equivalence, the method returns the CIF events related to the
-     * original UML-to-CIF conversion earlier in the synthesis chain.
+     * Returns the current CIF events of the given translation purpose, corresponding to the given set of UML elements
+     * as considered by the first UML-to-CIF conversion for the synthesis purpose.
      *
      * @param umlElements The set of UML elements, to find the related CIF events. Each UML element must be
      *     non-{@code null}.
@@ -1183,7 +1182,7 @@ public class SynthesisChainTracking {
             default -> throw new IllegalArgumentException("Unexpected translation purpose: " + purpose);
         };
 
-        boolean belongsToSynthesizedActivity = (umlElement == null) ? true : belongsToSynthesizedActivity(umlElement);
+        boolean belongsToSynthesizedActivity = umlElement == null || belongsToSynthesizedActivity(umlElement);
 
         return umlElement instanceof OpaqueBehavior || belongsToSynthesizedActivity;
     }
