@@ -1637,7 +1637,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                     // represents something else, i.e., a non-initial node of a concrete activity, we must allow taking
                     // the event (to complete the execution of the concrete activity) even after the postconditions are
                     // met.
-                    if (synthesisTracker.belongsToExistingConcreteActivity(cifEvent, translationPurpose)
+                    if (!synthesisTracker.belongsToExistingConcreteActivity(cifEvent, translationPurpose)
                             || synthesisTracker.representsExistingConcreteActivityInitialNode(cifEvent,
                                     translationPurpose))
                     {
