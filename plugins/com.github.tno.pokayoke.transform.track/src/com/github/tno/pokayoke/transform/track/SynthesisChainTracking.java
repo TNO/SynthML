@@ -1173,7 +1173,7 @@ public class SynthesisChainTracking {
     public boolean belongsToExistingConcreteActivity(Event cifEvent, UmlToCifTranslationPurpose purpose) {
         EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
         if (eventInfo == null) {
-            return true;
+            return false;
         }
 
         RedefinableElement umlElement = switch (purpose) {
@@ -1182,9 +1182,7 @@ public class SynthesisChainTracking {
             default -> throw new IllegalArgumentException("Unexpected translation purpose: " + purpose);
         };
 
-        boolean belongsToSynthesizedActivity = umlElement == null || belongsToSynthesizedActivity(umlElement);
-
-        return umlElement instanceof OpaqueBehavior || belongsToSynthesizedActivity;
+        return umlElement != null && !belongsToSynthesizedActivity(umlElement);
     }
 
     /**
