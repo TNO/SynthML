@@ -117,18 +117,18 @@
         <edge xmi:type="uml:ControlFlow" xmi:id="54" name="__end__to__FinalNode__p7" target="66" source="55"/>
         <node xmi:type="uml:OpaqueAction" xmi:id="55" name="__end" incoming="53" outgoing="54"/>
         <node xmi:type="uml:OpaqueAction" xmi:id="56" name="__start" incoming="40" outgoing="43"/>
-        <node xmi:type="uml:OpaqueAction" xmi:id="57" name="do_b_start" incoming="44" outgoing="49"/>
-        <node xmi:type="uml:OpaqueAction" xmi:id="58" name="do_b_start" incoming="42" outgoing="47"/>
-        <node xmi:type="uml:OpaqueAction" xmi:id="59" name="do_b_end1" incoming="50" outgoing="52"/>
-        <node xmi:type="uml:OpaqueAction" xmi:id="60" name="do_b_end1" incoming="46" outgoing="51"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="57" name="do_b_start_1" incoming="44" outgoing="49"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="58" name="do_b_start_2" incoming="42" outgoing="47"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="59" name="do_b_end1_1" incoming="50" outgoing="52"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="60" name="do_b_end1_2" incoming="46" outgoing="51"/>
         <node xmi:type="uml:InitialNode" xmi:id="61" name="InitialNode__p1" outgoing="40"/>
         <node xmi:type="uml:DecisionNode" xmi:id="62" name="Decision__p2" incoming="43" outgoing="41 42"/>
         <node xmi:type="uml:DecisionNode" xmi:id="63" name="Decision__p4" incoming="47" outgoing="45 46"/>
         <node xmi:type="uml:MergeNode" xmi:id="64" name="Merge__p5" incoming="48 49" outgoing="50"/>
         <node xmi:type="uml:MergeNode" xmi:id="65" name="Merge__p6" incoming="51 52" outgoing="53"/>
         <node xmi:type="uml:ActivityFinalNode" xmi:id="66" name="FinalNode__p7" incoming="54"/>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="67" name="do_a" incoming="41" outgoing="44" behavior="22"/>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="68" name="do_a" incoming="45" outgoing="48" behavior="22"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="67" name="do_a_1" incoming="41" outgoing="44" behavior="22"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="68" name="do_a_2" incoming="45" outgoing="48" behavior="22"/>
       </ownedBehavior>
     </packagedElement>
     <profileApplication xmi:id="69">

@@ -86,8 +86,8 @@
         <edge xmi:type="uml:ControlFlow" xmi:id="36" name="__end__to__Merge__p4" target="44" source="39"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="37" name="Merge__p4__to__FinalNode__p4" target="45" source="44"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="38" name="flip__to____end" target="39" source="46"/>
-        <node xmi:type="uml:OpaqueAction" xmi:id="39" name="__end" incoming="38" outgoing="36"/>
-        <node xmi:type="uml:OpaqueAction" xmi:id="40" name="__end" incoming="32" outgoing="35"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="39" name="__end_1" incoming="38" outgoing="36"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="40" name="__end_2" incoming="32" outgoing="35"/>
         <node xmi:type="uml:OpaqueAction" xmi:id="41" name="__start" incoming="30" outgoing="31"/>
         <node xmi:type="uml:InitialNode" xmi:id="42" name="InitialNode__p1" outgoing="30"/>
         <node xmi:type="uml:DecisionNode" xmi:id="43" name="Decision__p3" incoming="34" outgoing="32 33"/>

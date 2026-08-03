@@ -9,10 +9,12 @@ plant automaton Example:
   alg bool precondition = not field1 and not field2;
   alg bool __precondition = precondition;
   alg bool postcondition = field1 and field2;
-  alg bool __postcondition__activeAction = __activeAction = 0;
-  alg bool __postcondition = postcondition and __postcondition__activeAction;
+  alg bool __postcondition_without_structure__activeAction = __activeAction = 0;
+  alg bool __postcondition_without_structure = postcondition and __postcondition_without_structure__activeAction;
+  alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure;
   initial __precondition;
-  marked __postcondition;
+  marked __postcondition_with_structure;
   location:
     initial;
     marked;
@@ -21,7 +23,7 @@ plant automaton Example:
     edge action1__result_2 when __activeAction = 1 do field1 := false, __activeAction := 0;
     edge action2 when not field2, __activeAction = 0 do field2 := true;
 end
-requirement invariant Example.__postcondition disables action1;
-requirement invariant Example.__postcondition disables action1__result_1;
-requirement invariant Example.__postcondition disables action1__result_2;
-requirement invariant Example.__postcondition disables action2;
+requirement invariant Example.__postcondition_without_structure disables action1;
+requirement invariant Example.__postcondition_without_structure disables action1__result_1;
+requirement invariant Example.__postcondition_without_structure disables action1__result_2;
+requirement invariant Example.__postcondition_without_structure disables action2;

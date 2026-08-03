@@ -100,8 +100,8 @@
         <node xmi:type="uml:ActivityFinalNode" xmi:id="47" name="FinalNode__p6" incoming="39"/>
         <node xmi:type="uml:JoinNode" xmi:id="48" name="Join____end" incoming="35 38" outgoing="40"/>
         <node xmi:type="uml:ForkNode" xmi:id="49" name="Fork____start" incoming="41" outgoing="31 32"/>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="50" name="action1" incoming="36" outgoing="34" behavior="16"/>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="51" name="action1" incoming="31" outgoing="33" behavior="16"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="50" name="action1_1" incoming="36" outgoing="34" behavior="16"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="51" name="action1_2" incoming="31" outgoing="33" behavior="16"/>
         <node xmi:type="uml:CallBehaviorAction" xmi:id="52" name="action2" incoming="32" outgoing="38" behavior="18"/>
       </ownedBehavior>
     </packagedElement>

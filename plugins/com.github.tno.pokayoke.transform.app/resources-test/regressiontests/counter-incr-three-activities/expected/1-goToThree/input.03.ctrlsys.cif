@@ -10,13 +10,15 @@ plant automaton Context:
   alg bool pre_goToThree = not init and count = 0;
   alg bool __precondition = pre_goToThree;
   alg bool post_goToThree = count = 3;
-  alg bool __postcondition__nonAtomicActive__initialize = not __nonAtomicActive__initialize;
-  alg bool __postcondition__occurrences_goToThree_once__42__initialize__26 = occurrences_goToThree_once__42__initialize__26.__occurrences >= 0;
-  alg bool __postcondition__occurrences_goToThree_once__42__incr1__28 = occurrences_goToThree_once__42__incr1__28.__occurrences >= 0;
-  alg bool __postcondition__occurrences_goToThree_once__42__incr2__30 = occurrences_goToThree_once__42__incr2__30.__occurrences >= 0;
-  alg bool __postcondition = post_goToThree and __postcondition__nonAtomicActive__initialize and (__postcondition__occurrences_goToThree_once__42__initialize__26 and (__postcondition__occurrences_goToThree_once__42__incr1__28 and __postcondition__occurrences_goToThree_once__42__incr2__30));
+  alg bool __postcondition_without_structure__nonAtomicActive__initialize = not __nonAtomicActive__initialize;
+  alg bool __postcondition_without_structure__occurrences_goToThree_once__42__initialize__26 = occurrences_goToThree_once__42__initialize__26.__occurrences >= 0;
+  alg bool __postcondition_without_structure__occurrences_goToThree_once__42__incr1__28 = occurrences_goToThree_once__42__incr1__28.__occurrences >= 0;
+  alg bool __postcondition_without_structure__occurrences_goToThree_once__42__incr2__30 = occurrences_goToThree_once__42__incr2__30.__occurrences >= 0;
+  alg bool __postcondition_without_structure = post_goToThree and __postcondition_without_structure__nonAtomicActive__initialize and (__postcondition_without_structure__occurrences_goToThree_once__42__initialize__26 and (__postcondition_without_structure__occurrences_goToThree_once__42__incr1__28 and __postcondition_without_structure__occurrences_goToThree_once__42__incr2__30));
+  alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure;
   initial __precondition;
-  marked __postcondition;
+  marked __postcondition_with_structure;
   location:
     initial;
     marked;
@@ -59,8 +61,8 @@ supervisor automaton sup:
     edge incr2 when Context.count = 1 or (Context.count = 3 or Context.count = 5);
     edge initialize when true;
 end
-supervisor invariant Context.__postcondition disables initialize;
-supervisor invariant Context.__postcondition disables initialize__na_result_1;
-supervisor invariant Context.__postcondition disables initialize__na_result_2;
-supervisor invariant Context.__postcondition disables incr1;
-supervisor invariant Context.__postcondition disables incr2;
+supervisor invariant Context.__postcondition_without_structure disables initialize;
+supervisor invariant Context.__postcondition_without_structure disables initialize__na_result_1;
+supervisor invariant Context.__postcondition_without_structure disables initialize__na_result_2;
+supervisor invariant Context.__postcondition_without_structure disables incr1;
+supervisor invariant Context.__postcondition_without_structure disables incr2;

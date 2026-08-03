@@ -1,0 +1,67 @@
+uncontrollable __node__MergeNode__46__0;
+uncontrollable __node__DecisionNode__47__0;
+uncontrollable __node__DecisionNode__47__1;
+uncontrollable __node__DecisionNode__48__0;
+uncontrollable __node__MergeNode__49__0;
+uncontrollable __node__MergeNode__49__1;
+uncontrollable __node__OpaqueAction__50;
+uncontrollable __node__OpaqueAction__51;
+uncontrollable __node__OpaqueAction__51__result_1;
+uncontrollable __node__OpaqueAction__51__result_2;
+uncontrollable __node__DecisionNode__54__0;
+uncontrollable __node__MergeNode__55__0;
+automaton post_synthesis_chain_state_space:
+  alphabet __node__MergeNode__46__0, __node__DecisionNode__47__0, __node__DecisionNode__47__1, __node__DecisionNode__48__0, __node__MergeNode__49__0, __node__MergeNode__49__1, __node__OpaqueAction__50, __node__OpaqueAction__51, __node__OpaqueAction__51__result_1, __node__OpaqueAction__51__result_2, __node__DecisionNode__54__0, __node__MergeNode__55__0;
+  @state(Class1: "*", Class1.__activeAction: 0, Class1.__controlflow__28: false, Class1.__controlflow__30: false, Class1.__controlflow__32: false, Class1.__controlflow__34: false, Class1.__controlflow__36: false, Class1.__controlflow__38: false, Class1.__controlflow__40: false, Class1.__controlflow__42: false, Class1.__controlflow__43: false, Class1.__controlflow__44: true, Class1.init: false, Class1.val: false)
+  location loc1:
+    initial;
+    edge __node__DecisionNode__48__0 goto loc3;
+  @state(Class1: "*", Class1.__activeAction: 0, Class1.__controlflow__28: false, Class1.__controlflow__30: false, Class1.__controlflow__32: false, Class1.__controlflow__34: false, Class1.__controlflow__36: false, Class1.__controlflow__38: false, Class1.__controlflow__40: false, Class1.__controlflow__42: false, Class1.__controlflow__43: false, Class1.__controlflow__44: true, Class1.init: false, Class1.val: true)
+  location loc2:
+    initial;
+    edge __node__DecisionNode__48__0 goto loc4;
+  @state(Class1: "*", Class1.__activeAction: 0, Class1.__controlflow__28: true, Class1.__controlflow__30: false, Class1.__controlflow__32: false, Class1.__controlflow__34: false, Class1.__controlflow__36: false, Class1.__controlflow__38: false, Class1.__controlflow__40: false, Class1.__controlflow__42: false, Class1.__controlflow__43: false, Class1.__controlflow__44: false, Class1.init: false, Class1.val: false)
+  location loc3:
+    edge __node__OpaqueAction__51 goto loc5;
+  @state(Class1: "*", Class1.__activeAction: 0, Class1.__controlflow__28: true, Class1.__controlflow__30: false, Class1.__controlflow__32: false, Class1.__controlflow__34: false, Class1.__controlflow__36: false, Class1.__controlflow__38: false, Class1.__controlflow__40: false, Class1.__controlflow__42: false, Class1.__controlflow__43: false, Class1.__controlflow__44: false, Class1.init: false, Class1.val: true)
+  location loc4:
+    edge __node__OpaqueAction__51 goto loc6;
+  @state(Class1: "*", Class1.__activeAction: 1, Class1.__controlflow__28: false, Class1.__controlflow__30: false, Class1.__controlflow__32: false, Class1.__controlflow__34: false, Class1.__controlflow__36: false, Class1.__controlflow__38: false, Class1.__controlflow__40: false, Class1.__controlflow__42: false, Class1.__controlflow__43: false, Class1.__controlflow__44: false, Class1.init: false, Class1.val: false)
+  location loc5:
+    edge __node__OpaqueAction__51__result_1 goto loc7;
+    edge __node__OpaqueAction__51__result_2 goto loc8;
+  @state(Class1: "*", Class1.__activeAction: 1, Class1.__controlflow__28: false, Class1.__controlflow__30: false, Class1.__controlflow__32: false, Class1.__controlflow__34: false, Class1.__controlflow__36: false, Class1.__controlflow__38: false, Class1.__controlflow__40: false, Class1.__controlflow__42: false, Class1.__controlflow__43: false, Class1.__controlflow__44: false, Class1.init: false, Class1.val: true)
+  location loc6:
+    edge __node__OpaqueAction__51__result_1 goto loc7;
+    edge __node__OpaqueAction__51__result_2 goto loc8;
+  @state(Class1: "*", Class1.__activeAction: 0, Class1.__controlflow__28: false, Class1.__controlflow__30: false, Class1.__controlflow__32: true, Class1.__controlflow__34: false, Class1.__controlflow__36: false, Class1.__controlflow__38: false, Class1.__controlflow__40: false, Class1.__controlflow__42: false, Class1.__controlflow__43: false, Class1.__controlflow__44: false, Class1.init: true, Class1.val: true)
+  location loc7:
+    edge __node__DecisionNode__54__0 goto loc9;
+  @state(Class1: "*", Class1.__activeAction: 0, Class1.__controlflow__28: false, Class1.__controlflow__30: false, Class1.__controlflow__32: true, Class1.__controlflow__34: false, Class1.__controlflow__36: false, Class1.__controlflow__38: false, Class1.__controlflow__40: false, Class1.__controlflow__42: false, Class1.__controlflow__43: false, Class1.__controlflow__44: false, Class1.init: true, Class1.val: false)
+  location loc8:
+    edge __node__DecisionNode__54__0 goto loc10;
+  @state(Class1: "*", Class1.__activeAction: 0, Class1.__controlflow__28: false, Class1.__controlflow__30: true, Class1.__controlflow__32: false, Class1.__controlflow__34: false, Class1.__controlflow__36: false, Class1.__controlflow__38: false, Class1.__controlflow__40: false, Class1.__controlflow__42: false, Class1.__controlflow__43: false, Class1.__controlflow__44: false, Class1.init: true, Class1.val: true)
+  location loc9:
+    edge __node__DecisionNode__47__1 goto loc11;
+  @state(Class1: "*", Class1.__activeAction: 0, Class1.__controlflow__28: false, Class1.__controlflow__30: true, Class1.__controlflow__32: false, Class1.__controlflow__34: false, Class1.__controlflow__36: false, Class1.__controlflow__38: false, Class1.__controlflow__40: false, Class1.__controlflow__42: false, Class1.__controlflow__43: false, Class1.__controlflow__44: false, Class1.init: true, Class1.val: false)
+  location loc10:
+    edge __node__DecisionNode__47__0 goto loc12;
+  @state(Class1: "*", Class1.__activeAction: 0, Class1.__controlflow__28: false, Class1.__controlflow__30: false, Class1.__controlflow__32: false, Class1.__controlflow__34: false, Class1.__controlflow__36: true, Class1.__controlflow__38: false, Class1.__controlflow__40: false, Class1.__controlflow__42: false, Class1.__controlflow__43: false, Class1.__controlflow__44: false, Class1.init: true, Class1.val: true)
+  location loc11:
+    edge __node__MergeNode__49__0 goto loc13;
+  @state(Class1: "*", Class1.__activeAction: 0, Class1.__controlflow__28: false, Class1.__controlflow__30: false, Class1.__controlflow__32: false, Class1.__controlflow__34: true, Class1.__controlflow__36: false, Class1.__controlflow__38: false, Class1.__controlflow__40: false, Class1.__controlflow__42: false, Class1.__controlflow__43: false, Class1.__controlflow__44: false, Class1.init: true, Class1.val: false)
+  location loc12:
+    edge __node__OpaqueAction__50 goto loc14;
+  @state(Class1: "*", Class1.__activeAction: 0, Class1.__controlflow__28: false, Class1.__controlflow__30: false, Class1.__controlflow__32: false, Class1.__controlflow__34: false, Class1.__controlflow__36: false, Class1.__controlflow__38: false, Class1.__controlflow__40: true, Class1.__controlflow__42: false, Class1.__controlflow__43: false, Class1.__controlflow__44: false, Class1.init: true, Class1.val: true)
+  location loc13:
+    edge __node__MergeNode__55__0 goto loc15;
+  @state(Class1: "*", Class1.__activeAction: 0, Class1.__controlflow__28: false, Class1.__controlflow__30: false, Class1.__controlflow__32: false, Class1.__controlflow__34: false, Class1.__controlflow__36: false, Class1.__controlflow__38: true, Class1.__controlflow__40: false, Class1.__controlflow__42: false, Class1.__controlflow__43: false, Class1.__controlflow__44: false, Class1.init: true, Class1.val: true)
+  location loc14:
+    edge __node__MergeNode__49__1 goto loc13;
+  @state(Class1: "*", Class1.__activeAction: 0, Class1.__controlflow__28: false, Class1.__controlflow__30: false, Class1.__controlflow__32: false, Class1.__controlflow__34: false, Class1.__controlflow__36: false, Class1.__controlflow__38: false, Class1.__controlflow__40: false, Class1.__controlflow__42: true, Class1.__controlflow__43: false, Class1.__controlflow__44: false, Class1.init: true, Class1.val: true)
+  location loc15:
+    edge __node__MergeNode__46__0 goto loc16;
+  @state(Class1: "*", Class1.__activeAction: 0, Class1.__controlflow__28: false, Class1.__controlflow__30: false, Class1.__controlflow__32: false, Class1.__controlflow__34: false, Class1.__controlflow__36: false, Class1.__controlflow__38: false, Class1.__controlflow__40: false, Class1.__controlflow__42: false, Class1.__controlflow__43: true, Class1.__controlflow__44: false, Class1.init: true, Class1.val: true)
+  location loc16:
+    marked;
+end
