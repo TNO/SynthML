@@ -1561,7 +1561,7 @@ public class SynthesisChainTracking {
      * @param purpose The translation purpose.
      * @return {@code true} if the node represents an initial node; {@code false} otherwise.
      */
-    public boolean representsActivityInitialNode(Event cifEvent, UmlToCifTranslationPurpose purpose) {
+    public boolean representsExistingConcreteActivityInitialNode(Event cifEvent, UmlToCifTranslationPurpose purpose) {
         EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
         if (eventInfo == null) {
             return false;

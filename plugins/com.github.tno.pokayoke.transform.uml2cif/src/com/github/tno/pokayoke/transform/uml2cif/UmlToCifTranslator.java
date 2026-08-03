@@ -1607,7 +1607,8 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 case GUARD_COMPUTATION -> {
                     if ((!synthesisTracker.belongsToExistingConcreteActivity(cifEvent, translationPurpose)
                             && synthesisTracker.isStartOfOriginalAction(cifEvent, translationPurpose))
-                            || synthesisTracker.representsActivityInitialNode(cifEvent, translationPurpose))
+                            || synthesisTracker.representsExistingConcreteActivityInitialNode(cifEvent,
+                                    translationPurpose))
                     {
                         // As soon as the user-defined postconditions etc hold, we should no longer allow starting any
                         // of the actions that the user defined or calling (the initial node of) a concrete activity.
@@ -1638,7 +1639,8 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                     // the event (to complete the execution of the concrete activity) even after the postconditions are
                     // met.
                     if (synthesisTracker.belongsToExistingConcreteActivity(cifEvent, translationPurpose)
-                            || synthesisTracker.representsActivityInitialNode(cifEvent, translationPurpose))
+                            || synthesisTracker.representsExistingConcreteActivityInitialNode(cifEvent,
+                                    translationPurpose))
                     {
                         yield PostConditionKind.WITHOUT_STRUCTURE;
                     } else {
