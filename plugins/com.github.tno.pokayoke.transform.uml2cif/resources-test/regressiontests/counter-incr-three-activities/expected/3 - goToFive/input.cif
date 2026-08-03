@@ -10,13 +10,15 @@ plant automaton Context:
   alg bool pre_goToFive = not init and count = 0;
   alg bool __precondition = pre_goToFive;
   alg bool post_goToFive = count = 5;
-  alg bool __postcondition__nonAtomicActive__initialize = not __nonAtomicActive__initialize;
-  alg bool __postcondition__occurrences_goToFive__138__initialize__50 = occurrences_goToFive__138__initialize__50.__occurrences >= 0;
-  alg bool __postcondition__occurrences_goToFive__138__incr1__54 = occurrences_goToFive__138__incr1__54.__occurrences >= 0;
-  alg bool __postcondition__occurrences_goToFive__138__incr2__58 = occurrences_goToFive__138__incr2__58.__occurrences >= 0;
-  alg bool __postcondition = post_goToFive and __postcondition__nonAtomicActive__initialize and (__postcondition__occurrences_goToFive__138__initialize__50 and (__postcondition__occurrences_goToFive__138__incr1__54 and __postcondition__occurrences_goToFive__138__incr2__58));
+  alg bool __postcondition_without_structure__nonAtomicActive__initialize = not __nonAtomicActive__initialize;
+  alg bool __postcondition_without_structure__occurrences_goToFive__138__initialize__50 = occurrences_goToFive__138__initialize__50.__occurrences >= 0;
+  alg bool __postcondition_without_structure__occurrences_goToFive__138__incr1__54 = occurrences_goToFive__138__incr1__54.__occurrences >= 0;
+  alg bool __postcondition_without_structure__occurrences_goToFive__138__incr2__58 = occurrences_goToFive__138__incr2__58.__occurrences >= 0;
+  alg bool __postcondition_without_structure = post_goToFive and __postcondition_without_structure__nonAtomicActive__initialize and (__postcondition_without_structure__occurrences_goToFive__138__initialize__50 and (__postcondition_without_structure__occurrences_goToFive__138__incr1__54 and __postcondition_without_structure__occurrences_goToFive__138__incr2__58));
+  alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure;
   initial __precondition;
-  marked __postcondition;
+  marked __postcondition_with_structure;
   location:
     initial;
     marked;
@@ -50,8 +52,8 @@ requirement automaton occurrences_goToFive__138__incr2__58:
     marked;
     edge incr2 when __occurrences < 3 do __occurrences := __occurrences + 1;
 end
-requirement invariant Context.__postcondition disables initialize;
-requirement invariant Context.__postcondition disables initialize__na_result_1;
-requirement invariant Context.__postcondition disables initialize__na_result_2;
-requirement invariant Context.__postcondition disables incr1;
-requirement invariant Context.__postcondition disables incr2;
+requirement invariant Context.__postcondition_without_structure disables initialize;
+requirement invariant Context.__postcondition_without_structure disables initialize__na_result_1;
+requirement invariant Context.__postcondition_without_structure disables initialize__na_result_2;
+requirement invariant Context.__postcondition_without_structure disables incr1;
+requirement invariant Context.__postcondition_without_structure disables incr2;
