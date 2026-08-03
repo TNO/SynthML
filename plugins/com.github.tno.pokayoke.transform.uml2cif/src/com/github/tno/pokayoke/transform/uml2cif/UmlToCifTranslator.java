@@ -1617,10 +1617,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                             || synthesisTracker.belongsToExistingConcreteActivity(cifEvent, translationPurpose))
                     {
                         // We must allow internal actions after the user-defined postconditions etc hold, to ensure
-                        // that the token can still pass through merge/join/etc or concrete activity nodes and the token
-                        // can still reach the incoming control flow to the final node. The only exception is when a
-                        // node represents the start of an activity, which should not be called after satisfying the
-                        // user-defined postconditions etc.
+                        // that the token can still pass through merge/join/etc or concrete activity nodes (except the
+                        // initial node, which is handled in the previous switch case) and the token can still reach the
+                        // incoming control flow to the final node.
                         yield PostConditionKind.WITH_STRUCTURE;
                     } else {
                         // We must allow finishing non-atomic/non-deterministic actions.
