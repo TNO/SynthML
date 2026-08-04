@@ -1184,8 +1184,8 @@ public class SynthesisChainTracking {
             default -> throw new IllegalArgumentException("Unexpected translation purpose: " + purpose);
         };
 
-        // If the UML element is 'null', it is assumed that the CIF events corresponds to a new UML element created
-        // purposely for the given activity, so returns 'false'.
+        // Check that the original UML element indeed belongs to a concrete activity. If there is none, it for sure
+        // doesn't trace back to a concrete activity.
         return umlElement != null && belongsToExistingConcreteActivity(umlElement);
     }
 
@@ -1193,7 +1193,7 @@ public class SynthesisChainTracking {
      * Checks whether the given non-{@code null} UML element belongs to an existing concrete UML activity.
      *
      * @param umlElement The non-{@code null} UML element to check.
-     * @return {@code true} if the input element belongs to an existing concrete UML activity, {@code false} otherwise.
+     * @return {@code true} if the given UML element belongs to an existing concrete UML activity, {@code false} otherwise.
      */
     public boolean belongsToExistingConcreteActivity(RedefinableElement umlElement) {
         Verify.verifyNotNull(umlElement, "Element cannot be 'null'.");
