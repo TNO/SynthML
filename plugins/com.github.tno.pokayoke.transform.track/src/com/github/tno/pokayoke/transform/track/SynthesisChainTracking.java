@@ -1165,7 +1165,7 @@ public class SynthesisChainTracking {
      *
      * @param cifEvent The CIF event.
      * @param purpose The translation purpose.
-     * @return {@code true} if the CIF event corresponds to a UML element that does belong to the synthesized activity,
+     * @return {@code true} if the CIF event corresponds to a UML element that belongs to an existing concrete activity,
      *     {@code false} otherwise.
      */
     public boolean belongsToExistingConcreteActivity(Event cifEvent, UmlToCifTranslationPurpose purpose) {
