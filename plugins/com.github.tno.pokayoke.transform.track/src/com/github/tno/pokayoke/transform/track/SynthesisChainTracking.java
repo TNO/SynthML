@@ -1193,7 +1193,8 @@ public class SynthesisChainTracking {
      * Checks whether the given non-{@code null} UML element belongs to an existing concrete UML activity.
      *
      * @param umlElement The non-{@code null} UML element to check.
-     * @return {@code true} if the given UML element belongs to an existing concrete UML activity, {@code false} otherwise.
+     * @return {@code true} if the given UML element belongs to an existing concrete UML activity, {@code false}
+     *     otherwise.
      */
     public boolean belongsToExistingConcreteActivity(RedefinableElement umlElement) {
         Verify.verifyNotNull(umlElement, "Element cannot be 'null'.");
