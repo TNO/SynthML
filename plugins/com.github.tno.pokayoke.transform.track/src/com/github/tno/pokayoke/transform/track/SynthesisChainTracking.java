@@ -1147,7 +1147,9 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Checks whether the given non-{@code null} UML element belongs to the UML activity being synthesized. Note that this method always checks for a UML element belong to the synthesized activity as generated for the 'synthesis' purpose, not any later synthesis, like for guard computation.
+     * Checks whether the given non-{@code null} UML element belongs to the UML activity being synthesized. Note that
+     * this method always checks for a UML element belong to the synthesized activity as generated for the 'synthesis'
+     * purpose, not any later synthesis, like for guard computation.
      *
      * @param umlElement The non-{@code null} UML element to check.
      * @return {@code true} if the input element belongs to the UML activity being synthesized, {@code false} otherwise.
@@ -1167,13 +1169,15 @@ public class SynthesisChainTracking {
      *     {@code false} otherwise.
      */
     public boolean belongsToExistingConcreteActivity(Event cifEvent, UmlToCifTranslationPurpose purpose) {
-        // Get the event trace information for the CIF event. If there is none, it does not trace back to an element of an existing concrete activity.
+        // Get the event trace information for the CIF event. If there is none, it does not trace back to an element of
+        // an existing concrete activity.
         EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
         if (eventInfo == null) {
             return false;
         }
 
-        // Get the original UML element belonging to the CIF event. For the synthesis purpose, it is by definition an original UML element. For the later purposes, we get the original UML element from the current UML element.
+        // Get the original UML element belonging to the CIF event. For the synthesis purpose, it is by definition an
+        // original UML element. For the later purposes, we get the original UML element from the current UML element.
         RedefinableElement umlElement = switch (purpose) {
             case SYNTHESIS -> eventInfo.getUmlElement();
             case GUARD_COMPUTATION, LANGUAGE_EQUIVALENCE -> getOriginalUmlElement(eventInfo.getUmlElement());
@@ -1556,8 +1560,8 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Returns {@code true} if the CIF event was created for an existing concrete activity's initial node. If the purpose is guard
-     * computation or language equivalence, the method refers to the original UML element.
+     * Returns {@code true} if the CIF event was created for an existing concrete activity's initial node. If the
+     * purpose is guard computation or language equivalence, the method refers to the original UML element.
      *
      * @param cifEvent The event to check.
      * @param purpose The translation purpose.
