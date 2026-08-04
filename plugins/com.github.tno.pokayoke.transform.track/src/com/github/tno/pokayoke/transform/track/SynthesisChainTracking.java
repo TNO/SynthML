@@ -1186,7 +1186,26 @@ public class SynthesisChainTracking {
 
         // If the UML element is 'null', it is assumed that the CIF events corresponds to a new UML element created
         // purposely for the given activity, so returns 'false'.
-        return umlElement != null && !belongsToSynthesizedActivity(umlElement);
+        return umlElement != null && belongsToExistingConcreteActivity(umlElement);
+    }
+
+    /**
+     * Checks whether the given non-{@code null} UML element belongs to an existing concrete UML activity.
+     *
+     * @param umlElement The non-{@code null} UML element to check.
+     * @return {@code true} if the input element belongs to an existing concrete UML activity, {@code false} otherwise.
+     */
+    public boolean belongsToExistingConcreteActivity(RedefinableElement umlElement) {
+        Verify.verifyNotNull(umlElement, "Element cannot be 'null'.");
+
+        // Get the UML class that contains the to-be-synthesized activity.
+        org.eclipse.uml2.uml.Class clazz = (org.eclipse.uml2.uml.Class)activity.eContainer();
+
+        // Find the concrete activities in the class and check whether the UML element is contained in any of them.
+        Set<Activity> concreteActivities = clazz.getOwnedBehaviors().stream()
+                .filter(b -> b instanceof Activity act && !act.isAbstract() && !act.equals(activity))
+                .map(Activity.class::cast).collect(Collectors.toSet());
+        return concreteActivities.contains(umlElement.eContainer());
     }
 
     /**
