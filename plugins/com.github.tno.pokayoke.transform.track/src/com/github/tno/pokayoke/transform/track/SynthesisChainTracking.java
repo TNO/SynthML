@@ -1579,8 +1579,7 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Returns {@code true} if the CIF event was created for an existing concrete activity's initial node. If the
-     * purpose is guard computation or language equivalence, the method refers to the original UML element.
+     * Returns {@code true} if the CIF event was created for an existing concrete activity's initial node.
      *
      * @param cifEvent The event to check.
      * @param purpose The translation purpose.
