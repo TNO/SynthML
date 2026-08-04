@@ -1617,9 +1617,10 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                             || synthesisTracker.belongsToExistingConcreteActivity(cifEvent, translationPurpose))
                     {
                         // We must allow internal actions after the user-defined postconditions etc hold, to ensure
-                        // that the token can still pass through merge/join/etc or concrete activity nodes (except the
-                        // initial node, which is handled in the previous switch case) and the token can still reach the
-                        // incoming control flow to the final node.
+                        // that the token can still pass through merge/join/etc and the token can still reach the
+                        // incoming control flow to the final node. Similarly, we must ensure the token can still pass
+                        // through concrete activity nodes (except the initial node, which is handled in the previous
+                        // switch case), to be able complete their execution once they are already busy executing.
                         yield PostConditionKind.WITH_STRUCTURE;
                     } else {
                         // We must allow finishing non-atomic/non-deterministic actions.
@@ -1632,18 +1633,18 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 }
 
                 case SYNTHESIS -> {
-                    // If the CIF event refers to an element that does not belong to a concrete activity or if it refers
-                    // to the initial node of a concrete activity, we should prevent taking it once the postconditions
-                    // are met. Else, if the node represents something else, i.e., a non-initial node of a concrete
-                    // activity, we must allow taking the event (to complete the execution of the concrete activity)
-                    // even after the postconditions are met.
-                    if (!synthesisTracker.belongsToExistingConcreteActivity(cifEvent, translationPurpose)
-                            || synthesisTracker.representsExistingConcreteActivityInitialNode(cifEvent,
+                    // We must allow finishing concrete activities after the user-defined postconditions etc hold,
+                    // to ensure that their execution can be completed once it starts executing, and the token can
+                    // still reach the incoming control flow to the final node of the activity being synthesized.
+                    // We should however disallow starting a new concrete activity once the user-defined
+                    // post-conditions etc hold.
+                    if (synthesisTracker.belongsToExistingConcreteActivity(cifEvent, translationPurpose)
+                            && !synthesisTracker.representsExistingConcreteActivityInitialNode(cifEvent,
                                     translationPurpose))
                     {
-                        yield PostConditionKind.WITHOUT_STRUCTURE;
-                    } else {
                         yield PostConditionKind.WITH_STRUCTURE;
+                    } else {
+                        yield PostConditionKind.WITHOUT_STRUCTURE;
                     }
                 }
 
