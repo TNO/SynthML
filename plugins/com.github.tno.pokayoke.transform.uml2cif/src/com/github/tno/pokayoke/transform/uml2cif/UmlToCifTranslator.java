@@ -1622,13 +1622,12 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                         // through concrete activity nodes (except the initial node, which is handled in the previous
                         // switch case), to be able complete their execution once they are already busy executing.
                         yield PostConditionKind.WITH_STRUCTURE;
-                    } else {
+                    } else if (synthesisTracker.isRelatedToEndOnlyOfOriginalElement(cifEvent, translationPurpose)) {
                         // We must allow finishing non-atomic/non-deterministic actions.
-                        Verify.verify(
-                                synthesisTracker.isRelatedToEndOnlyOfOriginalElement(cifEvent, translationPurpose),
-                                "Event '%s' is not an end-only event.", cifEvent.getName());
-
                         yield PostConditionKind.WITH_STRUCTURE;
+                    } else {
+                        throw new RuntimeException(
+                                String.format("Event '%s' has unknown tracking status.", cifEvent.getName()));
                     }
                 }
 
