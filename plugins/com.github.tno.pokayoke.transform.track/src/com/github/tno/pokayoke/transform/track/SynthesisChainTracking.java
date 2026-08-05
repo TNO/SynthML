@@ -1531,7 +1531,7 @@ public class SynthesisChainTracking {
 
     /**
      * Returns, for the given CIF event, the corresponding UML element of an existing concrete activity. If the CIF
-     * event does correspond to a UML element of an existing concrete activity, {@code null} is returned instead.
+     * event does not correspond to a UML element of an existing concrete activity, {@code null} is returned instead.
      *
      * @param cifEvent The CIF event.
      * @param purpose The translation purpose.
