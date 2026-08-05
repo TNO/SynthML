@@ -1160,59 +1160,6 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Returns the UML element corresponding to the given CIF event if the UML element is contained in an existing
-     * concrete activity. Otherwise, returns {@code null}.
-     *
-     * @param cifEvent The CIF event.
-     * @param purpose The translation purpose.
-     * @return The UML element corresponding to the CIF event if it belongs to an existing concrete activity,
-     *     {@code null} otherwise.
-     */
-    public RedefinableElement getExistingConcreteActivityElement(Event cifEvent, UmlToCifTranslationPurpose purpose) {
-        // Get the event trace information for the CIF event. If there is none, return 'null'.
-        EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
-        if (eventInfo == null) {
-            return null;
-        }
-
-        // Get the original UML element belonging to the CIF event. For the synthesis purpose, it is by definition an
-        // original UML element. For the later purposes, we get the original UML element from the current UML element.
-        RedefinableElement umlElement = switch (purpose) {
-            case SYNTHESIS -> eventInfo.getUmlElement();
-            case GUARD_COMPUTATION, LANGUAGE_EQUIVALENCE -> getOriginalUmlElement(eventInfo.getUmlElement());
-            default -> throw new IllegalArgumentException("Unexpected translation purpose: " + purpose);
-        };
-
-        // Check that the original UML element indeed belongs to a concrete activity. If there is none, or if it does
-        // not belong to an existing concrete activity, return 'null'.
-        if (umlElement != null && belongsToExistingConcreteActivity(umlElement)) {
-            return umlElement;
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Checks whether the given non-{@code null} UML element belongs to an existing concrete UML activity.
-     *
-     * @param umlElement The non-{@code null} UML element to check.
-     * @return {@code true} if the given UML element belongs to an existing concrete UML activity, {@code false}
-     *     otherwise.
-     */
-    public boolean belongsToExistingConcreteActivity(RedefinableElement umlElement) {
-        Verify.verifyNotNull(umlElement, "Element cannot be 'null'.");
-
-        // Get the UML class that contains the to-be-synthesized activity.
-        org.eclipse.uml2.uml.Class clazz = (org.eclipse.uml2.uml.Class)activity.eContainer();
-
-        // Find the concrete activities in the class and check whether the UML element is contained in any of them.
-        Set<Activity> concreteActivities = clazz.getOwnedBehaviors().stream()
-                .filter(b -> b instanceof Activity act && !act.isAbstract() && !act.equals(activity))
-                .map(Activity.class::cast).collect(Collectors.toSet());
-        return concreteActivities.contains(umlElement.eContainer());
-    }
-
-    /**
      * Returns the original UML element for which the given activity node in the synthesized activity was created, or
      * {@code null} if no such element exists.
      *
@@ -1580,6 +1527,59 @@ public class SynthesisChainTracking {
     public boolean isRelatedToControlNodeOfCalledActivity(ActivityNode node) {
         RedefinableElement originalUmlElement = getOriginalUmlElement(node);
         return originalUmlElement instanceof ControlNode;
+    }
+
+    /**
+     * Returns the UML element corresponding to the given CIF event if the UML element is contained in an existing
+     * concrete activity. Otherwise, returns {@code null}.
+     *
+     * @param cifEvent The CIF event.
+     * @param purpose The translation purpose.
+     * @return The UML element corresponding to the CIF event if it belongs to an existing concrete activity,
+     *     {@code null} otherwise.
+     */
+    public RedefinableElement getExistingConcreteActivityElement(Event cifEvent, UmlToCifTranslationPurpose purpose) {
+        // Get the event trace information for the CIF event. If there is none, return 'null'.
+        EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
+        if (eventInfo == null) {
+            return null;
+        }
+
+        // Get the original UML element belonging to the CIF event. For the synthesis purpose, it is by definition an
+        // original UML element. For the later purposes, we get the original UML element from the current UML element.
+        RedefinableElement umlElement = switch (purpose) {
+            case SYNTHESIS -> eventInfo.getUmlElement();
+            case GUARD_COMPUTATION, LANGUAGE_EQUIVALENCE -> getOriginalUmlElement(eventInfo.getUmlElement());
+            default -> throw new IllegalArgumentException("Unexpected translation purpose: " + purpose);
+        };
+
+        // Check that the original UML element indeed belongs to a concrete activity. If there is none, or if it does
+        // not belong to an existing concrete activity, return 'null'.
+        if (umlElement != null && belongsToExistingConcreteActivity(umlElement)) {
+            return umlElement;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Checks whether the given non-{@code null} UML element belongs to an existing concrete UML activity.
+     *
+     * @param umlElement The non-{@code null} UML element to check.
+     * @return {@code true} if the given UML element belongs to an existing concrete UML activity, {@code false}
+     *     otherwise.
+     */
+    public boolean belongsToExistingConcreteActivity(RedefinableElement umlElement) {
+        Verify.verifyNotNull(umlElement, "Element cannot be 'null'.");
+
+        // Get the UML class that contains the to-be-synthesized activity.
+        org.eclipse.uml2.uml.Class clazz = (org.eclipse.uml2.uml.Class)activity.eContainer();
+
+        // Find the concrete activities in the class and check whether the UML element is contained in any of them.
+        Set<Activity> concreteActivities = clazz.getOwnedBehaviors().stream()
+                .filter(b -> b instanceof Activity act && !act.isAbstract() && !act.equals(activity))
+                .map(Activity.class::cast).collect(Collectors.toSet());
+        return concreteActivities.contains(umlElement.eContainer());
     }
 
     /**
