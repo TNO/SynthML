@@ -1605,7 +1605,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             // Determine which postcondition to use.
             PostConditionKind kind = switch (translationPurpose) {
                 case GUARD_COMPUTATION -> {
-                    if ((!synthesisTracker.belongsToExistingConcreteActivity(cifEvent, translationPurpose)
+                    if ((!synthesisTracker.getExistingConcreteActivityElement(cifEvent, translationPurpose)
                             && synthesisTracker.isStartOfOriginalAction(cifEvent, translationPurpose))
                             || synthesisTracker.representsExistingConcreteActivityInitialNode(cifEvent,
                                     translationPurpose))
@@ -1614,7 +1614,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                         // of the actions that the user defined or calling (the initial node of) a concrete activity.
                         yield PostConditionKind.WITHOUT_STRUCTURE;
                     } else if (synthesisTracker.getEventTraceInfo(cifEvent).isInternal()
-                            || synthesisTracker.belongsToExistingConcreteActivity(cifEvent, translationPurpose))
+                            || synthesisTracker.getExistingConcreteActivityElement(cifEvent, translationPurpose))
                     {
                         // We must allow internal actions after the user-defined postconditions etc hold, to ensure
                         // that the token can still pass through merge/join/etc and the token can still reach the
@@ -1637,7 +1637,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                     // still reach the incoming control flow to the final node of the activity being synthesized.
                     // We should however disallow starting a new concrete activity once the user-defined
                     // post-conditions etc hold.
-                    if (synthesisTracker.belongsToExistingConcreteActivity(cifEvent, translationPurpose)
+                    if (synthesisTracker.getExistingConcreteActivityElement(cifEvent, translationPurpose)
                             && !synthesisTracker.representsExistingConcreteActivityInitialNode(cifEvent,
                                     translationPurpose))
                     {

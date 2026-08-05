@@ -1168,7 +1168,7 @@ public class SynthesisChainTracking {
      * @return {@code true} if the CIF event corresponds to a UML element that belongs to an existing concrete activity,
      *     {@code false} otherwise.
      */
-    public RedefinableElement belongsToExistingConcreteActivity(Event cifEvent, UmlToCifTranslationPurpose purpose) {
+    public RedefinableElement getExistingConcreteActivityElement(Event cifEvent, UmlToCifTranslationPurpose purpose) {
         // Get the event trace information for the CIF event. If there is none, return 'null'.
         EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
         if (eventInfo == null) {
