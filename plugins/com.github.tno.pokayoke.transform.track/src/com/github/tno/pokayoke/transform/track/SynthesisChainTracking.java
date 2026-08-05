@@ -1530,16 +1530,16 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Returns the UML element corresponding to the given CIF event if the UML element is contained in an existing
-     * concrete activity. Otherwise, returns {@code null}.
+     * Returns, for the given CIF event, the corresponding UML element of an existing concrete activity. If the CIF
+     * event does correspond to a UML element of an existing concrete activity, {@code null} is returned instead.
      *
      * @param cifEvent The CIF event.
      * @param purpose The translation purpose.
-     * @return The UML element corresponding to the CIF event if it belongs to an existing concrete activity,
-     *     {@code null} otherwise.
+     * @return The UML element, or {@code null}.
      */
     public RedefinableElement getExistingConcreteActivityElement(Event cifEvent, UmlToCifTranslationPurpose purpose) {
-        // Get the event trace information for the CIF event. If there is none, return 'null'.
+        // Get the event trace information for the CIF event. If there is none, the CIF event does not trace back to
+        // a UML element of an existing concrete activity.
         EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
         if (eventInfo == null) {
             return null;
@@ -1553,8 +1553,8 @@ public class SynthesisChainTracking {
             default -> throw new IllegalArgumentException("Unexpected translation purpose: " + purpose);
         };
 
-        // Check that the original UML element indeed belongs to a concrete activity. If there is none, or if it does
-        // not belong to an existing concrete activity, return 'null'.
+        // Check that the CIF event traces back to an original UML element, and that this UML element belongs to a
+        // concrete activity.
         if (umlElement != null && belongsToExistingConcreteActivity(umlElement)) {
             return umlElement;
         } else {
@@ -1587,7 +1587,8 @@ public class SynthesisChainTracking {
      *
      * @param cifEvent The event to check.
      * @param purpose The translation purpose.
-     * @return {@code true} if the CIF event corresponds to any node of a concrete activity; {@code false} otherwise.
+     * @return {@code true} if the CIF event corresponds to any node of an existing concrete activity; {@code false}
+     *     otherwise.
      */
     public boolean representsExistingConcreteActivityNode(Event cifEvent, UmlToCifTranslationPurpose purpose) {
         RedefinableElement umlElement = getExistingConcreteActivityElement(cifEvent, purpose);
@@ -1599,8 +1600,8 @@ public class SynthesisChainTracking {
      *
      * @param cifEvent The event to check.
      * @param purpose The translation purpose.
-     * @return {@code true} if the CIF event corresponds to an initial node of a concrete activity; {@code false}
-     *     otherwise.
+     * @return {@code true} if the CIF event corresponds to an initial node of an existing concrete activity;
+     *     {@code false} otherwise.
      */
     public boolean representsExistingConcreteActivityInitialNode(Event cifEvent, UmlToCifTranslationPurpose purpose) {
         RedefinableElement umlElement = getExistingConcreteActivityElement(cifEvent, purpose);
