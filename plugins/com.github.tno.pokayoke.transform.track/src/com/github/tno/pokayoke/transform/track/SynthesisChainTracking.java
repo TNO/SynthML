@@ -1168,12 +1168,11 @@ public class SynthesisChainTracking {
      * @return {@code true} if the CIF event corresponds to a UML element that belongs to an existing concrete activity,
      *     {@code false} otherwise.
      */
-    public boolean belongsToExistingConcreteActivity(Event cifEvent, UmlToCifTranslationPurpose purpose) {
-        // Get the event trace information for the CIF event. If there is none, it does not trace back to an element of
-        // an existing concrete activity.
+    public RedefinableElement belongsToExistingConcreteActivity(Event cifEvent, UmlToCifTranslationPurpose purpose) {
+        // Get the event trace information for the CIF event. If there is none, return 'null'.
         EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
         if (eventInfo == null) {
-            return false;
+            return null;
         }
 
         // Get the original UML element belonging to the CIF event. For the synthesis purpose, it is by definition an
@@ -1184,9 +1183,13 @@ public class SynthesisChainTracking {
             default -> throw new IllegalArgumentException("Unexpected translation purpose: " + purpose);
         };
 
-        // Check that the original UML element indeed belongs to a concrete activity. If there is none, it for sure
-        // doesn't trace back to a concrete activity.
-        return umlElement != null && belongsToExistingConcreteActivity(umlElement);
+        // Check that the original UML element indeed belongs to a concrete activity. If there is none, or if it does
+        // not belong to an existing concrete activity, return 'null'.
+        if (umlElement != null && belongsToExistingConcreteActivity(umlElement)) {
+            return umlElement;
+        } else {
+            return null;
+        }
     }
 
     /**
