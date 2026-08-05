@@ -1590,24 +1590,7 @@ public class SynthesisChainTracking {
      * @return {@code true} if the node represents an initial node; {@code false} otherwise.
      */
     public boolean representsExistingConcreteActivityInitialNode(Event cifEvent, UmlToCifTranslationPurpose purpose) {
-        EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
-        if (eventInfo == null) {
-            return false;
-        }
-
-        RedefinableElement umlElement = switch (purpose) {
-            case SYNTHESIS -> eventInfo.getUmlElement();
-            case GUARD_COMPUTATION, LANGUAGE_EQUIVALENCE -> {
-                if (eventInfo.getUmlElement() instanceof ActivityNode node) {
-                    yield getOriginalUmlElement(node);
-                } else {
-                    throw new RuntimeException(
-                            "UML element " + eventInfo.getUmlElement().getName() + " is not an activity node.");
-                }
-            }
-            default -> throw new IllegalArgumentException("Unexpected translation purpose: " + purpose);
-        };
-
+        RedefinableElement umlElement = getExistingConcreteActivityElement(cifEvent, purpose);
         return umlElement instanceof InitialNode;
     }
 
