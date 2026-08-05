@@ -1587,7 +1587,8 @@ public class SynthesisChainTracking {
      *
      * @param cifEvent The event to check.
      * @param purpose The translation purpose.
-     * @return {@code true} if the node represents an initial node; {@code false} otherwise.
+     * @return {@code true} if the CIF event corresponds to an initial node of a concrete activity; {@code false}
+     *     otherwise.
      */
     public boolean representsExistingConcreteActivityInitialNode(Event cifEvent, UmlToCifTranslationPurpose purpose) {
         RedefinableElement umlElement = getExistingConcreteActivityElement(cifEvent, purpose);
