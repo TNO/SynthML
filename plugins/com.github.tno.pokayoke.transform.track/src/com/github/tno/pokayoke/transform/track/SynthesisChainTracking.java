@@ -1327,8 +1327,8 @@ public class SynthesisChainTracking {
         Verify.verify(belongsToSynthesizedActivity(umlElement),
                 String.format("UML element '%s' does not belong to the synthesized activity.", umlElement.getName()));
 
-        OpaqueAction action = finalizedElementToActivityNode.get(umlElement);
-        return (action == null) ? null : getUmlElement(action);
+        ActivityNode node = finalizedElementToActivityNode.get(umlElement);
+        return (node == null) ? null : getUmlElement(node);
     }
 
     /**
