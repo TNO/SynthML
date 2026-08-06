@@ -46,8 +46,8 @@ import fr.lip6.move.pnml.ptnet.Transition;
  * different formalisms throughout the various steps of the synthesis chain, such as CIF event, Petri net transitions,
  * actions, etc. The UML elements of the input model and CIF events created in the first step of the synthesis chain are
  * named 'original', to distinguish them from the UML elements in the synthesized activity (named 'non-finalized' for
- * placeholder opaque actions, and 'finalized' for their finalized version, see also
- * {@link #addFinalizedUmlElement(RedefinableElement, OpaqueAction)}) and from the CIF events created for guard
+ * placeholder activity nodes, and 'finalized' for their finalized version, see also
+ * {@link #addFinalizedUmlElement(RedefinableElement, ActivityNode)}) and from the CIF events created for guard
  * computation or language equivalence check phases of the synthesis chain.
  * <p>
  * This tracking storage contains only 'global' tracing information from transformations in the synthesis chain that is
@@ -1283,26 +1283,30 @@ public class SynthesisChainTracking {
 
     /**
      * Registers that the given finalized UML element has been created, as the result of the finalization of the given
-     * opaque action. A finalized UML element represents an element belonging to the synthesized activity, and can be of
-     * two kinds:
+     * activity node. A finalized UML element represents an element belonging to the synthesized activity, and can be of
+     * three kinds if the element did not belong to an existing concrete activity:
      * <ul>
      * <li>it is an opaque action including guard and effects, if it represents a start-only or end-only event</li>
      * <li>it is a call behavior, if it represents a complete event</li>
+     * <li>it is a control node, e.g., decision/merge nodes</li>
      * </ul>
+     * If the element belonged to an existing concrete activity, it can be of any allowed type.
      *
      * @param finalizedElement The finalized UML element.
-     * @param action The opaque action.
+     * @param node The activity node.
      */
-    public void addFinalizedUmlElement(RedefinableElement finalizedElement, OpaqueAction action) {
+    public void addFinalizedUmlElement(RedefinableElement finalizedElement, ActivityNode node) {
         // Sanity check: ensure that the finalized UML element and the opaque action are not present in the map.
         Verify.verify(!finalizedElementToActivityNode.containsKey(finalizedElement), String.format(
                 "Finalized UML element '%s' is already contained in the tracker mapping.", finalizedElement.getName()));
-        Verify.verify(!finalizedElementToActivityNode.values().contains(action), String.format(
-                "Action '%s' is already contained in the finalized UML element tracker mapping.", action.getName()));
-        Verify.verify(finalizedElement instanceof OpaqueAction || finalizedElement instanceof CallBehaviorAction,
-                "Expected a finalized UML element to be either an opaque action or a call behavior action.");
+        Verify.verify(!finalizedElementToActivityNode.values().contains(node), String.format(
+                "Node '%s' is already contained in the finalized UML element tracker mapping.", node.getName()));
+        Verify.verify(
+                finalizedElement instanceof OpaqueAction || finalizedElement instanceof CallBehaviorAction
+                        || finalizedElement instanceof ControlNode,
+                "Expected a finalized UML element to be either an opaque action, a call behavior action, or a control node.");
 
-        finalizedElementToActivityNode.put(finalizedElement, action);
+        finalizedElementToActivityNode.put(finalizedElement, node);
     }
 
     /**
