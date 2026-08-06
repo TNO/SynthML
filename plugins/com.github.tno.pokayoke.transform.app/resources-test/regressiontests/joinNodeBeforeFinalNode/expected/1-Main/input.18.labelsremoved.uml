@@ -52,7 +52,7 @@
         <body>not field2</body>
         <body>field2 := true</body>
       </ownedBehavior>
-      <ownedBehavior xmi:type="uml:Activity" xmi:id="20" name="Main" postcondition="26" precondition="22" node="39 40 41 42 43 44 45 46">
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="20" name="Main" postcondition="26" precondition="22" node="40 41 42 43 44 45 46 47 48">
         <ownedComment xmi:id="21">
           <body>Original-ID-Path:11</body>
         </ownedComment>
@@ -80,39 +80,41 @@
             <body>field1 and field2</body>
           </specification>
         </ownedRule>
-        <edge xmi:type="uml:ControlFlow" xmi:id="30" target="46" source="43"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="31" target="45" source="43"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="32" target="42" source="40"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="33" target="46" source="40"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="34" target="40" source="44"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="35" target="42" source="45"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="36" target="41" source="42"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="37" target="43" source="39"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="38" target="44" source="46"/>
-        <node xmi:type="uml:InitialNode" xmi:id="39" outgoing="37"/>
-        <node xmi:type="uml:DecisionNode" xmi:id="40" incoming="34" outgoing="32 33"/>
-        <node xmi:type="uml:ActivityFinalNode" xmi:id="41" incoming="36"/>
-        <node xmi:type="uml:JoinNode" xmi:id="42" incoming="32 35" outgoing="36"/>
-        <node xmi:type="uml:ForkNode" xmi:id="43" incoming="37" outgoing="30 31"/>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="44" name="action1" incoming="38" outgoing="34" behavior="16"/>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="45" name="action2" incoming="31" outgoing="35" behavior="18"/>
-        <node xmi:type="uml:MergeNode" xmi:id="46" incoming="30 33" outgoing="38"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="30" target="47" source="45"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="31" target="48" source="45"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="32" target="41" source="47"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="33" target="41" source="46"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="34" target="44" source="42"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="35" target="46" source="42"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="36" target="42" source="41"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="37" target="44" source="48"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="38" target="43" source="44"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="39" target="45" source="40"/>
+        <node xmi:type="uml:InitialNode" xmi:id="40" outgoing="39"/>
+        <node xmi:type="uml:MergeNode" xmi:id="41" incoming="32 33" outgoing="36"/>
+        <node xmi:type="uml:DecisionNode" xmi:id="42" incoming="36" outgoing="34 35"/>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="43" incoming="38"/>
+        <node xmi:type="uml:JoinNode" xmi:id="44" incoming="34 37" outgoing="38"/>
+        <node xmi:type="uml:ForkNode" xmi:id="45" incoming="39" outgoing="30 31"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="46" name="action1_1" incoming="35" outgoing="33" behavior="16"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="47" name="action1_2" incoming="30" outgoing="32" behavior="16"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="48" name="action2" incoming="31" outgoing="37" behavior="18"/>
       </ownedBehavior>
     </packagedElement>
-    <profileApplication xmi:id="47">
-      <eAnnotations xmi:id="48" source="http://www.eclipse.org/uml2/2.0.0/UML">
+    <profileApplication xmi:id="49">
+      <eAnnotations xmi:id="50" source="http://www.eclipse.org/uml2/2.0.0/UML">
         <references xmi:type="ecore:EPackage" href="https://github.com/TNO/SynthML/#/"/>
       </eAnnotations>
       <appliedProfile href="platform:/plugin/com.github.tno.synthml.uml.profile.plugin/model/synthml.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
     </profileApplication>
   </uml:Model>
-  <SynthML:FormalElement xmi:id="49" guard="not field1" base_RedefinableElement="16" atomic="true">
+  <SynthML:FormalElement xmi:id="51" guard="not field1" base_RedefinableElement="16" atomic="true">
     <effects>field1 := true</effects>
     <effects>field1 := false</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalElement xmi:id="50" guard="not field2" base_RedefinableElement="18" atomic="true">
+  <SynthML:FormalElement xmi:id="52" guard="not field2" base_RedefinableElement="18" atomic="true">
     <effects>field2 := true</effects>
   </SynthML:FormalElement>
-  <SynthML:SynthesisPrecondition xmi:id="51" base_Constraint="22"/>
-  <SynthML:Postcondition xmi:id="52" base_Constraint="26"/>
+  <SynthML:SynthesisPrecondition xmi:id="53" base_Constraint="22"/>
+  <SynthML:Postcondition xmi:id="54" base_Constraint="26"/>
 </xmi:XMI>

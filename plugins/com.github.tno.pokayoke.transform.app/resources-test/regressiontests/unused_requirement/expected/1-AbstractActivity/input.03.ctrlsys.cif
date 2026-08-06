@@ -5,9 +5,11 @@ plant automaton Class1:
   alg bool precondition = not flipped;
   alg bool __precondition = precondition;
   alg bool postcondition = flipped;
-  alg bool __postcondition = postcondition;
+  alg bool __postcondition_without_structure = postcondition;
+  alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure;
   initial __precondition;
-  marked __postcondition;
+  marked __postcondition_with_structure;
   supervisor invariant Requirement: ImpossibleBehavior needs flipped;
   location:
     initial;
@@ -23,5 +25,5 @@ supervisor automaton sup:
     edge flip when true;
     edge ImpossibleBehavior when true;
 end
-supervisor invariant Class1.__postcondition disables flip;
-supervisor invariant Class1.__postcondition disables ImpossibleBehavior;
+supervisor invariant Class1.__postcondition_without_structure disables flip;
+supervisor invariant Class1.__postcondition_without_structure disables ImpossibleBehavior;

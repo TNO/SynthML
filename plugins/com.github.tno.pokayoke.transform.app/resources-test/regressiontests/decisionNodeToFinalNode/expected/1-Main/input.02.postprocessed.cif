@@ -7,10 +7,12 @@ plant automaton Context:
   alg bool precondition = not field;
   alg bool __precondition = precondition;
   alg bool postcondition = field;
-  alg bool __postcondition__activeAction = __activeAction = 0;
-  alg bool __postcondition = postcondition and __postcondition__activeAction;
+  alg bool __postcondition_without_structure__activeAction = __activeAction = 0;
+  alg bool __postcondition_without_structure = postcondition and __postcondition_without_structure__activeAction;
+  alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure;
   initial __precondition;
-  marked __postcondition;
+  marked __postcondition_with_structure;
   location:
     initial;
     marked;
@@ -18,6 +20,6 @@ plant automaton Context:
     edge action__result_1 when __activeAction = 1 do field := true, __activeAction := 0;
     edge action__result_2 when __activeAction = 1 do field := false, __activeAction := 0;
 end
-requirement invariant Context.__postcondition disables action;
-requirement invariant Context.__postcondition disables action__result_1;
-requirement invariant Context.__postcondition disables action__result_2;
+requirement invariant Context.__postcondition_without_structure disables action;
+requirement invariant Context.__postcondition_without_structure disables action__result_1;
+requirement invariant Context.__postcondition_without_structure disables action__result_2;

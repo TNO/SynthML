@@ -145,8 +145,8 @@
         <node xmi:type="uml:JoinNode" xmi:id="72" name="Join____end" incoming="52 59" outgoing="60"/>
         <node xmi:type="uml:ForkNode" xmi:id="73" name="Fork__do_a/1" incoming="61" outgoing="50 53"/>
         <node xmi:type="uml:ForkNode" xmi:id="74" name="Fork__do_b" incoming="62" outgoing="56 57"/>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="75" name="do_a" incoming="56" outgoing="54" behavior="28"/>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="76" name="do_a" incoming="47" outgoing="61" behavior="28"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="75" name="do_a_1" incoming="56" outgoing="54" behavior="28"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="76" name="do_a_2" incoming="47" outgoing="61" behavior="28"/>
         <node xmi:type="uml:CallBehaviorAction" xmi:id="77" name="do_c" incoming="55" outgoing="59" behavior="78"/>
       </ownedBehavior>
       <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="78" name="do_c">

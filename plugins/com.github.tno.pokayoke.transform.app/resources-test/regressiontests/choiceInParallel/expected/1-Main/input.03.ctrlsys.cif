@@ -16,15 +16,17 @@ plant automaton Context:
   disc int[0..1] __activeAction;
   alg bool __precondition = true;
   alg bool postcondition = Is_Computer_On and Is_Computer_Ready and Has_Drank_Coffee_or_Tea and Is_Ready_to_Work;
-  alg bool __postcondition__activeAction = __activeAction = 0;
-  alg bool __postcondition__happens_at_most_once__56__Turn_Computer_On__60 = happens_at_most_once__56__Turn_Computer_On__60.__occurrences >= 0;
-  alg bool __postcondition__happens_at_most_once__56__Drink_Coffee__64 = happens_at_most_once__56__Drink_Coffee__64.__occurrences >= 0;
-  alg bool __postcondition__happens_at_most_once__56__Drink_Tea__66 = happens_at_most_once__56__Drink_Tea__66.__occurrences >= 0;
-  alg bool __postcondition__happens_at_most_once__56__Start_Working__68 = happens_at_most_once__56__Start_Working__68.__occurrences >= 0;
-  alg bool __postcondition__happens_at_most_once__56__Starting_Computer__62 = happens_at_most_once__56__Starting_Computer__62.__occurrences >= 0;
-  alg bool __postcondition = postcondition and (__postcondition__activeAction and __postcondition__happens_at_most_once__56__Turn_Computer_On__60) and (__postcondition__happens_at_most_once__56__Drink_Coffee__64 and __postcondition__happens_at_most_once__56__Drink_Tea__66 and (__postcondition__happens_at_most_once__56__Start_Working__68 and __postcondition__happens_at_most_once__56__Starting_Computer__62));
+  alg bool __postcondition_without_structure__activeAction = __activeAction = 0;
+  alg bool __postcondition_without_structure__happens_at_most_once__56__Turn_Computer_On__60 = happens_at_most_once__56__Turn_Computer_On__60.__occurrences >= 0;
+  alg bool __postcondition_without_structure__happens_at_most_once__56__Drink_Coffee__64 = happens_at_most_once__56__Drink_Coffee__64.__occurrences >= 0;
+  alg bool __postcondition_without_structure__happens_at_most_once__56__Drink_Tea__66 = happens_at_most_once__56__Drink_Tea__66.__occurrences >= 0;
+  alg bool __postcondition_without_structure__happens_at_most_once__56__Start_Working__68 = happens_at_most_once__56__Start_Working__68.__occurrences >= 0;
+  alg bool __postcondition_without_structure__happens_at_most_once__56__Starting_Computer__62 = happens_at_most_once__56__Starting_Computer__62.__occurrences >= 0;
+  alg bool __postcondition_without_structure = postcondition and (__postcondition_without_structure__activeAction and __postcondition_without_structure__happens_at_most_once__56__Turn_Computer_On__60) and (__postcondition_without_structure__happens_at_most_once__56__Drink_Coffee__64 and __postcondition_without_structure__happens_at_most_once__56__Drink_Tea__66 and (__postcondition_without_structure__happens_at_most_once__56__Start_Working__68 and __postcondition_without_structure__happens_at_most_once__56__Starting_Computer__62));
+  alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure;
   initial __precondition;
-  marked __postcondition;
+  marked __postcondition_with_structure;
   location:
     initial;
     marked;
@@ -89,11 +91,11 @@ supervisor automaton sup:
     edge Starting_Computer when true;
     edge Turn_Computer_On when true;
 end
-supervisor invariant Context.__postcondition disables Turn_Computer_On;
-supervisor invariant Context.__postcondition disables Starting_Computer;
-supervisor invariant Context.__postcondition disables Drink_Coffee;
-supervisor invariant Context.__postcondition disables Drink_Tea;
-supervisor invariant Context.__postcondition disables Start_Working;
-supervisor invariant Context.__postcondition disables Flip_A_Coin;
-supervisor invariant Context.__postcondition disables Flip_A_Coin__result_1;
-supervisor invariant Context.__postcondition disables Flip_A_Coin__result_2;
+supervisor invariant Context.__postcondition_without_structure disables Turn_Computer_On;
+supervisor invariant Context.__postcondition_without_structure disables Starting_Computer;
+supervisor invariant Context.__postcondition_without_structure disables Drink_Coffee;
+supervisor invariant Context.__postcondition_without_structure disables Drink_Tea;
+supervisor invariant Context.__postcondition_without_structure disables Start_Working;
+supervisor invariant Context.__postcondition_without_structure disables Flip_A_Coin;
+supervisor invariant Context.__postcondition_without_structure disables Flip_A_Coin__result_1;
+supervisor invariant Context.__postcondition_without_structure disables Flip_A_Coin__result_2;

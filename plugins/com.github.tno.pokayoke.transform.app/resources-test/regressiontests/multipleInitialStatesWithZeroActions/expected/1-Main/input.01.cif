@@ -1,9 +1,11 @@
 plant automaton Context:
   disc bool field in any;
   alg bool __precondition = true;
-  alg bool __postcondition = true;
+  alg bool __postcondition_without_structure = true;
+  alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure;
   initial __precondition;
-  marked __postcondition;
+  marked __postcondition_with_structure;
   location:
     initial;
     marked;

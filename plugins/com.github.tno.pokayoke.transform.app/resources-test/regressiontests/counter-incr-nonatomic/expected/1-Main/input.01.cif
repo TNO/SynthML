@@ -10,13 +10,15 @@ plant automaton Context:
   alg bool Pre = not init and count = 0;
   alg bool __precondition = Pre;
   alg bool Post = count = 3;
-  alg bool __postcondition__nonAtomicActive__initialize = not __nonAtomicActive__initialize;
-  alg bool __postcondition__occurrences__38__initialize__22 = occurrences__38__initialize__22.__occurrences >= 0;
-  alg bool __postcondition__occurrences__38__incr1__24 = occurrences__38__incr1__24.__occurrences >= 0;
-  alg bool __postcondition__occurrences__38__incr2__26 = occurrences__38__incr2__26.__occurrences >= 0;
-  alg bool __postcondition = Post and __postcondition__nonAtomicActive__initialize and (__postcondition__occurrences__38__initialize__22 and (__postcondition__occurrences__38__incr1__24 and __postcondition__occurrences__38__incr2__26));
+  alg bool __postcondition_without_structure__nonAtomicActive__initialize = not __nonAtomicActive__initialize;
+  alg bool __postcondition_without_structure__occurrences__38__initialize__22 = occurrences__38__initialize__22.__occurrences >= 0;
+  alg bool __postcondition_without_structure__occurrences__38__incr1__24 = occurrences__38__incr1__24.__occurrences >= 0;
+  alg bool __postcondition_without_structure__occurrences__38__incr2__26 = occurrences__38__incr2__26.__occurrences >= 0;
+  alg bool __postcondition_without_structure = Post and __postcondition_without_structure__nonAtomicActive__initialize and (__postcondition_without_structure__occurrences__38__initialize__22 and (__postcondition_without_structure__occurrences__38__incr1__24 and __postcondition_without_structure__occurrences__38__incr2__26));
+  alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure;
   initial __precondition;
-  marked __postcondition;
+  marked __postcondition_with_structure;
   location:
     initial;
     marked;
@@ -50,8 +52,8 @@ requirement automaton occurrences__38__incr2__26:
     marked;
     edge incr2 when __occurrences < 1 do __occurrences := __occurrences + 1;
 end
-requirement invariant Context.__postcondition disables initialize;
-requirement invariant Context.__postcondition disables initialize__na_result_1;
-requirement invariant Context.__postcondition disables initialize__na_result_2;
-requirement invariant Context.__postcondition disables incr1;
-requirement invariant Context.__postcondition disables incr2;
+requirement invariant Context.__postcondition_without_structure disables initialize;
+requirement invariant Context.__postcondition_without_structure disables initialize__na_result_1;
+requirement invariant Context.__postcondition_without_structure disables initialize__na_result_2;
+requirement invariant Context.__postcondition_without_structure disables incr1;
+requirement invariant Context.__postcondition_without_structure disables incr2;

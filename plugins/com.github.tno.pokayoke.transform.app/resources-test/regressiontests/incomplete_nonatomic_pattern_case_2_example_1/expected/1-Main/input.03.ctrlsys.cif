@@ -8,12 +8,14 @@ plant automaton Context:
   alg bool Pre = not done_a and not done_b;
   alg bool __precondition = Pre;
   alg bool Post = done_b;
-  alg bool __postcondition__nonAtomicActive__do_b = not __nonAtomicActive__do_b;
-  alg bool __postcondition__occurrences__36__do_a__22 = occurrences__36__do_a__22.__occurrences >= 0;
-  alg bool __postcondition__occurrences__36__do_b__24 = occurrences__36__do_b__24.__occurrences >= 0;
-  alg bool __postcondition = Post and __postcondition__nonAtomicActive__do_b and (__postcondition__occurrences__36__do_a__22 and __postcondition__occurrences__36__do_b__24);
+  alg bool __postcondition_without_structure__nonAtomicActive__do_b = not __nonAtomicActive__do_b;
+  alg bool __postcondition_without_structure__occurrences__36__do_a__22 = occurrences__36__do_a__22.__occurrences >= 0;
+  alg bool __postcondition_without_structure__occurrences__36__do_b__24 = occurrences__36__do_b__24.__occurrences >= 0;
+  alg bool __postcondition_without_structure = Post and __postcondition_without_structure__nonAtomicActive__do_b and (__postcondition_without_structure__occurrences__36__do_a__22 and __postcondition_without_structure__occurrences__36__do_b__24);
+  alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure;
   initial __precondition;
-  marked __postcondition;
+  marked __postcondition_with_structure;
   location:
     initial;
     marked;
@@ -45,6 +47,6 @@ supervisor automaton sup:
     edge do_a when Context.__nonAtomicActive__do_b;
     edge do_b when true;
 end
-supervisor invariant Context.__postcondition disables do_a;
-supervisor invariant Context.__postcondition disables do_b;
-supervisor invariant Context.__postcondition disables do_b__na_result_1;
+supervisor invariant Context.__postcondition_without_structure disables do_a;
+supervisor invariant Context.__postcondition_without_structure disables do_b;
+supervisor invariant Context.__postcondition_without_structure disables do_b__na_result_1;

@@ -76,8 +76,8 @@
         <node xmi:type="uml:MergeNode" xmi:id="35" name="Merge__p3" incoming="26 27" outgoing="30"/>
         <node xmi:type="uml:DecisionNode" xmi:id="36" name="Decision__p3" incoming="30" outgoing="28 29"/>
         <node xmi:type="uml:ActivityFinalNode" xmi:id="37" name="FinalNode__p4" incoming="31"/>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="38" name="action" incoming="29" outgoing="27" behavior="12"/>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="39" name="action" incoming="25" outgoing="26" behavior="12"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="38" name="action_1" incoming="29" outgoing="27" behavior="12"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="39" name="action_2" incoming="25" outgoing="26" behavior="12"/>
       </ownedBehavior>
     </packagedElement>
     <profileApplication xmi:id="40">

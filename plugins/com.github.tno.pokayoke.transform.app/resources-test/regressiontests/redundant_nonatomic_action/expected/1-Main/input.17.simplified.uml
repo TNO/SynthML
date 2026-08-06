@@ -124,8 +124,8 @@
         <node xmi:type="uml:JoinNode" xmi:id="61" name="Join____end" incoming="44 47" outgoing="52"/>
         <node xmi:type="uml:ForkNode" xmi:id="62" name="Fork__do_a/1" incoming="50" outgoing="42 45"/>
         <node xmi:type="uml:ForkNode" xmi:id="63" name="Fork__do_b" incoming="51" outgoing="48 49"/>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="64" name="do_a" incoming="48" outgoing="43" behavior="22"/>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="65" name="do_a" incoming="40" outgoing="50" behavior="22"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="64" name="do_a_1" incoming="48" outgoing="43" behavior="22"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="65" name="do_a_2" incoming="40" outgoing="50" behavior="22"/>
       </ownedBehavior>
     </packagedElement>
     <profileApplication xmi:id="66">

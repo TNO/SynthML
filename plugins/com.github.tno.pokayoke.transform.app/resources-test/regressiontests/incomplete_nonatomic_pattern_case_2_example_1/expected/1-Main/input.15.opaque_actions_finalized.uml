@@ -113,8 +113,8 @@
         <node xmi:type="uml:OpaqueAction" xmi:id="50" name="__end" incoming="48" outgoing="49"/>
         <node xmi:type="uml:OpaqueAction" xmi:id="51" name="__start" incoming="40" outgoing="41"/>
         <node xmi:type="uml:OpaqueAction" xmi:id="52" name="do_b_start" incoming="41" outgoing="44"/>
-        <node xmi:type="uml:OpaqueAction" xmi:id="53" name="do_b_end1" incoming="45" outgoing="47"/>
-        <node xmi:type="uml:OpaqueAction" xmi:id="54" name="do_b_end1" incoming="43" outgoing="46"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="53" name="do_b_end1_1" incoming="45" outgoing="47"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="54" name="do_b_end1_2" incoming="43" outgoing="46"/>
         <node xmi:type="uml:InitialNode" xmi:id="55" name="InitialNode__p1" outgoing="40"/>
         <node xmi:type="uml:DecisionNode" xmi:id="56" name="Decision__p3" incoming="44" outgoing="42 43"/>
         <node xmi:type="uml:MergeNode" xmi:id="57" name="Merge__p5" incoming="46 47" outgoing="48"/>

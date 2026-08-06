@@ -345,23 +345,10 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
         // Translate all postconditions of the input UML activity.
         switch (translationPurpose) {
-            case LANGUAGE_EQUIVALENCE:
-            case SYNTHESIS: {
-                // Translate postconditions once, to get a single algebraic variable that represents the postcondition.
-                // It is used as marking predicate, and later also to disable events when the postcondition holds.
-                Pair<List<AlgVariable>, AlgVariable> postconditions = translatePostconditions(cifNonAtomicVars,
-                        cifAtomicityVar, PostConditionKind.SINGLE);
-                cifPlant.getDeclarations().addAll(postconditions.left);
-                postconditionVariables.put(PostConditionKind.SINGLE, postconditions.right);
-                cifPlant.getDeclarations().add(postconditions.right);
-
-                cifPlant.getMarkeds().add(getTranslatedPostcondition(PostConditionKind.SINGLE));
-                break;
-            }
-
+            case SYNTHESIS:
             case GUARD_COMPUTATION: {
                 // Translate postconditions twice, once to determine the postcondition without structure, and once to
-                // determine the postcondition with structure. Both are later used for disable different events when
+                // determine the postcondition with structure. Both are later used to disable different events when
                 // different postconditions hold. The postcondition with structure is used as marking predicate.
                 Pair<List<AlgVariable>, AlgVariable> postconditionsWithoutStructure = translatePostconditions(
                         cifNonAtomicVars, cifAtomicityVar, PostConditionKind.WITHOUT_STRUCTURE);
@@ -376,6 +363,18 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 cifPlant.getDeclarations().add(postconditionsWithStructure.right);
 
                 cifPlant.getMarkeds().add(getTranslatedPostcondition(PostConditionKind.WITH_STRUCTURE));
+                break;
+            }
+            case LANGUAGE_EQUIVALENCE: {
+                // Translate postconditions once, to get a single algebraic variable that represents the postcondition.
+                // It is used as marking predicate, and later also to disable events when the postcondition holds.
+                Pair<List<AlgVariable>, AlgVariable> postconditions = translatePostconditions(cifNonAtomicVars,
+                        cifAtomicityVar, PostConditionKind.SINGLE);
+                cifPlant.getDeclarations().addAll(postconditions.left);
+                postconditionVariables.put(PostConditionKind.SINGLE, postconditions.right);
+                cifPlant.getDeclarations().add(postconditions.right);
+
+                cifPlant.getMarkeds().add(getTranslatedPostcondition(PostConditionKind.SINGLE));
                 break;
             }
 
@@ -1461,11 +1460,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         // Initialize the list of postcondition variables for the partial conditions.
         List<AlgVariable> postconditionVars = new ArrayList<>();
 
-        // For guard computation, we have two postconditions. For the 'with structure' postcondition, include the
-        // 'without structure' postcondition.
-        if (translationPurpose == UmlToCifTranslationPurpose.GUARD_COMPUTATION
-                && kind == PostConditionKind.WITH_STRUCTURE)
-        {
+        // For some purposes, we have two postconditions (one 'with' and one 'without' structure). For the 'with
+        // structure' postcondition, include the 'without structure' postcondition.
+        if (kind == PostConditionKind.WITH_STRUCTURE) {
             Expression condition = getTranslatedPostcondition(PostConditionKind.WITHOUT_STRUCTURE);
             AlgVariable cifAlgVar = CifConstructors.newAlgVariable(null, kind.prefix + "__without_structure", null,
                     CifConstructors.newBoolType(), condition);
@@ -1608,27 +1605,50 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             // Determine which postcondition to use.
             PostConditionKind kind = switch (translationPurpose) {
                 case GUARD_COMPUTATION -> {
-                    if (synthesisTracker.getEventTraceInfo(cifEvent).isInternal()) {
-                        // We must allow internal actions after the user-defined postconditions etc hold, to ensure
-                        // that the token can still pass through merge/join/etc nodes and the token can still reach
-                        // the incoming control flow to the final place.
-                        yield PostConditionKind.WITH_STRUCTURE;
-                    } else if (synthesisTracker.isStartOfOriginalOpaqueBehavior(cifEvent, translationPurpose)) {
+                    if ((!synthesisTracker.representsExistingConcreteActivityNode(cifEvent, translationPurpose)
+                            && synthesisTracker.isStartOfOriginalAction(cifEvent, translationPurpose))
+                            || synthesisTracker.representsExistingConcreteActivityInitialNode(cifEvent,
+                                    translationPurpose))
+                    {
                         // As soon as the user-defined postconditions etc hold, we should no longer allow starting any
-                        // of the actions that the user defined.
+                        // of the actions that the user defined or calling (the initial node of) a concrete activity.
                         yield PostConditionKind.WITHOUT_STRUCTURE;
-                    } else {
-                        // We must allow finishing non-atomic/non-deterministic actions.
-                        Verify.verify(
-                                synthesisTracker.isRelatedToEndOnlyOfOriginalElement(cifEvent, translationPurpose),
-                                "Event '%s' is not an end-only event.", cifEvent.getName());
-
+                    } else if (synthesisTracker.getEventTraceInfo(cifEvent).isInternal()
+                            || synthesisTracker.representsExistingConcreteActivityNode(cifEvent, translationPurpose))
+                    {
+                        // We must allow internal actions after the user-defined postconditions etc hold, to ensure
+                        // that the token can still pass through merge/join/etc and the token can still reach the
+                        // incoming control flow to the final node. Similarly, we must ensure the token can still pass
+                        // through concrete activity nodes (except the initial node, which is handled in the previous
+                        // switch case), to be able complete their execution once they are already busy executing.
                         yield PostConditionKind.WITH_STRUCTURE;
+                    } else if (synthesisTracker.isRelatedToEndOnlyOfOriginalElement(cifEvent, translationPurpose)) {
+                        // We must allow finishing non-atomic/non-deterministic actions.
+                        yield PostConditionKind.WITH_STRUCTURE;
+                    } else {
+                        throw new RuntimeException(
+                                String.format("Event '%s' has unknown tracking status.", cifEvent.getName()));
+                    }
+                }
+
+                case SYNTHESIS -> {
+                    // We must allow finishing concrete activities after the user-defined postconditions etc hold,
+                    // to ensure that their execution can be completed once it starts executing, and the token can
+                    // still reach the incoming control flow to the final node of the activity being synthesized.
+                    // We should however disallow starting a new concrete activity once the user-defined
+                    // post-conditions etc hold.
+                    if (synthesisTracker.representsExistingConcreteActivityNode(cifEvent, translationPurpose)
+                            && !synthesisTracker.representsExistingConcreteActivityInitialNode(cifEvent,
+                                    translationPurpose))
+                    {
+                        yield PostConditionKind.WITH_STRUCTURE;
+                    } else {
+                        yield PostConditionKind.WITHOUT_STRUCTURE;
                     }
                 }
 
                 // If there is only one postcondition, there is nothing to choose.
-                case LANGUAGE_EQUIVALENCE, SYNTHESIS -> PostConditionKind.SINGLE;
+                case LANGUAGE_EQUIVALENCE -> PostConditionKind.SINGLE;
             };
 
             // Get the associated postcondition algebraic variable.

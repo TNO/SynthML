@@ -144,8 +144,8 @@
         <node xmi:type="uml:JoinNode" xmi:id="65" incoming="46 49" outgoing="54"/>
         <node xmi:type="uml:ForkNode" xmi:id="66" incoming="52" outgoing="44 47"/>
         <node xmi:type="uml:ForkNode" xmi:id="67" incoming="53" outgoing="50 51"/>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="68" name="do_a" incoming="50" outgoing="45" behavior="22"/>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="69" name="do_a" incoming="40" outgoing="52" behavior="22"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="68" name="do_a_1" incoming="50" outgoing="45" behavior="22"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="69" name="do_a_2" incoming="40" outgoing="52" behavior="22"/>
       </ownedBehavior>
     </packagedElement>
     <profileApplication xmi:id="70">

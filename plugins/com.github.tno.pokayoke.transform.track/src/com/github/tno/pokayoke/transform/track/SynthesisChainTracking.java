@@ -29,6 +29,7 @@ import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.ControlNode;
 import org.eclipse.uml2.uml.DecisionNode;
+import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.MergeNode;
 import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.OpaqueBehavior;
@@ -154,7 +155,8 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Returns the events corresponding to the given set of UML elements, based on the indicated translation purpose.
+     * Returns the current CIF events of the given translation purpose, corresponding to the given set of UML elements
+     * as considered by the first UML-to-CIF conversion for the synthesis purpose.
      *
      * @param umlElements The set of UML elements, to find the related CIF events. Each UML element must be
      *     non-{@code null}.
@@ -162,8 +164,25 @@ public class SynthesisChainTracking {
      * @return The list of CIF events corresponding to the UML elements.
      */
     public List<Event> getEventsOf(Set<? extends RedefinableElement> umlElements, UmlToCifTranslationPurpose purpose) {
-        return cifEventTraceInfo.entrySet().stream().filter(e -> e.getValue().getTranslationPurpose().equals(purpose)
-                && umlElements.contains(e.getValue().getUmlElement())).map(Map.Entry::getKey).toList();
+        switch (purpose) {
+            case SYNTHESIS: {
+                return cifEventTraceInfo.entrySet().stream()
+                        .filter(e -> e.getValue().getTranslationPurpose().equals(purpose)
+                                && umlElements.contains(e.getValue().getUmlElement()))
+                        .map(Map.Entry::getKey).toList();
+            }
+            case GUARD_COMPUTATION:
+            case LANGUAGE_EQUIVALENCE: {
+                // For guard computation and the language equivalence check, look at the original element and not the
+                // current one.
+                return cifEventTraceInfo.entrySet().stream()
+                        .filter(e -> e.getValue().getTranslationPurpose().equals(purpose) && umlElements
+                                .contains(getOriginalUmlElement((ActivityNode)e.getValue().getUmlElement())))
+                        .map(Map.Entry::getKey).toList();
+            }
+            default:
+                throw new IllegalArgumentException("Unexpected value: " + purpose);
+        }
     }
 
     /**
@@ -1082,7 +1101,7 @@ public class SynthesisChainTracking {
         Set<Transition> transitionsToRemove = new LinkedHashSet<>();
         for (Entry<ActivityNode, Transition> entry: activityNodeToTransition.entrySet()) {
             if (entry.getKey() instanceof OpaqueAction action
-                    && (action.getName().equals("__start") || action.getName().equals("__end")))
+                    && (action.getName().contains("__start") || action.getName().contains("__end")))
             {
                 actionsToRemove.add(action);
                 transitionsToRemove.add(entry.getValue());
@@ -1092,13 +1111,6 @@ public class SynthesisChainTracking {
         // Sanity check: actions with double underscores in their names should be temporary petrification actions.
         Verify.verify(actionsToRemove.stream().allMatch(a -> isTemporaryPetrificationAction(a)),
                 "Found non-temporary actions with double underscore in their name.");
-
-        // Sanity check: the temporary actions should be called '__start' and '__end'. There can be more than two
-        // temporary actions, depending on the activity structure.
-        Verify.verify(
-                actionsToRemove.stream().map(a -> a.getName()).collect(Collectors.toSet())
-                        .equals(Set.of("__start", "__end")),
-                "Expected temporary petrification actions to be present, and called '__start' and '__end'.");
 
         // Remove temporary actions.
         activityNodeToTransition.keySet().removeAll(actionsToRemove);
@@ -1135,7 +1147,9 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Checks whether the given non-{@code null} UML element belongs to the UML activity being synthesized.
+     * Checks whether the given non-{@code null} UML element belongs to the UML activity being synthesized. Note that
+     * this method always checks for a UML element belong to the synthesized activity as generated for the 'synthesis'
+     * purpose, not any later synthesis, like for guard computation.
      *
      * @param umlElement The non-{@code null} UML element to check.
      * @return {@code true} if the input element belongs to the UML activity being synthesized, {@code false} otherwise.
@@ -1442,14 +1456,15 @@ public class SynthesisChainTracking {
     /**
      * Returns {@code true} if the given CIF event has been created for a finalized UML element during the guard
      * computation or language equivalence check phase, which corresponds to a CIF event created for the synthesis phase
-     * that represents the start event of an original opaque behavior.
+     * that represents the start event of an original SynthML action (UML opaque behavior, UML opaque action or UML call
+     * behavior action).
      *
      * @param cifEvent The CIF event.
      * @param purpose The translation purpose.
-     * @return {@code true} if the CIF event corresponds to the start of an original opaque behavior, {@code false}
-     *     otherwise.
+     * @return {@code true} if the CIF event corresponds to the start of an original opaque behavior, opaque action or
+     *     call behavior action; {@code false} otherwise.
      */
-    public boolean isStartOfOriginalOpaqueBehavior(Event cifEvent, UmlToCifTranslationPurpose purpose) {
+    public boolean isStartOfOriginalAction(Event cifEvent, UmlToCifTranslationPurpose purpose) {
         // Precondition check.
         Verify.verify(purpose != UmlToCifTranslationPurpose.SYNTHESIS,
                 "Reference to original UML element is undefined for synthesis translation.");
@@ -1459,7 +1474,9 @@ public class SynthesisChainTracking {
         Verify.verifyNotNull(finalizedEventInfo, String.format(
                 "Event '%s' does not have any tracing info referring to the finalized UML model.", cifEvent.getName()));
         RedefinableElement finalizedUmlElement = finalizedEventInfo.getUmlElement();
-        return getOriginalUmlElement(finalizedUmlElement) instanceof OpaqueBehavior
+        RedefinableElement originalUmlElement = getOriginalUmlElement(finalizedUmlElement);
+        return (originalUmlElement instanceof OpaqueBehavior || originalUmlElement instanceof OpaqueAction
+                || originalUmlElement instanceof CallBehaviorAction)
                 && isRelatedToStartOfOriginalElement(finalizedEventInfo);
     }
 
@@ -1510,6 +1527,85 @@ public class SynthesisChainTracking {
     public boolean isRelatedToControlNodeOfCalledActivity(ActivityNode node) {
         RedefinableElement originalUmlElement = getOriginalUmlElement(node);
         return originalUmlElement instanceof ControlNode;
+    }
+
+    /**
+     * Returns, for the given CIF event, the corresponding UML element of an existing concrete activity. If the CIF
+     * event does not correspond to a UML element of an existing concrete activity, {@code null} is returned instead.
+     *
+     * @param cifEvent The CIF event.
+     * @param purpose The translation purpose.
+     * @return The UML element, or {@code null}.
+     */
+    public RedefinableElement getExistingConcreteActivityElement(Event cifEvent, UmlToCifTranslationPurpose purpose) {
+        // Get the event trace information for the CIF event. If there is none, the CIF event does not trace back to
+        // a UML element of an existing concrete activity.
+        EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
+        if (eventInfo == null) {
+            return null;
+        }
+
+        // Get the original UML element belonging to the CIF event. For the synthesis purpose, it is by definition an
+        // original UML element. For the later purposes, we get the original UML element from the current UML element.
+        RedefinableElement umlElement = switch (purpose) {
+            case SYNTHESIS -> eventInfo.getUmlElement();
+            case GUARD_COMPUTATION, LANGUAGE_EQUIVALENCE -> getOriginalUmlElement(eventInfo.getUmlElement());
+            default -> throw new IllegalArgumentException("Unexpected translation purpose: " + purpose);
+        };
+
+        // Check that the CIF event traces back to an original UML element, and that this UML element belongs to a
+        // concrete activity.
+        if (umlElement != null && belongsToExistingConcreteActivity(umlElement)) {
+            return umlElement;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Checks whether the given non-{@code null} UML element belongs to an existing concrete UML activity.
+     *
+     * @param umlElement The non-{@code null} UML element to check.
+     * @return {@code true} if the given UML element belongs to an existing concrete UML activity, {@code false}
+     *     otherwise.
+     */
+    public boolean belongsToExistingConcreteActivity(RedefinableElement umlElement) {
+        Verify.verifyNotNull(umlElement, "Element cannot be 'null'.");
+
+        // Get the UML class that contains the to-be-synthesized activity.
+        org.eclipse.uml2.uml.Class clazz = (org.eclipse.uml2.uml.Class)activity.eContainer();
+
+        // Find the concrete activities in the class and check whether the UML element is contained in any of them.
+        Set<Activity> concreteActivities = clazz.getOwnedBehaviors().stream()
+                .filter(b -> b instanceof Activity act && !act.isAbstract() && !act.equals(activity))
+                .map(Activity.class::cast).collect(Collectors.toSet());
+        return concreteActivities.contains(umlElement.eContainer());
+    }
+
+    /**
+     * Returns {@code true} if the CIF event was created for any node of an existing concrete activity.
+     *
+     * @param cifEvent The event to check.
+     * @param purpose The translation purpose.
+     * @return {@code true} if the CIF event corresponds to any node of an existing concrete activity; {@code false}
+     *     otherwise.
+     */
+    public boolean representsExistingConcreteActivityNode(Event cifEvent, UmlToCifTranslationPurpose purpose) {
+        RedefinableElement umlElement = getExistingConcreteActivityElement(cifEvent, purpose);
+        return umlElement != null;
+    }
+
+    /**
+     * Returns {@code true} if the CIF event was created for an existing concrete activity's initial node.
+     *
+     * @param cifEvent The event to check.
+     * @param purpose The translation purpose.
+     * @return {@code true} if the CIF event corresponds to an initial node of an existing concrete activity;
+     *     {@code false} otherwise.
+     */
+    public boolean representsExistingConcreteActivityInitialNode(Event cifEvent, UmlToCifTranslationPurpose purpose) {
+        RedefinableElement umlElement = getExistingConcreteActivityElement(cifEvent, purpose);
+        return umlElement instanceof InitialNode;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
