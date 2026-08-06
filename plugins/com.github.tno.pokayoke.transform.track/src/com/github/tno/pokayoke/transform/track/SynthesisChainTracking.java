@@ -1062,33 +1062,33 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Returns {@code true} if the Petri net transition related to the opaque action is a start-only transition.
+     * Returns {@code true} if the Petri net transition related to the activity node is a start-only transition.
      *
-     * @param action The opaque action.
-     * @return {@code true} if the action is related to a start-only transition, {@code false} otherwise.
+     * @param node The activity node.
+     * @return {@code true} if the activity node is related to a start-only transition, {@code false} otherwise.
      */
-    private boolean isStartOnlyAction(OpaqueAction action) {
-        return getTransitionTraceInfo(action).isStartOnlyTransition();
+    private boolean isStartOnlyAction(ActivityNode node) {
+        return getTransitionTraceInfo(node).isStartOnlyTransition();
     }
 
     /**
-     * Returns {@code true} if the Petri net transition related to the opaque action is an end-only transition.
+     * Returns {@code true} if the Petri net transition related to the activity node is an end-only transition.
      *
-     * @param action The opaque action.
-     * @return {@code true} if the action is related to an end-only transition, {@code false} otherwise.
+     * @param node The activity node.
+     * @return {@code true} if the activity node is related to an end-only transition, {@code false} otherwise.
      */
-    private boolean isEndOnlyAction(OpaqueAction action) {
-        return getTransitionTraceInfo(action).isEndOnlyTransition();
+    private boolean isEndOnlyAction(ActivityNode node) {
+        return getTransitionTraceInfo(node).isEndOnlyTransition();
     }
 
     /**
-     * Returns {@code true} if the Petri net transition related to the opaque action is a complete transition.
+     * Returns {@code true} if the Petri net transition related to the activity node is a complete transition.
      *
-     * @param action The opaque action.
-     * @return {@code true} if the action is related to a complete transition, {@code false} otherwise.
+     * @param node The activity node.
+     * @return {@code true} if the activity node is related to a complete transition, {@code false} otherwise.
      */
-    private boolean isCompleteAction(OpaqueAction action) {
-        return getTransitionTraceInfo(action).isCompleteTransition();
+    private boolean isCompleteAction(ActivityNode node) {
+        return getTransitionTraceInfo(node).isCompleteTransition();
     }
 
     /**
