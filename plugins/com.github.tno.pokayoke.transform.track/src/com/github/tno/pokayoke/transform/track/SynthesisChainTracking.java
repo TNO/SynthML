@@ -88,7 +88,7 @@ public class SynthesisChainTracking {
     private final Map<MergeNode, Set<ActivityNode>> newMergeNodeToParentNodes = new LinkedHashMap<>();
 
     /** The map from the finalized UML elements to the non-finalized opaque actions they originate from. */
-    private final Map<RedefinableElement, OpaqueAction> finalizedElementToAction = new LinkedHashMap<>();
+    private final Map<RedefinableElement, OpaqueAction> finalizedElementToActivityNode = new LinkedHashMap<>();
 
     public static enum ActionKind {
         START_OPAQUE_BEHAVIOR, END_OPAQUE_BEHAVIOR, COMPLETE_OPAQUE_BEHAVIOR, START_SHADOW, END_SHADOW, COMPLETE_SHADOW,
@@ -1295,14 +1295,14 @@ public class SynthesisChainTracking {
      */
     public void addFinalizedUmlElement(RedefinableElement finalizedElement, OpaqueAction action) {
         // Sanity check: ensure that the finalized UML element and the opaque action are not present in the map.
-        Verify.verify(!finalizedElementToAction.containsKey(finalizedElement), String.format(
+        Verify.verify(!finalizedElementToActivityNode.containsKey(finalizedElement), String.format(
                 "Finalized UML element '%s' is already contained in the tracker mapping.", finalizedElement.getName()));
-        Verify.verify(!finalizedElementToAction.values().contains(action), String.format(
+        Verify.verify(!finalizedElementToActivityNode.values().contains(action), String.format(
                 "Action '%s' is already contained in the finalized UML element tracker mapping.", action.getName()));
         Verify.verify(finalizedElement instanceof OpaqueAction || finalizedElement instanceof CallBehaviorAction,
                 "Expected a finalized UML element to be either an opaque action or a call behavior action.");
 
-        finalizedElementToAction.put(finalizedElement, action);
+        finalizedElementToActivityNode.put(finalizedElement, action);
     }
 
     /**
@@ -1312,7 +1312,7 @@ public class SynthesisChainTracking {
      * @return {@code true} if the given UML element is a finalized element, {@code false} otherwise.
      */
     private boolean isFinalizedUmlElement(RedefinableElement umlElement) {
-        return finalizedElementToAction.containsKey(umlElement);
+        return finalizedElementToActivityNode.containsKey(umlElement);
     }
 
     /**
@@ -1327,7 +1327,7 @@ public class SynthesisChainTracking {
         Verify.verify(belongsToSynthesizedActivity(umlElement),
                 String.format("UML element '%s' does not belong to the synthesized activity.", umlElement.getName()));
 
-        OpaqueAction action = finalizedElementToAction.get(umlElement);
+        OpaqueAction action = finalizedElementToActivityNode.get(umlElement);
         return (action == null) ? null : getUmlElement(action);
     }
 
@@ -1340,7 +1340,7 @@ public class SynthesisChainTracking {
     private OpaqueAction getOpaqueAction(RedefinableElement umlElement) {
         Verify.verify(isFinalizedUmlElement(umlElement),
                 String.format("Element '%s' is not a finalized element.", umlElement.getName()));
-        OpaqueAction action = finalizedElementToAction.get(umlElement);
+        OpaqueAction action = finalizedElementToActivityNode.get(umlElement);
         Verify.verifyNotNull(action, String.format(
                 "Element '%s' does not have a corresponding non-finalized opaque action.", umlElement.getName()));
         return action;
