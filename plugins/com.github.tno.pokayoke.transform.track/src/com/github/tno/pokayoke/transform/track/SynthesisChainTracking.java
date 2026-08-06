@@ -1002,13 +1002,13 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Returns the UML element originally related to the opaque action, or {@code null} if no such element exists.
+     * Returns the UML element originally related to the activity node, or {@code null} if no such element exists.
      *
-     * @param action The opaque action.
+     * @param node The activity node.
      * @return The related UML element, or {@code null}.
      */
-    public RedefinableElement getUmlElement(OpaqueAction action) {
-        return getTransitionTraceInfo(action).getUmlElement();
+    public RedefinableElement getUmlElement(ActivityNode node) {
+        return getTransitionTraceInfo(node).getUmlElement();
     }
 
     /**
