@@ -87,8 +87,8 @@ public class SynthesisChainTracking {
     /** The map from a new merge node created from a Petri net place, to its parent nodes. */
     private final Map<MergeNode, Set<ActivityNode>> newMergeNodeToParentNodes = new LinkedHashMap<>();
 
-    /** The map from the finalized UML elements to the non-finalized opaque actions they originate from. */
-    private final Map<RedefinableElement, OpaqueAction> finalizedElementToActivityNode = new LinkedHashMap<>();
+    /** The map from the finalized UML elements to the non-finalized activity nodes they originate from. */
+    private final Map<RedefinableElement, ActivityNode> finalizedElementToActivityNode = new LinkedHashMap<>();
 
     public static enum ActionKind {
         START_OPAQUE_BEHAVIOR, END_OPAQUE_BEHAVIOR, COMPLETE_OPAQUE_BEHAVIOR, START_SHADOW, END_SHADOW, COMPLETE_SHADOW,
