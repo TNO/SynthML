@@ -1332,18 +1332,18 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Returns the non-finalized opaque action corresponding to the given finalized UML element.
+     * Returns the non-finalized activity node corresponding to the given finalized UML element.
      *
      * @param umlElement The finalized UML element.
-     * @return The corresponding opaque action.
+     * @return The corresponding activity node.
      */
-    private OpaqueAction getActivityNode(RedefinableElement umlElement) {
+    private ActivityNode getActivityNode(RedefinableElement umlElement) {
         Verify.verify(isFinalizedUmlElement(umlElement),
                 String.format("Element '%s' is not a finalized element.", umlElement.getName()));
-        OpaqueAction action = finalizedElementToActivityNode.get(umlElement);
-        Verify.verifyNotNull(action, String.format(
+        ActivityNode node = finalizedElementToActivityNode.get(umlElement);
+        Verify.verifyNotNull(node, String.format(
                 "Element '%s' does not have a corresponding non-finalized opaque action.", umlElement.getName()));
-        return action;
+        return node;
     }
 
     /**
