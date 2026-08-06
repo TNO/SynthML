@@ -926,15 +926,17 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Returns the Petri net transition tracing info corresponding to the input activity node.
+     * Returns the Petri net transition tracing info corresponding to the input activity node, or {@code null} if no
+     * transition exists.
      *
      * @param node The activity node.
-     * @return The transition tracing info related to the activity node.
+     * @return The transition tracing info related to the activity node, or {@code null}.
      */
     private TransitionTraceInfo getTransitionTraceInfo(ActivityNode node) {
         Transition transition = activityNodeToTransition.get(node);
-        Verify.verifyNotNull(transition, String
-                .format("Activity node '%s' does not have a corresponding Petri net transition.", node.getName()));
+        if (transition == null) {
+            return null;
+        }
         TransitionTraceInfo transitionInfo = transitionTraceInfo.get(transition);
         Verify.verifyNotNull(transitionInfo,
                 String.format("Transition '%s' does not have any tracing info.", transition.getName().getText()));
@@ -1008,7 +1010,8 @@ public class SynthesisChainTracking {
      * @return The related UML element, or {@code null}.
      */
     public RedefinableElement getUmlElement(ActivityNode node) {
-        return getTransitionTraceInfo(node).getUmlElement();
+        TransitionTraceInfo transitionInfo = getTransitionTraceInfo(node);
+        return (transitionInfo == null) ? null : transitionInfo.getUmlElement();
     }
 
     /**
