@@ -1337,7 +1337,7 @@ public class SynthesisChainTracking {
      * @param umlElement The finalized UML element.
      * @return The corresponding opaque action.
      */
-    private OpaqueAction getOpaqueAction(RedefinableElement umlElement) {
+    private OpaqueAction getActivityNode(RedefinableElement umlElement) {
         Verify.verify(isFinalizedUmlElement(umlElement),
                 String.format("Element '%s' is not a finalized element.", umlElement.getName()));
         OpaqueAction action = finalizedElementToActivityNode.get(umlElement);
@@ -1420,7 +1420,7 @@ public class SynthesisChainTracking {
     private boolean isRelatedToOriginalStartOnlyEvent(RedefinableElement finalizedUmlElement) {
         Verify.verify(isFinalizedUmlElement(finalizedUmlElement),
                 String.format("Element '%s' is not a finalized element.", finalizedUmlElement.getName()));
-        OpaqueAction action = getOpaqueAction(finalizedUmlElement);
+        OpaqueAction action = getActivityNode(finalizedUmlElement);
         return isStartOnlyAction(action);
     }
 
@@ -1434,7 +1434,7 @@ public class SynthesisChainTracking {
     private boolean isRelatedToOriginalEndOnlyEvent(RedefinableElement finalizedUmlElement) {
         Verify.verify(isFinalizedUmlElement(finalizedUmlElement),
                 String.format("Element '%s' is not a finalized element.", finalizedUmlElement.getName()));
-        OpaqueAction action = getOpaqueAction(finalizedUmlElement);
+        OpaqueAction action = getActivityNode(finalizedUmlElement);
         return isEndOnlyAction(action);
     }
 
@@ -1449,7 +1449,7 @@ public class SynthesisChainTracking {
     private boolean isRelatedToOriginalCompleteEvent(RedefinableElement finalizedUmlElement) {
         Verify.verify(isFinalizedUmlElement(finalizedUmlElement),
                 String.format("Element '%s' is not a finalized element.", finalizedUmlElement.getName()));
-        OpaqueAction action = getOpaqueAction(finalizedUmlElement);
+        OpaqueAction action = getActivityNode(finalizedUmlElement);
         return isCompleteAction(action);
     }
 
@@ -1697,7 +1697,7 @@ public class SynthesisChainTracking {
         Integer languageEqEffectIdx = languageEqEventInfo.getEffectIdx();
 
         // Trace to the Petri net transition.
-        TransitionTraceInfo transitionInfo = getTransitionTraceInfo(getOpaqueAction(languageEqOriginalUmlElement));
+        TransitionTraceInfo transitionInfo = getTransitionTraceInfo(getActivityNode(languageEqOriginalUmlElement));
 
         // Consider the original UML element.
         languageEqOriginalUmlElement = getOriginalUmlElement(languageEqOriginalUmlElement);
