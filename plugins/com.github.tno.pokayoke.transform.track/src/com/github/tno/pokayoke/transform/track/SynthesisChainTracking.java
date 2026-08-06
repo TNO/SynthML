@@ -1420,8 +1420,8 @@ public class SynthesisChainTracking {
     private boolean isRelatedToOriginalStartOnlyEvent(RedefinableElement finalizedUmlElement) {
         Verify.verify(isFinalizedUmlElement(finalizedUmlElement),
                 String.format("Element '%s' is not a finalized element.", finalizedUmlElement.getName()));
-        OpaqueAction action = getActivityNode(finalizedUmlElement);
-        return isStartOnlyAction(action);
+        ActivityNode node = getActivityNode(finalizedUmlElement);
+        return isStartOnlyAction(node);
     }
 
     /**
@@ -1434,8 +1434,8 @@ public class SynthesisChainTracking {
     private boolean isRelatedToOriginalEndOnlyEvent(RedefinableElement finalizedUmlElement) {
         Verify.verify(isFinalizedUmlElement(finalizedUmlElement),
                 String.format("Element '%s' is not a finalized element.", finalizedUmlElement.getName()));
-        OpaqueAction action = getActivityNode(finalizedUmlElement);
-        return isEndOnlyAction(action);
+        ActivityNode node = getActivityNode(finalizedUmlElement);
+        return isEndOnlyAction(node);
     }
 
     /**
@@ -1449,8 +1449,8 @@ public class SynthesisChainTracking {
     private boolean isRelatedToOriginalCompleteEvent(RedefinableElement finalizedUmlElement) {
         Verify.verify(isFinalizedUmlElement(finalizedUmlElement),
                 String.format("Element '%s' is not a finalized element.", finalizedUmlElement.getName()));
-        OpaqueAction action = getActivityNode(finalizedUmlElement);
-        return isCompleteAction(action);
+        ActivityNode node = getActivityNode(finalizedUmlElement);
+        return isCompleteAction(node);
     }
 
     /**
