@@ -926,7 +926,7 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Returns the Petri net transition tracing info corresponding to the input activity node, or {@code null} if no
+     * Returns the Petri net transition tracing info corresponding to the given activity node, or {@code null} if no
      * transition exists.
      *
      * @param node The activity node.
@@ -1291,7 +1291,7 @@ public class SynthesisChainTracking {
      * <ul>
      * <li>it is an opaque action including guard and effects, if it represents a start-only or end-only event</li>
      * <li>it is a call behavior, if it represents a complete event</li>
-     * <li>it is a control node, e.g., decision/merge nodes</li>
+     * <li>it is a control node, e.g., a decision/merge node</li>
      * </ul>
      * If the element belonged to an existing concrete activity, it can be of any allowed type.
      *
@@ -1299,7 +1299,7 @@ public class SynthesisChainTracking {
      * @param node The activity node.
      */
     public void addFinalizedUmlElement(RedefinableElement finalizedElement, ActivityNode node) {
-        // Sanity check: ensure that the finalized UML element and the opaque action are not present in the map.
+        // Sanity check: ensure that the finalized UML element and the activity node are not present in the map.
         Verify.verify(!finalizedElementToActivityNode.containsKey(finalizedElement), String.format(
                 "Finalized UML element '%s' is already contained in the tracker mapping.", finalizedElement.getName()));
         Verify.verify(!finalizedElementToActivityNode.values().contains(node), String.format(
@@ -1349,7 +1349,7 @@ public class SynthesisChainTracking {
                 String.format("Element '%s' is not a finalized element.", umlElement.getName()));
         ActivityNode node = finalizedElementToActivityNode.get(umlElement);
         Verify.verifyNotNull(node, String.format(
-                "Element '%s' does not have a corresponding non-finalized opaque action.", umlElement.getName()));
+                "Element '%s' does not have a corresponding non-finalized activity node.", umlElement.getName()));
         return node;
     }
 
