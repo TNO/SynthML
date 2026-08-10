@@ -952,6 +952,8 @@ public class SynthesisChainTracking {
      */
     public ActionKind getActionKind(OpaqueAction action) {
         TransitionTraceInfo transitionInfo = getTransitionTraceInfo(action);
+        Verify.verifyNotNull(transitionInfo, String
+                .format("The transition tracing information related to action '%s' is 'null'.", action.getName()));
 
         RedefinableElement umlElement = transitionInfo.getUmlElement();
 
@@ -1023,7 +1025,10 @@ public class SynthesisChainTracking {
      * @return The effect index of the related UML element, or {@code null}.
      */
     public int getEffectIdx(OpaqueAction action) {
-        return getTransitionTraceInfo(action).getEffectIdx();
+        TransitionTraceInfo transitionInfo = getTransitionTraceInfo(action);
+        Verify.verifyNotNull(transitionInfo, String
+                .format("The transition tracing information related to action '%s' is 'null'.", action.getName()));
+        return transitionInfo.getEffectIdx();
     }
 
     /**
@@ -1034,7 +1039,10 @@ public class SynthesisChainTracking {
      */
     public String getEntryGuard(ActivityNode node) {
         // Find the CIF events related to the given node.
-        Set<Event> cifEvents = getTransitionTraceInfo(node).getCifEvents();
+        TransitionTraceInfo transitionInfo = getTransitionTraceInfo(node);
+        Verify.verifyNotNull(transitionInfo,
+                String.format("The transition tracing information related to node '%s' is 'null'.", node.getName()));
+        Set<Event> cifEvents = transitionInfo.getCifEvents();
 
         // Find the start event, and get the entry guard.
         Set<String> entryGuards = cifEvents.stream().map(e -> getEventTraceInfo(e))
@@ -1071,7 +1079,10 @@ public class SynthesisChainTracking {
      * @return {@code true} if the activity node is related to a start-only transition, {@code false} otherwise.
      */
     private boolean isStartOnlyAction(ActivityNode node) {
-        return getTransitionTraceInfo(node).isStartOnlyTransition();
+        TransitionTraceInfo transitionInfo = getTransitionTraceInfo(node);
+        Verify.verifyNotNull(transitionInfo,
+                String.format("The transition tracing information related to node '%s' is 'null'.", node.getName()));
+        return transitionInfo.isStartOnlyTransition();
     }
 
     /**
@@ -1081,7 +1092,10 @@ public class SynthesisChainTracking {
      * @return {@code true} if the activity node is related to an end-only transition, {@code false} otherwise.
      */
     private boolean isEndOnlyAction(ActivityNode node) {
-        return getTransitionTraceInfo(node).isEndOnlyTransition();
+        TransitionTraceInfo transitionInfo = getTransitionTraceInfo(node);
+        Verify.verifyNotNull(transitionInfo,
+                String.format("The transition tracing information related to node '%s' is 'null'.", node.getName()));
+        return transitionInfo.isEndOnlyTransition();
     }
 
     /**
@@ -1091,7 +1105,10 @@ public class SynthesisChainTracking {
      * @return {@code true} if the activity node is related to a complete transition, {@code false} otherwise.
      */
     private boolean isCompleteAction(ActivityNode node) {
-        return getTransitionTraceInfo(node).isCompleteTransition();
+        TransitionTraceInfo transitionInfo = getTransitionTraceInfo(node);
+        Verify.verifyNotNull(transitionInfo,
+                String.format("The transition tracing information related to node '%s' is 'null'.", node.getName()));
+        return transitionInfo.isCompleteTransition();
     }
 
     /**
@@ -1705,6 +1722,9 @@ public class SynthesisChainTracking {
 
         // Trace to the Petri net transition.
         TransitionTraceInfo transitionInfo = getTransitionTraceInfo(getActivityNode(languageEqOriginalUmlElement));
+        Verify.verifyNotNull(transitionInfo,
+                String.format("The transition tracing information related to element '%s' is 'null'.",
+                        languageEqOriginalUmlElement.getName()));
 
         // Consider the original UML element.
         languageEqOriginalUmlElement = getOriginalUmlElement(languageEqOriginalUmlElement);
