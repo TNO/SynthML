@@ -11,6 +11,7 @@
 package com.github.tno.pokayoke.transform.track;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -1808,5 +1809,40 @@ public class SynthesisChainTracking {
                                 .map(e -> e.getName()).toList()));
 
         return pairedEvents;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Section dealing with name uniqueness.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /** Ensures activity nodes with the same name refer to the same original UML element. */
+    public void ensureUniqueNamesByOriginalUmlElement() {
+        // Create a map from names to a map of original UML element to activity nodes with the same name.
+        Map<String, Map<RedefinableElement, List<ActivityNode>>> namesToOriginalElementToNodes = new LinkedHashMap<>();
+        for (ActivityNode node: activity.getNodes()) {
+            namesToOriginalElementToNodes.computeIfAbsent(node.getName(), k -> new LinkedHashMap<>())
+                    .computeIfAbsent(getOriginalUmlElement(node), k -> new ArrayList<>()).add(node);
+        }
+
+        // Rename the activity nodes that refer to different original UML elements.
+        for (Map.Entry<String, Map<RedefinableElement, List<ActivityNode>>> entry: namesToOriginalElementToNodes.entrySet()) {
+            String baseName = entry.getKey();
+            Collection<List<ActivityNode>> sameNameNodes = entry.getValue().values();
+
+            // If all nodes with the same name refer to just one original UML element, do not rename.
+            if (sameNameNodes.size() <= 1) {
+                continue;
+            }
+
+            // Rename if the activity nodes refer to different original UML elements.
+            int suffix = 1;
+            for (List<ActivityNode> nodes: sameNameNodes) {
+                String uniqueName = baseName + "_" + suffix;
+                suffix++;
+                for (ActivityNode node: nodes) {
+                    node.setName(uniqueName);
+                }
+            }
+        }
     }
 }
