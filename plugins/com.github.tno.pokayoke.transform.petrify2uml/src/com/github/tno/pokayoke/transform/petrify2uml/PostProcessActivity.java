@@ -139,6 +139,7 @@ public class PostProcessActivity {
                 // Get the kind of action, and finalize the opaque action accordingly.
                 ActionKind actionKind = tracker.getActionKind(action);
                 RedefinableElement umlElement = tracker.getUmlElement(action);
+                Verify.verifyNotNull(umlElement, "Action '" + action.getName() + "' relates to a 'null' UML element.");
 
                 // Remove double underscores from UML elements' names in case they belong to a called concrete activity.
                 // Potential naming conflicts are corrected outside of the for-loop.

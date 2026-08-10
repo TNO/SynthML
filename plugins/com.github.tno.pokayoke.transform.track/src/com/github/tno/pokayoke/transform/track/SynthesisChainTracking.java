@@ -1708,6 +1708,9 @@ public class SynthesisChainTracking {
 
         // Consider the original UML element.
         languageEqOriginalUmlElement = getOriginalUmlElement(languageEqOriginalUmlElement);
+        Verify.verifyNotNull(languageEqOriginalUmlElement,
+                String.format("The original UML element related to element '%s' is 'null'.",
+                        languageEqEventInfo.getUmlElement().getName()));
 
         // If the language equivalence CIF event looks like it is part of a non-merged pattern, trace back the event
         // to its related synthesis event info, to see what it originally represented, to allow for proper comparison
