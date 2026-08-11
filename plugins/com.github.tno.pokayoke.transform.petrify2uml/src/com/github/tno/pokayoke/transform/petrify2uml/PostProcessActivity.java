@@ -327,6 +327,7 @@ public class PostProcessActivity {
         }
 
         // Ensure that there are no naming conflicts after the replacement of the double underscores.
+        // Activity nodes with the same name will still refer to the same original UML element, to ensure we can still do the maximum amount of pattern rewriting.
         tracker.ensureUniqueNamesByOriginalUmlElement();
     }
 }
