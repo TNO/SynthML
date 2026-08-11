@@ -1848,7 +1848,7 @@ public class SynthesisChainTracking {
         }
 
         // Rename the activity nodes that refer to different original UML elements.
-        for (Map.Entry<String, Map<RedefinableElement, List<ActivityNode>>> entry: namesToOriginalElementToNodes
+        for (Entry<String, Map<RedefinableElement, List<ActivityNode>>> entry: namesToOriginalElementToNodes
                 .entrySet())
         {
             String baseName = entry.getKey();
@@ -1863,10 +1863,11 @@ public class SynthesisChainTracking {
             int suffix = 1;
             for (List<ActivityNode> nodes: sameNameNodes) {
                 String uniqueName = baseName + "_" + suffix;
-                suffix++;
                 for (ActivityNode node: nodes) {
                     node.setName(uniqueName);
                 }
+
+                suffix++;
             }
         }
     }
