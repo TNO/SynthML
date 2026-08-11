@@ -1061,7 +1061,10 @@ public class SynthesisChainTracking {
      */
     public String getExitGuard(ActivityNode node) {
         // Find the CIF events related to the given node.
-        Set<Event> cifEvents = getTransitionTraceInfo(node).getCifEvents();
+        TransitionTraceInfo transitionInfo = getTransitionTraceInfo(node);
+        Verify.verifyNotNull(transitionInfo,
+                String.format("The transition tracing information related to node '%s' is 'null'.", node.getName()));
+        Set<Event> cifEvents = transitionInfo.getCifEvents();
 
         // Find the end events, and get the exit guards.
         Set<String> exitGuards = cifEvents.stream().map(e -> getEventTraceInfo(e))
