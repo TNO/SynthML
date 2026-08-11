@@ -1827,8 +1827,24 @@ public class SynthesisChainTracking {
         // Create a map from names to a map of original UML element to activity nodes with the same name.
         Map<String, Map<RedefinableElement, List<ActivityNode>>> namesToOriginalElementToNodes = new LinkedHashMap<>();
         for (ActivityNode node: activity.getNodes()) {
+            // If original UML element related to the node is 'null', the node refers to a control node or to petrify's
+            // temporary start/end nodes. We can avoid renaming them, since petrify's nodes will be deleted and control
+            // node's names will be deleted in later steps of the synthesis chain. The cast to 'RedefinableElement' is
+            // needed to call the correct version of the overloaded method 'getOriginalUmlElement', namely the version
+            // that deals with finalized UML elements.
+            RedefinableElement originalElement = getOriginalUmlElement((RedefinableElement)node);
+            if (originalElement == null) {
+                Verify.verify(
+                        node instanceof ControlNode
+                                || (node instanceof OpaqueAction action && isTemporaryPetrificationAction(action)),
+                        String.format(
+                                "Node '%s' is not a control node or a petrify's temporary action, but refers to a 'null' original UML element.",
+                                node.getName()));
+                continue;
+            }
+
             namesToOriginalElementToNodes.computeIfAbsent(node.getName(), k -> new LinkedHashMap<>())
-                    .computeIfAbsent(getOriginalUmlElement(node), k -> new ArrayList<>()).add(node);
+                    .computeIfAbsent(getOriginalUmlElement((RedefinableElement)node), k -> new ArrayList<>()).add(node);
         }
 
         // Rename the activity nodes that refer to different original UML elements.
