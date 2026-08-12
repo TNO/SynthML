@@ -1,0 +1,12 @@
+.model minimal
+.dummy  __start __end flip __loop
+.graph
+__end p3
+__loop p3
+__start p2
+flip p2
+p1 __start
+p2 __end flip
+p3 __loop
+.marking { p1 }
+.end

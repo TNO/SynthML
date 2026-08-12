@@ -46,8 +46,8 @@ import fr.lip6.move.pnml.ptnet.Transition;
  * different formalisms throughout the various steps of the synthesis chain, such as CIF event, Petri net transitions,
  * actions, etc. The UML elements of the input model and CIF events created in the first step of the synthesis chain are
  * named 'original', to distinguish them from the UML elements in the synthesized activity (named 'non-finalized' for
- * placeholder opaque actions, and 'finalized' for their finalized version, see also
- * {@link #addFinalizedUmlElement(RedefinableElement, OpaqueAction)}) and from the CIF events created for guard
+ * placeholder activity nodes, and 'finalized' for their finalized version, see also
+ * {@link #addFinalizedUmlElement(RedefinableElement, ActivityNode)}) and from the CIF events created for guard
  * computation or language equivalence check phases of the synthesis chain.
  * <p>
  * This tracking storage contains only 'global' tracing information from transformations in the synthesis chain that is
@@ -87,8 +87,8 @@ public class SynthesisChainTracking {
     /** The map from a new merge node created from a Petri net place, to its parent nodes. */
     private final Map<MergeNode, Set<ActivityNode>> newMergeNodeToParentNodes = new LinkedHashMap<>();
 
-    /** The map from the finalized UML elements to the non-finalized opaque actions they originate from. */
-    private final Map<RedefinableElement, OpaqueAction> finalizedElementToAction = new LinkedHashMap<>();
+    /** The map from the finalized UML elements to the non-finalized activity nodes they originate from. */
+    private final Map<RedefinableElement, ActivityNode> finalizedElementToActivityNode = new LinkedHashMap<>();
 
     public static enum ActionKind {
         START_OPAQUE_BEHAVIOR, END_OPAQUE_BEHAVIOR, COMPLETE_OPAQUE_BEHAVIOR, START_SHADOW, END_SHADOW, COMPLETE_SHADOW,
@@ -926,15 +926,17 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Returns the Petri net transition tracing info corresponding to the input activity node.
+     * Returns the Petri net transition tracing info corresponding to the given activity node, or {@code null} if no
+     * transition exists.
      *
      * @param node The activity node.
-     * @return The transition tracing info related to the activity node.
+     * @return The transition tracing info related to the activity node, or {@code null}.
      */
     private TransitionTraceInfo getTransitionTraceInfo(ActivityNode node) {
         Transition transition = activityNodeToTransition.get(node);
-        Verify.verifyNotNull(transition, String
-                .format("Activity node '%s' does not have a corresponding Petri net transition.", node.getName()));
+        if (transition == null) {
+            return null;
+        }
         TransitionTraceInfo transitionInfo = transitionTraceInfo.get(transition);
         Verify.verifyNotNull(transitionInfo,
                 String.format("Transition '%s' does not have any tracing info.", transition.getName().getText()));
@@ -950,6 +952,8 @@ public class SynthesisChainTracking {
      */
     public ActionKind getActionKind(OpaqueAction action) {
         TransitionTraceInfo transitionInfo = getTransitionTraceInfo(action);
+        Verify.verifyNotNull(transitionInfo, String
+                .format("The transition tracing information related to action '%s' is 'null'.", action.getName()));
 
         RedefinableElement umlElement = transitionInfo.getUmlElement();
 
@@ -1002,13 +1006,14 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Returns the UML element originally related to the opaque action, or {@code null} if no such element exists.
+     * Returns the UML element originally related to the activity node, or {@code null} if no such element exists.
      *
-     * @param action The opaque action.
+     * @param node The activity node.
      * @return The related UML element, or {@code null}.
      */
-    public RedefinableElement getUmlElement(OpaqueAction action) {
-        return getTransitionTraceInfo(action).getUmlElement();
+    public RedefinableElement getUmlElement(ActivityNode node) {
+        TransitionTraceInfo transitionInfo = getTransitionTraceInfo(node);
+        return (transitionInfo == null) ? null : transitionInfo.getUmlElement();
     }
 
     /**
@@ -1020,7 +1025,10 @@ public class SynthesisChainTracking {
      * @return The effect index of the related UML element, or {@code null}.
      */
     public int getEffectIdx(OpaqueAction action) {
-        return getTransitionTraceInfo(action).getEffectIdx();
+        TransitionTraceInfo transitionInfo = getTransitionTraceInfo(action);
+        Verify.verifyNotNull(transitionInfo, String
+                .format("The transition tracing information related to action '%s' is 'null'.", action.getName()));
+        return transitionInfo.getEffectIdx();
     }
 
     /**
@@ -1031,7 +1039,10 @@ public class SynthesisChainTracking {
      */
     public String getEntryGuard(ActivityNode node) {
         // Find the CIF events related to the given node.
-        Set<Event> cifEvents = getTransitionTraceInfo(node).getCifEvents();
+        TransitionTraceInfo transitionInfo = getTransitionTraceInfo(node);
+        Verify.verifyNotNull(transitionInfo,
+                String.format("The transition tracing information related to node '%s' is 'null'.", node.getName()));
+        Set<Event> cifEvents = transitionInfo.getCifEvents();
 
         // Find the start event, and get the entry guard.
         Set<String> entryGuards = cifEvents.stream().map(e -> getEventTraceInfo(e))
@@ -1050,7 +1061,10 @@ public class SynthesisChainTracking {
      */
     public String getExitGuard(ActivityNode node) {
         // Find the CIF events related to the given node.
-        Set<Event> cifEvents = getTransitionTraceInfo(node).getCifEvents();
+        TransitionTraceInfo transitionInfo = getTransitionTraceInfo(node);
+        Verify.verifyNotNull(transitionInfo,
+                String.format("The transition tracing information related to node '%s' is 'null'.", node.getName()));
+        Set<Event> cifEvents = transitionInfo.getCifEvents();
 
         // Find the end events, and get the exit guards.
         Set<String> exitGuards = cifEvents.stream().map(e -> getEventTraceInfo(e))
@@ -1062,33 +1076,42 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Returns {@code true} if the Petri net transition related to the opaque action is a start-only transition.
+     * Returns {@code true} if the Petri net transition related to the activity node is a start-only transition.
      *
-     * @param action The opaque action.
-     * @return {@code true} if the action is related to a start-only transition, {@code false} otherwise.
+     * @param node The activity node.
+     * @return {@code true} if the activity node is related to a start-only transition, {@code false} otherwise.
      */
-    private boolean isStartOnlyAction(OpaqueAction action) {
-        return getTransitionTraceInfo(action).isStartOnlyTransition();
+    private boolean isStartOnlyAction(ActivityNode node) {
+        TransitionTraceInfo transitionInfo = getTransitionTraceInfo(node);
+        Verify.verifyNotNull(transitionInfo,
+                String.format("The transition tracing information related to node '%s' is 'null'.", node.getName()));
+        return transitionInfo.isStartOnlyTransition();
     }
 
     /**
-     * Returns {@code true} if the Petri net transition related to the opaque action is an end-only transition.
+     * Returns {@code true} if the Petri net transition related to the activity node is an end-only transition.
      *
-     * @param action The opaque action.
-     * @return {@code true} if the action is related to an end-only transition, {@code false} otherwise.
+     * @param node The activity node.
+     * @return {@code true} if the activity node is related to an end-only transition, {@code false} otherwise.
      */
-    private boolean isEndOnlyAction(OpaqueAction action) {
-        return getTransitionTraceInfo(action).isEndOnlyTransition();
+    private boolean isEndOnlyAction(ActivityNode node) {
+        TransitionTraceInfo transitionInfo = getTransitionTraceInfo(node);
+        Verify.verifyNotNull(transitionInfo,
+                String.format("The transition tracing information related to node '%s' is 'null'.", node.getName()));
+        return transitionInfo.isEndOnlyTransition();
     }
 
     /**
-     * Returns {@code true} if the Petri net transition related to the opaque action is a complete transition.
+     * Returns {@code true} if the Petri net transition related to the activity node is a complete transition.
      *
-     * @param action The opaque action.
-     * @return {@code true} if the action is related to a complete transition, {@code false} otherwise.
+     * @param node The activity node.
+     * @return {@code true} if the activity node is related to a complete transition, {@code false} otherwise.
      */
-    private boolean isCompleteAction(OpaqueAction action) {
-        return getTransitionTraceInfo(action).isCompleteTransition();
+    private boolean isCompleteAction(ActivityNode node) {
+        TransitionTraceInfo transitionInfo = getTransitionTraceInfo(node);
+        Verify.verifyNotNull(transitionInfo,
+                String.format("The transition tracing information related to node '%s' is 'null'.", node.getName()));
+        return transitionInfo.isCompleteTransition();
     }
 
     /**
@@ -1283,26 +1306,30 @@ public class SynthesisChainTracking {
 
     /**
      * Registers that the given finalized UML element has been created, as the result of the finalization of the given
-     * opaque action. A finalized UML element represents an element belonging to the synthesized activity, and can be of
-     * two kinds:
+     * activity node. A finalized UML element represents an element belonging to the synthesized activity, and can be of
+     * three kinds if the element did not belong to an existing concrete activity:
      * <ul>
      * <li>it is an opaque action including guard and effects, if it represents a start-only or end-only event</li>
      * <li>it is a call behavior, if it represents a complete event</li>
+     * <li>it is a control node, e.g., a decision/merge node</li>
      * </ul>
+     * If the element belonged to an existing concrete activity, it can be of any allowed type.
      *
      * @param finalizedElement The finalized UML element.
-     * @param action The opaque action.
+     * @param node The activity node.
      */
-    public void addFinalizedUmlElement(RedefinableElement finalizedElement, OpaqueAction action) {
-        // Sanity check: ensure that the finalized UML element and the opaque action are not present in the map.
-        Verify.verify(!finalizedElementToAction.containsKey(finalizedElement), String.format(
+    public void addFinalizedUmlElement(RedefinableElement finalizedElement, ActivityNode node) {
+        // Sanity check: ensure that the finalized UML element and the activity node are not present in the map.
+        Verify.verify(!finalizedElementToActivityNode.containsKey(finalizedElement), String.format(
                 "Finalized UML element '%s' is already contained in the tracker mapping.", finalizedElement.getName()));
-        Verify.verify(!finalizedElementToAction.values().contains(action), String.format(
-                "Action '%s' is already contained in the finalized UML element tracker mapping.", action.getName()));
-        Verify.verify(finalizedElement instanceof OpaqueAction || finalizedElement instanceof CallBehaviorAction,
-                "Expected a finalized UML element to be either an opaque action or a call behavior action.");
+        Verify.verify(!finalizedElementToActivityNode.values().contains(node), String.format(
+                "Node '%s' is already contained in the finalized UML element tracker mapping.", node.getName()));
+        Verify.verify(
+                finalizedElement instanceof OpaqueAction || finalizedElement instanceof CallBehaviorAction
+                        || finalizedElement instanceof ControlNode,
+                "Expected a finalized UML element to be either an opaque action, a call behavior action, or a control node.");
 
-        finalizedElementToAction.put(finalizedElement, action);
+        finalizedElementToActivityNode.put(finalizedElement, node);
     }
 
     /**
@@ -1312,7 +1339,7 @@ public class SynthesisChainTracking {
      * @return {@code true} if the given UML element is a finalized element, {@code false} otherwise.
      */
     private boolean isFinalizedUmlElement(RedefinableElement umlElement) {
-        return finalizedElementToAction.containsKey(umlElement);
+        return finalizedElementToActivityNode.containsKey(umlElement);
     }
 
     /**
@@ -1327,23 +1354,23 @@ public class SynthesisChainTracking {
         Verify.verify(belongsToSynthesizedActivity(umlElement),
                 String.format("UML element '%s' does not belong to the synthesized activity.", umlElement.getName()));
 
-        OpaqueAction action = finalizedElementToAction.get(umlElement);
-        return (action == null) ? null : getUmlElement(action);
+        ActivityNode node = finalizedElementToActivityNode.get(umlElement);
+        return (node == null) ? null : getUmlElement(node);
     }
 
     /**
-     * Returns the non-finalized opaque action corresponding to the given finalized UML element.
+     * Returns the non-finalized activity node corresponding to the given finalized UML element.
      *
      * @param umlElement The finalized UML element.
-     * @return The corresponding opaque action.
+     * @return The corresponding activity node.
      */
-    private OpaqueAction getOpaqueAction(RedefinableElement umlElement) {
+    private ActivityNode getActivityNode(RedefinableElement umlElement) {
         Verify.verify(isFinalizedUmlElement(umlElement),
                 String.format("Element '%s' is not a finalized element.", umlElement.getName()));
-        OpaqueAction action = finalizedElementToAction.get(umlElement);
-        Verify.verifyNotNull(action, String.format(
-                "Element '%s' does not have a corresponding non-finalized opaque action.", umlElement.getName()));
-        return action;
+        ActivityNode node = finalizedElementToActivityNode.get(umlElement);
+        Verify.verifyNotNull(node, String.format(
+                "Element '%s' does not have a corresponding non-finalized activity node.", umlElement.getName()));
+        return node;
     }
 
     /**
@@ -1420,8 +1447,8 @@ public class SynthesisChainTracking {
     private boolean isRelatedToOriginalStartOnlyEvent(RedefinableElement finalizedUmlElement) {
         Verify.verify(isFinalizedUmlElement(finalizedUmlElement),
                 String.format("Element '%s' is not a finalized element.", finalizedUmlElement.getName()));
-        OpaqueAction action = getOpaqueAction(finalizedUmlElement);
-        return isStartOnlyAction(action);
+        ActivityNode node = getActivityNode(finalizedUmlElement);
+        return isStartOnlyAction(node);
     }
 
     /**
@@ -1434,8 +1461,8 @@ public class SynthesisChainTracking {
     private boolean isRelatedToOriginalEndOnlyEvent(RedefinableElement finalizedUmlElement) {
         Verify.verify(isFinalizedUmlElement(finalizedUmlElement),
                 String.format("Element '%s' is not a finalized element.", finalizedUmlElement.getName()));
-        OpaqueAction action = getOpaqueAction(finalizedUmlElement);
-        return isEndOnlyAction(action);
+        ActivityNode node = getActivityNode(finalizedUmlElement);
+        return isEndOnlyAction(node);
     }
 
     /**
@@ -1449,8 +1476,8 @@ public class SynthesisChainTracking {
     private boolean isRelatedToOriginalCompleteEvent(RedefinableElement finalizedUmlElement) {
         Verify.verify(isFinalizedUmlElement(finalizedUmlElement),
                 String.format("Element '%s' is not a finalized element.", finalizedUmlElement.getName()));
-        OpaqueAction action = getOpaqueAction(finalizedUmlElement);
-        return isCompleteAction(action);
+        ActivityNode node = getActivityNode(finalizedUmlElement);
+        return isCompleteAction(node);
     }
 
     /**
@@ -1697,10 +1724,16 @@ public class SynthesisChainTracking {
         Integer languageEqEffectIdx = languageEqEventInfo.getEffectIdx();
 
         // Trace to the Petri net transition.
-        TransitionTraceInfo transitionInfo = getTransitionTraceInfo(getOpaqueAction(languageEqOriginalUmlElement));
+        TransitionTraceInfo transitionInfo = getTransitionTraceInfo(getActivityNode(languageEqOriginalUmlElement));
+        Verify.verifyNotNull(transitionInfo,
+                String.format("The transition tracing information related to element '%s' is 'null'.",
+                        languageEqOriginalUmlElement.getName()));
 
         // Consider the original UML element.
         languageEqOriginalUmlElement = getOriginalUmlElement(languageEqOriginalUmlElement);
+        Verify.verifyNotNull(languageEqOriginalUmlElement,
+                String.format("The original UML element related to element '%s' is 'null'.",
+                        languageEqEventInfo.getUmlElement().getName()));
 
         // If the language equivalence CIF event looks like it is part of a non-merged pattern, trace back the event
         // to its related synthesis event info, to see what it originally represented, to allow for proper comparison
