@@ -1,62 +1,57 @@
+uncontrollable __node__OpaqueAction__56;
+uncontrollable __node__OpaqueAction__57;
 uncontrollable __node__OpaqueAction__58;
-uncontrollable __node__OpaqueAction__59;
-uncontrollable __node__OpaqueAction__60;
-uncontrollable __node__OpaqueAction__61;
-uncontrollable __node__DecisionNode__63__0;
-uncontrollable __node__DecisionNode__63__1;
-uncontrollable __node__DecisionNode__64__0;
-uncontrollable __node__DecisionNode__64__1;
+uncontrollable __node__DecisionNode__60__0;
+uncontrollable __node__DecisionNode__60__1;
+uncontrollable __node__DecisionNode__61__0;
+uncontrollable __node__DecisionNode__61__1;
+uncontrollable __node__CallBehaviorAction__63;
+uncontrollable __node__CallBehaviorAction__64;
 uncontrollable __node__MergeNode__65__0;
 uncontrollable __node__MergeNode__65__1;
-uncontrollable __node__MergeNode__66__0;
-uncontrollable __node__MergeNode__66__1;
-uncontrollable __node__CallBehaviorAction__68;
-uncontrollable __node__CallBehaviorAction__69;
+uncontrollable __node__MergeNode__65__2;
 automaton post_synthesis_chain_state_space:
-  alphabet __node__OpaqueAction__58, __node__OpaqueAction__59, __node__OpaqueAction__60, __node__OpaqueAction__61, __node__DecisionNode__63__0, __node__DecisionNode__63__1, __node__DecisionNode__64__0, __node__DecisionNode__64__1, __node__MergeNode__65__0, __node__MergeNode__65__1, __node__MergeNode__66__0, __node__MergeNode__66__1, __node__CallBehaviorAction__68, __node__CallBehaviorAction__69;
-  @state(Context: "*", Context.__controlflow__40: false, Context.__controlflow__42: false, Context.__controlflow__44: false, Context.__controlflow__45: false, Context.__controlflow__47: false, Context.__controlflow__49: false, Context.__controlflow__50: false, Context.__controlflow__51: false, Context.__controlflow__52: false, Context.__controlflow__53: false, Context.__controlflow__54: false, Context.__controlflow__55: false, Context.__controlflow__56: true, Context.done_a: false, Context.done_b: false)
+  alphabet __node__OpaqueAction__56, __node__OpaqueAction__57, __node__OpaqueAction__58, __node__DecisionNode__60__0, __node__DecisionNode__60__1, __node__DecisionNode__61__0, __node__DecisionNode__61__1, __node__CallBehaviorAction__63, __node__CallBehaviorAction__64, __node__MergeNode__65__0, __node__MergeNode__65__1, __node__MergeNode__65__2;
+  @state(Context: "*", Context.__controlflow__40: false, Context.__controlflow__42: false, Context.__controlflow__44: false, Context.__controlflow__45: false, Context.__controlflow__47: false, Context.__controlflow__49: false, Context.__controlflow__50: false, Context.__controlflow__51: false, Context.__controlflow__52: false, Context.__controlflow__53: true, Context.__controlflow__55: false, Context.done_a: false, Context.done_b: false)
   location loc1:
     initial;
-    edge __node__DecisionNode__63__0 goto loc2;
-    edge __node__DecisionNode__63__1 goto loc3;
-  @state(Context: "*", Context.__controlflow__40: true, Context.__controlflow__42: false, Context.__controlflow__44: false, Context.__controlflow__45: false, Context.__controlflow__47: false, Context.__controlflow__49: false, Context.__controlflow__50: false, Context.__controlflow__51: false, Context.__controlflow__52: false, Context.__controlflow__53: false, Context.__controlflow__54: false, Context.__controlflow__55: false, Context.__controlflow__56: false, Context.done_a: false, Context.done_b: false)
+    edge __node__DecisionNode__60__0 goto loc2;
+    edge __node__DecisionNode__60__1 goto loc3;
+  @state(Context: "*", Context.__controlflow__40: true, Context.__controlflow__42: false, Context.__controlflow__44: false, Context.__controlflow__45: false, Context.__controlflow__47: false, Context.__controlflow__49: false, Context.__controlflow__50: false, Context.__controlflow__51: false, Context.__controlflow__52: false, Context.__controlflow__53: false, Context.__controlflow__55: false, Context.done_a: false, Context.done_b: false)
   location loc2:
-    edge __node__CallBehaviorAction__68 goto loc4;
-  @state(Context: "*", Context.__controlflow__40: false, Context.__controlflow__42: true, Context.__controlflow__44: false, Context.__controlflow__45: false, Context.__controlflow__47: false, Context.__controlflow__49: false, Context.__controlflow__50: false, Context.__controlflow__51: false, Context.__controlflow__52: false, Context.__controlflow__53: false, Context.__controlflow__54: false, Context.__controlflow__55: false, Context.__controlflow__56: false, Context.done_a: false, Context.done_b: false)
+    edge __node__CallBehaviorAction__63 goto loc4;
+  @state(Context: "*", Context.__controlflow__40: false, Context.__controlflow__42: true, Context.__controlflow__44: false, Context.__controlflow__45: false, Context.__controlflow__47: false, Context.__controlflow__49: false, Context.__controlflow__50: false, Context.__controlflow__51: false, Context.__controlflow__52: false, Context.__controlflow__53: false, Context.__controlflow__55: false, Context.done_a: false, Context.done_b: false)
   location loc3:
-    edge __node__OpaqueAction__59 goto loc5;
-  @state(Context: "*", Context.__controlflow__40: false, Context.__controlflow__42: false, Context.__controlflow__44: true, Context.__controlflow__45: false, Context.__controlflow__47: false, Context.__controlflow__49: false, Context.__controlflow__50: false, Context.__controlflow__51: false, Context.__controlflow__52: false, Context.__controlflow__53: false, Context.__controlflow__54: false, Context.__controlflow__55: false, Context.__controlflow__56: false, Context.done_a: true, Context.done_b: false)
+    edge __node__OpaqueAction__57 goto loc5;
+  @state(Context: "*", Context.__controlflow__40: false, Context.__controlflow__42: false, Context.__controlflow__44: true, Context.__controlflow__45: false, Context.__controlflow__47: false, Context.__controlflow__49: false, Context.__controlflow__50: false, Context.__controlflow__51: false, Context.__controlflow__52: false, Context.__controlflow__53: false, Context.__controlflow__55: false, Context.done_a: true, Context.done_b: false)
   location loc4:
-    edge __node__OpaqueAction__58 goto loc6;
-  @state(Context: "*", Context.__controlflow__40: false, Context.__controlflow__42: false, Context.__controlflow__44: false, Context.__controlflow__45: false, Context.__controlflow__47: false, Context.__controlflow__49: true, Context.__controlflow__50: false, Context.__controlflow__51: false, Context.__controlflow__52: false, Context.__controlflow__53: false, Context.__controlflow__54: false, Context.__controlflow__55: false, Context.__controlflow__56: false, Context.done_a: false, Context.done_b: false)
+    edge __node__OpaqueAction__56 goto loc6;
+  @state(Context: "*", Context.__controlflow__40: false, Context.__controlflow__42: false, Context.__controlflow__44: false, Context.__controlflow__45: false, Context.__controlflow__47: false, Context.__controlflow__49: true, Context.__controlflow__50: false, Context.__controlflow__51: false, Context.__controlflow__52: false, Context.__controlflow__53: false, Context.__controlflow__55: false, Context.done_a: false, Context.done_b: false)
   location loc5:
-    edge __node__DecisionNode__64__0 goto loc7;
-    edge __node__DecisionNode__64__1 goto loc8;
-  @state(Context: "*", Context.__controlflow__40: false, Context.__controlflow__42: false, Context.__controlflow__44: false, Context.__controlflow__45: false, Context.__controlflow__47: false, Context.__controlflow__49: false, Context.__controlflow__50: false, Context.__controlflow__51: true, Context.__controlflow__52: false, Context.__controlflow__53: false, Context.__controlflow__54: false, Context.__controlflow__55: false, Context.__controlflow__56: false, Context.done_a: true, Context.done_b: false)
+    edge __node__DecisionNode__61__0 goto loc7;
+    edge __node__DecisionNode__61__1 goto loc8;
+  @state(Context: "*", Context.__controlflow__40: false, Context.__controlflow__42: false, Context.__controlflow__44: false, Context.__controlflow__45: false, Context.__controlflow__47: false, Context.__controlflow__49: false, Context.__controlflow__50: false, Context.__controlflow__51: true, Context.__controlflow__52: false, Context.__controlflow__53: false, Context.__controlflow__55: false, Context.done_a: true, Context.done_b: false)
   location loc6:
-    edge __node__MergeNode__65__1 goto loc9;
-  @state(Context: "*", Context.__controlflow__40: false, Context.__controlflow__42: false, Context.__controlflow__44: false, Context.__controlflow__45: true, Context.__controlflow__47: false, Context.__controlflow__49: false, Context.__controlflow__50: false, Context.__controlflow__51: false, Context.__controlflow__52: false, Context.__controlflow__53: false, Context.__controlflow__54: false, Context.__controlflow__55: false, Context.__controlflow__56: false, Context.done_a: false, Context.done_b: false)
+    edge __node__MergeNode__65__2 goto loc9;
+  @state(Context: "*", Context.__controlflow__40: false, Context.__controlflow__42: false, Context.__controlflow__44: false, Context.__controlflow__45: true, Context.__controlflow__47: false, Context.__controlflow__49: false, Context.__controlflow__50: false, Context.__controlflow__51: false, Context.__controlflow__52: false, Context.__controlflow__53: false, Context.__controlflow__55: false, Context.done_a: false, Context.done_b: false)
   location loc7:
-    edge __node__CallBehaviorAction__69 goto loc10;
-  @state(Context: "*", Context.__controlflow__40: false, Context.__controlflow__42: false, Context.__controlflow__44: false, Context.__controlflow__45: false, Context.__controlflow__47: true, Context.__controlflow__49: false, Context.__controlflow__50: false, Context.__controlflow__51: false, Context.__controlflow__52: false, Context.__controlflow__53: false, Context.__controlflow__54: false, Context.__controlflow__55: false, Context.__controlflow__56: false, Context.done_a: false, Context.done_b: false)
+    edge __node__CallBehaviorAction__64 goto loc10;
+  @state(Context: "*", Context.__controlflow__40: false, Context.__controlflow__42: false, Context.__controlflow__44: false, Context.__controlflow__45: false, Context.__controlflow__47: true, Context.__controlflow__49: false, Context.__controlflow__50: false, Context.__controlflow__51: false, Context.__controlflow__52: false, Context.__controlflow__53: false, Context.__controlflow__55: false, Context.done_a: false, Context.done_b: false)
   location loc8:
-    edge __node__OpaqueAction__61 goto loc11;
-  @state(Context: "*", Context.__controlflow__40: false, Context.__controlflow__42: false, Context.__controlflow__44: false, Context.__controlflow__45: false, Context.__controlflow__47: false, Context.__controlflow__49: false, Context.__controlflow__50: false, Context.__controlflow__51: false, Context.__controlflow__52: true, Context.__controlflow__53: false, Context.__controlflow__54: false, Context.__controlflow__55: false, Context.__controlflow__56: false, Context.done_a: true, Context.done_b: false)
+    edge __node__MergeNode__65__0 goto loc11;
+  @state(Context: "*", Context.__controlflow__40: false, Context.__controlflow__42: false, Context.__controlflow__44: false, Context.__controlflow__45: false, Context.__controlflow__47: false, Context.__controlflow__49: false, Context.__controlflow__50: false, Context.__controlflow__51: false, Context.__controlflow__52: false, Context.__controlflow__53: false, Context.__controlflow__55: true, Context.done_a: true, Context.done_b: false)
   location loc9:
-    edge __node__OpaqueAction__60 goto loc12;
-  @state(Context: "*", Context.__controlflow__40: false, Context.__controlflow__42: false, Context.__controlflow__44: false, Context.__controlflow__45: false, Context.__controlflow__47: false, Context.__controlflow__49: false, Context.__controlflow__50: true, Context.__controlflow__51: false, Context.__controlflow__52: false, Context.__controlflow__53: false, Context.__controlflow__54: false, Context.__controlflow__55: false, Context.__controlflow__56: false, Context.done_a: true, Context.done_b: false)
+    edge __node__OpaqueAction__58 goto loc12;
+  @state(Context: "*", Context.__controlflow__40: false, Context.__controlflow__42: false, Context.__controlflow__44: false, Context.__controlflow__45: false, Context.__controlflow__47: false, Context.__controlflow__49: false, Context.__controlflow__50: true, Context.__controlflow__51: false, Context.__controlflow__52: false, Context.__controlflow__53: false, Context.__controlflow__55: false, Context.done_a: true, Context.done_b: false)
   location loc10:
-    edge __node__MergeNode__65__0 goto loc9;
-  @state(Context: "*", Context.__controlflow__40: false, Context.__controlflow__42: false, Context.__controlflow__44: false, Context.__controlflow__45: false, Context.__controlflow__47: false, Context.__controlflow__49: false, Context.__controlflow__50: false, Context.__controlflow__51: false, Context.__controlflow__52: false, Context.__controlflow__53: true, Context.__controlflow__54: false, Context.__controlflow__55: false, Context.__controlflow__56: false, Context.done_a: false, Context.done_b: true)
+    edge __node__MergeNode__65__1 goto loc9;
+  @state(Context: "*", Context.__controlflow__40: false, Context.__controlflow__42: false, Context.__controlflow__44: false, Context.__controlflow__45: false, Context.__controlflow__47: false, Context.__controlflow__49: false, Context.__controlflow__50: false, Context.__controlflow__51: false, Context.__controlflow__52: false, Context.__controlflow__53: false, Context.__controlflow__55: true, Context.done_a: false, Context.done_b: false)
   location loc11:
-    edge __node__MergeNode__66__0 goto loc13;
-  @state(Context: "*", Context.__controlflow__40: false, Context.__controlflow__42: false, Context.__controlflow__44: false, Context.__controlflow__45: false, Context.__controlflow__47: false, Context.__controlflow__49: false, Context.__controlflow__50: false, Context.__controlflow__51: false, Context.__controlflow__52: false, Context.__controlflow__53: false, Context.__controlflow__54: true, Context.__controlflow__55: false, Context.__controlflow__56: false, Context.done_a: true, Context.done_b: true)
+    edge __node__OpaqueAction__58 goto loc13;
+  @state(Context: "*", Context.__controlflow__40: false, Context.__controlflow__42: false, Context.__controlflow__44: false, Context.__controlflow__45: false, Context.__controlflow__47: false, Context.__controlflow__49: false, Context.__controlflow__50: false, Context.__controlflow__51: false, Context.__controlflow__52: true, Context.__controlflow__53: false, Context.__controlflow__55: false, Context.done_a: true, Context.done_b: true)
   location loc12:
-    edge __node__MergeNode__66__1 goto loc14;
-  @state(Context: "*", Context.__controlflow__40: false, Context.__controlflow__42: false, Context.__controlflow__44: false, Context.__controlflow__45: false, Context.__controlflow__47: false, Context.__controlflow__49: false, Context.__controlflow__50: false, Context.__controlflow__51: false, Context.__controlflow__52: false, Context.__controlflow__53: false, Context.__controlflow__54: false, Context.__controlflow__55: true, Context.__controlflow__56: false, Context.done_a: false, Context.done_b: true)
-  location loc13:
     marked;
-  @state(Context: "*", Context.__controlflow__40: false, Context.__controlflow__42: false, Context.__controlflow__44: false, Context.__controlflow__45: false, Context.__controlflow__47: false, Context.__controlflow__49: false, Context.__controlflow__50: false, Context.__controlflow__51: false, Context.__controlflow__52: false, Context.__controlflow__53: false, Context.__controlflow__54: false, Context.__controlflow__55: true, Context.__controlflow__56: false, Context.done_a: true, Context.done_b: true)
-  location loc14:
+  @state(Context: "*", Context.__controlflow__40: false, Context.__controlflow__42: false, Context.__controlflow__44: false, Context.__controlflow__45: false, Context.__controlflow__47: false, Context.__controlflow__49: false, Context.__controlflow__50: false, Context.__controlflow__51: false, Context.__controlflow__52: true, Context.__controlflow__53: false, Context.__controlflow__55: false, Context.done_a: false, Context.done_b: true)
+  location loc13:
     marked;
 end

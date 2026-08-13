@@ -34,7 +34,7 @@
         <body>field := true</body>
         <body>field := false</body>
       </ownedBehavior>
-      <ownedBehavior xmi:type="uml:Activity" xmi:id="14" name="Main" postcondition="20" precondition="16" node="30 31 32 33 34 35">
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="14" name="Main" postcondition="20" precondition="16" node="29 30 31 32 33">
         <ownedComment xmi:id="15">
           <body>Original-ID-Path:8</body>
         </ownedComment>
@@ -62,31 +62,29 @@
             <body>field</body>
           </specification>
         </ownedRule>
-        <edge xmi:type="uml:ControlFlow" xmi:id="24" name="action/1__to__Merge__p3" target="31" source="35"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="25" name="action__to__Merge__p3" target="31" source="34"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="26" name="Decision__p3__to__action" target="34" source="32"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="27" name="Merge__p3__to__Decision__p3" target="32" source="31"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="28" name="Decision__p3__to__FinalNode__p4" target="33" source="32"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="29" name="InitialNode__p1__to__action_2" target="35" source="30"/>
-        <node xmi:type="uml:InitialNode" xmi:id="30" name="InitialNode__p1" outgoing="29"/>
-        <node xmi:type="uml:MergeNode" xmi:id="31" name="Merge__p3" incoming="24 25" outgoing="27"/>
-        <node xmi:type="uml:DecisionNode" xmi:id="32" name="Decision__p3" incoming="27" outgoing="26 28"/>
-        <node xmi:type="uml:ActivityFinalNode" xmi:id="33" name="FinalNode__p4" incoming="28"/>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="34" name="action_1" incoming="26" outgoing="25" behavior="12"/>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="35" name="action_2" incoming="29" outgoing="24" behavior="12"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="24" name="Decision__p3__to__action" target="33" source="30"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="25" name="Merge__p3__to__Decision__p3" target="30" source="32"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="26" name="Decision__p3__to__FinalNode__p4" target="31" source="30"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="27" name="InitialNode__p1__to__action" target="33" source="29"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="28" target="32" source="33"/>
+        <node xmi:type="uml:InitialNode" xmi:id="29" name="InitialNode__p1" outgoing="27"/>
+        <node xmi:type="uml:DecisionNode" xmi:id="30" name="Decision__p3" incoming="25" outgoing="24 26"/>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="31" name="FinalNode__p4" incoming="26"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="32" name="action" incoming="28" outgoing="25" behavior="12"/>
+        <node xmi:type="uml:MergeNode" xmi:id="33" name="Merge__p3" incoming="27 24" outgoing="28"/>
       </ownedBehavior>
     </packagedElement>
-    <profileApplication xmi:id="36">
-      <eAnnotations xmi:id="37" source="http://www.eclipse.org/uml2/2.0.0/UML">
+    <profileApplication xmi:id="34">
+      <eAnnotations xmi:id="35" source="http://www.eclipse.org/uml2/2.0.0/UML">
         <references xmi:type="ecore:EPackage" href="https://github.com/TNO/SynthML/#/"/>
       </eAnnotations>
       <appliedProfile href="platform:/plugin/com.github.tno.synthml.uml.profile.plugin/model/synthml.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
     </profileApplication>
   </uml:Model>
-  <SynthML:FormalElement xmi:id="38" guard="true" base_RedefinableElement="12" atomic="true">
+  <SynthML:FormalElement xmi:id="36" guard="true" base_RedefinableElement="12" atomic="true">
     <effects>field := true</effects>
     <effects>field := false</effects>
   </SynthML:FormalElement>
-  <SynthML:SynthesisPrecondition xmi:id="39" base_Constraint="16"/>
-  <SynthML:Postcondition xmi:id="40" base_Constraint="20"/>
+  <SynthML:SynthesisPrecondition xmi:id="37" base_Constraint="16"/>
+  <SynthML:Postcondition xmi:id="38" base_Constraint="20"/>
 </xmi:XMI>
