@@ -1,0 +1,32 @@
+controllable flip;
+uncontrollable flip__result_1;
+uncontrollable flip__result_2;
+plant automaton Class1:
+  disc bool val in any;
+  disc int[0..1] __activeAction;
+  alg bool precondition = true;
+  alg bool __precondition = precondition;
+  alg bool postcondition = val;
+  alg bool __postcondition_without_structure__activeAction = __activeAction = 0;
+  alg bool __postcondition_without_structure = postcondition and __postcondition_without_structure__activeAction;
+  alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure;
+  initial __precondition;
+  marked __postcondition_with_structure;
+  location:
+    initial;
+    marked;
+    edge flip when true, __activeAction = 0 do __activeAction := 1;
+    edge flip__result_1 when __activeAction = 1 do val := true, __activeAction := 0;
+    edge flip__result_2 when __activeAction = 1 do val := false, __activeAction := 0;
+end
+supervisor automaton sup:
+  alphabet flip;
+  location:
+    initial;
+    marked;
+    edge flip when true;
+end
+supervisor invariant Class1.__postcondition_without_structure disables flip;
+supervisor invariant Class1.__postcondition_without_structure disables flip__result_1;
+supervisor invariant Class1.__postcondition_without_structure disables flip__result_2;

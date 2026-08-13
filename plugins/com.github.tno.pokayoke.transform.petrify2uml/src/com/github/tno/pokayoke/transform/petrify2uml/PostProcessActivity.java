@@ -138,6 +138,7 @@ public class PostProcessActivity {
                 // Get the kind of action, and finalize the opaque action accordingly.
                 ActionKind actionKind = tracker.getActionKind(action);
                 RedefinableElement umlElement = tracker.getUmlElement(action);
+                Verify.verifyNotNull(umlElement, "Action '" + action.getName() + "' relates to a 'null' UML element.");
 
                 // Remove double underscores from UML elements' names in case they belong to a called concrete activity.
                 // Potential naming conflicts are corrected outside of the for-loop.
@@ -319,9 +320,12 @@ public class PostProcessActivity {
                         throw new RuntimeException("Found unexpected action kind: " + actionKind);
                     }
                 }
-            } else if (!(node instanceof DecisionNode || node instanceof MergeNode || node instanceof JoinNode
-                    || node instanceof ForkNode || node instanceof InitialNode || node instanceof ActivityFinalNode))
+            } else if (node instanceof DecisionNode || node instanceof MergeNode || node instanceof JoinNode
+                    || node instanceof ForkNode || node instanceof InitialNode || node instanceof ActivityFinalNode)
             {
+                // Store the control node in the synthesis chain tracker.
+                tracker.addFinalizedUmlElement(node, node);
+            } else {
                 throw new RuntimeException("Found unexpected node type: " + node.getClass().getSimpleName());
             }
         }
