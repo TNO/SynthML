@@ -388,12 +388,12 @@
         <node xmi:type="uml:MergeNode" xmi:id="153" name="Merge__p7" incoming="143 144" outgoing="145"/>
         <node xmi:type="uml:MergeNode" xmi:id="154" name="Merge__p8" incoming="146 147 148" outgoing="149"/>
         <node xmi:type="uml:ActivityFinalNode" xmi:id="155" name="FinalNode__p9" incoming="149"/>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="156" name="incr1_1" incoming="145" outgoing="146" behavior="41"/>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="157" name="incr1_2" incoming="139" outgoing="143" behavior="41"/>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="158" name="incr1_3" incoming="137" outgoing="142" behavior="41"/>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="159" name="incr2_1" incoming="142" outgoing="148" behavior="44"/>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="160" name="incr2_2" incoming="140" outgoing="147" behavior="44"/>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="161" name="incr2_3" incoming="138" outgoing="144" behavior="44"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="156" name="incr1" incoming="145" outgoing="146" behavior="41"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="157" name="incr1" incoming="139" outgoing="143" behavior="41"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="158" name="incr1" incoming="137" outgoing="142" behavior="41"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="159" name="incr2" incoming="142" outgoing="148" behavior="44"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="160" name="incr2" incoming="140" outgoing="147" behavior="44"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="161" name="incr2" incoming="138" outgoing="144" behavior="44"/>
         <node xmi:type="uml:CallBehaviorAction" xmi:id="162" name="initialize" incoming="150" outgoing="141" behavior="38"/>
       </ownedBehavior>
       <ownedBehavior xmi:type="uml:Activity" xmi:id="163" name="goToFive" isAbstract="true" postcondition="172" precondition="166">

@@ -11,6 +11,7 @@
 package com.github.tno.pokayoke.transform.track;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -1124,7 +1125,7 @@ public class SynthesisChainTracking {
         Set<Transition> transitionsToRemove = new LinkedHashSet<>();
         for (Entry<ActivityNode, Transition> entry: activityNodeToTransition.entrySet()) {
             if (entry.getKey() instanceof OpaqueAction action
-                    && (action.getName().contains("__start") || action.getName().contains("__end")))
+                    && (action.getName().equals("__start") || action.getName().equals("__end")))
             {
                 actionsToRemove.add(action);
                 transitionsToRemove.add(entry.getValue());
@@ -1134,6 +1135,13 @@ public class SynthesisChainTracking {
         // Sanity check: actions with double underscores in their names should be temporary petrification actions.
         Verify.verify(actionsToRemove.stream().allMatch(a -> isTemporaryPetrificationAction(a)),
                 "Found non-temporary actions with double underscore in their name.");
+
+        // Sanity check: the temporary actions should be called '__start' and '__end'. There can be more than two
+        // temporary actions, depending on the activity structure.
+        Verify.verify(
+                actionsToRemove.stream().map(a -> a.getName()).collect(Collectors.toSet())
+                        .equals(Set.of("__start", "__end")),
+                "Expected temporary petrification actions to be present, and called '__start' and '__end'.");
 
         // Remove temporary actions.
         activityNodeToTransition.keySet().removeAll(actionsToRemove);
@@ -1298,6 +1306,60 @@ public class SynthesisChainTracking {
         newMergeNodeToParentNodes.values().forEach(v -> v.removeAll(nodesToRemove));
         atomicNonDeterministicEventTraceInfoMap.keySet().removeAll(eventsToRemove);
         atomicNonDeterministicEventTraceInfoMap.values().stream().forEach(v -> v.keySet().removeAll(eventsToRemove));
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Section dealing with name uniqueness, between non-finalized and finalized UML elements.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /** Ensures activity nodes with the same name refer to the same original UML element. */
+    public void ensureUniqueNamesByOriginalUmlElement() {
+        // Create a map from names to a map of original UML element to activity nodes with the same name.
+        Map<String, Map<RedefinableElement, List<ActivityNode>>> namesToOriginalElementToNodes = new LinkedHashMap<>();
+        for (ActivityNode node: activity.getNodes()) {
+            // If original UML element related to the node is 'null', the node refers to a control node or to Petrify's
+            // temporary start/end nodes. We can avoid renaming them, since Petrify's nodes will be deleted and control
+            // node's names will be deleted in later steps of the synthesis chain. The cast to 'RedefinableElement' is
+            // needed to call the correct version of the overloaded method 'getOriginalUmlElement', namely the version
+            // that deals with finalized UML elements.
+            RedefinableElement originalElement = getOriginalUmlElement((RedefinableElement)node);
+            if (originalElement == null) {
+                Verify.verify(
+                        node instanceof ControlNode
+                                || (node instanceof OpaqueAction action && isTemporaryPetrificationAction(action)),
+                        String.format(
+                                "Node '%s' is not a control node or a Petrify's temporary action, but refers to a 'null' original UML element.",
+                                node.getName()));
+                continue;
+            }
+
+            namesToOriginalElementToNodes.computeIfAbsent(node.getName(), k -> new LinkedHashMap<>())
+                    .computeIfAbsent(getOriginalUmlElement((RedefinableElement)node), k -> new ArrayList<>()).add(node);
+        }
+
+        // Rename the activity nodes that refer to different original UML elements.
+        for (Entry<String, Map<RedefinableElement, List<ActivityNode>>> entry: namesToOriginalElementToNodes
+                .entrySet())
+        {
+            String baseName = entry.getKey();
+            Collection<List<ActivityNode>> sameNameNodes = entry.getValue().values();
+
+            // If all nodes with the same name refer to just one original UML element, do not rename.
+            if (sameNameNodes.size() <= 1) {
+                continue;
+            }
+
+            // Rename if the activity nodes refer to different original UML elements.
+            int suffix = 1;
+            for (List<ActivityNode> nodes: sameNameNodes) {
+                String uniqueName = baseName + "_" + suffix;
+                for (ActivityNode node: nodes) {
+                    node.setName(uniqueName);
+                }
+
+                suffix++;
+            }
+        }
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

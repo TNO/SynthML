@@ -212,10 +212,10 @@
         <node xmi:type="uml:MergeNode" xmi:id="88" incoming="73 74 75 76" outgoing="77"/>
         <node xmi:type="uml:ActivityFinalNode" xmi:id="89" incoming="77"/>
         <node xmi:type="uml:CallBehaviorAction" xmi:id="90" name="flip" incoming="54" outgoing="64" behavior="42"/>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="91" name="left_1" incoming="60" outgoing="75" behavior="38"/>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="92" name="left_2" incoming="56" outgoing="65" behavior="38"/>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="93" name="right_1" incoming="62" outgoing="76" behavior="40"/>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="94" name="right_2" incoming="58" outgoing="66" behavior="40"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="91" name="left" incoming="60" outgoing="75" behavior="38"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="92" name="left" incoming="56" outgoing="65" behavior="38"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="93" name="right" incoming="62" outgoing="76" behavior="40"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="94" name="right" incoming="58" outgoing="66" behavior="40"/>
       </ownedBehavior>
     </packagedElement>
     <profileApplication xmi:id="95">

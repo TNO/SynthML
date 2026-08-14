@@ -29,7 +29,6 @@ import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.UMLFactory;
 
 import com.github.tno.pokayoke.transform.common.ExprHelper;
-import com.github.tno.pokayoke.transform.common.NameHelper;
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.DoubleMergePattern;
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.EquivalentActionsIntoMergePattern;
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.RedundantDecisionForkMergePattern;
@@ -332,6 +331,8 @@ public class PostProcessActivity {
         }
 
         // Ensure that there are no naming conflicts after the replacement of the double underscores.
-        NameHelper.ensureUniqueNameForNodesAndEdges(activity);
+        // Activity nodes with the same name will still refer to the same original UML element, to ensure we can still
+        // do the maximum amount of pattern rewriting.
+        tracker.ensureUniqueNamesByOriginalUmlElement();
     }
 }

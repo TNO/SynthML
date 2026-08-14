@@ -413,12 +413,12 @@
         <node xmi:type="uml:MergeNode" xmi:id="158" incoming="147 148" outgoing="149"/>
         <node xmi:type="uml:MergeNode" xmi:id="159" incoming="150 151 152" outgoing="153"/>
         <node xmi:type="uml:ActivityFinalNode" xmi:id="160" incoming="153"/>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="161" name="incr1_1" incoming="149" outgoing="150" behavior="41"/>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="162" name="incr1_2" incoming="141" outgoing="147" behavior="41"/>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="163" name="incr1_3" incoming="137" outgoing="146" behavior="41"/>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="164" name="incr2_1" incoming="146" outgoing="152" behavior="44"/>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="165" name="incr2_2" incoming="143" outgoing="151" behavior="44"/>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="166" name="incr2_3" incoming="139" outgoing="148" behavior="44"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="161" name="incr1" incoming="149" outgoing="150" behavior="41"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="162" name="incr1" incoming="141" outgoing="147" behavior="41"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="163" name="incr1" incoming="137" outgoing="146" behavior="41"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="164" name="incr2" incoming="146" outgoing="152" behavior="44"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="165" name="incr2" incoming="143" outgoing="151" behavior="44"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="166" name="incr2" incoming="139" outgoing="148" behavior="44"/>
         <node xmi:type="uml:CallBehaviorAction" xmi:id="167" name="initialize" incoming="154" outgoing="145" behavior="38"/>
       </ownedBehavior>
       <ownedBehavior xmi:type="uml:Activity" xmi:id="168" name="goToFive" isAbstract="true" postcondition="177" precondition="171">
