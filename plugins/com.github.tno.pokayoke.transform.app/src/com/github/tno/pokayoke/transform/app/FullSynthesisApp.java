@@ -409,8 +409,12 @@ public class FullSynthesisApp {
         // Load state space post-synthesis chain file.
         Specification stateSpacePostSynthChain = CifFileHelper.loadCifSpec(cifStateSpacePath);
 
-        // Get internal event sets for the synthesis and language equivalence translations.
+        // Get internal event sets for the synthesis translation, including the events of any concrete activity nodes
+        // that were restored.
         Set<Event> synthesisInternalEvents = tracker.getInternalEvents(UmlToCifTranslationPurpose.SYNTHESIS);
+        synthesisInternalEvents.addAll(tracker.getRestoredDecisionMergeNodeEvents());
+
+        // Get internal event sets for the language equivalence translation.
         Set<Event> languageEqInternalEvents = tracker
                 .getInternalEvents(UmlToCifTranslationPurpose.LANGUAGE_EQUIVALENCE);
 
