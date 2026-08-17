@@ -1813,9 +1813,9 @@ public class SynthesisChainTracking {
                 String.format("The original UML element related to element '%s' is 'null'.",
                         languageEqEventInfo.getUmlElement().getName()));
 
-        // If the language equivalence CIF event looks like it is part of a non-merged pattern, trace back the event
-        // to its related synthesis event info, to see what it originally represented, to allow for proper comparison
-        // against the synthesis CIF events, which are already original.
+        // If the language equivalence CIF event does not refer to a concrete activity's node and looks like it is part
+        // of a non-merged pattern, trace back the event to its related synthesis event info, to see what it originally
+        // represented, to allow for proper comparison against the synthesis CIF events, which are already original.
         //
         // Only if the language equivalence CIF event is non-atomic or deterministic, trace it back and update the
         // attributes. This avoids tracing back for the events related to atomic non-deterministic original opaque
@@ -1841,8 +1841,9 @@ public class SynthesisChainTracking {
         // Non-atomic start     start                  Non-merged (traces to single event) start + end  (need to trace)
         // Non-atomic end       end                    Non-merged (traces to single event) start + end  (need to trace)
         // @formatter:on
-        if (!transitionInfo.isMergedTransition() && (!PokaYokeUmlProfileUtil.isAtomic(languageEqOriginalUmlElement)
-                || PokaYokeUmlProfileUtil.isDeterministic(languageEqOriginalUmlElement)))
+        if (!belongsToExistingConcreteActivity(languageEqOriginalUmlElement) && !transitionInfo.isMergedTransition()
+                && (!PokaYokeUmlProfileUtil.isAtomic(languageEqOriginalUmlElement)
+                        || PokaYokeUmlProfileUtil.isDeterministic(languageEqOriginalUmlElement)))
         {
             Event languageEqSynthesisEvent = transitionInfo.getSingleCifEvent();
             EventTraceInfo thatSynthesisEventInfo = getEventTraceInfo(languageEqSynthesisEvent);
