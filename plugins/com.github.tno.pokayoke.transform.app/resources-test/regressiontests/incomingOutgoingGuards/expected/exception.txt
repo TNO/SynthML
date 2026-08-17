@@ -1,1 +1,0 @@
-ERROR: Language equivalence check failed: state space 'synthesis_state_space' contains events that are neither internal nor external: __node__MergeNode__64__1, __node__DecisionNode__66__1.
