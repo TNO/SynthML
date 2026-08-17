@@ -91,6 +91,9 @@ public class SynthesisChainTracking {
     /** The map from the finalized UML elements to the non-finalized activity nodes they originate from. */
     private final Map<RedefinableElement, ActivityNode> finalizedElementToActivityNode = new LinkedHashMap<>();
 
+    /** The set containing the events updated after the restoring of decision and merge nodes of concrete activities. */
+    private final Set<Event> restoredDecisionMergeNodeEvents = new LinkedHashSet<>();
+
     public static enum ActionKind {
         START_OPAQUE_BEHAVIOR, END_OPAQUE_BEHAVIOR, COMPLETE_OPAQUE_BEHAVIOR, START_SHADOW, END_SHADOW, COMPLETE_SHADOW,
         START_OPAQUE_ACTION, END_OPAQUE_ACTION, COMPLETE_OPAQUE_ACTION, START_CALL_BEHAVIOR, END_CALL_BEHAVIOR,
