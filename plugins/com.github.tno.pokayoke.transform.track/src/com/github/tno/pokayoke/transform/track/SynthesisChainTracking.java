@@ -357,8 +357,8 @@ public class SynthesisChainTracking {
             cifEvents = getStartEventMap(purpose).entrySet().stream()
                     .filter(e -> e.getValue() instanceof RedefinableElement element
                             // Check the original UML element.
-                            && getOriginalUmlElement(element) != null
-                            && getOriginalUmlElement(element).equals(umlElement))
+                            && getOriginalUmlElementForFinalizedElement(element) != null
+                            && getOriginalUmlElementForFinalizedElement(element).equals(umlElement))
                     .map(Map.Entry::getKey).toList();
         }
         return cifEvents;
@@ -1322,7 +1322,7 @@ public class SynthesisChainTracking {
             // node's names will be deleted in later steps of the synthesis chain. The cast to 'RedefinableElement' is
             // needed to call the correct version of the overloaded method 'getOriginalUmlElement', namely the version
             // that deals with finalized UML elements.
-            RedefinableElement originalElement = getOriginalUmlElement((RedefinableElement)node);
+            RedefinableElement originalElement = getOriginalUmlElementForFinalizedElement(node);
             if (originalElement == null) {
                 Verify.verify(
                         node instanceof ControlNode
@@ -1334,7 +1334,7 @@ public class SynthesisChainTracking {
             }
 
             namesToOriginalElementToNodes.computeIfAbsent(node.getName(), k -> new LinkedHashMap<>())
-                    .computeIfAbsent(getOriginalUmlElement((RedefinableElement)node), k -> new ArrayList<>()).add(node);
+                    .computeIfAbsent(getOriginalUmlElementForFinalizedElement(node), k -> new ArrayList<>()).add(node);
         }
 
         // Rename the activity nodes that refer to different original UML elements.
@@ -1411,7 +1411,7 @@ public class SynthesisChainTracking {
      * @param umlElement The UML element in the synthesized activity.
      * @return The related original UML element, or {@code null} if no such UML element exists.
      */
-    private RedefinableElement getOriginalUmlElement(RedefinableElement umlElement) {
+    private RedefinableElement getOriginalUmlElementForFinalizedElement(RedefinableElement umlElement) {
         // Precondition check.
         Verify.verify(belongsToSynthesizedActivity(umlElement),
                 String.format("UML element '%s' does not belong to the synthesized activity.", umlElement.getName()));
@@ -1563,7 +1563,7 @@ public class SynthesisChainTracking {
         Verify.verifyNotNull(finalizedEventInfo, String.format(
                 "Event '%s' does not have any tracing info referring to the finalized UML model.", cifEvent.getName()));
         RedefinableElement finalizedUmlElement = finalizedEventInfo.getUmlElement();
-        RedefinableElement originalUmlElement = getOriginalUmlElement(finalizedUmlElement);
+        RedefinableElement originalUmlElement = getOriginalUmlElementForFinalizedElement(finalizedUmlElement);
         return (originalUmlElement instanceof OpaqueBehavior || originalUmlElement instanceof OpaqueAction
                 || originalUmlElement instanceof CallBehaviorAction)
                 && isRelatedToStartOfOriginalElement(finalizedEventInfo);
@@ -1592,7 +1592,8 @@ public class SynthesisChainTracking {
         // Filter to only events with given translation purpose.
         e.getValue().getTranslationPurpose().equals(purpose)
                 // Filter to only redefinable elements (avoid 'null' for control nodes).
-                && getOriginalUmlElement(e.getValue().getUmlElement()) instanceof RedefinableElement umlElement
+                && getOriginalUmlElementForFinalizedElement(
+                        e.getValue().getUmlElement()) instanceof RedefinableElement umlElement
                 // Filter to only UML elements that are equal to the original UML element.
                 && umlElement.equals(originalUmlElement)
                 // Filter to only CIF events related to the start of an original element.
@@ -1638,7 +1639,8 @@ public class SynthesisChainTracking {
         // original UML element. For the later purposes, we get the original UML element from the current UML element.
         RedefinableElement umlElement = switch (purpose) {
             case SYNTHESIS -> eventInfo.getUmlElement();
-            case GUARD_COMPUTATION, LANGUAGE_EQUIVALENCE -> getOriginalUmlElement(eventInfo.getUmlElement());
+            case GUARD_COMPUTATION, LANGUAGE_EQUIVALENCE -> getOriginalUmlElementForFinalizedElement(
+                    eventInfo.getUmlElement());
             default -> throw new IllegalArgumentException("Unexpected translation purpose: " + purpose);
         };
 
@@ -1792,7 +1794,7 @@ public class SynthesisChainTracking {
                         languageEqOriginalUmlElement.getName()));
 
         // Consider the original UML element.
-        languageEqOriginalUmlElement = getOriginalUmlElement(languageEqOriginalUmlElement);
+        languageEqOriginalUmlElement = getOriginalUmlElementForFinalizedElement(languageEqOriginalUmlElement);
         Verify.verifyNotNull(languageEqOriginalUmlElement,
                 String.format("The original UML element related to element '%s' is 'null'.",
                         languageEqEventInfo.getUmlElement().getName()));
