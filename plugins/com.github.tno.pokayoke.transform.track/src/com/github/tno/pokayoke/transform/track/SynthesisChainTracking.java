@@ -1405,8 +1405,8 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Returns the original UML element for which the given UML element in the synthesized activity was created, or
-     * {@code null} if no such element exists.
+     * Returns the original UML element for which the given finalized UML element was created, or {@code null} if no
+     * such element exists or if the given UML element is not a finalized element.
      *
      * @param umlElement The UML element in the synthesized activity.
      * @return The related original UML element, or {@code null} if no such UML element exists.
