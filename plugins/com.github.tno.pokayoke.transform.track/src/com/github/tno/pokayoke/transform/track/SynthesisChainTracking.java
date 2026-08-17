@@ -38,6 +38,7 @@ import org.eclipse.uml2.uml.RedefinableElement;
 
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Verify;
+import com.google.common.collect.ImmutableSet;
 
 import fr.lip6.move.pnml.ptnet.PetriNet;
 import fr.lip6.move.pnml.ptnet.Transition;
@@ -1727,6 +1728,15 @@ public class SynthesisChainTracking {
      */
     public Set<Event> getExternalEvents(UmlToCifTranslationPurpose purpose) {
         return getExternalEventsMap(purpose).keySet();
+    }
+
+    /**
+     * Returns the set of events related to any concrete activity's restored decision/merge nodes.
+     *
+     * @return The restored nodes' event set.
+     */
+    public Set<Event> getRestoredDecisionMergeNodeEvents() {
+        return ImmutableSet.copyOf(restoredDecisionMergeNodeEvents);
     }
 
     /**
