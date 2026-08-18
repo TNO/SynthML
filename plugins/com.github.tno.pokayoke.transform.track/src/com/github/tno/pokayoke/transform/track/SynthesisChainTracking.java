@@ -177,8 +177,8 @@ public class SynthesisChainTracking {
                 // For guard computation and the language equivalence check, look at the original element and not the
                 // current one.
                 return cifEventTraceInfo.entrySet().stream()
-                        .filter(e -> e.getValue().getTranslationPurpose().equals(purpose) && umlElements
-                                .contains(getOriginalUmlElement((ActivityNode)e.getValue().getUmlElement())))
+                        .filter(e -> e.getValue().getTranslationPurpose().equals(purpose) && umlElements.contains(
+                                getOriginalUmlElementForActivityNode((ActivityNode)e.getValue().getUmlElement())))
                         .map(Map.Entry::getKey).toList();
             }
             default:
@@ -1197,7 +1197,7 @@ public class SynthesisChainTracking {
      * @param node The activity node in the synthesized activity.
      * @return The related original UML element, or {@code null} if no such UML element exists.
      */
-    public RedefinableElement getOriginalUmlElement(ActivityNode node) {
+    public RedefinableElement getOriginalUmlElementForActivityNode(ActivityNode node) {
         // Precondition check.
         Verify.verify(belongsToSynthesizedActivity(node),
                 String.format("UML element '%s' does not belong to the synthesized activity.", node.getName()));
@@ -1616,7 +1616,7 @@ public class SynthesisChainTracking {
      *     {@code false} otherwise.
      */
     public boolean isRelatedToControlNodeOfCalledActivity(ActivityNode node) {
-        RedefinableElement originalUmlElement = getOriginalUmlElement(node);
+        RedefinableElement originalUmlElement = getOriginalUmlElementForActivityNode(node);
         return originalUmlElement instanceof ControlNode;
     }
 

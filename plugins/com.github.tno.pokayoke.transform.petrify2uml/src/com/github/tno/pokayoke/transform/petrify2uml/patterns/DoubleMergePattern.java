@@ -84,8 +84,8 @@ public class DoubleMergePattern {
     private static Optional<DoubleMergePattern> findAny(ActivityEdge controlFlow, SynthesisChainTracking tracker) {
         if (controlFlow.getSource() instanceof MergeNode sourceMergeNode
                 && controlFlow.getTarget() instanceof MergeNode targetMergeNode
-                && !(tracker.getOriginalUmlElement(sourceMergeNode) instanceof ActivityFinalNode)
-                && !(tracker.getOriginalUmlElement(targetMergeNode) instanceof ActivityFinalNode)
+                && !(tracker.getOriginalUmlElementForActivityNode(sourceMergeNode) instanceof ActivityFinalNode)
+                && !(tracker.getOriginalUmlElementForActivityNode(targetMergeNode) instanceof ActivityFinalNode)
                 && !PokaYokeUmlProfileUtil.isGuardedControlFlow((ControlFlow)controlFlow))
         {
             return Optional.of(new DoubleMergePattern(controlFlow));

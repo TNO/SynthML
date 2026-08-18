@@ -87,7 +87,7 @@ public class EquivalentActionsIntoMergePattern {
             SynthesisChainTracking tracker)
     {
         if (node instanceof MergeNode mergeNode
-                && !(tracker.getOriginalUmlElement(mergeNode) instanceof ActivityFinalNode)
+                && !(tracker.getOriginalUmlElementForActivityNode(mergeNode) instanceof ActivityFinalNode)
                 && mergeNode.getIncomings().size() > 1)
         {
             List<Action> incomingActions = new ArrayList<>(node.getIncomings().size());
