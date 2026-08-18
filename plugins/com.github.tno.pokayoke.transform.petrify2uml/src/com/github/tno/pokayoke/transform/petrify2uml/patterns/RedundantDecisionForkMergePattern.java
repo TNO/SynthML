@@ -95,7 +95,7 @@ public class RedundantDecisionForkMergePattern {
         // To start a redundant decision-fork-merge pattern, the node must be a decision node that does not correspond
         // to an initial node of a called concrete activity.
         if (node instanceof DecisionNode decisionNode
-                && !(tracker.getOriginalUmlElementForActivityNode(decisionNode) instanceof InitialNode))
+                && !(tracker.getOriginalUmlElementForSynthesizedActivityNode(decisionNode) instanceof InitialNode))
         {
             int nrOfOutgoings = decisionNode.getOutgoings().size();
 
@@ -120,7 +120,7 @@ public class RedundantDecisionForkMergePattern {
                             .filter(e -> !PokaYokeUmlProfileUtil.isGuardedControlFlow((ControlFlow)e))
                             .map(ActivityEdge::getTarget).filter(MergeNode.class::isInstance).map(MergeNode.class::cast)
                             .filter(m -> !(tracker
-                                    .getOriginalUmlElementForActivityNode(m) instanceof ActivityFinalNode))
+                                    .getOriginalUmlElementForSynthesizedActivityNode(m) instanceof ActivityFinalNode))
                             .collect(Collectors.toCollection(LinkedHashSet::new));
 
                     if (forkNode.getOutgoings().size() != localMergeNodes.size()

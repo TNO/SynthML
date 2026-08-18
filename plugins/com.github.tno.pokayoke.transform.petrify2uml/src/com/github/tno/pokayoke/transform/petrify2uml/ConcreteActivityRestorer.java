@@ -62,7 +62,7 @@ public class ConcreteActivityRestorer {
         for (ActivityNode node: activity.getNodes()) {
             // Track the original UML element related to the current node. If the original UML element is 'null', or if
             // the original UML is an opaque behavior, the node is newly created. Do not add guards to these nodes.
-            RedefinableElement originalSourceElement = tracker.getOriginalUmlElementForActivityNode(node);
+            RedefinableElement originalSourceElement = tracker.getOriginalUmlElementForSynthesizedActivityNode(node);
             if (originalSourceElement == null || originalSourceElement instanceof OpaqueBehavior) {
                 continue;
             }
@@ -144,7 +144,9 @@ public class ConcreteActivityRestorer {
         // element.
         Map<DecisionNode, List<DecisionNode>> originalDecisionNodeToPatternNodes = new LinkedHashMap<>();
         for (ActivityNode child: childNodes) {
-            if (tracker.getOriginalUmlElementForActivityNode(child) instanceof DecisionNode originalDecisionNode) {
+            if (tracker.getOriginalUmlElementForSynthesizedActivityNode(
+                    child) instanceof DecisionNode originalDecisionNode)
+            {
                 originalDecisionNodeToPatternNodes.computeIfAbsent(originalDecisionNode, k -> new ArrayList<>())
                         .add((DecisionNode)child);
             }
@@ -225,7 +227,9 @@ public class ConcreteActivityRestorer {
         // element.
         Map<MergeNode, List<MergeNode>> originalMergeNodeToPatternNodes = new LinkedHashMap<>();
         for (ActivityNode parent: parentNodes) {
-            if (tracker.getOriginalUmlElementForActivityNode(parent) instanceof MergeNode originalMergeNode) {
+            if (tracker
+                    .getOriginalUmlElementForSynthesizedActivityNode(parent) instanceof MergeNode originalMergeNode)
+            {
                 originalMergeNodeToPatternNodes.computeIfAbsent(originalMergeNode, k -> new ArrayList<>())
                         .add((MergeNode)parent);
             }

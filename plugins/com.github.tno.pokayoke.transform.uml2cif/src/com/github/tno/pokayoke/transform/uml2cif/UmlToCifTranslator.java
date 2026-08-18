@@ -750,7 +750,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         // where the initial node is translated as a decision node and the final node is translated as a merge node. If
         // that is the case, add the related pre/post-conditions to the CIF event.
         if (synthesisTracker.belongsToSynthesizedActivity(node)) {
-            RedefinableElement umlElement = synthesisTracker.getOriginalUmlElementForActivityNode(node);
+            RedefinableElement umlElement = synthesisTracker.getOriginalUmlElementForSynthesizedActivityNode(node);
 
             // If the UML activity node refers to a called activity's initial node, then add the usage preconditions of
             // the activity as extra guards for performing the translated CIF start events for the node.
