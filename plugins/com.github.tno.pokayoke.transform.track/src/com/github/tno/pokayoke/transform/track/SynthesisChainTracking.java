@@ -1409,7 +1409,8 @@ public class SynthesisChainTracking {
      * such element exists or if the given UML element is not a finalized element.
      *
      * @param umlElement The UML element in the synthesized activity.
-     * @return The related original UML element, or {@code null} if no such UML element exists.
+     * @return The related original UML element, or {@code null} if no such UML element exists or if the given UML
+     *     element is not a finalized element.
      */
     private RedefinableElement getOriginalUmlElementForFinalizedElement(RedefinableElement umlElement) {
         // Precondition check.
