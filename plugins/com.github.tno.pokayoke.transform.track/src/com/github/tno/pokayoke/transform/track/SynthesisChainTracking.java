@@ -1192,10 +1192,10 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Returns the original UML element for which the given activity node in the synthesized activity was created, or
-     * {@code null} if no such element exists.
+     * Returns the original UML element for which the given (non-finalized) activity node in the synthesized activity
+     * was created, or {@code null} if no such element exists.
      *
-     * @param node The activity node in the synthesized activity.
+     * @param node The (non-finalized) activity node in the synthesized activity.
      * @return The related original UML element, or {@code null} if no such UML element exists.
      */
     public RedefinableElement getOriginalUmlElementForSynthesizedActivityNode(ActivityNode node) {
