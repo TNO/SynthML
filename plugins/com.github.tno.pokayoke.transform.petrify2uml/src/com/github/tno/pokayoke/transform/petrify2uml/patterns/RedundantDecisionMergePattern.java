@@ -85,7 +85,7 @@ public class RedundantDecisionMergePattern {
         // To start a redundant decision-merge pattern the node must be a decision node that does not correspond to a
         // called concrete activity initial node.
         if (node instanceof DecisionNode decisionNode
-                && !(tracker.getOriginalUmlElement(node) instanceof InitialNode))
+                && !(tracker.getOriginalUmlElementForSynthesizedActivityNode(node) instanceof InitialNode))
         {
             // Find the set of all target nodes that are reachable from the decision node by a control flow.
             Set<ActivityNode> targetNodes = decisionNode.getOutgoings().stream().map(ActivityEdge::getTarget)
@@ -94,7 +94,8 @@ public class RedundantDecisionMergePattern {
             // If there is exactly one target node which is a merge node, which does not correspond to an activity final
             // node, and the control flow does not have any guard, then we have found a pattern.
             if (targetNodes.size() == 1 && targetNodes.iterator().next() instanceof MergeNode mergeNode
-                    && !(tracker.getOriginalUmlElement(mergeNode) instanceof ActivityFinalNode)
+                    && !(tracker
+                            .getOriginalUmlElementForSynthesizedActivityNode(mergeNode) instanceof ActivityFinalNode)
                     && !PokaYokeUmlProfileUtil.isGuardedControlFlow((ControlFlow)decisionNode.getOutgoings().get(0)))
             {
                 return Optional.of(new RedundantDecisionMergePattern(decisionNode, mergeNode));
