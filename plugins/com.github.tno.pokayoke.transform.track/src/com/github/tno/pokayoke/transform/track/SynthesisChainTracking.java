@@ -1302,9 +1302,10 @@ public class SynthesisChainTracking {
                 .flatMap(t -> transitionTraceInfo.get(t).getCifEvents().stream()).collect(Collectors.toSet());
         Set<Event> eventsToRemove = Sets.difference(tentativeEventsToRemove, eventsToKeep);
 
-        // Store the events to be removed.
+        // Store the now-obsolete pre-restoration events that are to be removed.
         restoredDecisionMergeNodeEvents.addAll(eventsToRemove);
 
+        // Remove the obsolete nodes, transitions and events from the tracker.
         activityNodeToTransition.keySet().removeAll(nodesToRemove);
         transitionTraceInfo.keySet().removeAll(transitionToRemove);
         cifEventTraceInfo.keySet().removeAll(eventsToRemove);
