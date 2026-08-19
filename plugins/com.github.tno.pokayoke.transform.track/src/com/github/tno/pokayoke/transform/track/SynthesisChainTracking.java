@@ -38,6 +38,7 @@ import org.eclipse.uml2.uml.RedefinableElement;
 
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Verify;
+import com.google.common.collect.ImmutableSet;
 
 import fr.lip6.move.pnml.ptnet.PetriNet;
 import fr.lip6.move.pnml.ptnet.Transition;
@@ -90,6 +91,9 @@ public class SynthesisChainTracking {
 
     /** The map from the finalized UML elements to the non-finalized activity nodes they originate from. */
     private final Map<RedefinableElement, ActivityNode> finalizedElementToActivityNode = new LinkedHashMap<>();
+
+    /** The set containing the events updated after the restoring of decision and merge nodes of concrete activities. */
+    private final Set<Event> restoredDecisionMergeNodeEvents = new LinkedHashSet<>();
 
     public static enum ActionKind {
         START_OPAQUE_BEHAVIOR, END_OPAQUE_BEHAVIOR, COMPLETE_OPAQUE_BEHAVIOR, START_SHADOW, END_SHADOW, COMPLETE_SHADOW,
@@ -1298,6 +1302,10 @@ public class SynthesisChainTracking {
                 .flatMap(t -> transitionTraceInfo.get(t).getCifEvents().stream()).collect(Collectors.toSet());
         Set<Event> eventsToRemove = Sets.difference(tentativeEventsToRemove, eventsToKeep);
 
+        // Store the now-obsolete pre-restoration events that are to be removed.
+        restoredDecisionMergeNodeEvents.addAll(eventsToRemove);
+
+        // Remove the obsolete nodes, transitions and events from the tracker.
         activityNodeToTransition.keySet().removeAll(nodesToRemove);
         transitionTraceInfo.keySet().removeAll(transitionToRemove);
         cifEventTraceInfo.keySet().removeAll(eventsToRemove);
@@ -1728,6 +1736,15 @@ public class SynthesisChainTracking {
     }
 
     /**
+     * Returns the set of events related to any concrete activity's restored decision/merge nodes.
+     *
+     * @return The restored nodes' event set.
+     */
+    public Set<Event> getRestoredDecisionMergeNodeEvents() {
+        return ImmutableSet.copyOf(restoredDecisionMergeNodeEvents);
+    }
+
+    /**
      * Returns the map from external events to their event tracing info for the given translation purpose.
      *
      * @param purpose The translation purpose.
@@ -1801,9 +1818,9 @@ public class SynthesisChainTracking {
                 String.format("The original UML element related to element '%s' is 'null'.",
                         languageEqEventInfo.getUmlElement().getName()));
 
-        // If the language equivalence CIF event looks like it is part of a non-merged pattern, trace back the event
-        // to its related synthesis event info, to see what it originally represented, to allow for proper comparison
-        // against the synthesis CIF events, which are already original.
+        // If the language equivalence CIF event does not refer to a concrete activity's node and looks like it is part
+        // of a non-merged pattern, trace back the event to its related synthesis event info, to see what it originally
+        // represented, to allow for proper comparison against the synthesis CIF events, which are already original.
         //
         // Only if the language equivalence CIF event is non-atomic or deterministic, trace it back and update the
         // attributes. This avoids tracing back for the events related to atomic non-deterministic original opaque
@@ -1829,8 +1846,9 @@ public class SynthesisChainTracking {
         // Non-atomic start     start                  Non-merged (traces to single event) start + end  (need to trace)
         // Non-atomic end       end                    Non-merged (traces to single event) start + end  (need to trace)
         // @formatter:on
-        if (!transitionInfo.isMergedTransition() && (!PokaYokeUmlProfileUtil.isAtomic(languageEqOriginalUmlElement)
-                || PokaYokeUmlProfileUtil.isDeterministic(languageEqOriginalUmlElement)))
+        if (!belongsToExistingConcreteActivity(languageEqOriginalUmlElement) && !transitionInfo.isMergedTransition()
+                && (!PokaYokeUmlProfileUtil.isAtomic(languageEqOriginalUmlElement)
+                        || PokaYokeUmlProfileUtil.isDeterministic(languageEqOriginalUmlElement)))
         {
             Event languageEqSynthesisEvent = transitionInfo.getSingleCifEvent();
             EventTraceInfo thatSynthesisEventInfo = getEventTraceInfo(languageEqSynthesisEvent);
