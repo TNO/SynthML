@@ -129,7 +129,7 @@ public class FlattenUMLActivity {
             Activity childBehaviorCopy = copyWithProfiles(childBehavior);
 
             // Construct the prefix name.
-            String prefixName = callBehaviorActionToReplace.getName() + "__" + childBehaviorCopy.getName();
+            String prefixName = callBehaviorActionToReplace.getName() + "_" + childBehaviorCopy.getName();
 
             // Prepend the prefix name to the name of all elements in the activity.
             NameHelper.prependPrefixNameToNodesAndEdgesInActivity(childBehaviorCopy, prefixName);
@@ -203,6 +203,9 @@ public class FlattenUMLActivity {
             // Destroy the call behavior action being replaced.
             callBehaviorActionToReplace.destroy();
         }
+
+        // Ensure unique names.
+        NameHelper.ensureUniqueNameForNodesAndEdges(childBehavior);
     }
 
     private static <T extends Element> T copyWithProfiles(T source) {
