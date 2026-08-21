@@ -49,6 +49,7 @@ import com.github.tno.pokayoke.transform.activitysynthesis.CIFDataSynthesisHelpe
 import com.github.tno.pokayoke.transform.activitysynthesis.CheckNonDeterministicChoices;
 import com.github.tno.pokayoke.transform.activitysynthesis.CifSourceSinkLocationTransformer;
 import com.github.tno.pokayoke.transform.activitysynthesis.GuardComputation;
+import com.github.tno.pokayoke.transform.activitysynthesis.InitialValuesRestricter;
 import com.github.tno.pokayoke.transform.activitysynthesis.NonAtomicPatternRewriter;
 import com.github.tno.pokayoke.transform.activitysynthesis.NonAtomicPatternRewriter.NonAtomicPattern;
 import com.github.tno.pokayoke.transform.app.StateAwareWeakLanguageEquivalenceHelper.ModelPreparationResult;
@@ -151,10 +152,20 @@ public class FullSynthesisApp {
             AppEnv.unregisterApplication();
         }
 
+        // Restrict the UML properties default values according to the activity precondition, if possible.
+        Path cifRestrictedSpecPath = outputFolderPath.resolve(filePrefix + ".02a.restricted.cif");
+        InitialValuesRestricter.restrict(cifSpec, umlToCifTranslator, cifRestrictedSpecPath);
+        try {
+            AppEnv.registerSimple();
+            CifWriter.writeCifSpec(cifSpec, makePathPair(cifRestrictedSpecPath), outputFolderPath.toString());
+        } finally {
+            AppEnv.unregisterApplication();
+        }
+
         // Get CIF/BDD specification.
         CifDataSynthesisSettings settings = CIFDataSynthesisHelper.getSynthesisSettings();
         CifBddSpec cifBddSpec = CIFDataSynthesisHelper.getCifBddSpec(cifSpec,
-                cifPostProcessedSpecPath.toAbsolutePath().toString(), settings);
+                cifRestrictedSpecPath.toAbsolutePath().toString(), settings);
 
         // Perform synthesis.
         CifDataSynthesisResult cifSynthesisResult = CIFDataSynthesisHelper.synthesize(cifBddSpec, settings);
@@ -392,9 +403,19 @@ public class FullSynthesisApp {
             AppEnv.unregisterApplication();
         }
 
+        // Restrict the UML properties default values according to the activity precondition, if possible.
+        Path restrictedInitialPredSpecPath = localOutputPath.resolve(filePrefix + "99.01a.restricted.cif");
+        InitialValuesRestricter.restrict(cifSpec, umlToCifTranslatorPostSynth, restrictedInitialPredSpecPath);
+        try {
+            AppEnv.registerSimple();
+            CifWriter.writeCifSpec(cifSpec, makePathPair(restrictedInitialPredSpecPath), localOutputPath.toString());
+        } finally {
+            AppEnv.unregisterApplication();
+        }
+
         // Perform state space generation.
         Path cifStateSpacePath = localOutputPath.resolve(filePrefix + ".99.02.ctrlsys.statespace.cif");
-        String[] stateSpaceGenerationArgs = new String[] {cifSpecPath.toString(),
+        String[] stateSpaceGenerationArgs = new String[] {restrictedInitialPredSpecPath.toString(),
                 "--name=post_synthesis_chain_state_space", "--output=" + cifStateSpacePath.toString()};
         AppStream explorerAppStream = new MemAppStream();
         AppStreams explorerAppStreams = new AppStreams(InputStream.nullInputStream(), explorerAppStream,
