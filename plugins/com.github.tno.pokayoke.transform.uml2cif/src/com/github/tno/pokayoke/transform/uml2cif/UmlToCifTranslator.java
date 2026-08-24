@@ -253,13 +253,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
      */
     public Specification translate() throws CoreException {
         // Validate the UML input model.
-        //
-        // Ideally, we check this always, as the UML models resulting from synthesis should also be valid. Currently, we
-        // do it only for the input to synthesis, as we generate some names during synthesis that are invalid. This is
-        // to be improved in the future.
-//        if (translationPurpose == UmlToCifTranslationPurpose.SYNTHESIS) {
         ValidationHelper.validateModel(activity.getModel());
-//        }
 
         if (context.hasParameterizedActivities()) {
             throw new RuntimeException("Translating parameterized activities to CIF is unsupported.");
