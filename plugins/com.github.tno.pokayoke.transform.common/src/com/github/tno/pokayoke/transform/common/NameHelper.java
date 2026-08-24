@@ -175,7 +175,7 @@ public class NameHelper {
      * @param prefix The prefix name to prepend.
      */
     private static void prependPrefixName(NamedElement element, String prefix) {
-        element.setName(prefix + "__" + element.getName());
+        element.setName(prefix + "_" + element.getName());
     }
 
     /**
