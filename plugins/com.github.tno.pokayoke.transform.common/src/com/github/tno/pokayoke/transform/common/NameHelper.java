@@ -181,17 +181,21 @@ public class NameHelper {
     }
 
     /**
-     * Prepend the name of the outer activity to the nodes and edges in activities within the given UML element.
+     * Prepend the name of the outer activity using the given separator to the nodes and edges in activities within the
+     * given UML element.
      *
      * @param element The UML element that contains activities, either directly or nested in models or classes.
+     * @param separator The separator between the name of the outer activity and the nodes and edges names.
      */
-    public static void prependOuterActivityNameToNodesAndEdgesInActivities(Element element) {
+    public static void prependOuterActivityNameToNodesAndEdgesInActivities(Element element, String separator) {
         if (element instanceof Activity activityElement) {
-            prependPrefixNameToNodesAndEdgesInActivity(activityElement, activityElement.getName());
+            prependPrefixNameToNodesAndEdgesInActivity(activityElement, activityElement.getName(), separator);
         } else if (element instanceof Class classElement) {
-            classElement.getOwnedMembers().forEach(NameHelper::prependOuterActivityNameToNodesAndEdgesInActivities);
+            classElement.getOwnedMembers()
+                    .forEach(e -> prependOuterActivityNameToNodesAndEdgesInActivities(e, separator));
         } else if (element instanceof Model modelElement) {
-            modelElement.getOwnedMembers().forEach(NameHelper::prependOuterActivityNameToNodesAndEdgesInActivities);
+            modelElement.getOwnedMembers()
+                    .forEach(e -> prependOuterActivityNameToNodesAndEdgesInActivities(e, separator));
         }
     }
 
