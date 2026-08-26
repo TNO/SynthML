@@ -132,7 +132,7 @@ public class FlattenUMLActivity {
             String prefixName = callBehaviorActionToReplace.getName() + "_" + childBehaviorCopy.getName();
 
             // Prepend the prefix name to the name of all elements in the activity.
-            NameHelper.prependPrefixNameToNodesAndEdgesInActivity(childBehaviorCopy, prefixName);
+            NameHelper.prependPrefixNameToNodesAndEdgesInActivity(childBehaviorCopy, prefixName, "_");
 
             // Prepend prefix ID (i.e., the IDs of the activity and the call behavior action) to the tracing comment of
             // all elements in the activity.
