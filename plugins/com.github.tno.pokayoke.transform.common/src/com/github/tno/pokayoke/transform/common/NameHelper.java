@@ -157,25 +157,27 @@ public class NameHelper {
      *
      * @param activity The activity in which the name of nodes and edges is prepended.
      * @param prefix The prefix to prepend.
+     * @param separator The separator between the prefix and the element's name.
      */
-    public static void prependPrefixNameToNodesAndEdgesInActivity(Activity activity, String prefix) {
+    public static void prependPrefixNameToNodesAndEdgesInActivity(Activity activity, String prefix, String separator) {
         for (ActivityNode node: activity.getNodes()) {
-            prependPrefixName(node, prefix);
+            prependPrefixName(node, prefix, separator);
         }
 
         for (ActivityEdge edge: activity.getEdges()) {
-            prependPrefixName(edge, prefix);
+            prependPrefixName(edge, prefix, separator);
         }
     }
 
     /**
-     * Prepends a prefix name to the name of an element.
+     * Prepends a prefix name using the given separator to the name of an element.
      *
      * @param element The element.
      * @param prefix The prefix name to prepend.
+     * @param separator The separator between the prefix and the element's name.
      */
-    private static void prependPrefixName(NamedElement element, String prefix) {
-        element.setName(prefix + "_" + element.getName());
+    private static void prependPrefixName(NamedElement element, String prefix, String separator) {
+        element.setName(prefix + separator + element.getName());
     }
 
     /**
