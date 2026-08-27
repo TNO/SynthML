@@ -79,8 +79,8 @@ public class InitialValuesRestricter {
 
     /**
      * Finds the CIF discrete variables corresponding to UML properties, whose initial values are restricted by the
-     * activity's precondition, and returns the map from those variables to their admissible initial values. If a
-     * variable can take any value, it is not included in the map.
+     * activity's precondition, and returns the map from those variables to their admissible initial values. The map
+     * includes only the variables whose initial values are to be modified.
      *
      * @param cifBddSpec The CIF/BDD specification.
      * @param translator The UML-to-CIF translator.
