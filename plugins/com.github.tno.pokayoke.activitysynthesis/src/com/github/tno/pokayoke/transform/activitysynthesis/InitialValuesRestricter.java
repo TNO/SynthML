@@ -46,6 +46,14 @@ public class InitialValuesRestricter {
     private InitialValuesRestricter() {
     }
 
+    /**
+     * Restricts the initial values of CIF variables based on activity preconditions and updates their default values in
+     * the CIF specification.
+     *
+     * @param specification The CIF specification to update.
+     * @param translator The UML-to-CIF translator used to determine variable restrictions.
+     * @param specPath The path of the CIF specification.
+     */
     public static void restrict(Specification specification, UmlToCifTranslator translator, Path specPath) {
         // Get placeholder synthesis settings for the CIF/BDD converter.
         CifBddSettings settings = new CifBddSettings();
