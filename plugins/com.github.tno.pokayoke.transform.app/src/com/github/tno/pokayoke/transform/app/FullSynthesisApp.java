@@ -404,7 +404,7 @@ public class FullSynthesisApp {
         }
 
         // Restrict the UML properties default values according to the activity precondition, if possible.
-        Path restrictedInitialPredSpecPath = localOutputPath.resolve(filePrefix + "99.01a.restricted.cif");
+        Path restrictedInitialPredSpecPath = localOutputPath.resolve(filePrefix + "99.02.restricted.cif");
         InitialValuesRestricter.restrict(cifSpec, umlToCifTranslatorPostSynth, restrictedInitialPredSpecPath);
         try {
             AppEnv.registerSimple();
@@ -414,7 +414,7 @@ public class FullSynthesisApp {
         }
 
         // Perform state space generation.
-        Path cifStateSpacePath = localOutputPath.resolve(filePrefix + ".99.02.ctrlsys.statespace.cif");
+        Path cifStateSpacePath = localOutputPath.resolve(filePrefix + ".99.03.ctrlsys.statespace.cif");
         String[] stateSpaceGenerationArgs = new String[] {restrictedInitialPredSpecPath.toString(),
                 "--name=post_synthesis_chain_state_space", "--output=" + cifStateSpacePath.toString()};
         AppStream explorerAppStream = new MemAppStream();
