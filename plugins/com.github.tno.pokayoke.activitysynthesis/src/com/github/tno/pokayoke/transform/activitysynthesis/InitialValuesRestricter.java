@@ -84,7 +84,8 @@ public class InitialValuesRestricter {
      * @param cifBddSpec The CIF/BDD specification.
      * @param translator The UML-to-CIF translator.
      * @param converter The CIF/BDD converter.
-     * @param initialPlantInv Combined initialization and state plant invariant predicates of the model.
+     * @param initialPlantInv Combined initialization and state plant invariant predicates of the model. The method does
+     *     not free the BDD.
      * @return The map from variables to the admissible initial values.
      */
     private static Map<DiscVariable, List<Expression>> findRestrictedInitialValueVariables(CifBddSpec cifBddSpec,
