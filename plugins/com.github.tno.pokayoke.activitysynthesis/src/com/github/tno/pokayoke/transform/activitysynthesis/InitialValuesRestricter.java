@@ -157,14 +157,9 @@ public class InitialValuesRestricter {
             BddBitVector<?, ?> varVector = var.createBitVector(false);
             BddBitVector<?, ?> valueVector = converter.convertExpr(value, true, cifBddSpec, null);
 
-            // The CIF type checker ensures that the type of the value is contained in the type of the
-            // discrete variable, and thus always fits in the bit vector representation. There are thus
-            // no runtime errors.
-
             // The representations of the variable and value bit vectors can be different. For instance,
-            // a signed variable may be assigned an non-negative (unsigned) value. And for an unsigned
-            // variable, the value may be computed in such a way that we get a signed bit vector.
-            // Therefore, we ensure the representations are compatible.
+            // a signed variable may be assigned an non-negative (unsigned) value. Therefore, we ensure the
+            // representations are compatible.
             Pair<BddBitVector<?, ?>, BddBitVector<?, ?>> vectors = BddBitVector.ensureCompatible(varVector,
                     valueVector);
             varVector = vectors.left;
