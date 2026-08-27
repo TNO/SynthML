@@ -107,11 +107,11 @@ public class InitialValuesRestricter {
 
                 // Conjunct 'var = value' predicate with initial predicate to see if variable can have this value in any
                 // initial state.
-                BDD presentInInitialPred = initialPlantInv.and(varEqualsValue);
+                BDD canHaveValueInInitialState = initialPlantInv.and(varEqualsValue);
 
                 // If the conjunction is not 'false', the variable can have the value in the initial state, so we store
                 // this value for the CIF variable.
-                if (!presentInInitialPred.isZero()) {
+                if (!canHaveValueInInitialState.isZero()) {
                     varsToValues.computeIfAbsent(cifVariable, k -> new ArrayList<>()).add(value);
                 }
             }
