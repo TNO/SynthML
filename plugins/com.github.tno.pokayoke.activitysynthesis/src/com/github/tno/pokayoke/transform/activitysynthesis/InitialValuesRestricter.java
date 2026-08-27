@@ -13,11 +13,11 @@ import java.util.Map.Entry;
 
 import org.eclipse.escet.cif.bdd.conversion.CifToBddConverter;
 import org.eclipse.escet.cif.bdd.conversion.bitvectors.BddBitVector;
+import org.eclipse.escet.cif.bdd.settings.CifBddSettings;
 import org.eclipse.escet.cif.bdd.spec.CifBddDiscVariable;
 import org.eclipse.escet.cif.bdd.spec.CifBddSpec;
 import org.eclipse.escet.cif.bdd.spec.CifBddVariable;
 import org.eclipse.escet.cif.common.CifValueUtils;
-import org.eclipse.escet.cif.datasynth.settings.CifDataSynthesisSettings;
 import org.eclipse.escet.cif.metamodel.cif.Specification;
 import org.eclipse.escet.cif.metamodel.cif.SupKind;
 import org.eclipse.escet.cif.metamodel.cif.automata.Automaton;
@@ -42,10 +42,10 @@ public class InitialValuesRestricter {
 
     public static void restrict(Specification specification, UmlToCifTranslator translator, Path specPath) {
         // Get placeholder synthesis settings for the CIF/BDD converter.
-        CifDataSynthesisSettings settings = new CifDataSynthesisSettings();
+        CifBddSettings settings = new CifBddSettings();
 
         // Convert the CIF specification to a CIF/BDD specification.
-        CifToBddConverter converter = new CifToBddConverter("Initial predicate");
+        CifToBddConverter converter = new CifToBddConverter("Initial value restricter");
         converter.preprocess(specification, specPath.toAbsolutePath().toString(), settings.getWarnOutput(),
                 settings.getDoPlantsRefReqsWarn(), Termination.NEVER);
         BDDFactory factory = CifToBddConverter.createFactory(settings, new ArrayList<>(), new ArrayList<>());
@@ -60,7 +60,7 @@ public class InitialValuesRestricter {
         List<Automaton> cifPlants = specification.getComponents().stream()
                 .filter(c -> c instanceof Automaton automaton && automaton.getKind().equals(SupKind.PLANT))
                 .map(Automaton.class::cast).toList();
-        Verify.verify(cifPlants.size() == 1, "Found more than one plant automaton.");
+        Verify.verify(cifPlants.size() == 1, "Did not find exactly one plant automaton.");
         Automaton cifPlant = cifPlants.get(0);
 
         // Set a new default value for all variables found.
@@ -77,15 +77,15 @@ public class InitialValuesRestricter {
     }
 
     /**
-     * Finds the CIF variables whose initial values are restricted by the activity's precondition, and returns the map
-     * from those variables to their admissible initial values. If a variable can take any value, it is not included in
-     * the map.
+     * Finds the CIF discrete variables corresponding to UML properties, whose initial values are restricted by the
+     * activity's precondition, and returns the map from those variables to their admissible initial values. If a
+     * variable can take any value, it is not included in the map.
      *
      * @param cifBddSpec The CIF/BDD specification.
      * @param translator The UML-to-CIF translator.
      * @param converter The CIF/BDD converter.
-     * @param initialPlantInv The initial plant invariant.
-     * @return The amp from variables to the admissible initial values.
+     * @param initialPlantInv Combined initialization and state plant invariant predicates of the model.
+     * @return The map from variables to the admissible initial values.
      */
     private static Map<DiscVariable, List<Expression>> findReducedInitialValueVariables(CifBddSpec cifBddSpec,
             UmlToCifTranslator translator, CifToBddConverter converter, BDD initialPlantInv)
@@ -105,10 +105,12 @@ public class InitialValuesRestricter {
                 // Create 'var = value' BDD.
                 BDD varEqualsValue = createVarEqualValueBDD(cifBddSpec, converter, var, value);
 
-                // Conjunct with initial predicate.
+                // Conjunct 'var = value' predicate with initial predicate to see if variable can have this value in any
+                // initial state.
                 BDD presentInInitialPred = initialPlantInv.and(varEqualsValue);
 
-                // If the conjunction is not 'false', store the CIF variable.
+                // If the conjunction is not 'false', the variable can have the value in the initial state, so we store
+                // this value for the CIF variable.
                 if (!presentInInitialPred.isZero()) {
                     varsToValues.computeIfAbsent(cifVariable, k -> new ArrayList<>()).add(value);
                 }
