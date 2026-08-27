@@ -185,7 +185,7 @@ public class NameHelper {
      * given UML element.
      *
      * @param element The UML element that contains activities, either directly or nested in models or classes.
-     * @param separator The separator between the name of the outer activity and the nodes and edges names.
+     * @param separator The separator between the name of the outer activity and the node/edge name.
      */
     public static void prependOuterActivityNameToNodesAndEdgesInActivities(Element element, String separator) {
         if (element instanceof Activity activityElement) {
