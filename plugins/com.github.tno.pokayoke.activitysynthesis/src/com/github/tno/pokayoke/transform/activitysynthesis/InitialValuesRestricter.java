@@ -115,6 +115,10 @@ public class InitialValuesRestricter {
                 if (!canHaveValueInInitialState.isZero()) {
                     varsToValues.computeIfAbsent(cifVariable, k -> new ArrayList<>()).add(value);
                 }
+
+                // Free the BDDs.
+                varEqualsValue.free();
+                canHaveValueInInitialState.free();
             }
 
             // Remove variables that can take any value.
