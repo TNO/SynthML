@@ -53,7 +53,7 @@ public class InitialValuesRestricter {
 
         // Find the CIF variables which can take only a restricted set of initial values given the activity's
         // preconditions.
-        Map<DiscVariable, List<Expression>> varsToInitialValues = findReducedInitialValueVariables(cifBddSpec,
+        Map<DiscVariable, List<Expression>> varsToInitialValues = findRestrictedInitialValueVariables(cifBddSpec,
                 translator, converter, cifBddSpec.initialPlantInv.id());
 
         // Get CIF plant automaton. Must be unique, since the UML-to-CIF translation provides a flower automaton.
@@ -87,7 +87,7 @@ public class InitialValuesRestricter {
      * @param initialPlantInv Combined initialization and state plant invariant predicates of the model.
      * @return The map from variables to the admissible initial values.
      */
-    private static Map<DiscVariable, List<Expression>> findReducedInitialValueVariables(CifBddSpec cifBddSpec,
+    private static Map<DiscVariable, List<Expression>> findRestrictedInitialValueVariables(CifBddSpec cifBddSpec,
             UmlToCifTranslator translator, CifToBddConverter converter, BDD initialPlantInv)
     {
         Map<DiscVariable, List<Expression>> varsToValues = new LinkedHashMap<>();
