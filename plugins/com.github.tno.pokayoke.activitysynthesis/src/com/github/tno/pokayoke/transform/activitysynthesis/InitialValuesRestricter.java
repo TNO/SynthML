@@ -25,8 +25,6 @@ import org.eclipse.escet.cif.bdd.spec.CifBddSpec;
 import org.eclipse.escet.cif.bdd.spec.CifBddVariable;
 import org.eclipse.escet.cif.common.CifValueUtils;
 import org.eclipse.escet.cif.metamodel.cif.Specification;
-import org.eclipse.escet.cif.metamodel.cif.SupKind;
-import org.eclipse.escet.cif.metamodel.cif.automata.Automaton;
 import org.eclipse.escet.cif.metamodel.cif.declarations.DiscVariable;
 import org.eclipse.escet.cif.metamodel.cif.expressions.Expression;
 import org.eclipse.escet.cif.metamodel.cif.types.BoolType;
@@ -38,8 +36,6 @@ import org.eclipse.escet.common.java.Termination;
 import com.github.javabdd.BDD;
 import com.github.javabdd.BDDFactory;
 import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator;
-import com.google.common.base.Verify;
-import com.google.common.collect.ImmutableList;
 
 /** Restricts the possible initial values of CIF variables according to the activity's preconditions. */
 public class InitialValuesRestricter {
@@ -68,14 +64,7 @@ public class InitialValuesRestricter {
         // Find the CIF variables which can take only a restricted set of initial values given the activity's
         // preconditions.
         Map<DiscVariable, List<Expression>> varsToInitialValues = findRestrictedInitialValueVariables(cifBddSpec,
-                translator, converter, cifBddSpec.initialPlantInv.id());
-
-        // Get CIF plant automaton. Must be unique, since the UML-to-CIF translation provides a flower automaton.
-        List<Automaton> cifPlants = specification.getComponents().stream()
-                .filter(c -> c instanceof Automaton automaton && automaton.getKind().equals(SupKind.PLANT))
-                .map(Automaton.class::cast).toList();
-        Verify.verify(cifPlants.size() == 1, "Did not find exactly one plant automaton.");
-        Automaton cifPlant = cifPlants.get(0);
+                translator, converter, cifBddSpec.initialPlantInv);
 
         // Set a new default value for all variables found.
         for (Entry<DiscVariable, List<Expression>> entry: varsToInitialValues.entrySet()) {
@@ -84,9 +73,7 @@ public class InitialValuesRestricter {
 
             // Remove old CIF variable from the plant, update the CIF variable with the new default values, and add it
             // back to the plant.
-            cifPlant.getDeclarations().remove(cifVariable);
-            cifVariable.setValue(CifConstructors.newVariableValue(null, ImmutableList.copyOf(values)));
-            cifPlant.getDeclarations().add(cifVariable);
+            cifVariable.setValue(CifConstructors.newVariableValue(null, values));
         }
     }
 
