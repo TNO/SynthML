@@ -55,6 +55,7 @@ import com.github.tno.pokayoke.transform.app.StateAwareWeakLanguageEquivalenceHe
 import com.github.tno.pokayoke.transform.cif2petrify.Cif2Petrify;
 import com.github.tno.pokayoke.transform.cif2petrify.CifFileHelper;
 import com.github.tno.pokayoke.transform.common.FileHelper;
+import com.github.tno.pokayoke.transform.common.ValidationHelper;
 import com.github.tno.pokayoke.transform.flatten.CompositeDataTypeFlattener;
 import com.github.tno.pokayoke.transform.petrify.PetrifyHelper;
 import com.github.tno.pokayoke.transform.petrify2uml.ConcreteActivityRestorer;
@@ -342,6 +343,9 @@ public class FullSynthesisApp {
                 umlActivityToCifPath);
         Path umlGuardsOutputPath = outputFolderPath.resolve(filePrefix + ".21.guardsadded.uml");
         FileHelper.storeModel(umlActivityToCifTranslator.getActivity().getModel(), umlGuardsOutputPath.toString());
+
+        // Validate the output UML model.
+        ValidationHelper.validateModel(activity.getModel());
 
         // Check the activity for non-deterministic choices.
         CheckNonDeterministicChoices.check(activity, umlToCifTranslator, warnings, cifBddSpec);

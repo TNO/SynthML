@@ -157,39 +157,45 @@ public class NameHelper {
      *
      * @param activity The activity in which the name of nodes and edges is prepended.
      * @param prefix The prefix to prepend.
+     * @param separator The separator between the prefix and the element's name.
      */
-    public static void prependPrefixNameToNodesAndEdgesInActivity(Activity activity, String prefix) {
+    public static void prependPrefixNameToNodesAndEdgesInActivity(Activity activity, String prefix, String separator) {
         for (ActivityNode node: activity.getNodes()) {
-            prependPrefixName(node, prefix);
+            prependPrefixName(node, prefix, separator);
         }
 
         for (ActivityEdge edge: activity.getEdges()) {
-            prependPrefixName(edge, prefix);
+            prependPrefixName(edge, prefix, separator);
         }
     }
 
     /**
-     * Prepends a prefix name to the name of an element.
+     * Prepends a prefix name using the given separator to the name of an element.
      *
      * @param element The element.
      * @param prefix The prefix name to prepend.
+     * @param separator The separator between the prefix and the element's name.
      */
-    private static void prependPrefixName(NamedElement element, String prefix) {
-        element.setName(prefix + "__" + element.getName());
+    private static void prependPrefixName(NamedElement element, String prefix, String separator) {
+        element.setName(prefix + separator + element.getName());
     }
 
     /**
-     * Prepend the name of the outer activity to the nodes and edges in activities within the given UML element.
+     * Prepend the name of the outer activity using the given separator to the nodes and edges in activities within the
+     * given UML element.
      *
      * @param element The UML element that contains activities, either directly or nested in models or classes.
+     * @param separator The separator between the name of the outer activity and the node/edge name.
      */
-    public static void prependOuterActivityNameToNodesAndEdgesInActivities(Element element) {
+    public static void prependOuterActivityNameToNodesAndEdgesInActivities(Element element, String separator) {
         if (element instanceof Activity activityElement) {
-            prependPrefixNameToNodesAndEdgesInActivity(activityElement, activityElement.getName());
+            prependPrefixNameToNodesAndEdgesInActivity(activityElement, activityElement.getName(), separator);
         } else if (element instanceof Class classElement) {
-            classElement.getOwnedMembers().forEach(NameHelper::prependOuterActivityNameToNodesAndEdgesInActivities);
+            classElement.getOwnedMembers()
+                    .forEach(e -> prependOuterActivityNameToNodesAndEdgesInActivities(e, separator));
         } else if (element instanceof Model modelElement) {
-            modelElement.getOwnedMembers().forEach(NameHelper::prependOuterActivityNameToNodesAndEdgesInActivities);
+            modelElement.getOwnedMembers()
+                    .forEach(e -> prependOuterActivityNameToNodesAndEdgesInActivities(e, separator));
         }
     }
 

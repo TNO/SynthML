@@ -133,7 +133,7 @@ public class Uml2GalTranslator {
         new FlattenUMLActivity(model).transform();
 
         // Prepend the name of the outer activity to the model elements in activities.
-        NameHelper.prependOuterActivityNameToNodesAndEdgesInActivities(model);
+        NameHelper.prependOuterActivityNameToNodesAndEdgesInActivities(model, "__");
 
         // Create GAL specification builders for translating the UML model, and reset from any previous translation.
         specificationBuilder = new GalSpecificationBuilder();
