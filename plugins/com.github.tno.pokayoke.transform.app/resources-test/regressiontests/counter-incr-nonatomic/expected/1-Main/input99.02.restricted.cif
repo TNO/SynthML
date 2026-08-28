@@ -1,0 +1,40 @@
+uncontrollable __node__DecisionNode__53__0;
+uncontrollable __node__DecisionNode__53__1;
+uncontrollable __node__MergeNode__54__0;
+uncontrollable __node__MergeNode__54__1;
+uncontrollable __node__CallBehaviorAction__56;
+uncontrollable __node__CallBehaviorAction__57;
+uncontrollable __node__CallBehaviorAction__58;
+uncontrollable __node__CallBehaviorAction__58__na_result_1;
+uncontrollable __node__CallBehaviorAction__58__na_result_2;
+plant automaton Context:
+  disc bool init = false;
+  disc int[0..3] count = 0;
+  disc bool __controlflow__42;
+  disc bool __controlflow__44;
+  disc bool __controlflow__46;
+  disc bool __controlflow__47;
+  disc bool __controlflow__48;
+  disc bool __controlflow__49;
+  disc bool __controlflow__50 = true;
+  disc bool __nonAtomicActive____node__CallBehaviorAction__58;
+  alg bool Pre = not init and count = 0;
+  alg bool __token_on_first_controlflow = __controlflow__50;
+  alg bool __precondition = Pre and __token_on_first_controlflow;
+  alg bool __token_on_last_controlflow = __controlflow__49;
+  alg bool __postcondition = __token_on_last_controlflow;
+  initial __precondition;
+  marked __postcondition;
+  location:
+    initial;
+    marked;
+    edge __node__DecisionNode__53__0 when true, __controlflow__46, not __controlflow__42, count = 1 or count = 3 do __controlflow__46 := false, __controlflow__42 := true;
+    edge __node__DecisionNode__53__1 when true, __controlflow__46, not __controlflow__44, count = 0 or count = 2 do __controlflow__46 := false, __controlflow__44 := true;
+    edge __node__MergeNode__54__0 when true, __controlflow__47, true, not __controlflow__49 do __controlflow__47 := false, __controlflow__49 := true;
+    edge __node__MergeNode__54__1 when true, __controlflow__48, true, not __controlflow__49 do __controlflow__48 := false, __controlflow__49 := true;
+    edge __node__CallBehaviorAction__56 when init, __controlflow__44, true, not __controlflow__47 do count := count + 1, __controlflow__44 := false, __controlflow__47 := true;
+    edge __node__CallBehaviorAction__57 when init, __controlflow__42, true, not __controlflow__48 do count := count + 2, __controlflow__42 := false, __controlflow__48 := true;
+    edge __node__CallBehaviorAction__58 when not init, __controlflow__50, true, not __controlflow__46, not __nonAtomicActive____node__CallBehaviorAction__58 do __controlflow__50 := false, __nonAtomicActive____node__CallBehaviorAction__58 := true;
+    edge __node__CallBehaviorAction__58__na_result_1 when not __controlflow__46, __nonAtomicActive____node__CallBehaviorAction__58 do init := true, count := 1, __controlflow__46 := true, __nonAtomicActive____node__CallBehaviorAction__58 := false;
+    edge __node__CallBehaviorAction__58__na_result_2 when not __controlflow__46, __nonAtomicActive____node__CallBehaviorAction__58 do init := true, count := 2, __controlflow__46 := true, __nonAtomicActive____node__CallBehaviorAction__58 := false;
+end

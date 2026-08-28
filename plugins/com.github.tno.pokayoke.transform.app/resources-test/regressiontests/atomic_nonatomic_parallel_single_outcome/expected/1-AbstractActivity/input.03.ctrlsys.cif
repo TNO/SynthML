@@ -2,8 +2,8 @@ controllable AtomicA;
 controllable NonAtomicB;
 uncontrollable NonAtomicB__na_result_1;
 plant automaton Machine:
-  disc bool a_executed in any;
-  disc bool b_executed in any;
+  disc bool a_executed = false;
+  disc bool b_executed = false;
   disc bool __nonAtomicActive__NonAtomicB;
   alg bool Precondition = not a_executed and not b_executed;
   alg bool __precondition = Precondition;

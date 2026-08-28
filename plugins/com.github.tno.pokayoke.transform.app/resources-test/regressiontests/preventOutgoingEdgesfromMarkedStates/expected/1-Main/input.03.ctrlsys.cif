@@ -1,7 +1,7 @@
 enum Number = First, Second, Third;
 controllable change;
 plant automaton Class:
-  disc Number element in any;
+  disc Number element = First;
   alg bool Pre = element = First;
   alg bool __precondition = Pre;
   alg bool Post = element = Second;

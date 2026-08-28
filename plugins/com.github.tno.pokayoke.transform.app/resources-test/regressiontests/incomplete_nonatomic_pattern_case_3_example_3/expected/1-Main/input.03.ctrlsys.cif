@@ -3,9 +3,9 @@ controllable do_b;
 uncontrollable do_b__na_result_1;
 controllable reset;
 plant automaton Context:
-  disc bool done_a in any;
-  disc bool done_b in any;
-  disc bool flag in any;
+  disc bool done_a = false;
+  disc bool done_b = false;
+  disc bool flag = false;
   disc bool __nonAtomicActive__do_b;
   alg bool Pre = not done_a and not done_b and not flag;
   alg bool __precondition = Pre;

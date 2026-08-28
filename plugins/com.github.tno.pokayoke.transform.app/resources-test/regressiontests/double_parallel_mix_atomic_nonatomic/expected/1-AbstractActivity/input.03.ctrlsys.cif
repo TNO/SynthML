@@ -11,10 +11,10 @@ controllable AtomicD;
 uncontrollable AtomicD__result_1;
 uncontrollable AtomicD__result_2;
 plant automaton Machine:
-  disc bool a_executed in any;
-  disc bool b_executed in any;
-  disc bool c_executed in any;
-  disc bool d_executed in any;
+  disc bool a_executed = false;
+  disc bool b_executed = false;
+  disc bool c_executed = false;
+  disc bool d_executed = false;
   disc int[0..2] __activeAction;
   disc bool __nonAtomicActive__NonAtomicA;
   disc bool __nonAtomicActive__NonAtomicC;

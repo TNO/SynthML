@@ -3,8 +3,8 @@ uncontrollable action1__result_1;
 uncontrollable action1__result_2;
 controllable action2;
 plant automaton Example:
-  disc bool field1 in any;
-  disc bool field2 in any;
+  disc bool field1 = false;
+  disc bool field2 = false;
   disc int[0..1] __activeAction;
   alg bool precondition = not field1 and not field2;
   alg bool __precondition = precondition;

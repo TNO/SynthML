@@ -1,0 +1,17 @@
+uncontrollable __node__CallBehaviorAction__31;
+plant automaton Class1:
+  disc bool flipped = false;
+  disc bool __controlflow__26;
+  disc bool __controlflow__27 = true;
+  alg bool precondition = not flipped;
+  alg bool __token_on_first_controlflow = __controlflow__27;
+  alg bool __precondition = precondition and __token_on_first_controlflow;
+  alg bool __token_on_last_controlflow = __controlflow__26;
+  alg bool __postcondition = __token_on_last_controlflow;
+  initial __precondition;
+  marked __postcondition;
+  location:
+    initial;
+    marked;
+    edge __node__CallBehaviorAction__31 when not flipped, __controlflow__27, true, not __controlflow__26 do flipped := true, __controlflow__27 := false, __controlflow__26 := true;
+end

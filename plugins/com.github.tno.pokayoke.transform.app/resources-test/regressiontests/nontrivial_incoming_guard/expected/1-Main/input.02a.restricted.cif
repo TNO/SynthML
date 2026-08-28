@@ -1,0 +1,20 @@
+controllable left;
+controllable right;
+plant automaton Context:
+  disc bool field1 in any;
+  disc bool field2 = false;
+  alg bool __precondition = true;
+  alg bool postcondition = field2;
+  alg bool __postcondition_without_structure = postcondition;
+  alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure;
+  initial __precondition;
+  marked __postcondition_with_structure;
+  location:
+    initial;
+    marked;
+    edge left when not field1 do field2 := true;
+    edge right when field1 do field2 := true;
+end
+requirement invariant Context.__postcondition_without_structure disables left;
+requirement invariant Context.__postcondition_without_structure disables right;
