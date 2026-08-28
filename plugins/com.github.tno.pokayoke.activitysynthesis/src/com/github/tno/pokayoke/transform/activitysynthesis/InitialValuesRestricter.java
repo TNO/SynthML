@@ -43,7 +43,8 @@ public class InitialValuesRestricter {
     }
 
     /**
-     * Restricts the initial values of CIF discrete variable declarations corresponding to UML properties, based on values they can have according to activity preconditions.
+     * Restricts the initial values of CIF discrete variable declarations corresponding to UML properties, based on
+     * values they can have according to activity preconditions.
      *
      * @param specification The CIF specification to update.
      * @param translator The UML-to-CIF translator used to determine variable restrictions.
@@ -69,9 +70,6 @@ public class InitialValuesRestricter {
         for (Entry<DiscVariable, List<Expression>> entry: varsToInitialValues.entrySet()) {
             DiscVariable cifVariable = entry.getKey();
             List<Expression> values = entry.getValue();
-
-            // Remove old CIF variable from the plant, update the CIF variable with the new default values, and add it
-            // back to the plant.
             cifVariable.setValue(CifConstructors.newVariableValue(null, values));
         }
     }
