@@ -43,8 +43,7 @@ public class InitialValuesRestricter {
     }
 
     /**
-     * Restricts the initial values of CIF variables based on activity preconditions and updates their default values in
-     * the CIF specification.
+     * Restricts the initial values of CIF discrete variable declarations corresponding to UML properties, based on values they can have according to activity preconditions.
      *
      * @param specification The CIF specification to update.
      * @param translator The UML-to-CIF translator used to determine variable restrictions.
@@ -66,7 +65,7 @@ public class InitialValuesRestricter {
         Map<DiscVariable, List<Expression>> varsToInitialValues = findRestrictedInitialValueVariables(cifBddSpec,
                 translator, converter, cifBddSpec.initialPlantInv);
 
-        // Set a new default value for all variables found.
+        // Restrict the possible initial values of the to-be-restricted variables.
         for (Entry<DiscVariable, List<Expression>> entry: varsToInitialValues.entrySet()) {
             DiscVariable cifVariable = entry.getKey();
             List<Expression> values = entry.getValue();
@@ -159,7 +158,7 @@ public class InitialValuesRestricter {
             BddBitVector<?, ?> valueVector = converter.convertExpr(value, true, cifBddSpec, null);
 
             // The representations of the variable and value bit vectors can be different. For instance,
-            // a signed variable may be assigned an non-negative (unsigned) value. Therefore, we ensure the
+            // a signed variable may be initialized to a non-negative (unsigned) value. Therefore, we ensure the
             // representations are compatible.
             Pair<BddBitVector<?, ?>, BddBitVector<?, ?>> vectors = BddBitVector.ensureCompatible(varVector,
                     valueVector);
