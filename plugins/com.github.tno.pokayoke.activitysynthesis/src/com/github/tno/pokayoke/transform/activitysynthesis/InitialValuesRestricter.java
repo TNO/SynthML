@@ -124,7 +124,8 @@ public class InitialValuesRestricter {
                 // The CIF variable can take no value at all. We give it the default value. This value will be
                 // disallowed by the initialization predicate. Adding a dummy value prevents the variable from being
                 // declared as having 'any value'.
-                varsToValues.put(cifVariable, new ArrayList<>(List.of(CifValueUtils.getDefaultValue(cifVariable.getType(), null))));
+                varsToValues.put(cifVariable,
+                        new ArrayList<>(List.of(CifValueUtils.getDefaultValue(cifVariable.getType(), null))));
             } else if (varsToValues.get(cifVariable).size() == allPossibleValues.size()) {
                 // Remove variables that can take any value.
                 varsToValues.remove(cifVariable);
