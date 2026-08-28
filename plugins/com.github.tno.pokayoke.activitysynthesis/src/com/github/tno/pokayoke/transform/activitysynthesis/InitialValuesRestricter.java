@@ -119,8 +119,14 @@ public class InitialValuesRestricter {
                 canHaveValueInInitialState.free();
             }
 
-            // Remove variables that can take any value.
-            if (varsToValues.getOrDefault(cifVariable, new ArrayList<>()).size() == allPossibleValues.size()) {
+            // Handle corner cases: the variable has no possible values or it can take all possible values.
+            if (varsToValues.get(cifVariable) == null) {
+                // If the CIF variable can take no value at all, give it the default value. This value will not be
+                // considered anyway, but helps with later processing during the state space generation.
+                varsToValues.computeIfAbsent(cifVariable, k -> new ArrayList<>())
+                        .add(CifValueUtils.getDefaultValue(cifVariable.getType(), null));
+            } else if (varsToValues.get(cifVariable).size() == allPossibleValues.size()) {
+                // Remove variables that can take any value.
                 varsToValues.remove(cifVariable);
             }
         }
