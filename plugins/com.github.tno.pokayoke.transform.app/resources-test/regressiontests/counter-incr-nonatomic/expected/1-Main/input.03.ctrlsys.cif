@@ -4,8 +4,8 @@ uncontrollable initialize__na_result_2;
 controllable incr1;
 controllable incr2;
 plant automaton Context:
-  disc bool init in any;
-  disc int[0..3] count in any;
+  disc bool init = false;
+  disc int[0..3] count = 0;
   disc bool __nonAtomicActive__initialize;
   alg bool Pre = not init and count = 0;
   alg bool __precondition = Pre;

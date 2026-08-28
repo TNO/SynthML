@@ -1,0 +1,55 @@
+controllable AtomicA;
+uncontrollable AtomicA__result_1;
+uncontrollable AtomicA__result_2;
+controllable NonAtomicB;
+uncontrollable NonAtomicB__na_result_1;
+uncontrollable NonAtomicB__na_result_2;
+plant automaton Machine:
+  disc bool a_executed = false;
+  disc bool b_executed = false;
+  disc int[0..1] __activeAction;
+  disc bool __nonAtomicActive__NonAtomicB;
+  alg bool Precondition = not a_executed and not b_executed;
+  alg bool __precondition = Precondition;
+  alg bool Postcondition = a_executed = true and b_executed = true;
+  alg bool __postcondition_without_structure__nonAtomicActive__NonAtomicB = not __nonAtomicActive__NonAtomicB;
+  alg bool __postcondition_without_structure__activeAction = __activeAction = 0;
+  alg bool __postcondition_without_structure__IntervalConstraintA__32__AtomicA__40 = IntervalConstraintA__32__AtomicA__40.__occurrences >= 0;
+  alg bool __postcondition_without_structure__IntervalConstraintB__36__NonAtomicB__42 = IntervalConstraintB__36__NonAtomicB__42.__occurrences >= 0;
+  alg bool __postcondition_without_structure = Postcondition and __postcondition_without_structure__nonAtomicActive__NonAtomicB and (__postcondition_without_structure__activeAction and (__postcondition_without_structure__IntervalConstraintA__32__AtomicA__40 and __postcondition_without_structure__IntervalConstraintB__36__NonAtomicB__42));
+  alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure;
+  initial __precondition;
+  marked __postcondition_with_structure;
+  location:
+    initial;
+    marked;
+    edge AtomicA when true, __activeAction = 0 do __activeAction := 1;
+    edge AtomicA__result_1 when __activeAction = 1 do a_executed := true, __activeAction := 0;
+    edge AtomicA__result_2 when __activeAction = 1 do a_executed := true, __activeAction := 0;
+    edge NonAtomicB when true, __activeAction = 0, not __nonAtomicActive__NonAtomicB do __nonAtomicActive__NonAtomicB := true;
+    edge NonAtomicB__na_result_1 when __activeAction = 0, __nonAtomicActive__NonAtomicB do b_executed := true, __nonAtomicActive__NonAtomicB := false;
+    edge NonAtomicB__na_result_2 when __activeAction = 0, __nonAtomicActive__NonAtomicB do b_executed := true, __nonAtomicActive__NonAtomicB := false;
+end
+requirement automaton IntervalConstraintA__32__AtomicA__40:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+    edge AtomicA when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+requirement automaton IntervalConstraintB__36__NonAtomicB__42:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+    edge NonAtomicB when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+requirement invariant Machine.__postcondition_without_structure disables AtomicA;
+requirement invariant Machine.__postcondition_without_structure disables AtomicA__result_1;
+requirement invariant Machine.__postcondition_without_structure disables AtomicA__result_2;
+requirement invariant Machine.__postcondition_without_structure disables NonAtomicB;
+requirement invariant Machine.__postcondition_without_structure disables NonAtomicB__na_result_1;
+requirement invariant Machine.__postcondition_without_structure disables NonAtomicB__na_result_2;

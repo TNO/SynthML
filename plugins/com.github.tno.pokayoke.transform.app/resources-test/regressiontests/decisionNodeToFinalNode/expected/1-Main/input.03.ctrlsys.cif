@@ -2,7 +2,7 @@ controllable action;
 uncontrollable action__result_1;
 uncontrollable action__result_2;
 plant automaton Context:
-  disc bool field in any;
+  disc bool field = false;
   disc int[0..1] __activeAction;
   alg bool precondition = not field;
   alg bool __precondition = precondition;

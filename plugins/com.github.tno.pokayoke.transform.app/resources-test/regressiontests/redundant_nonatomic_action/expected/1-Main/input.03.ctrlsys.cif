@@ -4,8 +4,8 @@ uncontrollable do_a__result_2;
 controllable do_b;
 uncontrollable do_b__na_result_1;
 plant automaton Context:
-  disc bool done_a in any;
-  disc bool done_b in any;
+  disc bool done_a = false;
+  disc bool done_b = false;
   disc int[0..1] __activeAction;
   disc bool __nonAtomicActive__do_b;
   alg bool Pre = not done_a and not done_b;
