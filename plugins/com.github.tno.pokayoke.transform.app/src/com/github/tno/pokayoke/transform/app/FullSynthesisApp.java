@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.escet.cif.bdd.spec.CifBddSpec;
-import org.eclipse.escet.cif.cif2cif.ElimIfUpdates;
 import org.eclipse.escet.cif.common.CifCollectUtils;
 import org.eclipse.escet.cif.common.CifTextUtils;
 import org.eclipse.escet.cif.datasynth.CifDataSynthesisResult;
@@ -142,19 +141,8 @@ public class FullSynthesisApp {
             AppEnv.unregisterApplication();
         }
 
-        // Post-process the CIF specification to eliminate all if-updates.
-        ElimIfUpdates elimIfUpdates = new ElimIfUpdates();
-        elimIfUpdates.transform(cifSpec);
-        Path cifPostProcessedSpecPath = outputFolderPath.resolve(filePrefix + ".02.postprocessed.cif");
-        try {
-            AppEnv.registerSimple();
-            CifWriter.writeCifSpec(cifSpec, makePathPair(cifPostProcessedSpecPath), outputFolderPath.toString());
-        } finally {
-            AppEnv.unregisterApplication();
-        }
-
         // Restrict the UML properties default values according to the activity precondition, if possible.
-        Path cifRestrictedSpecPath = outputFolderPath.resolve(filePrefix + ".02a.restricted.cif");
+        Path cifRestrictedSpecPath = outputFolderPath.resolve(filePrefix + ".02.restricted.cif");
         InitialValuesRestricter.restrict(cifSpec, umlToCifTranslator, cifRestrictedSpecPath);
         try {
             AppEnv.registerSimple();
@@ -336,23 +324,10 @@ public class FullSynthesisApp {
             AppEnv.unregisterApplication();
         }
 
-        // Post-process the CIF specification to eliminate all if-updates.
-        ElimIfUpdates elimIfUpdatesGuardComputation = new ElimIfUpdates();
-        elimIfUpdatesGuardComputation.transform(cifTranslatedActivity);
-        Path cifPostProcessedGuardComputation = outputFolderPath
-                .resolve(filePrefix + ".20.guardcomputation.postprocessed.cif");
-        try {
-            AppEnv.registerSimple();
-            CifWriter.writeCifSpec(cifTranslatedActivity, makePathPair(cifPostProcessedGuardComputation),
-                    outputFolderPath.toString());
-        } finally {
-            AppEnv.unregisterApplication();
-        }
-
         // Computing guards.
         new GuardComputation(umlActivityToCifTranslator, tracker).computeGuards(cifTranslatedActivity,
                 umlActivityToCifPath);
-        Path umlGuardsOutputPath = outputFolderPath.resolve(filePrefix + ".21.guardsadded.uml");
+        Path umlGuardsOutputPath = outputFolderPath.resolve(filePrefix + ".20.guardsadded.uml");
         FileHelper.storeModel(umlActivityToCifTranslator.getActivity().getModel(), umlGuardsOutputPath.toString());
 
         // Validate the output UML model.
