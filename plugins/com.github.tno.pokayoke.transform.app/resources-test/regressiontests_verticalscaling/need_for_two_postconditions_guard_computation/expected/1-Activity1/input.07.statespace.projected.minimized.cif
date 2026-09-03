@@ -1,0 +1,29 @@
+controllable __node__InitialNode__32__0;
+uncontrollable __node__ActivityFinalNode__34__0;
+uncontrollable __node__CallBehaviorAction__36;
+controllable __start;
+controllable __end;
+automaton minimal:
+  alphabet __node__InitialNode__32__0, __node__ActivityFinalNode__34__0, __node__CallBehaviorAction__36, __start, __end;
+  @state(projected: "s1")
+  location s1:
+    initial;
+    edge __start goto s2;
+  @state(projected: "s2")
+  location s2:
+    edge __end goto s3;
+    edge __node__InitialNode__32__0 goto s4;
+  @state(projected: "s3")
+  location s3:
+    marked;
+  @state(projected: "s4")
+  location s4:
+    edge __node__CallBehaviorAction__36 goto s6;
+  @state(projected: "s6")
+  location s5:
+    edge __node__ActivityFinalNode__34__0 goto s4;
+  @state(projected: "s5")
+  location s6:
+    edge __node__ActivityFinalNode__34__0 goto s2;
+    edge __node__InitialNode__32__0 goto s5;
+end

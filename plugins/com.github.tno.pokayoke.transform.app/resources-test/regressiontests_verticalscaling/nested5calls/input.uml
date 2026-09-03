@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:SynthML="https://github.com/TNO/SynthML/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="_ksAgUJU3EfCr1O28ReXLFg" name="NewModel">
+    <packagedElement xmi:type="uml:Class" xmi:id="_0HrkIJU3EfCr1O28ReXLFg" name="Class1" classifierBehavior="_Iw5D0JU4EfCr1O28ReXLFg" isActive="true">
+      <ownedAttribute xmi:id="_1hkIMJU3EfCr1O28ReXLFg" name="v1">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_3zw0UZU3EfCr1O28ReXLFg" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_3zxbYJU3EfCr1O28ReXLFg" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_76-hUJU3EfCr1O28ReXLFg">
+          <language>CIF</language>
+          <body>false</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_4mLvwJU3EfCr1O28ReXLFg" name="v2">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_479LcJU3EfCr1O28ReXLFg" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_479LcZU3EfCr1O28ReXLFg" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_8dYq0JU3EfCr1O28ReXLFg">
+          <language>CIF</language>
+          <body>false</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_9KTbMJU3EfCr1O28ReXLFg" name="v3">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_9uRD4JU3EfCr1O28ReXLFg" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_9uRD4ZU3EfCr1O28ReXLFg" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_-NA1YJU3EfCr1O28ReXLFg">
+          <language>CIF</language>
+          <body>false</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_-8yFcJU3EfCr1O28ReXLFg" name="v4">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="__UI1gJU3EfCr1O28ReXLFg" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="__UI1gZU3EfCr1O28ReXLFg" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="__0sk4JU3EfCr1O28ReXLFg">
+          <language>CIF</language>
+          <body>false</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_AdK6IJU4EfCr1O28ReXLFg" name="v5">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_A1xAUJU4EfCr1O28ReXLFg" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_A1xAUZU4EfCr1O28ReXLFg" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_BSf_oJU4EfCr1O28ReXLFg">
+          <language>CIF</language>
+          <body>false</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_DeO3YJU4EfCr1O28ReXLFg" name="flip1"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_bRTrAJU4EfCr1O28ReXLFg" name="flip2"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_f5mr0JU4EfCr1O28ReXLFg" name="flip3"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_j2gmQJU4EfCr1O28ReXLFg" name="flip4"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_nGwPAJU4EfCr1O28ReXLFg" name="flip5"/>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_Iw5D0JU4EfCr1O28ReXLFg" name="Activity1" isAbstract="true" postcondition="_OhmeMJU4EfCr1O28ReXLFg" precondition="_KIX0IJU4EfCr1O28ReXLFg">
+        <ownedRule xmi:id="_KIX0IJU4EfCr1O28ReXLFg" name="precondition1">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="_T-8gkNwZEfCxbuj7Gct2Mg">
+            <language>CIF</language>
+            <body>not v1</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:id="_OhmeMJU4EfCr1O28ReXLFg" name="postcondition1">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="_XlX0sNwZEfCxbuj7Gct2Mg">
+            <language>CIF</language>
+            <body>v1</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="_4NFBUJU5EfCr1O28ReXLFg" name="ZeroCalls" constrainedElement="_D60QQJU5EfCr1O28ReYLFg _D60QQJU5EfCr1O28ReZLFg _D60QQJU5EfCr1O28ReULFg _RBtYkJU6EfCr1O28ReXLFg _bRTrAJU4EfCr1O28ReXLFg _f5mr0JU4EfCr1O28ReXLFg _j2gmQJU4EfCr1O28ReXLFg _nGwPAJU4EfCr1O28ReXLFg">
+          <specification xmi:type="uml:Interval" xmi:id="_9Lk7oJU5EfCr1O28ReXLFg" name="" max="_U5hCgJU4EfCr1O28ReXLFg" min="_U5hCgJU4EfCr1O28ReXLFg"/>
+        </ownedRule>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_RBtYkJU6EfCr1O28ReXLFg" name="Activity2" isAbstract="true" postcondition="_XqJsMJU6EfCr1O28ReXLFg" precondition="_TBzoEJU6EfCr1O28ReXLFg">
+        <ownedRule xmi:id="_TBzoEJU6EfCr1O28ReXLFg" name="precondition2">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="_VGTxQNwZEfCxbuj7Gct2Mg">
+            <language>CIF</language>
+            <body>not v2 and not v1</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:id="_XqJsMJU6EfCr1O28ReXLFg" name="postcondition2">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="_W9ShANwZEfCxbuj7Gct2Mg">
+            <language>CIF</language>
+            <body>v2 and v1</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="_c650IJU6EfCr1O28ReXLFg" name="ZeroCalls" constrainedElement="_D60QQJU5EfCr1O28ReYLFg _D60QQJU5EfCr1O28ReZLFg _D60QQJU5EfCr1O28ReULFg _DeO3YJU4EfCr1O28ReXLFg _f5mr0JU4EfCr1O28ReXLFg _j2gmQJU4EfCr1O28ReXLFg _nGwPAJU4EfCr1O28ReXLFg">
+          <specification xmi:type="uml:Interval" xmi:id="_gQMU8JU6EfCr1O28ReXLFg" name="" max="_U5hCgJU4EfCr1O28ReXLFg" min="_U5hCgJU4EfCr1O28ReXLFg"/>
+        </ownedRule>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_D60QQJU5EfCr1O28ReYLFg" name="Activity3" isAbstract="true" postcondition="_RLJzAJU7EfCr1O28ReXLFg" precondition="_L0FnsJU7EfCr1O28ReXLFg">
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="_CL5a4JU6EfCr1O28ReXLFg" name="ZeroCalls" constrainedElement="_D60QQJU5EfCr1O28ReZLFg _D60QQJU5EfCr1O28ReULFg _DeO3YJU4EfCr1O28ReXLFg _bRTrAJU4EfCr1O28ReXLFg _j2gmQJU4EfCr1O28ReXLFg _nGwPAJU4EfCr1O28ReXLFg _Iw5D0JU4EfCr1O28ReXLFg">
+          <specification xmi:type="uml:Interval" xmi:id="_Fxx8cJU6EfCr1O28ReXLFg" name="Interval1" max="_U5hCgJU4EfCr1O28ReXLFg" min="_U5hCgJU4EfCr1O28ReXLFg"/>
+        </ownedRule>
+        <ownedRule xmi:id="_L0FnsJU7EfCr1O28ReXLFg" name="precondition3">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="_YvL8cNwZEfCxbuj7Gct2Mg">
+            <language>CIF</language>
+            <body>not v3 and not v2 and not v1</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:id="_RLJzAJU7EfCr1O28ReXLFg" name="postcondition3">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="_ZbUCoNwZEfCxbuj7Gct2Mg">
+            <language>CIF</language>
+            <body>v3 and v2 and v1</body>
+          </specification>
+        </ownedRule>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_D60QQJU5EfCr1O28ReZLFg" name="Activity4" isAbstract="true" postcondition="_fhat8JU7EfCr1O28ReXLFg" precondition="_ak_QMJU7EfCr1O28ReXLFg">
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="_JF9C8JU6EfCr1O28ReXLFg" name="ZeroCalls" constrainedElement="_D60QQJU5EfCr1O28ReULFg _DeO3YJU4EfCr1O28ReXLFg _bRTrAJU4EfCr1O28ReXLFg _f5mr0JU4EfCr1O28ReXLFg _nGwPAJU4EfCr1O28ReXLFg _Iw5D0JU4EfCr1O28ReXLFg _RBtYkJU6EfCr1O28ReXLFg">
+          <specification xmi:type="uml:Interval" xmi:id="_Lv1PQJU6EfCr1O28ReXLFg" name="Interval1" max="_U5hCgJU4EfCr1O28ReXLFg" min="_U5hCgJU4EfCr1O28ReXLFg"/>
+        </ownedRule>
+        <ownedRule xmi:id="_ak_QMJU7EfCr1O28ReXLFg" name="precondition4">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="_afXgoNwZEfCxbuj7Gct2Mg">
+            <language>CIF</language>
+            <body>not v4 and not v3 and not v2 and not v1</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:id="_fhat8JU7EfCr1O28ReXLFg" name="postcondition4">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="_bF-NoNwZEfCxbuj7Gct2Mg">
+            <language>CIF</language>
+            <body>v4 and v3 and v2 and v1</body>
+          </specification>
+        </ownedRule>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_D60QQJU5EfCr1O28ReULFg" name="Activity5" isAbstract="true" postcondition="_oOvqcJU7EfCr1O28ReXLFg" precondition="_jmbbgJU7EfCr1O28ReXLFg">
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="_qiS24JU6EfCr1O28ReXLFg" name="ZeroCalls" constrainedElement="_DeO3YJU4EfCr1O28ReXLFg _bRTrAJU4EfCr1O28ReXLFg _f5mr0JU4EfCr1O28ReXLFg _j2gmQJU4EfCr1O28ReXLFg _Iw5D0JU4EfCr1O28ReXLFg _RBtYkJU6EfCr1O28ReXLFg _D60QQJU5EfCr1O28ReYLFg">
+          <specification xmi:type="uml:Interval" xmi:id="_tnVVMJU6EfCr1O28ReXLFg" name="" max="_U5hCgJU4EfCr1O28ReXLFg" min="_U5hCgJU4EfCr1O28ReXLFg"/>
+        </ownedRule>
+        <ownedRule xmi:id="_jmbbgJU7EfCr1O28ReXLFg" name="precondition5">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="_b7jx0NwZEfCxbuj7Gct2Mg">
+            <language>CIF</language>
+            <body>not v5 and not v4 and not v3 and not v2 and not v1</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:id="_oOvqcJU7EfCr1O28ReXLFg" name="postcondition5">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="_ctBrANwZEfCxbuj7Gct2Mg">
+            <language>CIF</language>
+            <body>v5 and v4 and v3 and v2 and v1</body>
+          </specification>
+        </ownedRule>
+      </ownedBehavior>
+    </packagedElement>
+    <packagedElement xmi:type="uml:LiteralInteger" xmi:id="_U5hCgJU4EfCr1O28ReXLFg" name="LiteralZero"/>
+    <profileApplication xmi:id="_3ztxAJU3EfCr1O28ReXLFg">
+      <eAnnotations xmi:id="_3zw0UJU3EfCr1O28ReXLFg" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/SynthML/#/"/>
+      </eAnnotations>
+      <appliedProfile href="platform:/plugin/com.github.tno.synthml.uml.profile.plugin/model/synthml.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+    </profileApplication>
+  </uml:Model>
+  <SynthML:FormalElement xmi:id="_FVabcJU4EfCr1O28ReXLFg" guard="not v1" base_RedefinableElement="_DeO3YJU4EfCr1O28ReXLFg">
+    <effects>v1 := true</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="_c0y3AJU4EfCr1O28ReXLFg" guard="not v2" base_RedefinableElement="_bRTrAJU4EfCr1O28ReXLFg" atomic="true">
+    <effects>v2 := true</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="_grolsJU4EfCr1O28ReXLFg" guard="not v3" base_RedefinableElement="_f5mr0JU4EfCr1O28ReXLFg" atomic="true">
+    <effects>v3 := true</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="_k04TAJU4EfCr1O28ReXLFg" guard="not v4" base_RedefinableElement="_j2gmQJU4EfCr1O28ReXLFg">
+    <effects>v4 := true</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="_oWLPgJU4EfCr1O28ReXLFg" guard="not v5" base_RedefinableElement="_nGwPAJU4EfCr1O28ReXLFg" atomic="true">
+    <effects>v5 := true</effects>
+  </SynthML:FormalElement>
+  <SynthML:SynthesisPrecondition xmi:id="_Tk5o4NwZEfCxbuj7Gct2Mg" base_Constraint="_KIX0IJU4EfCr1O28ReXLFg"/>
+  <SynthML:SynthesisPrecondition xmi:id="_UpAKMNwZEfCxbuj7Gct2Mg" base_Constraint="_TBzoEJU6EfCr1O28ReXLFg"/>
+  <SynthML:Postcondition xmi:id="_WLWtwNwZEfCxbuj7Gct2Mg" base_Constraint="_XqJsMJU6EfCr1O28ReXLFg"/>
+  <SynthML:Postcondition xmi:id="_XMk6MNwZEfCxbuj7Gct2Mg" base_Constraint="_OhmeMJU4EfCr1O28ReXLFg"/>
+  <SynthML:SynthesisPrecondition xmi:id="_YLhOsNwZEfCxbuj7Gct2Mg" base_Constraint="_L0FnsJU7EfCr1O28ReXLFg"/>
+  <SynthML:Postcondition xmi:id="_ZAkAUNwZEfCxbuj7Gct2Mg" base_Constraint="_RLJzAJU7EfCr1O28ReXLFg"/>
+  <SynthML:SynthesisPrecondition xmi:id="_aHd-ANwZEfCxbuj7Gct2Mg" base_Constraint="_ak_QMJU7EfCr1O28ReXLFg"/>
+  <SynthML:Postcondition xmi:id="_atNIUNwZEfCxbuj7Gct2Mg" base_Constraint="_fhat8JU7EfCr1O28ReXLFg"/>
+  <SynthML:SynthesisPrecondition xmi:id="_bjrdUNwZEfCxbuj7Gct2Mg" base_Constraint="_jmbbgJU7EfCr1O28ReXLFg"/>
+  <SynthML:Postcondition xmi:id="_cWah0NwZEfCxbuj7Gct2Mg" base_Constraint="_oOvqcJU7EfCr1O28ReXLFg"/>
+</xmi:XMI>

@@ -1,0 +1,74 @@
+controllable flip3;
+uncontrollable __node__MergeNode__210__0;
+uncontrollable __node__DecisionNode__212__0;
+controllable __node__InitialNode__214__0;
+uncontrollable __node__ActivityFinalNode__216__0;
+uncontrollable __node__JoinNode__218;
+uncontrollable __node__ForkNode__220;
+uncontrollable __node__CallBehaviorAction__222;
+uncontrollable __node__CallBehaviorAction__222__na_result_1;
+uncontrollable __node__CallBehaviorAction__224;
+plant automaton Class1:
+  disc bool v1 = false;
+  disc bool v2 = false;
+  disc bool v3 = false;
+  disc bool v4 = false;
+  disc bool v5 = false;
+  disc bool __controlflow__184;
+  disc bool __controlflow__186;
+  disc bool __controlflow__188;
+  disc bool __controlflow__192;
+  disc bool __controlflow__194;
+  disc bool __controlflow__198;
+  disc bool __controlflow__200;
+  disc bool __controlflow__205;
+  disc bool __nonAtomicActive____node__CallBehaviorAction__222;
+  alg bool precondition3 = not v3 and not v2 and not v1;
+  alg bool __precondition = precondition3;
+  alg bool postcondition3 = v3 and v2 and v1;
+  alg bool __postcondition_without_structure__nonAtomicActive____node__CallBehaviorAction__222 = not __nonAtomicActive____node__CallBehaviorAction__222;
+  alg bool __postcondition_without_structure = postcondition3 and __postcondition_without_structure__nonAtomicActive____node__CallBehaviorAction__222;
+  alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
+  alg bool __postcondition_with_structure__controlflow__184 = not __controlflow__184;
+  alg bool __postcondition_with_structure__controlflow__186 = not __controlflow__186;
+  alg bool __postcondition_with_structure__controlflow__188 = not __controlflow__188;
+  alg bool __postcondition_with_structure__controlflow__192 = not __controlflow__192;
+  alg bool __postcondition_with_structure__controlflow__194 = not __controlflow__194;
+  alg bool __postcondition_with_structure__controlflow__198 = not __controlflow__198;
+  alg bool __postcondition_with_structure__controlflow__200 = not __controlflow__200;
+  alg bool __postcondition_with_structure__controlflow__205 = not __controlflow__205;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure and __postcondition_with_structure__controlflow__184 and (__postcondition_with_structure__controlflow__186 and __postcondition_with_structure__controlflow__188) and (__postcondition_with_structure__controlflow__192 and __postcondition_with_structure__controlflow__194 and (__postcondition_with_structure__controlflow__198 and (__postcondition_with_structure__controlflow__200 and __postcondition_with_structure__controlflow__205)));
+  initial __precondition;
+  marked __postcondition_with_structure;
+  location:
+    initial;
+    marked;
+    edge flip3 when not v3 do v3 := true;
+    edge __node__MergeNode__210__0 when true, __controlflow__194, true, not __controlflow__198 do __controlflow__194 := false, __controlflow__198 := true;
+    edge __node__DecisionNode__212__0 when true, __controlflow__184, not __controlflow__188 do __controlflow__184 := false, __controlflow__188 := true;
+    edge __node__InitialNode__214__0 when true, not __controlflow__205 do __controlflow__205 := true;
+    edge __node__ActivityFinalNode__216__0 when true, __controlflow__200, true, v2 and v1 do __controlflow__200 := false;
+    edge __node__JoinNode__218 when true, __controlflow__192, __controlflow__198, not __controlflow__200 do __controlflow__192 := false, __controlflow__198 := false, __controlflow__200 := true;
+    edge __node__ForkNode__220 when true, __controlflow__205, true, not __controlflow__184, not __controlflow__186 do __controlflow__205 := false, __controlflow__184 := true, __controlflow__186 := true;
+    edge __node__CallBehaviorAction__222 when not v1, __controlflow__188, true, not __controlflow__194, not __nonAtomicActive____node__CallBehaviorAction__222 do __controlflow__188 := false, __nonAtomicActive____node__CallBehaviorAction__222 := true;
+    edge __node__CallBehaviorAction__222__na_result_1 when not __controlflow__194, __nonAtomicActive____node__CallBehaviorAction__222 do v1 := true, __controlflow__194 := true, __nonAtomicActive____node__CallBehaviorAction__222 := false;
+    edge __node__CallBehaviorAction__224 when not v2, __controlflow__186, true, not __controlflow__192 do v2 := true, __controlflow__186 := false, __controlflow__192 := true;
+end
+supervisor automaton sup:
+  alphabet flip3, __node__InitialNode__214__0;
+  location:
+    initial;
+    marked;
+    edge __node__InitialNode__214__0 when not Class1.__controlflow__184 and (not Class1.__controlflow__186 and not Class1.__controlflow__188) and (not Class1.__controlflow__192 and (not Class1.__controlflow__200 and not Class1.v1));
+    edge flip3 when true;
+end
+supervisor invariant Class1.__postcondition_without_structure disables flip3;
+supervisor invariant Class1.__postcondition_with_structure disables __node__MergeNode__210__0;
+supervisor invariant Class1.__postcondition_with_structure disables __node__DecisionNode__212__0;
+supervisor invariant Class1.__postcondition_without_structure disables __node__InitialNode__214__0;
+supervisor invariant Class1.__postcondition_with_structure disables __node__ActivityFinalNode__216__0;
+supervisor invariant Class1.__postcondition_with_structure disables __node__JoinNode__218;
+supervisor invariant Class1.__postcondition_with_structure disables __node__ForkNode__220;
+supervisor invariant Class1.__postcondition_with_structure disables __node__CallBehaviorAction__222;
+supervisor invariant Class1.__postcondition_with_structure disables __node__CallBehaviorAction__222__na_result_1;
+supervisor invariant Class1.__postcondition_with_structure disables __node__CallBehaviorAction__224;

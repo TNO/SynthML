@@ -1,0 +1,35 @@
+controllable __node__InitialNode__32__0;
+uncontrollable __node__ActivityFinalNode__34__0;
+uncontrollable __node__CallBehaviorAction__36;
+uncontrollable __node__CallBehaviorAction__36__result_1;
+uncontrollable __node__CallBehaviorAction__36__result_2;
+plant automaton Class1:
+  disc bool val in any;
+  disc bool __controlflow__26;
+  disc bool __controlflow__29;
+  disc int[0..1] __activeAction;
+  alg bool precondition = true;
+  alg bool __precondition = precondition;
+  alg bool postcondition = val;
+  alg bool __postcondition_without_structure__activeAction = __activeAction = 0;
+  alg bool __postcondition_without_structure = postcondition and __postcondition_without_structure__activeAction;
+  alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
+  alg bool __postcondition_with_structure__controlflow__26 = not __controlflow__26;
+  alg bool __postcondition_with_structure__controlflow__29 = not __controlflow__29;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure and (__postcondition_with_structure__controlflow__26 and __postcondition_with_structure__controlflow__29);
+  initial __precondition;
+  marked __postcondition_with_structure;
+  location:
+    initial;
+    marked;
+    edge __node__InitialNode__32__0 when true, not __controlflow__26, __activeAction = 0 do __controlflow__26 := true;
+    edge __node__ActivityFinalNode__34__0 when true, __controlflow__29, __activeAction = 0 do __controlflow__29 := false;
+    edge __node__CallBehaviorAction__36 when true, __controlflow__26, not __controlflow__29, __activeAction = 0 do __controlflow__26 := false, __activeAction := 1;
+    edge __node__CallBehaviorAction__36__result_1 when not __controlflow__29, __activeAction = 1 do val := true, __controlflow__29 := true, __activeAction := 0;
+    edge __node__CallBehaviorAction__36__result_2 when not __controlflow__29, __activeAction = 1 do val := false, __controlflow__29 := true, __activeAction := 0;
+end
+requirement invariant Class1.__postcondition_without_structure disables __node__InitialNode__32__0;
+requirement invariant Class1.__postcondition_with_structure disables __node__ActivityFinalNode__34__0;
+requirement invariant Class1.__postcondition_with_structure disables __node__CallBehaviorAction__36;
+requirement invariant Class1.__postcondition_with_structure disables __node__CallBehaviorAction__36__result_1;
+requirement invariant Class1.__postcondition_with_structure disables __node__CallBehaviorAction__36__result_2;

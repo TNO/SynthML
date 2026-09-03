@@ -1,0 +1,65 @@
+controllable __node__InitialNode__76__0;
+uncontrollable __node__DecisionNode__78__0;
+uncontrollable __node__DecisionNode__78__1;
+uncontrollable __node__MergeNode__80__0;
+uncontrollable __node__MergeNode__80__1;
+uncontrollable __node__ActivityFinalNode__82__0;
+uncontrollable __node__CallBehaviorAction__84;
+uncontrollable __node__CallBehaviorAction__86;
+uncontrollable __node__CallBehaviorAction__86__result_1;
+uncontrollable __node__CallBehaviorAction__86__result_2;
+plant automaton ActiveClass:
+  disc bool init = false;
+  disc bool bit in any;
+  disc bool __controlflow__56;
+  disc bool __controlflow__60;
+  disc bool __controlflow__62;
+  disc bool __controlflow__65;
+  disc bool __controlflow__67;
+  disc bool __controlflow__71;
+  disc int[0..1] __activeAction;
+  alg bool __precondition = true;
+  alg bool postcondition2 = bit and init;
+  alg bool __postcondition_without_structure__activeAction = __activeAction = 0;
+  alg bool __postcondition_without_structure = postcondition2 and __postcondition_without_structure__activeAction;
+  alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
+  alg bool __postcondition_with_structure__controlflow__56 = not __controlflow__56;
+  alg bool __postcondition_with_structure__controlflow__60 = not __controlflow__60;
+  alg bool __postcondition_with_structure__controlflow__62 = not __controlflow__62;
+  alg bool __postcondition_with_structure__controlflow__65 = not __controlflow__65;
+  alg bool __postcondition_with_structure__controlflow__67 = not __controlflow__67;
+  alg bool __postcondition_with_structure__controlflow__71 = not __controlflow__71;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure and (__postcondition_with_structure__controlflow__56 and __postcondition_with_structure__controlflow__60) and (__postcondition_with_structure__controlflow__62 and __postcondition_with_structure__controlflow__65 and (__postcondition_with_structure__controlflow__67 and __postcondition_with_structure__controlflow__71));
+  initial __precondition;
+  marked __postcondition_with_structure;
+  location:
+    initial;
+    marked;
+    edge __node__InitialNode__76__0 when true, not __controlflow__71, not init or init, __activeAction = 0 do __controlflow__71 := true;
+    edge __node__DecisionNode__78__0 when true, __controlflow__60, not __controlflow__56, not bit, __activeAction = 0 do __controlflow__60 := false, __controlflow__56 := true;
+    edge __node__DecisionNode__78__1 when true, __controlflow__60, not __controlflow__67, bit, __activeAction = 0 do __controlflow__60 := false, __controlflow__67 := true;
+    edge __node__MergeNode__80__0 when true, __controlflow__65, true, not __controlflow__62, __activeAction = 0 do __controlflow__65 := false, __controlflow__62 := true;
+    edge __node__MergeNode__80__1 when true, __controlflow__67, true, not __controlflow__62, __activeAction = 0 do __controlflow__67 := false, __controlflow__62 := true;
+    edge __node__ActivityFinalNode__82__0 when true, __controlflow__62, true, bit and init, __activeAction = 0 do __controlflow__62 := false;
+    edge __node__CallBehaviorAction__84 when init, __controlflow__56, true, not __controlflow__65, __activeAction = 0 do bit := not bit, __controlflow__56 := false, __controlflow__65 := true;
+    edge __node__CallBehaviorAction__86 when not init, __controlflow__71, true, not __controlflow__60, __activeAction = 0 do __controlflow__71 := false, __activeAction := 1;
+    edge __node__CallBehaviorAction__86__result_1 when not __controlflow__60, __activeAction = 1 do init := true, bit := true, __controlflow__60 := true, __activeAction := 0;
+    edge __node__CallBehaviorAction__86__result_2 when not __controlflow__60, __activeAction = 1 do init := true, bit := false, __controlflow__60 := true, __activeAction := 0;
+end
+supervisor automaton sup:
+  alphabet __node__InitialNode__76__0;
+  location:
+    initial;
+    marked;
+    edge __node__InitialNode__76__0 when not ActiveClass.init;
+end
+supervisor invariant ActiveClass.__postcondition_without_structure disables __node__InitialNode__76__0;
+supervisor invariant ActiveClass.__postcondition_with_structure disables __node__DecisionNode__78__0;
+supervisor invariant ActiveClass.__postcondition_with_structure disables __node__DecisionNode__78__1;
+supervisor invariant ActiveClass.__postcondition_with_structure disables __node__MergeNode__80__0;
+supervisor invariant ActiveClass.__postcondition_with_structure disables __node__MergeNode__80__1;
+supervisor invariant ActiveClass.__postcondition_with_structure disables __node__ActivityFinalNode__82__0;
+supervisor invariant ActiveClass.__postcondition_with_structure disables __node__CallBehaviorAction__84;
+supervisor invariant ActiveClass.__postcondition_with_structure disables __node__CallBehaviorAction__86;
+supervisor invariant ActiveClass.__postcondition_with_structure disables __node__CallBehaviorAction__86__result_1;
+supervisor invariant ActiveClass.__postcondition_with_structure disables __node__CallBehaviorAction__86__result_2;

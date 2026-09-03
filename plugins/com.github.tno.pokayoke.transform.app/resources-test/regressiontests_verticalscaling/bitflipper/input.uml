@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:SynthML="https://github.com/TNO/SynthML/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="_ZgAmYMd9Ee--jc4lXL-BHw" name="BitFlipper">
+    <packagedElement xmi:type="uml:Class" xmi:id="_c2oj8Md9Ee--jc4lXL-BHw" name="ActiveClass" classifierBehavior="_jGcVIMd9Ee--jc4lXL-BHw" isActive="true">
+      <ownedAttribute xmi:id="_J_Wn8O9pEe-OWbsCeUFhqQ" name="init" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_J_Wn8e9pEe-OWbsCeUFhqQ" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_J_Wn8u9pEe-OWbsCeUFhqQ" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_J_Wn8-9pEe-OWbsCeUFhqQ">
+          <language>CIF</language>
+          <body>false</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_foV2kMd9Ee--jc4lXL-BHw" name="bit" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_gkt_QMd9Ee--jc4lXL-BHw" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_gkt_Qcd9Ee--jc4lXL-BHw" value="1"/>
+        <defaultValue xmi:type="uml:LiteralNull" xmi:id="_scJWwMkeEe-FBs3p21lQgw"/>
+      </ownedAttribute>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_jGcVIMd9Ee--jc4lXL-BHw" name="Activity1" isAbstract="true" postcondition="_tuw-sMd9Ee--jc4lXL-BHw" precondition="_mh5IUMd9Ee--jc4lXL-BHw _sOmMIKdkEfGM3snF9pGhbg">
+        <ownedRule xmi:id="_mh5IUMd9Ee--jc4lXL-BHw" name="precondition">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="_CoHZ8KLSEfGlBtOePNv_bg">
+            <language>CIF</language>
+            <body>not init </body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:id="_tuw-sMd9Ee--jc4lXL-BHw" name="postcondition">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="_wBaWwMd9Ee--jc4lXL-BHw" name="">
+            <language>CIF</language>
+            <body>bit and init</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:id="_sOmMIKdkEfGM3snF9pGhbg" name="usagePrecondition">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="_uaBh4KdkEfGM3snF9pGhbg">
+            <language>CIF</language>
+            <body>not init or init</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="_1kN3sKdkEfGM3snF9pGhbg" name="ZeroCalls" constrainedElement="_v5yEcKdkEfGM3snF9pGhbg">
+          <specification xmi:type="uml:Interval" xmi:id="_5fFKwKdkEfGM3snF9pGhbg" max="_5fEjsadkEfGM3snF9pGhbg" min="_5fEjsadkEfGM3snF9pGhbg"/>
+        </ownedRule>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_0_1_oMd9Ee--jc4lXL-BHw" name="flip"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_QZQ60MkeEe-FBs3p21lQgw" name="initialize"/>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_v5yEcKdkEfGM3snF9pGhbg" name="Activity2" isAbstract="true" postcondition="_8oH_UKdkEfGM3snF9pGhbg">
+        <ownedRule xmi:id="_8oH_UKdkEfGM3snF9pGhbg" name="postcondition2">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="_-QAjIKdkEfGM3snF9pGhbg">
+            <language>CIF</language>
+            <body>bit and init</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="_IRMUMKdlEfGM3snF9pGhbg" name="ZeroCalls" constrainedElement="_0_1_oMd9Ee--jc4lXL-BHw _QZQ60MkeEe-FBs3p21lQgw">
+          <specification xmi:type="uml:Interval" xmi:id="_JRFD4adlEfGM3snF9pGhbg" max="_5fEjsadkEfGM3snF9pGhbg" min="_5fEjsadkEfGM3snF9pGhbg"/>
+        </ownedRule>
+      </ownedBehavior>
+    </packagedElement>
+    <packagedElement xmi:type="uml:LiteralInteger" xmi:id="_5fEjsadkEfGM3snF9pGhbg"/>
+    <profileApplication xmi:id="_gkpt0Md9Ee--jc4lXL-BHw">
+      <eAnnotations xmi:id="_gksKEMd9Ee--jc4lXL-BHw" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/SynthML/#/"/>
+      </eAnnotations>
+      <appliedProfile href="platform:/plugin/com.github.tno.synthml.uml.profile.plugin/model/synthml.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+    </profileApplication>
+  </uml:Model>
+  <SynthML:FormalElement xmi:id="_2jwCYMd9Ee--jc4lXL-BHw" guard="init" base_RedefinableElement="_0_1_oMd9Ee--jc4lXL-BHw" atomic="true">
+    <effects>bit := not bit</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="_TccX8MkeEe-FBs3p21lQgw" guard="not init" base_RedefinableElement="_QZQ60MkeEe-FBs3p21lQgw" atomic="true">
+    <effects>init := true, &#xD;
+bit := true</effects>
+    <effects>init := true,&#xD;
+bit := false</effects>
+  </SynthML:FormalElement>
+  <SynthML:SynthesisPrecondition xmi:id="_PxjOdeDmucsAxYIwVYTZCt" base_Constraint="_mh5IUMd9Ee--jc4lXL-BHw"/>
+  <SynthML:Postcondition xmi:id="_fzVKJsfCrPRElnAFfbMGyM" base_Constraint="_tuw-sMd9Ee--jc4lXL-BHw"/>
+  <SynthML:UsagePrecondition xmi:id="_tgHeYKdkEfGM3snF9pGhbg" base_Constraint="_sOmMIKdkEfGM3snF9pGhbg"/>
+  <SynthML:Occurrence xmi:id="_5fEjsKdkEfGM3snF9pGhbg" base_Constraint="_1kN3sKdkEfGM3snF9pGhbg"/>
+  <SynthML:Postcondition xmi:id="_9bRTgKdkEfGM3snF9pGhbg" base_Constraint="_8oH_UKdkEfGM3snF9pGhbg"/>
+  <SynthML:Occurrence xmi:id="_JRFD4KdlEfGM3snF9pGhbg" base_Constraint="_IRMUMKdlEfGM3snF9pGhbg"/>
+</xmi:XMI>

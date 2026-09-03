@@ -1,0 +1,130 @@
+<pnml xmlns="http://www.pnml.org/version-2009/grammar/pnml">
+  <net id="minimal" type="http://www.pnml.org/version-2009/grammar/ptnet">
+    <page id="minimal">
+      <transition id="__start">
+        <name>
+          <text>__start</text>
+        </name>
+      </transition>
+      <transition id="__node__InitialNode__109__0">
+        <name>
+          <text>__node__InitialNode__109__0</text>
+        </name>
+      </transition>
+      <transition id="flip2">
+        <name>
+          <text>flip2</text>
+        </name>
+      </transition>
+      <transition id="__node__CallBehaviorAction__113">
+        <name>
+          <text>__node__CallBehaviorAction__113</text>
+        </name>
+      </transition>
+      <transition id="__node__CallBehaviorAction__113__na_result_1">
+        <name>
+          <text>__node__CallBehaviorAction__113__na_result_1</text>
+        </name>
+      </transition>
+      <transition id="__node__ActivityFinalNode__111__0">
+        <name>
+          <text>__node__ActivityFinalNode__111__0</text>
+        </name>
+      </transition>
+      <transition id="__end">
+        <name>
+          <text>__end</text>
+        </name>
+      </transition>
+      <transition id="__loop">
+        <name>
+          <text>__loop</text>
+        </name>
+      </transition>
+      <place id="p7">
+        <name>
+          <text>p7</text>
+        </name>
+      </place>
+      <arc id="__end__to__p7" source="__end" target="p7">
+      </arc>
+      <arc id="__loop__to__p7" source="__loop" target="p7">
+      </arc>
+      <place id="p9">
+        <name>
+          <text>p9</text>
+        </name>
+      </place>
+      <arc id="__node__ActivityFinalNode__111__0__to__p9" source="__node__ActivityFinalNode__111__0" target="p9">
+      </arc>
+      <place id="p6">
+        <name>
+          <text>p6</text>
+        </name>
+      </place>
+      <arc id="__node__CallBehaviorAction__113__to__p6" source="__node__CallBehaviorAction__113" target="p6">
+      </arc>
+      <place id="p8">
+        <name>
+          <text>p8</text>
+        </name>
+      </place>
+      <arc id="__node__CallBehaviorAction__113__na_result_1__to__p8" source="__node__CallBehaviorAction__113__na_result_1" target="p8">
+      </arc>
+      <place id="p4">
+        <name>
+          <text>p4</text>
+        </name>
+      </place>
+      <arc id="__node__InitialNode__109__0__to__p4" source="__node__InitialNode__109__0" target="p4">
+      </arc>
+      <place id="p2">
+        <name>
+          <text>p2</text>
+        </name>
+      </place>
+      <place id="p3">
+        <name>
+          <text>p3</text>
+        </name>
+      </place>
+      <arc id="__start__to__p2" source="__start" target="p2">
+      </arc>
+      <arc id="__start__to__p3" source="__start" target="p3">
+      </arc>
+      <place id="p5">
+        <name>
+          <text>p5</text>
+        </name>
+      </place>
+      <arc id="flip2__to__p5" source="flip2" target="p5">
+      </arc>
+      <place id="p1">
+        <name>
+          <text>p1</text>
+        </name>
+        <initialMarking>
+          <text>1</text>
+        </initialMarking>
+      </place>
+      <arc id="p1__to____start" source="p1" target="__start">
+      </arc>
+      <arc id="p2__to____node__InitialNode__109__0" source="p2" target="__node__InitialNode__109__0">
+      </arc>
+      <arc id="p3__to__flip2" source="p3" target="flip2">
+      </arc>
+      <arc id="p4__to____node__CallBehaviorAction__113" source="p4" target="__node__CallBehaviorAction__113">
+      </arc>
+      <arc id="p5__to____end" source="p5" target="__end">
+      </arc>
+      <arc id="p6__to____node__CallBehaviorAction__113__na_result_1" source="p6" target="__node__CallBehaviorAction__113__na_result_1">
+      </arc>
+      <arc id="p7__to____loop" source="p7" target="__loop">
+      </arc>
+      <arc id="p8__to____node__ActivityFinalNode__111__0" source="p8" target="__node__ActivityFinalNode__111__0">
+      </arc>
+      <arc id="p9__to____end" source="p9" target="__end">
+      </arc>
+    </page>
+  </net>
+</pnml>

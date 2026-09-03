@@ -1,0 +1,15 @@
+uncontrollable __node__CallBehaviorAction__73;
+uncontrollable __node__CallBehaviorAction__73__na_result_1;
+automaton post_synthesis_chain_state_space:
+  alphabet __node__CallBehaviorAction__73, __node__CallBehaviorAction__73__na_result_1;
+  @state(Class1: "*", Class1.__controlflow__68: false, Class1.__controlflow__69: true, Class1.__nonAtomicActive____node__CallBehaviorAction__73: false, Class1.v1: false, Class1.v2: false, Class1.v3: false, Class1.v4: false, Class1.v5: false)
+  location loc1:
+    initial;
+    edge __node__CallBehaviorAction__73 goto loc2;
+  @state(Class1: "*", Class1.__controlflow__68: false, Class1.__controlflow__69: false, Class1.__nonAtomicActive____node__CallBehaviorAction__73: true, Class1.v1: false, Class1.v2: false, Class1.v3: false, Class1.v4: false, Class1.v5: false)
+  location loc2:
+    edge __node__CallBehaviorAction__73__na_result_1 goto loc3;
+  @state(Class1: "*", Class1.__controlflow__68: true, Class1.__controlflow__69: false, Class1.__nonAtomicActive____node__CallBehaviorAction__73: false, Class1.v1: true, Class1.v2: false, Class1.v3: false, Class1.v4: false, Class1.v5: false)
+  location loc3:
+    marked;
+end

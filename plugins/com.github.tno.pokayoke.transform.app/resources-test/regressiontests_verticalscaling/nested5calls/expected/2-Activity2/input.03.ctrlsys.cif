@@ -1,0 +1,47 @@
+controllable flip2;
+controllable __node__InitialNode__109__0;
+uncontrollable __node__ActivityFinalNode__111__0;
+uncontrollable __node__CallBehaviorAction__113;
+uncontrollable __node__CallBehaviorAction__113__na_result_1;
+plant automaton Class1:
+  disc bool v1 = false;
+  disc bool v2 = false;
+  disc bool v3 = false;
+  disc bool v4 = false;
+  disc bool v5 = false;
+  disc bool __controlflow__101;
+  disc bool __controlflow__104;
+  disc bool __nonAtomicActive____node__CallBehaviorAction__113;
+  alg bool precondition2 = not v2 and not v1;
+  alg bool __precondition = precondition2;
+  alg bool postcondition2 = v2 and v1;
+  alg bool __postcondition_without_structure__nonAtomicActive____node__CallBehaviorAction__113 = not __nonAtomicActive____node__CallBehaviorAction__113;
+  alg bool __postcondition_without_structure = postcondition2 and __postcondition_without_structure__nonAtomicActive____node__CallBehaviorAction__113;
+  alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
+  alg bool __postcondition_with_structure__controlflow__101 = not __controlflow__101;
+  alg bool __postcondition_with_structure__controlflow__104 = not __controlflow__104;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure and (__postcondition_with_structure__controlflow__101 and __postcondition_with_structure__controlflow__104);
+  initial __precondition;
+  marked __postcondition_with_structure;
+  location:
+    initial;
+    marked;
+    edge flip2 when not v2 do v2 := true;
+    edge __node__InitialNode__109__0 when true, not __controlflow__104 do __controlflow__104 := true;
+    edge __node__ActivityFinalNode__111__0 when true, __controlflow__101, true, v1 do __controlflow__101 := false;
+    edge __node__CallBehaviorAction__113 when not v1, __controlflow__104, true, not __controlflow__101, not __nonAtomicActive____node__CallBehaviorAction__113 do __controlflow__104 := false, __nonAtomicActive____node__CallBehaviorAction__113 := true;
+    edge __node__CallBehaviorAction__113__na_result_1 when not __controlflow__101, __nonAtomicActive____node__CallBehaviorAction__113 do v1 := true, __controlflow__101 := true, __nonAtomicActive____node__CallBehaviorAction__113 := false;
+end
+supervisor automaton sup:
+  alphabet flip2, __node__InitialNode__109__0;
+  location:
+    initial;
+    marked;
+    edge __node__InitialNode__109__0 when not Class1.__controlflow__101 and (not Class1.__nonAtomicActive____node__CallBehaviorAction__113 and not Class1.v1);
+    edge flip2 when true;
+end
+supervisor invariant Class1.__postcondition_without_structure disables flip2;
+supervisor invariant Class1.__postcondition_without_structure disables __node__InitialNode__109__0;
+supervisor invariant Class1.__postcondition_with_structure disables __node__ActivityFinalNode__111__0;
+supervisor invariant Class1.__postcondition_with_structure disables __node__CallBehaviorAction__113;
+supervisor invariant Class1.__postcondition_with_structure disables __node__CallBehaviorAction__113__na_result_1;

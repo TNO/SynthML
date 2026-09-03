@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:SynthML="https://github.com/TNO/SynthML/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="1" name="BitFlipper">
+    <packagedElement xmi:type="uml:Class" xmi:id="2" name="ActiveClass" classifierBehavior="20" isActive="true">
+      <ownedComment xmi:id="3">
+        <body>Original-ID-Path:2</body>
+      </ownedComment>
+      <ownedAttribute xmi:id="4" name="init" visibility="public">
+        <ownedComment xmi:id="5">
+          <body>Original-ID-Path:3</body>
+        </ownedComment>
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="6" value="1">
+          <ownedComment xmi:id="7">
+            <body>Original-ID-Path:4</body>
+          </ownedComment>
+        </lowerValue>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="8" value="1">
+          <ownedComment xmi:id="9">
+            <body>Original-ID-Path:5</body>
+          </ownedComment>
+        </upperValue>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="10">
+          <ownedComment xmi:id="11">
+            <body>Original-ID-Path:6</body>
+          </ownedComment>
+          <language>CIF</language>
+          <body>false</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="12" name="bit" visibility="public">
+        <ownedComment xmi:id="13">
+          <body>Original-ID-Path:7</body>
+        </ownedComment>
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="14" value="1">
+          <ownedComment xmi:id="15">
+            <body>Original-ID-Path:8</body>
+          </ownedComment>
+        </lowerValue>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="16" value="1">
+          <ownedComment xmi:id="17">
+            <body>Original-ID-Path:9</body>
+          </ownedComment>
+        </upperValue>
+        <defaultValue xmi:type="uml:LiteralNull" xmi:id="18">
+          <ownedComment xmi:id="19">
+            <body>Original-ID-Path:10</body>
+          </ownedComment>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="20" name="Activity1" postcondition="26" precondition="22 30" node="44 45 46 47 48 49">
+        <ownedComment xmi:id="21">
+          <body>Original-ID-Path:11</body>
+        </ownedComment>
+        <ownedRule xmi:id="22" name="precondition">
+          <ownedComment xmi:id="23">
+            <body>Original-ID-Path:12</body>
+          </ownedComment>
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="24">
+            <ownedComment xmi:id="25">
+              <body>Original-ID-Path:13</body>
+            </ownedComment>
+            <language>CIF</language>
+            <body>not init </body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:id="26" name="postcondition">
+          <ownedComment xmi:id="27">
+            <body>Original-ID-Path:14</body>
+          </ownedComment>
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="28" name="">
+            <ownedComment xmi:id="29">
+              <body>Original-ID-Path:15</body>
+            </ownedComment>
+            <language>CIF</language>
+            <body>bit and init</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:id="30" name="usagePrecondition">
+          <ownedComment xmi:id="31">
+            <body>Original-ID-Path:16</body>
+          </ownedComment>
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="32">
+            <ownedComment xmi:id="33">
+              <body>Original-ID-Path:17</body>
+            </ownedComment>
+            <language>CIF</language>
+            <body>not init or init</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="34" name="ZeroCalls" constrainedElement="54">
+          <ownedComment xmi:id="35">
+            <body>Original-ID-Path:18</body>
+          </ownedComment>
+          <specification xmi:type="uml:Interval" xmi:id="36" max="64" min="64">
+            <ownedComment xmi:id="37">
+              <body>Original-ID-Path:19</body>
+            </ownedComment>
+          </specification>
+        </ownedRule>
+        <edge xmi:type="uml:ControlFlow" xmi:id="38" name="Decision__p3__to__flip" target="48" source="45"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="39" name="initialize__to__Decision__p3" target="45" source="49"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="40" name="Merge__p4__to__FinalNode__p4" target="47" source="46"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="41" name="flip__to__Merge__p4" target="46" source="48"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="42" name="Decision__p3__to__Merge__p4" target="46" source="45"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="43" name="InitialNode__p1__to__initialize" target="49" source="44"/>
+        <node xmi:type="uml:InitialNode" xmi:id="44" name="InitialNode__p1" outgoing="43"/>
+        <node xmi:type="uml:DecisionNode" xmi:id="45" name="Decision__p3" incoming="39" outgoing="38 42"/>
+        <node xmi:type="uml:MergeNode" xmi:id="46" name="Merge__p4" incoming="41 42" outgoing="40"/>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="47" name="FinalNode__p4" incoming="40"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="48" name="flip" incoming="38" outgoing="41" behavior="50"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="49" name="initialize" incoming="43" outgoing="39" behavior="52"/>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="50" name="flip">
+        <ownedComment xmi:id="51">
+          <body>Original-ID-Path:20</body>
+        </ownedComment>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="52" name="initialize">
+        <ownedComment xmi:id="53">
+          <body>Original-ID-Path:21</body>
+        </ownedComment>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="54" name="Activity2" isAbstract="true" postcondition="56">
+        <ownedComment xmi:id="55">
+          <body>Original-ID-Path:22</body>
+        </ownedComment>
+        <ownedRule xmi:id="56" name="postcondition2">
+          <ownedComment xmi:id="57">
+            <body>Original-ID-Path:23</body>
+          </ownedComment>
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="58">
+            <ownedComment xmi:id="59">
+              <body>Original-ID-Path:24</body>
+            </ownedComment>
+            <language>CIF</language>
+            <body>bit and init</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="60" name="ZeroCalls" constrainedElement="50 52">
+          <ownedComment xmi:id="61">
+            <body>Original-ID-Path:25</body>
+          </ownedComment>
+          <specification xmi:type="uml:Interval" xmi:id="62" max="64" min="64">
+            <ownedComment xmi:id="63">
+              <body>Original-ID-Path:26</body>
+            </ownedComment>
+          </specification>
+        </ownedRule>
+      </ownedBehavior>
+    </packagedElement>
+    <packagedElement xmi:type="uml:LiteralInteger" xmi:id="64">
+      <ownedComment xmi:id="65">
+        <body>Original-ID-Path:27</body>
+      </ownedComment>
+    </packagedElement>
+    <profileApplication xmi:id="66">
+      <eAnnotations xmi:id="67" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/SynthML/#/"/>
+      </eAnnotations>
+      <appliedProfile href="platform:/plugin/com.github.tno.synthml.uml.profile.plugin/model/synthml.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+    </profileApplication>
+  </uml:Model>
+  <SynthML:SynthesisPrecondition xmi:id="68" base_Constraint="22"/>
+  <SynthML:Postcondition xmi:id="69" base_Constraint="26"/>
+  <SynthML:UsagePrecondition xmi:id="70" base_Constraint="30"/>
+  <SynthML:Occurrence xmi:id="71" base_Constraint="34"/>
+  <SynthML:FormalElement xmi:id="72" guard="init" base_RedefinableElement="50" atomic="true">
+    <effects>bit := not bit</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="73" guard="not init" base_RedefinableElement="52" atomic="true">
+    <effects>init := true, &#xD;
+bit := true</effects>
+    <effects>init := true,&#xD;
+bit := false</effects>
+  </SynthML:FormalElement>
+  <SynthML:Postcondition xmi:id="74" base_Constraint="56"/>
+  <SynthML:Occurrence xmi:id="75" base_Constraint="60"/>
+</xmi:XMI>
