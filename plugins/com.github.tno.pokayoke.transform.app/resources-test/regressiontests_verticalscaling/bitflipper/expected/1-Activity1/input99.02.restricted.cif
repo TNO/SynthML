@@ -1,0 +1,37 @@
+uncontrollable __node__DecisionNode__48__0;
+uncontrollable __node__DecisionNode__48__1;
+uncontrollable __node__MergeNode__49__0;
+uncontrollable __node__MergeNode__49__1;
+uncontrollable __node__CallBehaviorAction__51;
+uncontrollable __node__CallBehaviorAction__52;
+uncontrollable __node__CallBehaviorAction__52__result_1;
+uncontrollable __node__CallBehaviorAction__52__result_2;
+plant automaton ActiveClass:
+  disc bool init = false;
+  disc bool bit in any;
+  disc bool __controlflow__38;
+  disc bool __controlflow__40;
+  disc bool __controlflow__41;
+  disc bool __controlflow__42;
+  disc bool __controlflow__43;
+  disc bool __controlflow__45 = true;
+  disc int[0..1] __activeAction;
+  alg bool precondition = not init;
+  alg bool __token_on_first_controlflow = __controlflow__45;
+  alg bool __precondition = precondition and __token_on_first_controlflow;
+  alg bool __token_on_last_controlflow = __controlflow__41;
+  alg bool __postcondition = __token_on_last_controlflow;
+  initial __precondition;
+  marked __postcondition;
+  location:
+    initial;
+    marked;
+    edge __node__DecisionNode__48__0 when true, __controlflow__40, not __controlflow__38, not bit, __activeAction = 0 do __controlflow__40 := false, __controlflow__38 := true;
+    edge __node__DecisionNode__48__1 when true, __controlflow__40, not __controlflow__43, bit, __activeAction = 0 do __controlflow__40 := false, __controlflow__43 := true;
+    edge __node__MergeNode__49__0 when true, __controlflow__42, true, not __controlflow__41, __activeAction = 0 do __controlflow__42 := false, __controlflow__41 := true;
+    edge __node__MergeNode__49__1 when true, __controlflow__43, true, not __controlflow__41, __activeAction = 0 do __controlflow__43 := false, __controlflow__41 := true;
+    edge __node__CallBehaviorAction__51 when init, __controlflow__38, true, not __controlflow__42, __activeAction = 0 do bit := not bit, __controlflow__38 := false, __controlflow__42 := true;
+    edge __node__CallBehaviorAction__52 when not init, __controlflow__45, true, not __controlflow__40, __activeAction = 0 do __controlflow__45 := false, __activeAction := 1;
+    edge __node__CallBehaviorAction__52__result_1 when not __controlflow__40, __activeAction = 1 do init := true, bit := true, __controlflow__40 := true, __activeAction := 0;
+    edge __node__CallBehaviorAction__52__result_2 when not __controlflow__40, __activeAction = 1 do init := true, bit := false, __controlflow__40 := true, __activeAction := 0;
+end

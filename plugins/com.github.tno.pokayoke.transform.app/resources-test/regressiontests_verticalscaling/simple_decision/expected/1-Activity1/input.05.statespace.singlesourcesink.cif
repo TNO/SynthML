@@ -1,0 +1,61 @@
+controllable __node__InitialNode__48__0;
+uncontrollable __node__ActivityFinalNode__50__0;
+uncontrollable __node__DecisionNode__52__0;
+uncontrollable __node__DecisionNode__52__1;
+uncontrollable __node__OpaqueAction__54;
+uncontrollable __node__MergeNode__56__0;
+uncontrollable __node__MergeNode__56__1;
+controllable __node__InitialNode__76__0;
+uncontrollable __node__ActivityFinalNode__78__0;
+uncontrollable __node__DecisionNode__80__0;
+uncontrollable __node__DecisionNode__80__1;
+uncontrollable __node__OpaqueAction__82;
+uncontrollable __node__MergeNode__84__0;
+uncontrollable __node__MergeNode__84__1;
+controllable __start;
+controllable __end;
+automaton synthesis_state_space:
+  alphabet __node__InitialNode__48__0, __node__ActivityFinalNode__50__0, __node__DecisionNode__52__0, __node__DecisionNode__52__1, __node__OpaqueAction__54, __node__MergeNode__56__0, __node__MergeNode__56__1, __node__InitialNode__76__0, __node__ActivityFinalNode__78__0, __node__DecisionNode__80__0, __node__DecisionNode__80__1, __node__OpaqueAction__82, __node__MergeNode__84__0, __node__MergeNode__84__1, __start, __end;
+  @state(Class1: "*", Class1.__controlflow__32: false, Class1.__controlflow__35: false, Class1.__controlflow__39: false, Class1.__controlflow__41: false, Class1.__controlflow__45: false, Class1.__controlflow__60: false, Class1.__controlflow__63: false, Class1.__controlflow__67: false, Class1.__controlflow__69: false, Class1.__controlflow__73: false, Class1.p1: false, Class1.p2: false, OneCall__22__ConcreteActivity1__30: "*", OneCall__22__ConcreteActivity1__30.__occurrences: 0, OneCall__22__ConcreteActivity2__58: "*", OneCall__22__ConcreteActivity2__58.__occurrences: 0, sup: "*")
+  location __init:
+    initial;
+    edge __start goto loc1;
+  @state(Class1: "*", Class1.__controlflow__32: false, Class1.__controlflow__35: false, Class1.__controlflow__39: false, Class1.__controlflow__41: false, Class1.__controlflow__45: false, Class1.__controlflow__60: false, Class1.__controlflow__63: false, Class1.__controlflow__67: false, Class1.__controlflow__69: false, Class1.__controlflow__73: false, Class1.p1: false, Class1.p2: false, OneCall__22__ConcreteActivity1__30: "*", OneCall__22__ConcreteActivity1__30.__occurrences: 0, OneCall__22__ConcreteActivity2__58: "*", OneCall__22__ConcreteActivity2__58.__occurrences: 0, sup: "*")
+  location loc1:
+    edge __node__InitialNode__48__0 goto loc2;
+    edge __node__InitialNode__76__0 goto loc3;
+  @state(Class1: "*", Class1.__controlflow__32: true, Class1.__controlflow__35: false, Class1.__controlflow__39: false, Class1.__controlflow__41: false, Class1.__controlflow__45: false, Class1.__controlflow__60: false, Class1.__controlflow__63: false, Class1.__controlflow__67: false, Class1.__controlflow__69: false, Class1.__controlflow__73: false, Class1.p1: false, Class1.p2: false, OneCall__22__ConcreteActivity1__30: "*", OneCall__22__ConcreteActivity1__30.__occurrences: 1, OneCall__22__ConcreteActivity2__58: "*", OneCall__22__ConcreteActivity2__58.__occurrences: 0, sup: "*")
+  location loc2:
+    edge __node__DecisionNode__52__0 goto loc4;
+  @state(Class1: "*", Class1.__controlflow__32: false, Class1.__controlflow__35: false, Class1.__controlflow__39: false, Class1.__controlflow__41: false, Class1.__controlflow__45: false, Class1.__controlflow__60: true, Class1.__controlflow__63: false, Class1.__controlflow__67: false, Class1.__controlflow__69: false, Class1.__controlflow__73: false, Class1.p1: false, Class1.p2: false, OneCall__22__ConcreteActivity1__30: "*", OneCall__22__ConcreteActivity1__30.__occurrences: 0, OneCall__22__ConcreteActivity2__58: "*", OneCall__22__ConcreteActivity2__58.__occurrences: 1, sup: "*")
+  location loc3:
+    edge __node__DecisionNode__80__0 goto loc5;
+  @state(Class1: "*", Class1.__controlflow__32: false, Class1.__controlflow__35: true, Class1.__controlflow__39: false, Class1.__controlflow__41: false, Class1.__controlflow__45: false, Class1.__controlflow__60: false, Class1.__controlflow__63: false, Class1.__controlflow__67: false, Class1.__controlflow__69: false, Class1.__controlflow__73: false, Class1.p1: false, Class1.p2: false, OneCall__22__ConcreteActivity1__30: "*", OneCall__22__ConcreteActivity1__30.__occurrences: 1, OneCall__22__ConcreteActivity2__58: "*", OneCall__22__ConcreteActivity2__58.__occurrences: 0, sup: "*")
+  location loc4:
+    edge __node__OpaqueAction__54 goto loc6;
+  @state(Class1: "*", Class1.__controlflow__32: false, Class1.__controlflow__35: false, Class1.__controlflow__39: false, Class1.__controlflow__41: false, Class1.__controlflow__45: false, Class1.__controlflow__60: false, Class1.__controlflow__63: true, Class1.__controlflow__67: false, Class1.__controlflow__69: false, Class1.__controlflow__73: false, Class1.p1: false, Class1.p2: false, OneCall__22__ConcreteActivity1__30: "*", OneCall__22__ConcreteActivity1__30.__occurrences: 0, OneCall__22__ConcreteActivity2__58: "*", OneCall__22__ConcreteActivity2__58.__occurrences: 1, sup: "*")
+  location loc5:
+    edge __node__OpaqueAction__82 goto loc7;
+  @state(Class1: "*", Class1.__controlflow__32: false, Class1.__controlflow__35: false, Class1.__controlflow__39: true, Class1.__controlflow__41: false, Class1.__controlflow__45: false, Class1.__controlflow__60: false, Class1.__controlflow__63: false, Class1.__controlflow__67: false, Class1.__controlflow__69: false, Class1.__controlflow__73: false, Class1.p1: true, Class1.p2: false, OneCall__22__ConcreteActivity1__30: "*", OneCall__22__ConcreteActivity1__30.__occurrences: 1, OneCall__22__ConcreteActivity2__58: "*", OneCall__22__ConcreteActivity2__58.__occurrences: 0, sup: "*")
+  location loc6:
+    edge __node__MergeNode__56__0 goto loc8;
+  @state(Class1: "*", Class1.__controlflow__32: false, Class1.__controlflow__35: false, Class1.__controlflow__39: false, Class1.__controlflow__41: false, Class1.__controlflow__45: false, Class1.__controlflow__60: false, Class1.__controlflow__63: false, Class1.__controlflow__67: true, Class1.__controlflow__69: false, Class1.__controlflow__73: false, Class1.p1: false, Class1.p2: true, OneCall__22__ConcreteActivity1__30: "*", OneCall__22__ConcreteActivity1__30.__occurrences: 0, OneCall__22__ConcreteActivity2__58: "*", OneCall__22__ConcreteActivity2__58.__occurrences: 1, sup: "*")
+  location loc7:
+    edge __node__MergeNode__84__0 goto loc9;
+  @state(Class1: "*", Class1.__controlflow__32: false, Class1.__controlflow__35: false, Class1.__controlflow__39: false, Class1.__controlflow__41: false, Class1.__controlflow__45: true, Class1.__controlflow__60: false, Class1.__controlflow__63: false, Class1.__controlflow__67: false, Class1.__controlflow__69: false, Class1.__controlflow__73: false, Class1.p1: true, Class1.p2: false, OneCall__22__ConcreteActivity1__30: "*", OneCall__22__ConcreteActivity1__30.__occurrences: 1, OneCall__22__ConcreteActivity2__58: "*", OneCall__22__ConcreteActivity2__58.__occurrences: 0, sup: "*")
+  location loc8:
+    edge __node__ActivityFinalNode__50__0 goto loc10;
+  @state(Class1: "*", Class1.__controlflow__32: false, Class1.__controlflow__35: false, Class1.__controlflow__39: false, Class1.__controlflow__41: false, Class1.__controlflow__45: false, Class1.__controlflow__60: false, Class1.__controlflow__63: false, Class1.__controlflow__67: false, Class1.__controlflow__69: false, Class1.__controlflow__73: true, Class1.p1: false, Class1.p2: true, OneCall__22__ConcreteActivity1__30: "*", OneCall__22__ConcreteActivity1__30.__occurrences: 0, OneCall__22__ConcreteActivity2__58: "*", OneCall__22__ConcreteActivity2__58.__occurrences: 1, sup: "*")
+  location loc9:
+    edge __node__ActivityFinalNode__78__0 goto loc11;
+  @state(Class1: "*", Class1.__controlflow__32: false, Class1.__controlflow__35: false, Class1.__controlflow__39: false, Class1.__controlflow__41: false, Class1.__controlflow__45: false, Class1.__controlflow__60: false, Class1.__controlflow__63: false, Class1.__controlflow__67: false, Class1.__controlflow__69: false, Class1.__controlflow__73: false, Class1.p1: true, Class1.p2: false, OneCall__22__ConcreteActivity1__30: "*", OneCall__22__ConcreteActivity1__30.__occurrences: 1, OneCall__22__ConcreteActivity2__58: "*", OneCall__22__ConcreteActivity2__58.__occurrences: 0, sup: "*")
+  location loc10:
+    edge __end goto __done;
+  @state(Class1: "*", Class1.__controlflow__32: false, Class1.__controlflow__35: false, Class1.__controlflow__39: false, Class1.__controlflow__41: false, Class1.__controlflow__45: false, Class1.__controlflow__60: false, Class1.__controlflow__63: false, Class1.__controlflow__67: false, Class1.__controlflow__69: false, Class1.__controlflow__73: false, Class1.p1: false, Class1.p2: true, OneCall__22__ConcreteActivity1__30: "*", OneCall__22__ConcreteActivity1__30.__occurrences: 0, OneCall__22__ConcreteActivity2__58: "*", OneCall__22__ConcreteActivity2__58.__occurrences: 1, sup: "*")
+  location loc11:
+    edge __end goto __done;
+  @state(Class1: "*", Class1.__controlflow__32: false, Class1.__controlflow__35: false, Class1.__controlflow__39: false, Class1.__controlflow__41: false, Class1.__controlflow__45: false, Class1.__controlflow__60: false, Class1.__controlflow__63: false, Class1.__controlflow__67: false, Class1.__controlflow__69: false, Class1.__controlflow__73: false, Class1.p1: true, Class1.p2: false, OneCall__22__ConcreteActivity1__30: "*", OneCall__22__ConcreteActivity1__30.__occurrences: 1, OneCall__22__ConcreteActivity2__58: "*", OneCall__22__ConcreteActivity2__58.__occurrences: 0, sup: "*")
+  @state(Class1: "*", Class1.__controlflow__32: false, Class1.__controlflow__35: false, Class1.__controlflow__39: false, Class1.__controlflow__41: false, Class1.__controlflow__45: false, Class1.__controlflow__60: false, Class1.__controlflow__63: false, Class1.__controlflow__67: false, Class1.__controlflow__69: false, Class1.__controlflow__73: false, Class1.p1: false, Class1.p2: true, OneCall__22__ConcreteActivity1__30: "*", OneCall__22__ConcreteActivity1__30.__occurrences: 0, OneCall__22__ConcreteActivity2__58: "*", OneCall__22__ConcreteActivity2__58.__occurrences: 1, sup: "*")
+  location __done:
+    marked;
+end

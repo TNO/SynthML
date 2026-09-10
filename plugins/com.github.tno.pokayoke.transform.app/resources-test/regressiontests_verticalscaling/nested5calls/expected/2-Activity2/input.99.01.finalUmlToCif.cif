@@ -1,0 +1,40 @@
+uncontrollable __node__MergeNode__148__0;
+uncontrollable __node__DecisionNode__149__0;
+uncontrollable __node__JoinNode__152;
+uncontrollable __node__ForkNode__153;
+uncontrollable __node__CallBehaviorAction__154;
+uncontrollable __node__CallBehaviorAction__154__na_result_1;
+uncontrollable __node__CallBehaviorAction__155;
+plant automaton Class1:
+  disc bool v1 = false;
+  disc bool v2 = false;
+  disc bool v3 = false;
+  disc bool v4 = false;
+  disc bool v5 = false;
+  disc bool __controlflow__136;
+  disc bool __controlflow__137;
+  disc bool __controlflow__138;
+  disc bool __controlflow__140;
+  disc bool __controlflow__141;
+  disc bool __controlflow__143;
+  disc bool __controlflow__144;
+  disc bool __controlflow__146 = true;
+  disc bool __nonAtomicActive____node__CallBehaviorAction__154;
+  alg bool precondition2 = not v2 and not v1;
+  alg bool __token_on_first_controlflow = __controlflow__146;
+  alg bool __precondition = precondition2 and __token_on_first_controlflow;
+  alg bool __token_on_last_controlflow = __controlflow__144;
+  alg bool __postcondition = __token_on_last_controlflow;
+  initial __precondition;
+  marked __postcondition;
+  location:
+    initial;
+    marked;
+    edge __node__MergeNode__148__0 when true, __controlflow__141, true, not __controlflow__143, v1 do __controlflow__141 := false, __controlflow__143 := true;
+    edge __node__DecisionNode__149__0 when true, __controlflow__136, not __controlflow__138 do __controlflow__136 := false, __controlflow__138 := true;
+    edge __node__JoinNode__152 when true, __controlflow__140, __controlflow__143, not __controlflow__144 do __controlflow__140 := false, __controlflow__143 := false, __controlflow__144 := true;
+    edge __node__ForkNode__153 when true, __controlflow__146, true, not __controlflow__136, not __controlflow__137 do __controlflow__146 := false, __controlflow__136 := true, __controlflow__137 := true;
+    edge __node__CallBehaviorAction__154 when not v1, __controlflow__138, true, not __controlflow__141, not __nonAtomicActive____node__CallBehaviorAction__154 do __controlflow__138 := false, __nonAtomicActive____node__CallBehaviorAction__154 := true;
+    edge __node__CallBehaviorAction__154__na_result_1 when not __controlflow__141, __nonAtomicActive____node__CallBehaviorAction__154 do v1 := true, __controlflow__141 := true, __nonAtomicActive____node__CallBehaviorAction__154 := false;
+    edge __node__CallBehaviorAction__155 when not v2, __controlflow__137, true, not __controlflow__140 do v2 := true, __controlflow__137 := false, __controlflow__140 := true;
+end

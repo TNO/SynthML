@@ -1,0 +1,19 @@
+.model minimal
+.dummy  __start __end __node__InitialNode__32__0 __node__CallBehaviorAction__36 __node__ActivityFinalNode__34__0 __loop
+.graph
+__end p3
+__loop p3
+__node__ActivityFinalNode__34__0 p4
+__node__ActivityFinalNode__34__0/1 p2
+__node__CallBehaviorAction__36 p5
+__node__InitialNode__32__0 p6
+__node__InitialNode__32__0/1 p4
+__start p2
+p1 __start
+p2 __end __node__InitialNode__32__0/1
+p3 __loop
+p4 __node__CallBehaviorAction__36
+p5 __node__ActivityFinalNode__34__0/1 __node__InitialNode__32__0
+p6 __node__ActivityFinalNode__34__0
+.marking { p1 }
+.end

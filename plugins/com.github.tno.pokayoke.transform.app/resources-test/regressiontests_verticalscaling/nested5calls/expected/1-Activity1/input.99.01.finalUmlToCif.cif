@@ -1,0 +1,24 @@
+uncontrollable __node__CallBehaviorAction__73;
+uncontrollable __node__CallBehaviorAction__73__na_result_1;
+plant automaton Class1:
+  disc bool v1 = false;
+  disc bool v2 = false;
+  disc bool v3 = false;
+  disc bool v4 = false;
+  disc bool v5 = false;
+  disc bool __controlflow__68;
+  disc bool __controlflow__69 = true;
+  disc bool __nonAtomicActive____node__CallBehaviorAction__73;
+  alg bool precondition1 = not v1;
+  alg bool __token_on_first_controlflow = __controlflow__69;
+  alg bool __precondition = precondition1 and __token_on_first_controlflow;
+  alg bool __token_on_last_controlflow = __controlflow__68;
+  alg bool __postcondition = __token_on_last_controlflow;
+  initial __precondition;
+  marked __postcondition;
+  location:
+    initial;
+    marked;
+    edge __node__CallBehaviorAction__73 when not v1, __controlflow__69, true, not __controlflow__68, not __nonAtomicActive____node__CallBehaviorAction__73 do __controlflow__69 := false, __nonAtomicActive____node__CallBehaviorAction__73 := true;
+    edge __node__CallBehaviorAction__73__na_result_1 when not __controlflow__68, __nonAtomicActive____node__CallBehaviorAction__73 do v1 := true, __controlflow__68 := true, __nonAtomicActive____node__CallBehaviorAction__73 := false;
+end

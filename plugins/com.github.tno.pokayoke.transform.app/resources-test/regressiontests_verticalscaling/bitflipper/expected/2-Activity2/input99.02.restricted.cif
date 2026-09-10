@@ -1,0 +1,45 @@
+uncontrollable __node__MergeNode__125__0;
+uncontrollable __node__DecisionNode__126__0;
+uncontrollable __node__DecisionNode__126__1;
+uncontrollable __node__DecisionNode__127__0;
+uncontrollable __node__DecisionNode__130__0;
+uncontrollable __node__MergeNode__131__0;
+uncontrollable __node__MergeNode__131__1;
+uncontrollable __node__CallBehaviorAction__132;
+uncontrollable __node__CallBehaviorAction__133;
+uncontrollable __node__CallBehaviorAction__133__result_1;
+uncontrollable __node__CallBehaviorAction__133__result_2;
+plant automaton ActiveClass:
+  disc bool init = false;
+  disc bool bit in any;
+  disc bool __controlflow__109;
+  disc bool __controlflow__111;
+  disc bool __controlflow__113;
+  disc bool __controlflow__115;
+  disc bool __controlflow__117;
+  disc bool __controlflow__119;
+  disc bool __controlflow__121;
+  disc bool __controlflow__122;
+  disc bool __controlflow__123 = true;
+  disc int[0..1] __activeAction;
+  alg bool __token_on_first_controlflow = __controlflow__123;
+  alg bool __precondition = __token_on_first_controlflow;
+  alg bool __token_on_last_controlflow = __controlflow__122;
+  alg bool __postcondition = __token_on_last_controlflow;
+  initial __precondition;
+  marked __postcondition;
+  location:
+    initial;
+    marked;
+    edge __node__MergeNode__125__0 when true, __controlflow__121, true, not __controlflow__122, bit and init, __activeAction = 0 do __controlflow__121 := false, __controlflow__122 := true;
+    edge __node__DecisionNode__126__0 when true, __controlflow__111, not __controlflow__115, not bit, __activeAction = 0 do __controlflow__111 := false, __controlflow__115 := true;
+    edge __node__DecisionNode__126__1 when true, __controlflow__111, not __controlflow__117, bit, __activeAction = 0 do __controlflow__111 := false, __controlflow__117 := true;
+    edge __node__DecisionNode__127__0 when true, __controlflow__123, not __controlflow__109, not init or init, __activeAction = 0 do __controlflow__123 := false, __controlflow__109 := true;
+    edge __node__DecisionNode__130__0 when true, __controlflow__113, not __controlflow__111, __activeAction = 0 do __controlflow__113 := false, __controlflow__111 := true;
+    edge __node__MergeNode__131__0 when true, __controlflow__119, true, not __controlflow__121, __activeAction = 0 do __controlflow__119 := false, __controlflow__121 := true;
+    edge __node__MergeNode__131__1 when true, __controlflow__117, true, not __controlflow__121, __activeAction = 0 do __controlflow__117 := false, __controlflow__121 := true;
+    edge __node__CallBehaviorAction__132 when init, __controlflow__115, true, not __controlflow__119, __activeAction = 0 do bit := not bit, __controlflow__115 := false, __controlflow__119 := true;
+    edge __node__CallBehaviorAction__133 when not init, __controlflow__109, true, not __controlflow__113, __activeAction = 0 do __controlflow__109 := false, __activeAction := 1;
+    edge __node__CallBehaviorAction__133__result_1 when not __controlflow__113, __activeAction = 1 do init := true, bit := true, __controlflow__113 := true, __activeAction := 0;
+    edge __node__CallBehaviorAction__133__result_2 when not __controlflow__113, __activeAction = 1 do init := true, bit := false, __controlflow__113 := true, __activeAction := 0;
+end

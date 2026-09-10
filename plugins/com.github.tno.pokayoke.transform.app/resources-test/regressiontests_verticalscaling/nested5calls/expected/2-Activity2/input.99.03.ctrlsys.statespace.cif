@@ -1,0 +1,51 @@
+uncontrollable __node__MergeNode__148__0;
+uncontrollable __node__DecisionNode__149__0;
+uncontrollable __node__JoinNode__152;
+uncontrollable __node__ForkNode__153;
+uncontrollable __node__CallBehaviorAction__154;
+uncontrollable __node__CallBehaviorAction__154__na_result_1;
+uncontrollable __node__CallBehaviorAction__155;
+automaton post_synthesis_chain_state_space:
+  alphabet __node__MergeNode__148__0, __node__DecisionNode__149__0, __node__JoinNode__152, __node__ForkNode__153, __node__CallBehaviorAction__154, __node__CallBehaviorAction__154__na_result_1, __node__CallBehaviorAction__155;
+  @state(Class1: "*", Class1.__controlflow__136: false, Class1.__controlflow__137: false, Class1.__controlflow__138: false, Class1.__controlflow__140: false, Class1.__controlflow__141: false, Class1.__controlflow__143: false, Class1.__controlflow__144: false, Class1.__controlflow__146: true, Class1.__nonAtomicActive____node__CallBehaviorAction__154: false, Class1.v1: false, Class1.v2: false, Class1.v3: false, Class1.v4: false, Class1.v5: false)
+  location loc1:
+    initial;
+    edge __node__ForkNode__153 goto loc2;
+  @state(Class1: "*", Class1.__controlflow__136: true, Class1.__controlflow__137: true, Class1.__controlflow__138: false, Class1.__controlflow__140: false, Class1.__controlflow__141: false, Class1.__controlflow__143: false, Class1.__controlflow__144: false, Class1.__controlflow__146: false, Class1.__nonAtomicActive____node__CallBehaviorAction__154: false, Class1.v1: false, Class1.v2: false, Class1.v3: false, Class1.v4: false, Class1.v5: false)
+  location loc2:
+    edge __node__DecisionNode__149__0 goto loc3;
+    edge __node__CallBehaviorAction__155 goto loc4;
+  @state(Class1: "*", Class1.__controlflow__136: false, Class1.__controlflow__137: true, Class1.__controlflow__138: true, Class1.__controlflow__140: false, Class1.__controlflow__141: false, Class1.__controlflow__143: false, Class1.__controlflow__144: false, Class1.__controlflow__146: false, Class1.__nonAtomicActive____node__CallBehaviorAction__154: false, Class1.v1: false, Class1.v2: false, Class1.v3: false, Class1.v4: false, Class1.v5: false)
+  location loc3:
+    edge __node__CallBehaviorAction__154 goto loc5;
+    edge __node__CallBehaviorAction__155 goto loc6;
+  @state(Class1: "*", Class1.__controlflow__136: true, Class1.__controlflow__137: false, Class1.__controlflow__138: false, Class1.__controlflow__140: true, Class1.__controlflow__141: false, Class1.__controlflow__143: false, Class1.__controlflow__144: false, Class1.__controlflow__146: false, Class1.__nonAtomicActive____node__CallBehaviorAction__154: false, Class1.v1: false, Class1.v2: true, Class1.v3: false, Class1.v4: false, Class1.v5: false)
+  location loc4:
+    edge __node__DecisionNode__149__0 goto loc6;
+  @state(Class1: "*", Class1.__controlflow__136: false, Class1.__controlflow__137: true, Class1.__controlflow__138: false, Class1.__controlflow__140: false, Class1.__controlflow__141: false, Class1.__controlflow__143: false, Class1.__controlflow__144: false, Class1.__controlflow__146: false, Class1.__nonAtomicActive____node__CallBehaviorAction__154: true, Class1.v1: false, Class1.v2: false, Class1.v3: false, Class1.v4: false, Class1.v5: false)
+  location loc5:
+    edge __node__CallBehaviorAction__154__na_result_1 goto loc7;
+    edge __node__CallBehaviorAction__155 goto loc8;
+  @state(Class1: "*", Class1.__controlflow__136: false, Class1.__controlflow__137: false, Class1.__controlflow__138: true, Class1.__controlflow__140: true, Class1.__controlflow__141: false, Class1.__controlflow__143: false, Class1.__controlflow__144: false, Class1.__controlflow__146: false, Class1.__nonAtomicActive____node__CallBehaviorAction__154: false, Class1.v1: false, Class1.v2: true, Class1.v3: false, Class1.v4: false, Class1.v5: false)
+  location loc6:
+    edge __node__CallBehaviorAction__154 goto loc8;
+  @state(Class1: "*", Class1.__controlflow__136: false, Class1.__controlflow__137: true, Class1.__controlflow__138: false, Class1.__controlflow__140: false, Class1.__controlflow__141: true, Class1.__controlflow__143: false, Class1.__controlflow__144: false, Class1.__controlflow__146: false, Class1.__nonAtomicActive____node__CallBehaviorAction__154: false, Class1.v1: true, Class1.v2: false, Class1.v3: false, Class1.v4: false, Class1.v5: false)
+  location loc7:
+    edge __node__MergeNode__148__0 goto loc9;
+    edge __node__CallBehaviorAction__155 goto loc10;
+  @state(Class1: "*", Class1.__controlflow__136: false, Class1.__controlflow__137: false, Class1.__controlflow__138: false, Class1.__controlflow__140: true, Class1.__controlflow__141: false, Class1.__controlflow__143: false, Class1.__controlflow__144: false, Class1.__controlflow__146: false, Class1.__nonAtomicActive____node__CallBehaviorAction__154: true, Class1.v1: false, Class1.v2: true, Class1.v3: false, Class1.v4: false, Class1.v5: false)
+  location loc8:
+    edge __node__CallBehaviorAction__154__na_result_1 goto loc10;
+  @state(Class1: "*", Class1.__controlflow__136: false, Class1.__controlflow__137: true, Class1.__controlflow__138: false, Class1.__controlflow__140: false, Class1.__controlflow__141: false, Class1.__controlflow__143: true, Class1.__controlflow__144: false, Class1.__controlflow__146: false, Class1.__nonAtomicActive____node__CallBehaviorAction__154: false, Class1.v1: true, Class1.v2: false, Class1.v3: false, Class1.v4: false, Class1.v5: false)
+  location loc9:
+    edge __node__CallBehaviorAction__155 goto loc11;
+  @state(Class1: "*", Class1.__controlflow__136: false, Class1.__controlflow__137: false, Class1.__controlflow__138: false, Class1.__controlflow__140: true, Class1.__controlflow__141: true, Class1.__controlflow__143: false, Class1.__controlflow__144: false, Class1.__controlflow__146: false, Class1.__nonAtomicActive____node__CallBehaviorAction__154: false, Class1.v1: true, Class1.v2: true, Class1.v3: false, Class1.v4: false, Class1.v5: false)
+  location loc10:
+    edge __node__MergeNode__148__0 goto loc11;
+  @state(Class1: "*", Class1.__controlflow__136: false, Class1.__controlflow__137: false, Class1.__controlflow__138: false, Class1.__controlflow__140: true, Class1.__controlflow__141: false, Class1.__controlflow__143: true, Class1.__controlflow__144: false, Class1.__controlflow__146: false, Class1.__nonAtomicActive____node__CallBehaviorAction__154: false, Class1.v1: true, Class1.v2: true, Class1.v3: false, Class1.v4: false, Class1.v5: false)
+  location loc11:
+    edge __node__JoinNode__152 goto loc12;
+  @state(Class1: "*", Class1.__controlflow__136: false, Class1.__controlflow__137: false, Class1.__controlflow__138: false, Class1.__controlflow__140: false, Class1.__controlflow__141: false, Class1.__controlflow__143: false, Class1.__controlflow__144: true, Class1.__controlflow__146: false, Class1.__nonAtomicActive____node__CallBehaviorAction__154: false, Class1.v1: true, Class1.v2: true, Class1.v3: false, Class1.v4: false, Class1.v5: false)
+  location loc12:
+    marked;
+end

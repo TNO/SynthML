@@ -1,0 +1,293 @@
+<pnml xmlns="http://www.pnml.org/version-2009/grammar/pnml">
+  <net id="minimal" type="http://www.pnml.org/version-2009/grammar/ptnet">
+    <page id="minimal">
+      <transition id="__start">
+        <name>
+          <text>__start</text>
+        </name>
+      </transition>
+      <transition id="__node__InitialNode__391__0">
+        <name>
+          <text>__node__InitialNode__391__0</text>
+        </name>
+      </transition>
+      <transition id="flip4">
+        <name>
+          <text>flip4</text>
+        </name>
+      </transition>
+      <transition id="__node__ForkNode__397">
+        <name>
+          <text>__node__ForkNode__397</text>
+        </name>
+      </transition>
+      <transition id="flip4__na_result_1">
+        <name>
+          <text>flip4__na_result_1</text>
+        </name>
+      </transition>
+      <transition id="__node__CallBehaviorAction__403">
+        <name>
+          <text>__node__CallBehaviorAction__403</text>
+        </name>
+      </transition>
+      <transition id="__node__MergeNode__379__0">
+        <name>
+          <text>__node__MergeNode__379__0</text>
+        </name>
+      </transition>
+      <transition id="__node__CallBehaviorAction__401">
+        <name>
+          <text>__node__CallBehaviorAction__401</text>
+        </name>
+      </transition>
+      <transition id="__node__DecisionNode__381__0">
+        <name>
+          <text>__node__DecisionNode__381__0</text>
+        </name>
+      </transition>
+      <transition id="__node__CallBehaviorAction__399">
+        <name>
+          <text>__node__CallBehaviorAction__399</text>
+        </name>
+      </transition>
+      <transition id="__node__JoinNode__395">
+        <name>
+          <text>__node__JoinNode__395</text>
+        </name>
+      </transition>
+      <transition id="__node__ForkNode__383">
+        <name>
+          <text>__node__ForkNode__383</text>
+        </name>
+      </transition>
+      <transition id="__node__DecisionNode__385__0">
+        <name>
+          <text>__node__DecisionNode__385__0</text>
+        </name>
+      </transition>
+      <transition id="__node__JoinNode__387">
+        <name>
+          <text>__node__JoinNode__387</text>
+        </name>
+      </transition>
+      <transition id="__node__MergeNode__389__0">
+        <name>
+          <text>__node__MergeNode__389__0</text>
+        </name>
+      </transition>
+      <transition id="__node__ActivityFinalNode__393__0">
+        <name>
+          <text>__node__ActivityFinalNode__393__0</text>
+        </name>
+      </transition>
+      <transition id="__end">
+        <name>
+          <text>__end</text>
+        </name>
+      </transition>
+      <transition id="__node__CallBehaviorAction__399__na_result_1">
+        <name>
+          <text>__node__CallBehaviorAction__399__na_result_1</text>
+        </name>
+      </transition>
+      <place id="p11">
+        <name>
+          <text>p11</text>
+        </name>
+      </place>
+      <arc id="__end__to__p11" source="__end" target="p11">
+      </arc>
+      <place id="p15">
+        <name>
+          <text>p15</text>
+        </name>
+      </place>
+      <arc id="__node__ActivityFinalNode__393__0__to__p15" source="__node__ActivityFinalNode__393__0" target="p15">
+      </arc>
+      <place id="p19">
+        <name>
+          <text>p19</text>
+        </name>
+      </place>
+      <arc id="__node__CallBehaviorAction__399__to__p19" source="__node__CallBehaviorAction__399" target="p19">
+      </arc>
+      <place id="p21">
+        <name>
+          <text>p21</text>
+        </name>
+      </place>
+      <arc id="__node__CallBehaviorAction__399__na_result_1__to__p21" source="__node__CallBehaviorAction__399__na_result_1" target="p21">
+      </arc>
+      <place id="p16">
+        <name>
+          <text>p16</text>
+        </name>
+      </place>
+      <arc id="__node__CallBehaviorAction__401__to__p16" source="__node__CallBehaviorAction__401" target="p16">
+      </arc>
+      <place id="p9">
+        <name>
+          <text>p9</text>
+        </name>
+      </place>
+      <arc id="__node__CallBehaviorAction__403__to__p9" source="__node__CallBehaviorAction__403" target="p9">
+      </arc>
+      <place id="p17">
+        <name>
+          <text>p17</text>
+        </name>
+      </place>
+      <arc id="__node__DecisionNode__381__0__to__p17" source="__node__DecisionNode__381__0" target="p17">
+      </arc>
+      <place id="p10">
+        <name>
+          <text>p10</text>
+        </name>
+      </place>
+      <arc id="__node__DecisionNode__385__0__to__p10" source="__node__DecisionNode__385__0" target="p10">
+      </arc>
+      <place id="p13">
+        <name>
+          <text>p13</text>
+        </name>
+      </place>
+      <place id="p14">
+        <name>
+          <text>p14</text>
+        </name>
+      </place>
+      <arc id="__node__ForkNode__383__to__p13" source="__node__ForkNode__383" target="p13">
+      </arc>
+      <arc id="__node__ForkNode__383__to__p14" source="__node__ForkNode__383" target="p14">
+      </arc>
+      <place id="p6">
+        <name>
+          <text>p6</text>
+        </name>
+      </place>
+      <place id="p7">
+        <name>
+          <text>p7</text>
+        </name>
+      </place>
+      <arc id="__node__ForkNode__397__to__p6" source="__node__ForkNode__397" target="p6">
+      </arc>
+      <arc id="__node__ForkNode__397__to__p7" source="__node__ForkNode__397" target="p7">
+      </arc>
+      <place id="p4">
+        <name>
+          <text>p4</text>
+        </name>
+      </place>
+      <arc id="__node__InitialNode__391__0__to__p4" source="__node__InitialNode__391__0" target="p4">
+      </arc>
+      <place id="p18">
+        <name>
+          <text>p18</text>
+        </name>
+      </place>
+      <arc id="__node__JoinNode__387__to__p18" source="__node__JoinNode__387" target="p18">
+      </arc>
+      <place id="p12">
+        <name>
+          <text>p12</text>
+        </name>
+      </place>
+      <arc id="__node__JoinNode__395__to__p12" source="__node__JoinNode__395" target="p12">
+      </arc>
+      <place id="p20">
+        <name>
+          <text>p20</text>
+        </name>
+      </place>
+      <arc id="__node__MergeNode__379__0__to__p20" source="__node__MergeNode__379__0" target="p20">
+      </arc>
+      <place id="p22">
+        <name>
+          <text>p22</text>
+        </name>
+      </place>
+      <arc id="__node__MergeNode__389__0__to__p22" source="__node__MergeNode__389__0" target="p22">
+      </arc>
+      <place id="p2">
+        <name>
+          <text>p2</text>
+        </name>
+      </place>
+      <place id="p3">
+        <name>
+          <text>p3</text>
+        </name>
+      </place>
+      <arc id="__start__to__p2" source="__start" target="p2">
+      </arc>
+      <arc id="__start__to__p3" source="__start" target="p3">
+      </arc>
+      <place id="p5">
+        <name>
+          <text>p5</text>
+        </name>
+      </place>
+      <arc id="flip4__to__p5" source="flip4" target="p5">
+      </arc>
+      <place id="p8">
+        <name>
+          <text>p8</text>
+        </name>
+      </place>
+      <arc id="flip4__na_result_1__to__p8" source="flip4__na_result_1" target="p8">
+      </arc>
+      <place id="p1">
+        <name>
+          <text>p1</text>
+        </name>
+        <initialMarking>
+          <text>1</text>
+        </initialMarking>
+      </place>
+      <arc id="p1__to____start" source="p1" target="__start">
+      </arc>
+      <arc id="p10__to____node__ForkNode__383" source="p10" target="__node__ForkNode__383">
+      </arc>
+      <arc id="p12__to____node__ActivityFinalNode__393__0" source="p12" target="__node__ActivityFinalNode__393__0">
+      </arc>
+      <arc id="p13__to____node__CallBehaviorAction__401" source="p13" target="__node__CallBehaviorAction__401">
+      </arc>
+      <arc id="p14__to____node__DecisionNode__381__0" source="p14" target="__node__DecisionNode__381__0">
+      </arc>
+      <arc id="p15__to____end" source="p15" target="__end">
+      </arc>
+      <arc id="p16__to____node__JoinNode__387" source="p16" target="__node__JoinNode__387">
+      </arc>
+      <arc id="p17__to____node__CallBehaviorAction__399" source="p17" target="__node__CallBehaviorAction__399">
+      </arc>
+      <arc id="p18__to____node__MergeNode__379__0" source="p18" target="__node__MergeNode__379__0">
+      </arc>
+      <arc id="p19__to____node__CallBehaviorAction__399__na_result_1" source="p19" target="__node__CallBehaviorAction__399__na_result_1">
+      </arc>
+      <arc id="p2__to____node__InitialNode__391__0" source="p2" target="__node__InitialNode__391__0">
+      </arc>
+      <arc id="p20__to____node__JoinNode__395" source="p20" target="__node__JoinNode__395">
+      </arc>
+      <arc id="p21__to____node__MergeNode__389__0" source="p21" target="__node__MergeNode__389__0">
+      </arc>
+      <arc id="p22__to____node__JoinNode__387" source="p22" target="__node__JoinNode__387">
+      </arc>
+      <arc id="p3__to__flip4" source="p3" target="flip4">
+      </arc>
+      <arc id="p4__to____node__ForkNode__397" source="p4" target="__node__ForkNode__397">
+      </arc>
+      <arc id="p5__to__flip4__na_result_1" source="p5" target="flip4__na_result_1">
+      </arc>
+      <arc id="p6__to____node__CallBehaviorAction__403" source="p6" target="__node__CallBehaviorAction__403">
+      </arc>
+      <arc id="p7__to____node__DecisionNode__385__0" source="p7" target="__node__DecisionNode__385__0">
+      </arc>
+      <arc id="p8__to____end" source="p8" target="__end">
+      </arc>
+      <arc id="p9__to____node__JoinNode__395" source="p9" target="__node__JoinNode__395">
+      </arc>
+    </page>
+  </net>
+</pnml>

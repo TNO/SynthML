@@ -1,0 +1,60 @@
+controllable __node__InitialNode__48__0;
+uncontrollable __node__ActivityFinalNode__50__0;
+uncontrollable __node__DecisionNode__52__0;
+uncontrollable __node__DecisionNode__52__1;
+uncontrollable __node__OpaqueAction__54;
+uncontrollable __node__MergeNode__56__0;
+uncontrollable __node__MergeNode__56__1;
+controllable __node__InitialNode__76__0;
+uncontrollable __node__ActivityFinalNode__78__0;
+uncontrollable __node__DecisionNode__80__0;
+uncontrollable __node__DecisionNode__80__1;
+uncontrollable __node__OpaqueAction__82;
+uncontrollable __node__MergeNode__84__0;
+uncontrollable __node__MergeNode__84__1;
+controllable __start;
+controllable __end;
+automaton projected:
+  alphabet __node__InitialNode__48__0, __node__ActivityFinalNode__50__0, __node__DecisionNode__52__0, __node__DecisionNode__52__1, __node__OpaqueAction__54, __node__MergeNode__56__0, __node__MergeNode__56__1, __node__InitialNode__76__0, __node__ActivityFinalNode__78__0, __node__DecisionNode__80__0, __node__DecisionNode__80__1, __node__OpaqueAction__82, __node__MergeNode__84__0, __node__MergeNode__84__1, __start, __end;
+  @state(synthesis_state_space: "__init")
+  location s1:
+    initial;
+    edge __start goto s2;
+  @state(synthesis_state_space: "loc1")
+  location s2:
+    edge __node__InitialNode__76__0 goto s3;
+    edge __node__InitialNode__48__0 goto s4;
+  @state(synthesis_state_space: "loc3")
+  location s3:
+    edge __node__DecisionNode__80__0 goto s6;
+  @state(synthesis_state_space: "loc2")
+  location s4:
+    edge __node__DecisionNode__52__0 goto s5;
+  @state(synthesis_state_space: "loc4")
+  location s5:
+    edge __node__OpaqueAction__54 goto s7;
+  @state(synthesis_state_space: "loc5")
+  location s6:
+    edge __node__OpaqueAction__82 goto s8;
+  @state(synthesis_state_space: "loc6")
+  location s7:
+    edge __node__MergeNode__56__0 goto s9;
+  @state(synthesis_state_space: "loc7")
+  location s8:
+    edge __node__MergeNode__84__0 goto s10;
+  @state(synthesis_state_space: "loc8")
+  location s9:
+    edge __node__ActivityFinalNode__50__0 goto s11;
+  @state(synthesis_state_space: "loc9")
+  location s10:
+    edge __node__ActivityFinalNode__78__0 goto s12;
+  @state(synthesis_state_space: "loc10")
+  location s11:
+    edge __end goto s13;
+  @state(synthesis_state_space: "loc11")
+  location s12:
+    edge __end goto s13;
+  @state(synthesis_state_space: "__done")
+  location s13:
+    marked;
+end
