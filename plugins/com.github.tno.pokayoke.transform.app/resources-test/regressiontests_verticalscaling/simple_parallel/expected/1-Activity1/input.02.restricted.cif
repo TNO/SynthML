@@ -26,9 +26,9 @@ plant automaton Class1:
   disc bool __controlflow__69;
   disc bool __controlflow__73;
   alg bool __precondition = true;
-  alg bool postcondition = p1 and not p2 or not p1 and p2;
-  alg bool __postcondition_without_structure__OneCall__22__ConcreteActivity1__30 = OneCall__22__ConcreteActivity1__30.__occurrences >= 0;
-  alg bool __postcondition_without_structure__OneCall__22__ConcreteActivity2__58 = OneCall__22__ConcreteActivity2__58.__occurrences >= 0;
+  alg bool postcondition = p1 and p2;
+  alg bool __postcondition_without_structure__OneCall__22__ConcreteActivity1__30 = OneCall__22__ConcreteActivity1__30.__occurrences >= 1;
+  alg bool __postcondition_without_structure__OneCall__22__ConcreteActivity2__58 = OneCall__22__ConcreteActivity2__58.__occurrences >= 1;
   alg bool __postcondition_without_structure = postcondition and (__postcondition_without_structure__OneCall__22__ConcreteActivity1__30 and __postcondition_without_structure__OneCall__22__ConcreteActivity2__58);
   alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
   alg bool __postcondition_with_structure__controlflow__32 = not __controlflow__32;
@@ -64,7 +64,7 @@ plant automaton Class1:
 end
 requirement automaton OneCall__22__ConcreteActivity1__30:
   disc int[0..1] __occurrences;
-  marked __occurrences >= 0;
+  marked __occurrences >= 1;
   location:
     initial;
     marked;
@@ -72,7 +72,7 @@ requirement automaton OneCall__22__ConcreteActivity1__30:
 end
 requirement automaton OneCall__22__ConcreteActivity2__58:
   disc int[0..1] __occurrences;
-  marked __occurrences >= 0;
+  marked __occurrences >= 1;
   location:
     initial;
     marked;

@@ -1,159 +1,58 @@
-controllable __node__InitialNode__40__0;
-uncontrollable __node__ActivityFinalNode__42__0;
-uncontrollable __node__DecisionNode__44__0;
-uncontrollable __node__DecisionNode__44__1;
-uncontrollable __node__OpaqueAction__46;
-uncontrollable __node__MergeNode__48__0;
-uncontrollable __node__MergeNode__48__1;
-controllable __node__InitialNode__68__0;
-uncontrollable __node__ActivityFinalNode__70__0;
-uncontrollable __node__DecisionNode__72__0;
-uncontrollable __node__DecisionNode__72__1;
-uncontrollable __node__OpaqueAction__74;
-uncontrollable __node__MergeNode__76__0;
-uncontrollable __node__MergeNode__76__1;
+controllable __node__InitialNode__48__0;
+uncontrollable __node__ActivityFinalNode__50__0;
+uncontrollable __node__DecisionNode__52__0;
+uncontrollable __node__DecisionNode__52__1;
+uncontrollable __node__OpaqueAction__54;
+uncontrollable __node__MergeNode__56__0;
+uncontrollable __node__MergeNode__56__1;
+controllable __node__InitialNode__76__0;
+uncontrollable __node__ActivityFinalNode__78__0;
+uncontrollable __node__DecisionNode__80__0;
+uncontrollable __node__DecisionNode__80__1;
+uncontrollable __node__OpaqueAction__82;
+uncontrollable __node__MergeNode__84__0;
+uncontrollable __node__MergeNode__84__1;
 controllable __start;
 controllable __end;
 automaton minimal:
-  alphabet __node__InitialNode__40__0, __node__ActivityFinalNode__42__0, __node__DecisionNode__44__0, __node__DecisionNode__44__1, __node__OpaqueAction__46, __node__MergeNode__48__0, __node__MergeNode__48__1, __node__InitialNode__68__0, __node__ActivityFinalNode__70__0, __node__DecisionNode__72__0, __node__DecisionNode__72__1, __node__OpaqueAction__74, __node__MergeNode__76__0, __node__MergeNode__76__1, __start, __end;
+  alphabet __node__InitialNode__48__0, __node__ActivityFinalNode__50__0, __node__DecisionNode__52__0, __node__DecisionNode__52__1, __node__OpaqueAction__54, __node__MergeNode__56__0, __node__MergeNode__56__1, __node__InitialNode__76__0, __node__ActivityFinalNode__78__0, __node__DecisionNode__80__0, __node__DecisionNode__80__1, __node__OpaqueAction__82, __node__MergeNode__84__0, __node__MergeNode__84__1, __start, __end;
   @state(projected: "s1")
   location s1:
     initial;
     edge __start goto s2;
   @state(projected: "s2")
   location s2:
-    edge __node__InitialNode__68__0 goto s4;
-    edge __node__InitialNode__40__0 goto s5;
-  @state(projected: "s38")
+    edge __node__InitialNode__76__0 goto s4;
+    edge __node__InitialNode__48__0 goto s5;
+  @state(projected: "s13")
   location s3:
     marked;
   @state(projected: "s3")
   location s4:
-    edge __node__DecisionNode__72__0 goto s9;
-    edge __node__InitialNode__40__0 goto s10;
+    edge __node__DecisionNode__80__0 goto s11;
   @state(projected: "s4")
   location s5:
-    edge __node__InitialNode__68__0 goto s10;
-    edge __node__DecisionNode__44__0 goto s11;
-  @state(projected: "s13")
+    edge __node__DecisionNode__52__0 goto s8;
+  @state(projected: "s9")
   location s6:
-    edge __node__InitialNode__68__0 goto s7;
-    edge __node__ActivityFinalNode__42__0 goto s8;
-  @state(projected: "s17")
+    edge __node__ActivityFinalNode__50__0 goto s7;
+  @state(projected: "s11")
+  @state(projected: "s12")
   location s7:
-    edge __node__DecisionNode__72__0 goto s12;
-    edge __node__ActivityFinalNode__42__0 goto s13;
-  @state(projected: "s18")
+    edge __end goto s3;
+  @state(projected: "s5")
   location s8:
-    edge __node__InitialNode__68__0 goto s13;
+    edge __node__OpaqueAction__54 goto s9;
   @state(projected: "s7")
   location s9:
-    edge __node__OpaqueAction__74 goto s23;
-    edge __node__InitialNode__40__0 goto s19;
-  @state(projected: "s5")
+    edge __node__MergeNode__56__0 goto s6;
+  @state(projected: "s10")
   location s10:
-    edge __node__DecisionNode__72__0 goto s19;
-    edge __node__DecisionNode__44__0 goto s17;
+    edge __node__ActivityFinalNode__78__0 goto s7;
   @state(projected: "s6")
   location s11:
-    edge __node__InitialNode__68__0 goto s17;
-    edge __node__OpaqueAction__46 goto s18;
-  @state(projected: "s24")
-  location s12:
-    edge __node__OpaqueAction__74 goto s32;
-    edge __node__ActivityFinalNode__42__0 goto s33;
-  @state(projected: "s23")
-  location s13:
-    edge __node__DecisionNode__72__0 goto s33;
-  @state(projected: "s16")
-  location s14:
-    edge __node__ActivityFinalNode__70__0 goto s15;
-    edge __node__InitialNode__40__0 goto s16;
-  @state(projected: "s22")
-  location s15:
-    edge __node__InitialNode__40__0 goto s31;
-  @state(projected: "s21")
-  location s16:
-    edge __node__ActivityFinalNode__70__0 goto s31;
-    edge __node__DecisionNode__44__0 goto s29;
+    edge __node__OpaqueAction__82 goto s12;
   @state(projected: "s8")
-  location s17:
-    edge __node__DecisionNode__72__0 goto s28;
-    edge __node__OpaqueAction__46 goto s24;
-  @state(projected: "s9")
-  location s18:
-    edge __node__InitialNode__68__0 goto s24;
-    edge __node__MergeNode__48__0 goto s6;
-  @state(projected: "s10")
-  location s19:
-    edge __node__OpaqueAction__74 goto s34;
-    edge __node__DecisionNode__44__0 goto s28;
-  @state(projected: "s33")
-  location s20:
-    edge __node__ActivityFinalNode__70__0 goto s21;
-    edge __node__ActivityFinalNode__42__0 goto s22;
-  @state(projected: "s36")
-  location s21:
-    edge __node__ActivityFinalNode__42__0 goto s38;
-  @state(projected: "s35")
-  location s22:
-    edge __node__ActivityFinalNode__70__0 goto s38;
-  @state(projected: "s11")
-  location s23:
-    edge __node__MergeNode__76__0 goto s14;
-    edge __node__InitialNode__40__0 goto s34;
-  @state(projected: "s12")
-  location s24:
-    edge __node__DecisionNode__72__0 goto s25;
-    edge __node__MergeNode__48__0 goto s7;
-  @state(projected: "s19")
-  location s25:
-    edge __node__OpaqueAction__74 goto s35;
-    edge __node__MergeNode__48__0 goto s12;
-  @state(projected: "s30")
-  location s26:
-    edge __node__ActivityFinalNode__70__0 goto s27;
-    edge __node__MergeNode__48__0 goto s20;
-  @state(projected: "s34")
-  location s27:
-    edge __node__MergeNode__48__0 goto s21;
-  @state(projected: "s14")
-  location s28:
-    edge __node__OpaqueAction__74 goto s36;
-    edge __node__OpaqueAction__46 goto s25;
-  @state(projected: "s26")
-  location s29:
-    edge __node__ActivityFinalNode__70__0 goto s30;
-    edge __node__OpaqueAction__46 goto s26;
-  @state(projected: "s31")
-  location s30:
-    edge __node__OpaqueAction__46 goto s27;
-  @state(projected: "s27")
-  location s31:
-    edge __node__DecisionNode__44__0 goto s30;
-  @state(projected: "s29")
-  location s32:
-    edge __node__MergeNode__76__0 goto s20;
-    edge __node__ActivityFinalNode__42__0 goto s37;
-  @state(projected: "s28")
-  location s33:
-    edge __node__OpaqueAction__74 goto s37;
-  @state(projected: "s15")
-  location s34:
-    edge __node__MergeNode__76__0 goto s16;
-    edge __node__DecisionNode__44__0 goto s36;
-  @state(projected: "s25")
-  location s35:
-    edge __node__MergeNode__76__0 goto s26;
-    edge __node__MergeNode__48__0 goto s32;
-  @state(projected: "s20")
-  location s36:
-    edge __node__MergeNode__76__0 goto s29;
-    edge __node__OpaqueAction__46 goto s35;
-  @state(projected: "s32")
-  location s37:
-    edge __node__MergeNode__76__0 goto s22;
-  @state(projected: "s37")
-  location s38:
-    edge __end goto s3;
+  location s12:
+    edge __node__MergeNode__84__0 goto s10;
 end

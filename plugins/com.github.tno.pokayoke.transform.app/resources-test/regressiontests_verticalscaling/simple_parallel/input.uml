@@ -22,12 +22,12 @@
       </ownedAttribute>
       <ownedBehavior xmi:type="uml:Activity" xmi:id="__uIl4MPGEfCRKfSobUPc2Q" name="Activity1" isAbstract="true" postcondition="_LMitcMPIEfCRKfSobUPc2Q">
         <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="_XSoyAMPHEfCRKfSobUPc2Q" name="OneCall" constrainedElement="_AzwKIMPHEfCRKfSobUPc2Q _9ugwIMPJEfCBwZxA3pwFLQ">
-          <specification xmi:type="uml:Interval" xmi:id="_gudzQMPHEfCRKfSobUPc2Q" name="" max="_Z4TzwMPHEfCRKfSobUPc2Q" min="_IT80YKzjEfG0YZ7DCW5-KA"/>
+          <specification xmi:type="uml:Interval" xmi:id="_gudzQMPHEfCRKfSobUPc2Q" name="" max="_Z4TzwMPHEfCRKfSobUPc2Q" min="_Z4TzwMPHEfCRKfSobUPc2Q"/>
         </ownedRule>
         <ownedRule xmi:id="_LMitcMPIEfCRKfSobUPc2Q" name="postcondition">
-          <specification xmi:type="uml:OpaqueExpression" xmi:id="_Frx4QKzjEfG0YZ7DCW5-KA">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="_jEBaEKziEfG0YZ7DCW5-KA">
             <language>CIF</language>
-            <body>(p1 and not p2) or (not p1 and p2)</body>
+            <body>p1 and p2</body>
           </specification>
         </ownedRule>
       </ownedBehavior>
@@ -97,7 +97,6 @@
       </ownedBehavior>
     </packagedElement>
     <packagedElement xmi:type="uml:LiteralInteger" xmi:id="_Z4TzwMPHEfCRKfSobUPc2Q" name="LiteralOne" value="1"/>
-    <packagedElement xmi:type="uml:LiteralInteger" xmi:id="_IT80YKzjEfG0YZ7DCW5-KA"/>
     <profileApplication xmi:id="_86BDAMPHEfCRKfSobUPc2Q">
       <eAnnotations xmi:id="_86EGUMPHEfCRKfSobUPc2Q" source="http://www.eclipse.org/uml2/2.0.0/UML">
         <references xmi:type="ecore:EPackage" href="https://github.com/TNO/SynthML/#/"/>
@@ -112,5 +111,4 @@
   <SynthML:FormalElement xmi:id="_S-swQMPKEfCBwZxA3pwFLQ" guard="true" base_RedefinableElement="_BXx848PKEfCBwZxA3pwFLQ" atomic="true">
     <effects>p2 := true</effects>
   </SynthML:FormalElement>
-  <SynthML:Occurrence xmi:id="_IT8NUKzjEfG0YZ7DCW5-KA" base_Constraint="_XSoyAMPHEfCRKfSobUPc2Q"/>
 </xmi:XMI>
