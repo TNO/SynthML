@@ -233,7 +233,7 @@
       <pages name="PR_ControlFlowPage" labelExpression="SynthML" domainClass="uml::ControlFlow" groups="//@extensions.0/@categories.0/@groups.1"/>
       <pages name="PR_PropertyPage" labelExpression="SynthML" domainClass="uml::Property" groups="//@extensions.0/@categories.0/@groups.2"/>
       <pages name="PR_PrimitiveTypePage" labelExpression="SynthML" domainClass="uml::PrimitiveType" groups="//@extensions.0/@categories.0/@groups.3"/>
-      <pages name="PR_ActivityPage" labelExpression="SynthML" domainClass="uml::Activity"/>
+      <pages name="PR_ActivityPage" labelExpression="SynthML" domainClass="uml::Activity" groups="//@extensions.0/@categories.0/@groups.7"/>
       <pages name="PR_ConstraintPage" labelExpression="SynthML" domainClass="uml::Constraint" preconditionExpression="aql:not self.oclIsKindOf(uml::IntervalConstraint) and not self.eContainer().oclIsKindOf(uml::PrimitiveType)" groups="//@extensions.0/@categories.0/@groups.5"/>
       <pages name="PR_OccurrencePage" labelExpression="SynthML" domainClass="uml::Constraint" preconditionExpression="aql:self.oclIsKindOf(uml::IntervalConstraint) and not self.eContainer().oclIsKindOf(uml::PrimitiveType)" groups="//@extensions.0/@categories.0/@groups.6"/>
       <groups name="PR_FormalElementGroup" labelExpression="General" semanticCandidateExpression="var:self">
@@ -370,6 +370,13 @@
         <controls xsi:type="properties:TextDescription" name="PR_OC_Min" labelExpression="Min:" helpExpression="The minimum number of times the constrained elements can be called." valueExpression="service:self.getIntervalConstraintMin()">
           <initialOperation>
             <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="service:self.setIntervalConstraintMin(newValue)"/>
+          </initialOperation>
+        </controls>
+      </groups>
+      <groups name="PR_ActivityGroup" labelExpression="Group" semanticCandidateExpression="var:self">
+        <controls xsi:type="properties:CheckboxDescription" name="PR_AC_Interface" labelExpression="Interface" helpExpression="Specifies whether the activity is an interface." valueExpression="service:self.isInterface()">
+          <initialOperation>
+            <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="service:self.setInterface(newValue)"/>
           </initialOperation>
         </controls>
       </groups>
