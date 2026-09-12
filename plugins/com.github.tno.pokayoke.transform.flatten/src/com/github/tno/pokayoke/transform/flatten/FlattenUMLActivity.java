@@ -168,7 +168,7 @@ public class FlattenUMLActivity {
                     // If the activity has any usage preconditions, conjunct them with the incoming guard of the
                     // outgoing edge.
                     Set<String> activityPreconditions = childBehaviorCopy.getPreconditions().stream()
-                            .filter(p -> PokaYokeUmlProfileUtil.isUsagePrecondition(p))
+                            .filter(p -> PokaYokeUmlProfileUtil.isUsagePreconditionConstraint(p))
                             .map(up -> PokaYokeUmlProfileUtil.getConstraintBodyExpression(up))
                             .collect(Collectors.toCollection(LinkedHashSet::new));
                     activityPreconditions

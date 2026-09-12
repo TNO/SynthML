@@ -149,7 +149,8 @@ public class Uml2GalTranslator {
 
         // Check transformation preconditions.
         Preconditions.checkArgument(!cifContext.hasOpaqueBehaviors(), "Opaque behaviors are unsupported.");
-        Preconditions.checkArgument(!cifContext.hasConstraints(c -> !CifContext.isPrimitiveTypeConstraint(c)),
+        Preconditions.checkArgument(
+                !cifContext.hasConstraints(c -> !PokaYokeUmlProfileUtil.isPrimitiveTypeConstraint(c)),
                 "Only type constraints are supported.");
         Preconditions.checkArgument(!cifContext.hasAbstractActivities(), "Abstract activities are unsupported.");
         Preconditions.checkArgument(!cifContext.hasParameterizedActivities(),
