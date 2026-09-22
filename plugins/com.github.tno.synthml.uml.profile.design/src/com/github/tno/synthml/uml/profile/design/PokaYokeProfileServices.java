@@ -755,7 +755,7 @@ public class PokaYokeProfileServices {
     }
 
     /**
-     * Applies the {@link FormalActivity} stereotype and sets the {@link FormalActivity#setInterface(boolean) atomic}
+     * Applies the {@link FormalActivity} stereotype and sets the {@link FormalActivity#setInterface(boolean) interface}
      * property for {@code activity}.
      * <p>
      * The {@link FormalActivity} stereotype is removed if {@code newValue} is {@code null} or {@code false}.
