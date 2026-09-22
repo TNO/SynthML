@@ -589,6 +589,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         if (activity.isAbstract()) {
             error("Interface activity " + activity.getName() + " must be concrete.", null);
         }
+
         // Check that the interface activity contains only control nodes and call behaviors.
         if (activity.getNodes().stream()
                 .anyMatch(n -> !(n instanceof ControlNode || n instanceof CallBehaviorAction)))
@@ -697,7 +698,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             }
 
             if (cbAction.getBehavior() instanceof Activity activityElement
-                    && PokaYokeUmlProfileUtil.isFormalActivity(activityElement))
+                    && PokaYokeUmlProfileUtil.isInterface(activityElement))
             {
                 error("Interface activities cannot be called.", node,
                         UMLPackage.Literals.CALL_BEHAVIOR_ACTION__BEHAVIOR);
