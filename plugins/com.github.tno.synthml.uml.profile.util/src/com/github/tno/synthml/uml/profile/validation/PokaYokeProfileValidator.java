@@ -690,11 +690,21 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             checkNamingConventions(node, NamingConvention.OPTIONAL);
         }
 
-        // Check that call behavior actions call either an opaque behavior or a concrete non-interface activity.
+        // Check that call behavior actions call either an opaque behavior or an activity.
         if (node instanceof CallBehaviorAction cbAction) {
-            if (!(cbAction.getBehavior() instanceof OpaqueBehavior || (cbAction.getBehavior() instanceof Activity))) {
+            if (!(cbAction.getBehavior() instanceof OpaqueBehavior || cbAction.getBehavior() instanceof Activity)) {
                 error("Call behavior actions should call an opaque behavior or an activity.", node,
                         UMLPackage.Literals.CALL_BEHAVIOR_ACTION__BEHAVIOR);
+            } else if (cbAction.getBehavior() instanceof Activity activityElement) {
+                // Concrete non-interface activities can only contain call behaviors to (other) concrete activities.
+                // Note that interface activities can contain call behaviors to abstract or concrete activities, so
+                // the parent if-clause covers this latter case.
+                if (node.eContainer() instanceof Activity containerActivity
+                        && !PokaYokeUmlProfileUtil.isFormalActivity(containerActivity) && activityElement.isAbstract())
+                {
+                    error("Call behavior actions within concrete activities cannot call an abstract activity.", node,
+                            UMLPackage.Literals.CALL_BEHAVIOR_ACTION__BEHAVIOR);
+                }
             }
 
             if (cbAction.getBehavior() instanceof Activity activityElement
