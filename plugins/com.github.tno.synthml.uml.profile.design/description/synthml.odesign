@@ -373,7 +373,7 @@
           </initialOperation>
         </controls>
       </groups>
-      <groups name="PR_ActivityGroup" labelExpression="Group" semanticCandidateExpression="var:self">
+      <groups name="PR_ActivityGroup" labelExpression="General" semanticCandidateExpression="var:self">
         <controls xsi:type="properties:CheckboxDescription" name="PR_AC_Interface" labelExpression="Interface" helpExpression="Specifies whether the activity is an interface." valueExpression="service:self.isInterface()">
           <initialOperation>
             <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="service:self.setInterface(newValue)"/>
