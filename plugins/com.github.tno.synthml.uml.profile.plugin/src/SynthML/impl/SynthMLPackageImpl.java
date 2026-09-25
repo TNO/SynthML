@@ -2,6 +2,7 @@
  */
 package SynthML.impl;
 
+import SynthML.FormalActivity;
 import SynthML.FormalCallBehaviorAction;
 import SynthML.FormalConstraint;
 import SynthML.FormalControlFlow;
@@ -95,6 +96,13 @@ public class SynthMLPackageImpl extends EPackageImpl implements SynthMLPackage {
 	 * @generated
 	 */
 	private EClass occurrenceEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass formalActivityEClass = null;
 
 	/**
 	 * Creates an instance of the model <b>Package</b>, registered with
@@ -347,6 +355,36 @@ public class SynthMLPackageImpl extends EPackageImpl implements SynthMLPackage {
 	 * @generated
 	 */
 	@Override
+	public EClass getFormalActivity() {
+		return formalActivityEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getFormalActivity_Base_Activity() {
+		return (EReference)formalActivityEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getFormalActivity_Interface() {
+		return (EAttribute)formalActivityEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public SynthMLFactory getSynthMLFactory() {
 		return (SynthMLFactory)getEFactoryInstance();
 	}
@@ -396,6 +434,10 @@ public class SynthMLPackageImpl extends EPackageImpl implements SynthMLPackage {
 		postconditionEClass = createEClass(POSTCONDITION);
 
 		occurrenceEClass = createEClass(OCCURRENCE);
+
+		formalActivityEClass = createEClass(FORMAL_ACTIVITY);
+		createEReference(formalActivityEClass, FORMAL_ACTIVITY__BASE_ACTIVITY);
+		createEAttribute(formalActivityEClass, FORMAL_ACTIVITY__INTERFACE);
 	}
 
 	/**
@@ -463,6 +505,10 @@ public class SynthMLPackageImpl extends EPackageImpl implements SynthMLPackage {
 		initEClass(postconditionEClass, Postcondition.class, "Postcondition", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
 		initEClass(occurrenceEClass, Occurrence.class, "Occurrence", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+
+		initEClass(formalActivityEClass, FormalActivity.class, "FormalActivity", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getFormalActivity_Base_Activity(), theUMLPackage.getActivity(), null, "base_Activity", null, 1, 1, FormalActivity.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, !IS_ORDERED);
+		initEAttribute(getFormalActivity_Interface(), theTypesPackage.getBoolean(), "interface", "false", 0, 1, FormalActivity.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, !IS_ORDERED);
 
 		// Create resource
 		createResource(eNS_URI);

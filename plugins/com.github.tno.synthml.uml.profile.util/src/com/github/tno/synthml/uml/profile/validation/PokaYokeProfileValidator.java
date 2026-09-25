@@ -530,6 +530,11 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                     UMLPackage.Literals.BEHAVIORED_CLASSIFIER__CLASSIFIER_BEHAVIOR);
         }
 
+        // Additional checks for interface activities.
+        if (PokaYokeUmlProfileUtil.isInterface(activity)) {
+            checkValidInterfaceActivity(activity);
+        }
+
         // Check template parameters of the activity. Adding a check directly on 'TemplateSignature' fails
         // to report the error message to the Problems view.
         checkValidTemplateSignature(activity);
@@ -576,6 +581,44 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             if (!flowFinalNodes.isEmpty()) {
                 error("Flow final nodes are not supported.", activity, null);
             }
+        }
+    }
+
+    private void checkValidInterfaceActivity(Activity activity) {
+        // Interface activity must be concrete.
+        if (activity.isAbstract()) {
+            error("Interface activity " + activity.getName() + " must be concrete.", null);
+        }
+
+        // Check that the interface activity contains only control nodes and call behaviors.
+        if (activity.getNodes().stream()
+                .anyMatch(n -> !(n instanceof ControlNode || n instanceof CallBehaviorAction)))
+        {
+            error("Interface activity " + activity.getName()
+                    + " can only contain control nodes and call behavior action nodes.", null);
+        }
+
+        // An interface activity can have postconditions if it contains an activity final node.
+        if (!activity.getPostconditions().isEmpty()
+                && !activity.getNodes().stream().anyMatch(n -> n instanceof ActivityFinalNode))
+        {
+            error("Interface activity can contain postconditions if it has an activity final node.", null);
+        }
+
+        // Check that an interface activity does not contain interval constraints.
+        if (activity.getOwnedRules().stream().anyMatch(r -> r instanceof IntervalConstraint)) {
+            error("Interface activities cannot contain interval constraints.", null);
+        }
+
+        // Check that every call behavior action is non-shadowed and calls an activity.
+        Set<CallBehaviorAction> callBehaviors = activity.getNodes().stream()
+                .filter(n -> n instanceof CallBehaviorAction).map(CallBehaviorAction.class::cast)
+                .collect(Collectors.toSet());
+        if (callBehaviors.stream().anyMatch(cb -> PokaYokeUmlProfileUtil.isFormalElement(cb))) {
+            error("Only non-shadowed call behaviors are allowed within an interface activity.", null);
+        }
+        if (callBehaviors.stream().anyMatch(cb -> !(cb.getBehavior() instanceof Activity))) {
+            error("Call behaviors within an interface activity must call an activity.", null);
         }
     }
 
@@ -659,12 +702,26 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             checkNamingConventions(node, NamingConvention.OPTIONAL);
         }
 
-        // Check that call behavior actions call either an opaque behavior or a concrete activity.
+        // Check that call behavior actions call either an opaque behavior or an activity.
         if (node instanceof CallBehaviorAction cbAction) {
-            if (!(cbAction.getBehavior() instanceof OpaqueBehavior
-                    || (cbAction.getBehavior() instanceof Activity activity && !activity.isAbstract())))
+            if (!(cbAction.getBehavior() instanceof OpaqueBehavior || cbAction.getBehavior() instanceof Activity)) {
+                error("Call behavior actions should call an opaque behavior or an activity.", node,
+                        UMLPackage.Literals.CALL_BEHAVIOR_ACTION__BEHAVIOR);
+            } else if (cbAction.getBehavior() instanceof Activity activityElement) {
+                // Concrete non-interface activities can only contain call behaviors to (other) concrete activities.
+                // Note that interface activities can contain call behaviors to abstract or concrete activities.
+                if (node.eContainer() instanceof Activity containerActivity
+                        && !PokaYokeUmlProfileUtil.isInterface(containerActivity) && activityElement.isAbstract())
+                {
+                    error("Call behavior actions within concrete non-interface activities cannot call an abstract activity.",
+                            node, UMLPackage.Literals.CALL_BEHAVIOR_ACTION__BEHAVIOR);
+                }
+            }
+
+            if (cbAction.getBehavior() instanceof Activity activityElement
+                    && PokaYokeUmlProfileUtil.isInterface(activityElement))
             {
-                error("Call behavior actions should call an opaque behavior or a concrete activity.", node,
+                error("Interface activities cannot be called.", node,
                         UMLPackage.Literals.CALL_BEHAVIOR_ACTION__BEHAVIOR);
             }
         }
