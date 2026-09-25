@@ -531,7 +531,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
 
         // Additional checks for interface activities.
-        if (PokaYokeUmlProfileUtil.isFormalActivity(activity)) {
+        if (PokaYokeUmlProfileUtil.isInterface(activity)) {
             checkValidInterfaceActivity(activity);
         }
 
