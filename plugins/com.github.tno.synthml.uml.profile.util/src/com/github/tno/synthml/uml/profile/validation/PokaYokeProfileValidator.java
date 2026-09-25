@@ -605,6 +605,11 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             error("Interface activity can contain postconditions if it has an activity final node.", null);
         }
 
+        // Check that an interface activity does not contain interval constraints.
+        if (activity.getOwnedRules().stream().anyMatch(r -> r instanceof IntervalConstraint)) {
+            error("Interface activities cannot contain interval constraints.", null);
+        }
+
         // Check that every call behavior action is non-shadowed and calls an activity.
         Set<CallBehaviorAction> callBehaviors = activity.getNodes().stream()
                 .filter(n -> n instanceof CallBehaviorAction).map(CallBehaviorAction.class::cast)
