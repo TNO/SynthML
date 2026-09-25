@@ -704,13 +704,12 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                         UMLPackage.Literals.CALL_BEHAVIOR_ACTION__BEHAVIOR);
             } else if (cbAction.getBehavior() instanceof Activity activityElement) {
                 // Concrete non-interface activities can only contain call behaviors to (other) concrete activities.
-                // Note that interface activities can contain call behaviors to abstract or concrete activities, so
-                // the parent if-clause covers this latter case.
+                // Note that interface activities can contain call behaviors to abstract or concrete activities.
                 if (node.eContainer() instanceof Activity containerActivity
-                        && !PokaYokeUmlProfileUtil.isFormalActivity(containerActivity) && activityElement.isAbstract())
+                        && !PokaYokeUmlProfileUtil.isInterface(containerActivity) && activityElement.isAbstract())
                 {
-                    error("Call behavior actions within concrete activities cannot call an abstract activity.", node,
-                            UMLPackage.Literals.CALL_BEHAVIOR_ACTION__BEHAVIOR);
+                    error("Call behavior actions within concrete non-interface activities cannot call an abstract activity.",
+                            node, UMLPackage.Literals.CALL_BEHAVIOR_ACTION__BEHAVIOR);
                 }
             }
 
