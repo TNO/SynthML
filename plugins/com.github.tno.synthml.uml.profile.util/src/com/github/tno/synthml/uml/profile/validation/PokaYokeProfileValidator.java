@@ -598,6 +598,13 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                     + " can only contain control nodes and call behavior action nodes.", null);
         }
 
+        // An interface activity can have postconditions if it contains an activity final node.
+        if (!activity.getPostconditions().isEmpty()
+                && !activity.getNodes().stream().anyMatch(n -> n instanceof ActivityFinalNode))
+        {
+            error("Interface activity can contain postconditions if it has an activity final node.", null);
+        }
+
         // Check that every call behavior action is non-shadowed and calls an activity.
         Set<CallBehaviorAction> callBehaviors = activity.getNodes().stream()
                 .filter(n -> n instanceof CallBehaviorAction).map(CallBehaviorAction.class::cast)
