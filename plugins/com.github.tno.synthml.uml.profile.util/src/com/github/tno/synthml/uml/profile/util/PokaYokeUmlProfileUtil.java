@@ -50,6 +50,7 @@ import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.google.common.base.Strings;
 import com.google.common.base.Verify;
 
+import SynthML.FormalActivity;
 import SynthML.FormalCallBehaviorAction;
 import SynthML.FormalConstraint;
 import SynthML.FormalControlFlow;
@@ -93,6 +94,11 @@ public class PokaYokeUmlProfileUtil {
 
     public static final String ST_OCCURRENCE = SynthMLPackage.Literals.OCCURRENCE.getName();
 
+    public static final String ST_FORMAL_ACTIVITY = SynthMLPackage.Literals.FORMAL_ACTIVITY.getName();
+
+    private static final String PROP_FORMAL_ACTIVITY_INTERFACE = SynthMLPackage.Literals.FORMAL_ACTIVITY__INTERFACE
+            .getName();
+
     /** Qualified name for the {@link SynthMLPackage Poka Yoke} profile. */
     public static final String POKA_YOKE_PROFILE = SynthMLPackage.eNAME;
 
@@ -129,6 +135,10 @@ public class PokaYokeUmlProfileUtil {
 
     /** Qualified name for the {@link Occurrence} stereotype. */
     public static final String OCCURRENCE_STEREOTYPE = POKA_YOKE_PROFILE + NamedElement.SEPARATOR + ST_OCCURRENCE;
+
+    /** Qualified name for the {@link FormalActivity} stereotype. */
+    public static final String FORMAL_ACTIVITY_STEREOTYPE = POKA_YOKE_PROFILE + NamedElement.SEPARATOR
+            + ST_FORMAL_ACTIVITY;
 
     private PokaYokeUmlProfileUtil() {
         // Empty for utility classes
@@ -832,5 +842,40 @@ public class PokaYokeUmlProfileUtil {
         return model.getOwnedElements().stream()
                 .filter(e -> e instanceof LiteralInteger literalInteger && literalInteger.getValue() == value)
                 .findFirst().map(LiteralInteger.class::cast).orElse(null);
+    }
+
+    public static boolean isInterface(Activity activity) {
+        return getAppliedStereotype(activity, FORMAL_ACTIVITY_STEREOTYPE)
+                .map(st -> (Boolean)activity.getValue(st, PROP_FORMAL_ACTIVITY_INTERFACE)).orElse(false);
+    }
+
+    /**
+     * Applies the {@link FormalActivity} stereotype and sets the {@link FormalActivity#setInterface(boolean) interface}
+     * property for {@code activity}.
+     * <p>
+     * The {@link FormalActivity} stereotype is removed if {@code newValue} is {@code null} or {@code false}.
+     * </p>
+     *
+     * @param activity The activity to set the property on.
+     * @param newValue The new property value.
+     */
+    public static void setInterface(Activity activity, Boolean newValue) {
+        if (newValue == null || !newValue) {
+            PokaYokeUmlProfileUtil.unapplyStereotype(activity, FORMAL_ACTIVITY_STEREOTYPE);
+            return;
+        }
+        Stereotype st = applyStereotype(activity, getPokaYokeProfile(activity).getOwnedStereotype(ST_FORMAL_ACTIVITY));
+        activity.setValue(st, PROP_FORMAL_ACTIVITY_INTERFACE, newValue);
+    }
+
+    /**
+     * Returns {@code true} if {@link FormalActivity} stereotype is applied on {@link Activity activity}, {@code false}
+     * otherwise.
+     *
+     * @param activity The activity to interrogate.
+     * @return {@code true} if {@link FormalActivity} stereotype is applied on element, {@code false} otherwise.
+     */
+    public static boolean isFormalActivity(Activity activity) {
+        return PokaYokeUmlProfileUtil.getAppliedStereotype(activity, FORMAL_ACTIVITY_STEREOTYPE).isPresent();
     }
 }

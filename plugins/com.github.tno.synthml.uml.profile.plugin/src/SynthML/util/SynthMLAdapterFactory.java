@@ -104,6 +104,10 @@ public class SynthMLAdapterFactory extends AdapterFactoryImpl {
 				return createOccurrenceAdapter();
 			}
 			@Override
+			public Adapter caseFormalActivity(FormalActivity object) {
+				return createFormalActivityAdapter();
+			}
+			@Override
 			public Adapter defaultCase(EObject object) {
 				return createEObjectAdapter();
 			}
@@ -246,6 +250,20 @@ public class SynthMLAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createOccurrenceAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link SynthML.FormalActivity <em>Formal Activity</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see SynthML.FormalActivity
+	 * @generated
+	 */
+	public Adapter createFormalActivityAdapter() {
 		return null;
 	}
 

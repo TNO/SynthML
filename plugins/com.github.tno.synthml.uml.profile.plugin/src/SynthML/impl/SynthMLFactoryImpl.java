@@ -64,6 +64,7 @@ public class SynthMLFactoryImpl extends EFactoryImpl implements SynthMLFactory {
 			case SynthMLPackage.USAGE_PRECONDITION: return createUsagePrecondition();
 			case SynthMLPackage.POSTCONDITION: return createPostcondition();
 			case SynthMLPackage.OCCURRENCE: return createOccurrence();
+			case SynthMLPackage.FORMAL_ACTIVITY: return createFormalActivity();
 			default:
 				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -155,6 +156,17 @@ public class SynthMLFactoryImpl extends EFactoryImpl implements SynthMLFactory {
 	public Occurrence createOccurrence() {
 		OccurrenceImpl occurrence = new OccurrenceImpl();
 		return occurrence;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public FormalActivity createFormalActivity() {
+		FormalActivityImpl formalActivity = new FormalActivityImpl();
+		return formalActivity;
 	}
 
 	/**
