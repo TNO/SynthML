@@ -610,6 +610,13 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             error("Interface activities cannot contain interval constraints.", null);
         }
 
+        // Check that an activity does not contain parameters.
+        List<ClassifierTemplateParameter> templateParameters = CifScopedContext
+                .getClassifierTemplateParameters(activity);
+        if (templateParameters.size() > 0) {
+            error("Interface activity cannot be parameterized.", null);
+        }
+
         // Check that every call behavior action is non-shadowed and calls an activity.
         Set<CallBehaviorAction> callBehaviors = activity.getNodes().stream()
                 .filter(n -> n instanceof CallBehaviorAction).map(CallBehaviorAction.class::cast)
