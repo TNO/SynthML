@@ -159,6 +159,18 @@ public class PokaYokeUmlProfileUtil {
     }
 
     /**
+     * Returns {@code true} if {@link FormalElement} stereotype is applied on {@link CallBehaviorAction cbAction} and if
+     * {@link CallBehaviorAction cbAction} has guard and effects; {@code false} otherwise.
+     *
+     * @param cbAction The call behavior action to interrogate.
+     * @return {@code true} if cbAction has the {@link FormalElement} stereotype applied and has guard and effects,
+     *     {@code false} otherwise.
+     */
+    public static boolean isShadowedCallBehavior(CallBehaviorAction cbAction) {
+        return isFormalElement(cbAction) && isGuardEffectsAction(cbAction);
+    }
+
+    /**
      * Returns {@code true} if the control flow has non-trivial (i.e. null or true) guards.
      *
      * @param controlFlow The control flow to interrogate.
