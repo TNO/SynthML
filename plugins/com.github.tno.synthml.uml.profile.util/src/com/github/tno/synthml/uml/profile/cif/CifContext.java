@@ -32,6 +32,7 @@ import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Property;
 
 import com.github.tno.synthml.uml.profile.util.PokaYokeTypeUtil;
+import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 
 /**
  * Symbol table of the UML model, with all its declared and referenceable named elements from the scope for which it is
@@ -281,7 +282,7 @@ public interface CifContext {
     }
 
     default boolean hasParameterizedActivities() {
-        return getDeclaredElements().stream().anyMatch(
-                e -> e instanceof Activity a && !CifScopedContext.getClassifierTemplateParameters(a).isEmpty());
+        return getDeclaredElements().stream()
+                .anyMatch(e -> e instanceof Activity a && PokaYokeUmlProfileUtil.isParameterizedActivity(a));
     }
 }
