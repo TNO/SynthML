@@ -611,7 +611,7 @@ public class CompositeDataTypeFlattener {
                     PokaYokeUmlProfileUtil.setOutgoingGuard(controlEdge, ACifObjectToString.toString(unfoldedOutgoing));
                 }
             } else if (ownedElement instanceof CallBehaviorAction callBehavior) {
-                if (PokaYokeUmlProfileUtil.isFormalElement(callBehavior)) {
+                if (PokaYokeUmlProfileUtil.isShadowedCallBehavior(callBehavior)) {
                     // Shadowed call, process guards and effects of the call behavior.
                     unfoldRedefinableElement(callBehavior, propertyToLeaves, absoluteToFlatNames);
                 }

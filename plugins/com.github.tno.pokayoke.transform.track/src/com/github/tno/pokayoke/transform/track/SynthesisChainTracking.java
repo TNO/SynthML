@@ -753,7 +753,7 @@ public class SynthesisChainTracking {
                 // If the UML element is a non-shadowed call behavior action, consider the called opaque behavior.
                 RedefinableElement umlElement = getEventTraceInfo(cifEvents.iterator().next()).getUmlElement();
                 if (umlElement instanceof CallBehaviorAction cbAction
-                        && !PokaYokeUmlProfileUtil.isFormalElement(cbAction))
+                        && !PokaYokeUmlProfileUtil.isShadowedCallBehavior(cbAction))
                 {
                     umlElement = cbAction.getBehavior();
                 }
@@ -986,7 +986,7 @@ public class SynthesisChainTracking {
         }
 
         if (umlElement instanceof CallBehaviorAction cbAction) {
-            if (PokaYokeUmlProfileUtil.isFormalElement(cbAction)) { // Shadowed call behavior.
+            if (PokaYokeUmlProfileUtil.isShadowedCallBehavior(cbAction)) {
                 if (transitionInfo.isCompleteTransition()) {
                     return ActionKind.COMPLETE_SHADOW;
                 } else if (transitionInfo.isStartOnlyTransition()) {

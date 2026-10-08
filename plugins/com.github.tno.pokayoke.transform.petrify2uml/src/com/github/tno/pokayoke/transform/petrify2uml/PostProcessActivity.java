@@ -298,7 +298,7 @@ public class PostProcessActivity {
                         // get the current UML element effects.
                         String effect;
                         if (umlElement instanceof CallBehaviorAction cbAction
-                                && !PokaYokeUmlProfileUtil.isFormalElement(cbAction))
+                                && !PokaYokeUmlProfileUtil.isShadowedCallBehavior(cbAction))
                         {
                             effect = PokaYokeUmlProfileUtil.getEffects(cbAction.getBehavior()).get(effectIdx);
                         } else {

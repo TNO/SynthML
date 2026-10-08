@@ -702,7 +702,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         } else if (node instanceof ForkNode || node instanceof JoinNode) {
             newEventEdges = translateActivityAndNode(node, true, false);
         } else if (node instanceof CallBehaviorAction callNode) {
-            if (PokaYokeUmlProfileUtil.isFormalElement(callNode)) {
+            if (PokaYokeUmlProfileUtil.isShadowedCallBehavior(callNode)) {
                 // Sanity check. Translating a shadowed call behavior should occur only if translating for synthesis.
                 Verify.verify(translationPurpose == UmlToCifTranslationPurpose.SYNTHESIS,
                         "Translating a shadowed call behavior is allowed only for synthesis translation purpose.");

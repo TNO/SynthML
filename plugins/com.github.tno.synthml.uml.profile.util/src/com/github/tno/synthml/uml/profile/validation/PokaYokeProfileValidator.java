@@ -619,7 +619,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         Set<CallBehaviorAction> callBehaviors = activity.getNodes().stream()
                 .filter(n -> n instanceof CallBehaviorAction).map(CallBehaviorAction.class::cast)
                 .collect(Collectors.toSet());
-        if (callBehaviors.stream().anyMatch(cb -> PokaYokeUmlProfileUtil.isFormalElement(cb))) {
+        if (callBehaviors.stream().anyMatch(cb -> PokaYokeUmlProfileUtil.isShadowedCallBehavior(cb))) {
             error("Only non-shadowed call behaviors are allowed within an interface activity.", null);
         }
         if (callBehaviors.stream().anyMatch(cb -> !(cb.getBehavior() instanceof Activity))) {
