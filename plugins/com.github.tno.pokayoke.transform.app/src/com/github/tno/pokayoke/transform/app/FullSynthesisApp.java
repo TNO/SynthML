@@ -69,6 +69,7 @@ import com.github.tno.pokayoke.transform.track.UmlToCifTranslationPurpose;
 import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
 import com.github.tno.synthml.uml.profile.cif.CifContextManager;
+import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 
@@ -130,8 +131,10 @@ public class FullSynthesisApp {
         SynthesisChainTracking tracker = new SynthesisChainTracking(activity);
 
         // Translate the UML specification to a CIF specification.
-        UmlToCifTranslator umlToCifTranslator = new UmlToCifTranslator(ctxManager.getGlobalContext(), activity,
-                UmlToCifTranslationPurpose.SYNTHESIS, tracker, warnings);
+        UmlToCifTranslationPurpose purpose = PokaYokeUmlProfileUtil.isInterface(activity)
+                ? UmlToCifTranslationPurpose.INTERFACE : UmlToCifTranslationPurpose.SYNTHESIS;
+        UmlToCifTranslator umlToCifTranslator = new UmlToCifTranslator(ctxManager.getGlobalContext(), activity, purpose,
+                tracker, warnings);
         Specification cifSpec = umlToCifTranslator.translate();
         Path cifSpecPath = outputFolderPath.resolve(filePrefix + ".01.cif");
         try {
