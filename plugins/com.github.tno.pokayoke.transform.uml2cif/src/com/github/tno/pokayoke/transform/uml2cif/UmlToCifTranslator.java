@@ -263,7 +263,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         computeNonCallableElements();
 
         // Flatten UML activities and normalize IDs.
-        if (translationPurpose == UmlToCifTranslationPurpose.SYNTHESIS) {
+        if (translationPurpose == UmlToCifTranslationPurpose.SYNTHESIS
+                || translationPurpose == UmlToCifTranslationPurpose.INTERFACE)
+        {
             FlattenUMLActivity flattener = new FlattenUMLActivity(activity.getModel());
             flattener.transform();
             FileHelper.normalizeIds(activity.getModel());
