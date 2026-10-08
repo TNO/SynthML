@@ -159,6 +159,30 @@ public class FullSynthesisApp {
         CifBddSpec cifBddSpec = CIFDataSynthesisHelper.getCifBddSpec(cifSpec,
                 cifRestrictedSpecPath.toAbsolutePath().toString(), settings);
 
+        if (PokaYokeUmlProfileUtil.isInterface(activity)) {
+            // Post-process the activity to remove the names of edges and nodes.
+            Path umlLabelsRemovedOutputPath = outputFolderPath.resolve(filePrefix + ".03.labelsremoved.uml");
+            PostProcessActivity.removeNodesEdgesNames(activity);
+            FileHelper.storeModel(activity.getModel(), umlLabelsRemovedOutputPath.toString());
+
+            // Computing guards.
+            GuardComputation guardComputer = new GuardComputation(umlToCifTranslator, tracker);
+            CifDataSynthesisResult cifSynthesisResult = guardComputer.computeGuards(cifSpec,
+                    umlLabelsRemovedOutputPath);
+            Path umlGuardsOutputPath = outputFolderPath.resolve(filePrefix + ".04.guardsadded.uml");
+            FileHelper.storeModel(umlToCifTranslator.getActivity().getModel(), umlGuardsOutputPath.toString());
+
+            // Store the CIF model with the computed guards.
+            Path cifSynthesisPath = outputFolderPath.resolve(filePrefix + ".05.ctrlsys.cif");
+            CIFDataSynthesisHelper.convertSynthesisResultToCif(cifSpec, cifSynthesisResult, cifSynthesisPath,
+                    outputFolderPath.toString());
+
+            // Check the activity for non-deterministic choices.
+            CheckNonDeterministicChoices.check(activity, umlToCifTranslator, warnings, cifBddSpec);
+
+            return;
+        }
+
         // Perform synthesis.
         CifDataSynthesisResult cifSynthesisResult = CIFDataSynthesisHelper.synthesize(cifBddSpec, settings);
 
