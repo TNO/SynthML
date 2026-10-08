@@ -163,8 +163,8 @@ public class PokaYokeUmlProfileUtil {
      * {@link CallBehaviorAction cbAction} has guard and effects; {@code false} otherwise.
      *
      * @param cbAction The call behavior action to interrogate.
-     * @return {@code true} if {@code cbAction} has the {@link FormalElement} stereotype applied and has guard and effects,
-     *     {@code false} otherwise.
+     * @return {@code true} if {@code cbAction} has the {@link FormalElement} stereotype applied and has guard and
+     *     effects, {@code false} otherwise.
      */
     public static boolean isShadowedCallBehavior(CallBehaviorAction cbAction) {
         return isFormalElement(cbAction) && isGuardEffectsAction(cbAction);
