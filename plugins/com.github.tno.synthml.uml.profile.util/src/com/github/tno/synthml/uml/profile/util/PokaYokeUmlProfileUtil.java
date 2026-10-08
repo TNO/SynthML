@@ -25,6 +25,7 @@ import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Classifier;
+import org.eclipse.uml2.uml.ClassifierTemplateParameter;
 import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.Element;
@@ -47,6 +48,7 @@ import org.eclipse.uml2.uml.ValueSpecification;
 
 import com.github.tno.pokayoke.transform.common.ExprHelper;
 import com.github.tno.pokayoke.transform.common.FileHelper;
+import com.github.tno.synthml.uml.profile.cif.CifScopedContext;
 import com.google.common.base.Strings;
 import com.google.common.base.Verify;
 
@@ -877,5 +879,17 @@ public class PokaYokeUmlProfileUtil {
      */
     public static boolean isFormalActivity(Activity activity) {
         return PokaYokeUmlProfileUtil.getAppliedStereotype(activity, FORMAL_ACTIVITY_STEREOTYPE).isPresent();
+    }
+
+    /**
+     * Returns {@code true} if {@link Activity activity} is parameterized, {@code false} otherwise.
+     *
+     * @param activity The activity to interrogate.
+     * @return {@code true} if the activity is parameterized, {@code false} otherwise.
+     */
+    public static boolean isParameterizedActivity(Activity activity) {
+        List<ClassifierTemplateParameter> templateParameters = CifScopedContext
+                .getClassifierTemplateParameters(activity);
+        return templateParameters.size() > 0;
     }
 }
