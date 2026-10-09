@@ -624,9 +624,6 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         if (callBehaviors.stream().anyMatch(cb -> PokaYokeUmlProfileUtil.isFormalElement(cb))) {
             error("Only non-shadowed call behaviors are allowed within an interface activity.", null);
         }
-        if (callBehaviors.stream().anyMatch(cb -> !(cb.getBehavior() instanceof Activity))) {
-            error("Call behaviors within an interface activity must call an activity.", null);
-        }
     }
 
     private void checkValidTemplateSignature(Activity activity) {
