@@ -325,8 +325,10 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
         // Translate all occurrence constraints of the input UML activity. For the language equivalence check, the
         // constraints have already been included in the structure and guards, and we want to check that it was done
-        // correctly, so we don't translate them.
-        if (translationPurpose != UmlToCifTranslationPurpose.LANGUAGE_EQUIVALENCE) {
+        // correctly, so we don't translate them. Interfaces cannot contain occurrence constraints.
+        if (translationPurpose == UmlToCifTranslationPurpose.SYNTHESIS
+                || translationPurpose == UmlToCifTranslationPurpose.GUARD_COMPUTATION)
+        {
             List<Automaton> cifRequirementAutomata = translateOccurrenceConstraints();
             cifSpec.getComponents().addAll(cifRequirementAutomata);
         }
