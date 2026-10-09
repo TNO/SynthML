@@ -1648,7 +1648,7 @@ public class SynthesisChainTracking {
         // Get the original UML element belonging to the CIF event. For the synthesis purpose, it is by definition an
         // original UML element. For the later purposes, we get the original UML element from the current UML element.
         RedefinableElement umlElement = switch (purpose) {
-            case SYNTHESIS -> eventInfo.getUmlElement();
+            case SYNTHESIS, INTERFACE -> eventInfo.getUmlElement();
             case GUARD_COMPUTATION, LANGUAGE_EQUIVALENCE -> getOriginalUmlElementForFinalizedElement(
                     eventInfo.getUmlElement());
             default -> throw new IllegalArgumentException("Unexpected translation purpose: " + purpose);
