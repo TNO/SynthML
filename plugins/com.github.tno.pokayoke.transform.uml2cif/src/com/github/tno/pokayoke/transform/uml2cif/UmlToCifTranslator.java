@@ -339,6 +339,12 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         cifPlant.getDeclarations().add(preconditionVariable);
         cifPlant.getInitials().add(getTranslatedPrecondition());
 
+        // If the concrete activity does not have a final node, it is cyclic. If it is cyclic, it must be an interface.
+        boolean isCyclicActivity = !activity.isAbstract()
+                && activity.getNodes().stream().noneMatch(n -> n instanceof ActivityFinalNode);
+        Verify.verify(!isCyclicActivity || translationPurpose == UmlToCifTranslationPurpose.INTERFACE,
+                "Only interface activities can be cyclic.");
+
         // Translate all postconditions of the input UML activity.
         switch (translationPurpose) {
             case SYNTHESIS:
@@ -350,13 +356,28 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 translateSingleKindPostconditions(cifNonAtomicVars, cifAtomicityVar, cifPlant);
                 break;
             }
+            case INTERFACE: {
+                if (!isCyclicActivity) {
+                    // Translate usual postconditions with single kind if the activity is not cyclic.
+                    translateSingleKindPostconditions(cifNonAtomicVars, cifAtomicityVar, cifPlant);
+                } else {
+                    throw new RuntimeException(String.format(
+                            "Activity '%s' is a cyclic interface but contains postconditions.", activity.getName()));
+                }
+                break;
+            }
 
             default:
                 throw new AssertionError("Unknown translation purpose: " + translationPurpose);
         }
 
         // Create extra requirements to ensure that, whenever the postcondition holds, no further steps can be taken.
-        if (translationPurpose != UmlToCifTranslationPurpose.LANGUAGE_EQUIVALENCE) {
+        // Interface activities might have empty postconditions, e.g., if the activity loops forever; if so, do not
+        // translate any disable requirements.
+        if (translationPurpose == UmlToCifTranslationPurpose.SYNTHESIS
+                || translationPurpose == UmlToCifTranslationPurpose.GUARD_COMPUTATION
+                || (translationPurpose == UmlToCifTranslationPurpose.INTERFACE && !isCyclicActivity))
+        {
             List<Invariant> cifDisableConstraints = createDisableEventsWhenDoneRequirements();
             cifSpec.getInvariants().addAll(cifDisableConstraints);
         }
@@ -1525,11 +1546,14 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 && kind != PostConditionKind.WITHOUT_STRUCTURE)
         {
             for (var entry: controlFlowMap.entrySet()) {
-                // For synthesis, we don't want any tokens on control flows of called activities. For guard computation,
-                // we also want no tokens on control flows, except for the incoming control flow into the final node.
-                // That last case is handled later in this method, so that particular control flow is excluded here.
+                // For synthesis, we don't want any tokens on control flows of called activities. For guard computation
+                // and interfaces, we also want no tokens on control flows, except for the incoming control flow into
+                // the final node. That last case is handled later in this method, so that particular control flow is
+                // excluded here.
                 boolean isIncomingToFinalNode = entry.getKey().getTarget() instanceof ActivityFinalNode;
-                if (translationPurpose == UmlToCifTranslationPurpose.GUARD_COMPUTATION && isIncomingToFinalNode) {
+                if ((translationPurpose == UmlToCifTranslationPurpose.GUARD_COMPUTATION
+                        || translationPurpose == UmlToCifTranslationPurpose.INTERFACE) && isIncomingToFinalNode)
+                {
                     continue;
                 }
 
@@ -1656,7 +1680,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 }
 
                 // If there is only one postcondition, there is nothing to choose.
-                case LANGUAGE_EQUIVALENCE -> PostConditionKind.SINGLE;
+                case LANGUAGE_EQUIVALENCE, INTERFACE -> PostConditionKind.SINGLE;
             };
 
             // Get the associated postcondition algebraic variable.
