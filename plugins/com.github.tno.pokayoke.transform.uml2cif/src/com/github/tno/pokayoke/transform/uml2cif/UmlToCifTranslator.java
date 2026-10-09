@@ -451,9 +451,12 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     private ActionTranslationResult translateAsAction(RedefinableElement umlElement, String name, boolean isAtomic,
             boolean controllableStartEvent, String entryGuard, String exitGuard)
     {
-        // For guard computation, force all start events to be controllable, as the structure of the synthesized UML
-        // activity is already fixed, and we just want to re-compute the guards as locally as possible.
-        if (translationPurpose == UmlToCifTranslationPurpose.GUARD_COMPUTATION) {
+        // For guard computation and interface activities, force all start events to be controllable, as the structure
+        // of the synthesized UML activity is already fixed, and we just want to re-compute the guards as locally as
+        // possible.
+        if (translationPurpose == UmlToCifTranslationPurpose.GUARD_COMPUTATION
+                || translationPurpose == UmlToCifTranslationPurpose.INTERFACE)
+        {
             controllableStartEvent = true;
         }
 
