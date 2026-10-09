@@ -82,7 +82,9 @@ public class FlattenUMLActivity {
     }
 
     private void transform(Element element) {
-        if (element instanceof Activity activityElement) {
+        if (element instanceof Activity activityElement && !activityElement.isAbstract()) {
+            // Transform only concrete activities (interface activities can call abstract activities, where there's
+            // nothing to flatten).
             transformActivity(activityElement, null);
         } else if (element instanceof Class classElement) {
             classElement.getOwnedMembers().forEach(this::transform);
@@ -106,9 +108,12 @@ public class FlattenUMLActivity {
             if (node instanceof CallBehaviorAction action) {
                 Behavior behavior = action.getBehavior();
 
-                // Translate only non-shadowed call behavior actions. Shadowed (stereotyped) call behavior actions are
-                // considered leaves, as are call behavior actions that call opaque behaviors.
-                if (behavior instanceof Activity activity && action.getAppliedStereotypes().isEmpty()) {
+                // Translate only non-shadowed call behavior actions that call concrete activities (interface activities
+                // can call abstract activities). Shadowed (stereotyped) call behavior actions are considered leaves, as
+                // are call behavior actions that call opaque behaviors.
+                if (behavior instanceof Activity activity && action.getAppliedStereotypes().isEmpty()
+                        && !activity.isAbstract())
+                {
                     transformActivity(activity, action);
                 }
             }

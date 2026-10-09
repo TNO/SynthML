@@ -622,9 +622,6 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         if (callBehaviors.stream().anyMatch(cb -> PokaYokeUmlProfileUtil.isShadowedCallBehavior(cb))) {
             error("Only non-shadowed call behaviors are allowed within an interface activity.", null);
         }
-        if (callBehaviors.stream().anyMatch(cb -> !(cb.getBehavior() instanceof Activity))) {
-            error("Call behaviors within an interface activity must call an activity.", null);
-        }
     }
 
     private void checkValidTemplateSignature(Activity activity) {
@@ -739,9 +736,22 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                         UMLPackage.Literals.ACTIVITY_NODE__INCOMING);
             }
             if (node.getOutgoings().size() != 1) {
-                error(String.format("Node of type '%s' should have exactly one outgoing edge, but got %s.",
-                        node.getClass().getSimpleName(), node.getOutgoings().size()), node,
-                        UMLPackage.Literals.ACTIVITY_NODE__OUTGOING);
+                // Call behavior actions are allowed to have no outgoing edges in cyclic interface activities.
+                Activity activity = (Activity)node.eContainer();
+                if (PokaYokeUmlProfileUtil.isInterface(activity)) {
+                    boolean isCyclicActivity = activity.getNodes().stream()
+                            .noneMatch(n -> n instanceof ActivityFinalNode);
+                    if (node.getOutgoings().size() != 0 || !isCyclicActivity) {
+                        error(String.format(
+                                "Node of type '%s' within a cyclic interface activity can have zero or one outgoing edges, but got %s.",
+                                node.getClass().getSimpleName(), node.getOutgoings().size()), node,
+                                UMLPackage.Literals.ACTIVITY_NODE__OUTGOING);
+                    }
+                } else {
+                    error(String.format("Node of type '%s' should have exactly one outgoing edge, but got %s.",
+                            node.getClass().getSimpleName(), node.getOutgoings().size()), node,
+                            UMLPackage.Literals.ACTIVITY_NODE__OUTGOING);
+                }
             }
         } else if (node instanceof DecisionNode || node instanceof ForkNode) {
             if (node.getIncomings().size() != 1) {

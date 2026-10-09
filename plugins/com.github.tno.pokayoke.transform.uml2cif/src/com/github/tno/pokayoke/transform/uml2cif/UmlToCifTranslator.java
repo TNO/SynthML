@@ -263,7 +263,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         computeNonCallableElements();
 
         // Flatten UML activities and normalize IDs.
-        if (translationPurpose == UmlToCifTranslationPurpose.SYNTHESIS) {
+        if (translationPurpose == UmlToCifTranslationPurpose.SYNTHESIS
+                || translationPurpose == UmlToCifTranslationPurpose.INTERFACE)
+        {
             FlattenUMLActivity flattener = new FlattenUMLActivity(activity.getModel());
             flattener.transform();
             FileHelper.normalizeIds(activity.getModel());
@@ -323,8 +325,10 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
         // Translate all occurrence constraints of the input UML activity. For the language equivalence check, the
         // constraints have already been included in the structure and guards, and we want to check that it was done
-        // correctly, so we don't translate them.
-        if (translationPurpose != UmlToCifTranslationPurpose.LANGUAGE_EQUIVALENCE) {
+        // correctly, so we don't translate them. Interfaces cannot contain occurrence constraints.
+        if (translationPurpose == UmlToCifTranslationPurpose.SYNTHESIS
+                || translationPurpose == UmlToCifTranslationPurpose.GUARD_COMPUTATION)
+        {
             List<Automaton> cifRequirementAutomata = translateOccurrenceConstraints();
             cifSpec.getComponents().addAll(cifRequirementAutomata);
         }
@@ -337,38 +341,31 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         cifPlant.getDeclarations().add(preconditionVariable);
         cifPlant.getInitials().add(getTranslatedPrecondition());
 
+        // If the concrete activity does not have a final node, it is cyclic. If it is cyclic, it must be an interface.
+        boolean isCyclicActivity = !activity.isAbstract()
+                && activity.getNodes().stream().noneMatch(n -> n instanceof ActivityFinalNode);
+        Verify.verify(!isCyclicActivity || translationPurpose == UmlToCifTranslationPurpose.INTERFACE,
+                "Only interface activities can be cyclic.");
+
         // Translate all postconditions of the input UML activity.
         switch (translationPurpose) {
             case SYNTHESIS:
             case GUARD_COMPUTATION: {
-                // Translate postconditions twice, once to determine the postcondition without structure, and once to
-                // determine the postcondition with structure. Both are later used to disable different events when
-                // different postconditions hold. The postcondition with structure is used as marking predicate.
-                Pair<List<AlgVariable>, AlgVariable> postconditionsWithoutStructure = translatePostconditions(
-                        cifNonAtomicVars, cifAtomicityVar, PostConditionKind.WITHOUT_STRUCTURE);
-                cifPlant.getDeclarations().addAll(postconditionsWithoutStructure.left);
-                postconditionVariables.put(PostConditionKind.WITHOUT_STRUCTURE, postconditionsWithoutStructure.right);
-                cifPlant.getDeclarations().add(postconditionsWithoutStructure.right);
-
-                Pair<List<AlgVariable>, AlgVariable> postconditionsWithStructure = translatePostconditions(
-                        cifNonAtomicVars, cifAtomicityVar, PostConditionKind.WITH_STRUCTURE);
-                cifPlant.getDeclarations().addAll(postconditionsWithStructure.left);
-                postconditionVariables.put(PostConditionKind.WITH_STRUCTURE, postconditionsWithStructure.right);
-                cifPlant.getDeclarations().add(postconditionsWithStructure.right);
-
-                cifPlant.getMarkeds().add(getTranslatedPostcondition(PostConditionKind.WITH_STRUCTURE));
+                translateTwoKindPostconditions(cifNonAtomicVars, cifAtomicityVar, cifPlant);
                 break;
             }
             case LANGUAGE_EQUIVALENCE: {
-                // Translate postconditions once, to get a single algebraic variable that represents the postcondition.
-                // It is used as marking predicate, and later also to disable events when the postcondition holds.
-                Pair<List<AlgVariable>, AlgVariable> postconditions = translatePostconditions(cifNonAtomicVars,
-                        cifAtomicityVar, PostConditionKind.SINGLE);
-                cifPlant.getDeclarations().addAll(postconditions.left);
-                postconditionVariables.put(PostConditionKind.SINGLE, postconditions.right);
-                cifPlant.getDeclarations().add(postconditions.right);
-
-                cifPlant.getMarkeds().add(getTranslatedPostcondition(PostConditionKind.SINGLE));
+                translateSingleKindPostconditions(cifNonAtomicVars, cifAtomicityVar, cifPlant);
+                break;
+            }
+            case INTERFACE: {
+                if (!isCyclicActivity) {
+                    // Translate usual postconditions with single kind if the activity is not cyclic.
+                    translateSingleKindPostconditions(cifNonAtomicVars, cifAtomicityVar, cifPlant);
+                } else {
+                    throw new RuntimeException(String.format(
+                            "Activity '%s' is a cyclic interface but contains postconditions.", activity.getName()));
+                }
                 break;
             }
 
@@ -377,7 +374,12 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         }
 
         // Create extra requirements to ensure that, whenever the postcondition holds, no further steps can be taken.
-        if (translationPurpose != UmlToCifTranslationPurpose.LANGUAGE_EQUIVALENCE) {
+        // Interface activities might have empty postconditions, e.g., if the activity loops forever; if so, do not
+        // translate any disable requirements.
+        if (translationPurpose == UmlToCifTranslationPurpose.SYNTHESIS
+                || translationPurpose == UmlToCifTranslationPurpose.GUARD_COMPUTATION
+                || (translationPurpose == UmlToCifTranslationPurpose.INTERFACE && !isCyclicActivity))
+        {
             List<Invariant> cifDisableConstraints = createDisableEventsWhenDoneRequirements();
             cifSpec.getInvariants().addAll(cifDisableConstraints);
         }
@@ -449,9 +451,12 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     private ActionTranslationResult translateAsAction(RedefinableElement umlElement, String name, boolean isAtomic,
             boolean controllableStartEvent, String entryGuard, String exitGuard)
     {
-        // For guard computation, force all start events to be controllable, as the structure of the synthesized UML
-        // activity is already fixed, and we just want to re-compute the guards as locally as possible.
-        if (translationPurpose == UmlToCifTranslationPurpose.GUARD_COMPUTATION) {
+        // For guard computation and interface activities, force all start events to be controllable, as the structure
+        // of the synthesized UML activity is already fixed, and we just want to re-compute the guards as locally as
+        // possible.
+        if (translationPurpose == UmlToCifTranslationPurpose.GUARD_COMPUTATION
+                || translationPurpose == UmlToCifTranslationPurpose.INTERFACE)
+        {
             controllableStartEvent = true;
         }
 
@@ -1546,11 +1551,14 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 && kind != PostConditionKind.WITHOUT_STRUCTURE)
         {
             for (var entry: controlFlowMap.entrySet()) {
-                // For synthesis, we don't want any tokens on control flows of called activities. For guard computation,
-                // we also want no tokens on control flows, except for the incoming control flow into the final node.
-                // That last case is handled later in this method, so that particular control flow is excluded here.
+                // For synthesis, we don't want any tokens on control flows of called activities. For guard computation
+                // and interfaces, we also want no tokens on control flows, except for the incoming control flow into
+                // the final node. That last case is handled later in this method, so that particular control flow is
+                // excluded here.
                 boolean isIncomingToFinalNode = entry.getKey().getTarget() instanceof ActivityFinalNode;
-                if (translationPurpose == UmlToCifTranslationPurpose.GUARD_COMPUTATION && isIncomingToFinalNode) {
+                if ((translationPurpose == UmlToCifTranslationPurpose.GUARD_COMPUTATION
+                        || translationPurpose == UmlToCifTranslationPurpose.INTERFACE) && isIncomingToFinalNode)
+                {
                     continue;
                 }
 
@@ -1584,6 +1592,41 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         // Combine the user-specified and/or additional postconditions.
         AlgVariable postconditionVar = combinePrePostconditionVariables(postconditionVars, kind.prefix);
         return Pair.pair(postconditionVars, postconditionVar);
+    }
+
+    private void translateSingleKindPostconditions(List<DiscVariable> cifNonAtomicVars, DiscVariable cifAtomicityVar,
+            Automaton cifPlant)
+    {
+        // Translate postconditions once, to get a single algebraic variable that represents the postcondition.
+        // It is used as marking predicate, and later also to disable events when the postcondition holds.
+        Pair<List<AlgVariable>, AlgVariable> postconditions = translatePostconditions(cifNonAtomicVars, cifAtomicityVar,
+                PostConditionKind.SINGLE);
+        cifPlant.getDeclarations().addAll(postconditions.left);
+        postconditionVariables.put(PostConditionKind.SINGLE, postconditions.right);
+        cifPlant.getDeclarations().add(postconditions.right);
+
+        cifPlant.getMarkeds().add(getTranslatedPostcondition(PostConditionKind.SINGLE));
+    }
+
+    private void translateTwoKindPostconditions(List<DiscVariable> cifNonAtomicVars, DiscVariable cifAtomicityVar,
+            Automaton cifPlant)
+    {
+        // Translate postconditions twice, once to determine the postcondition without structure, and once to
+        // determine the postcondition with structure. Both are later used to disable different events when
+        // different postconditions hold. The postcondition with structure is used as marking predicate.
+        Pair<List<AlgVariable>, AlgVariable> postconditionsWithoutStructure = translatePostconditions(cifNonAtomicVars,
+                cifAtomicityVar, PostConditionKind.WITHOUT_STRUCTURE);
+        cifPlant.getDeclarations().addAll(postconditionsWithoutStructure.left);
+        postconditionVariables.put(PostConditionKind.WITHOUT_STRUCTURE, postconditionsWithoutStructure.right);
+        cifPlant.getDeclarations().add(postconditionsWithoutStructure.right);
+
+        Pair<List<AlgVariable>, AlgVariable> postconditionsWithStructure = translatePostconditions(cifNonAtomicVars,
+                cifAtomicityVar, PostConditionKind.WITH_STRUCTURE);
+        cifPlant.getDeclarations().addAll(postconditionsWithStructure.left);
+        postconditionVariables.put(PostConditionKind.WITH_STRUCTURE, postconditionsWithStructure.right);
+        cifPlant.getDeclarations().add(postconditionsWithStructure.right);
+
+        cifPlant.getMarkeds().add(getTranslatedPostcondition(PostConditionKind.WITH_STRUCTURE));
     }
 
     /**
@@ -1642,7 +1685,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 }
 
                 // If there is only one postcondition, there is nothing to choose.
-                case LANGUAGE_EQUIVALENCE -> PostConditionKind.SINGLE;
+                case LANGUAGE_EQUIVALENCE, INTERFACE -> PostConditionKind.SINGLE;
             };
 
             // Get the associated postcondition algebraic variable.
