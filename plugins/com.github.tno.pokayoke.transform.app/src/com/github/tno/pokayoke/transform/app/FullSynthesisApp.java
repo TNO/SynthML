@@ -43,7 +43,7 @@ import org.eclipse.escet.common.java.PathPair;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Model;
 
-import com.github.tno.pokayoke.transform.activitysynthesis.AbstractActivityDependencyOrderer;
+import com.github.tno.pokayoke.transform.activitysynthesis.ActivitySynthesisDependencyOrderer;
 import com.github.tno.pokayoke.transform.activitysynthesis.CIFDataSynthesisHelper;
 import com.github.tno.pokayoke.transform.activitysynthesis.CheckNonDeterministicChoices;
 import com.github.tno.pokayoke.transform.activitysynthesis.CifSourceSinkLocationTransformer;
@@ -69,6 +69,7 @@ import com.github.tno.pokayoke.transform.track.UmlToCifTranslationPurpose;
 import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
 import com.github.tno.synthml.uml.profile.cif.CifContextManager;
+import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 
@@ -97,7 +98,7 @@ public class FullSynthesisApp {
 
         // Synthesize all abstract activities in the loaded UML specification in the proper order.
         CifContext context = ctxManager.getGlobalContext();
-        AbstractActivityDependencyOrderer orderer = new AbstractActivityDependencyOrderer(context.getAllActivities());
+        ActivitySynthesisDependencyOrderer orderer = new ActivitySynthesisDependencyOrderer(context.getAllActivities());
         List<Activity> activities = orderer.computeOrder();
 
         if (activities == null) {
@@ -130,8 +131,10 @@ public class FullSynthesisApp {
         SynthesisChainTracking tracker = new SynthesisChainTracking(activity);
 
         // Translate the UML specification to a CIF specification.
-        UmlToCifTranslator umlToCifTranslator = new UmlToCifTranslator(ctxManager.getGlobalContext(), activity,
-                UmlToCifTranslationPurpose.SYNTHESIS, tracker, warnings);
+        UmlToCifTranslationPurpose purpose = PokaYokeUmlProfileUtil.isInterface(activity)
+                ? UmlToCifTranslationPurpose.INTERFACE : UmlToCifTranslationPurpose.SYNTHESIS;
+        UmlToCifTranslator umlToCifTranslator = new UmlToCifTranslator(ctxManager.getGlobalContext(), activity, purpose,
+                tracker, warnings);
         Specification cifSpec = umlToCifTranslator.translate();
         Path cifSpecPath = outputFolderPath.resolve(filePrefix + ".01.cif");
         try {
@@ -155,6 +158,30 @@ public class FullSynthesisApp {
         CifDataSynthesisSettings settings = CIFDataSynthesisHelper.getSynthesisSettings();
         CifBddSpec cifBddSpec = CIFDataSynthesisHelper.getCifBddSpec(cifSpec,
                 cifRestrictedSpecPath.toAbsolutePath().toString(), settings);
+
+        if (PokaYokeUmlProfileUtil.isInterface(activity)) {
+            // Post-process the activity to remove the names of edges and nodes.
+            Path umlLabelsRemovedOutputPath = outputFolderPath.resolve(filePrefix + ".03.labelsremoved.uml");
+            PostProcessActivity.removeNodesEdgesNames(activity);
+            FileHelper.storeModel(activity.getModel(), umlLabelsRemovedOutputPath.toString());
+
+            // Computing guards.
+            GuardComputation guardComputer = new GuardComputation(umlToCifTranslator, tracker);
+            CifDataSynthesisResult cifSynthesisResult = guardComputer.computeGuards(cifSpec,
+                    umlLabelsRemovedOutputPath);
+            Path umlGuardsOutputPath = outputFolderPath.resolve(filePrefix + ".04.guardsadded.uml");
+            FileHelper.storeModel(umlToCifTranslator.getActivity().getModel(), umlGuardsOutputPath.toString());
+
+            // Store the CIF model with the computed guards.
+            Path cifSynthesisPath = outputFolderPath.resolve(filePrefix + ".05.ctrlsys.cif");
+            CIFDataSynthesisHelper.convertSynthesisResultToCif(cifSpec, cifSynthesisResult, cifSynthesisPath,
+                    outputFolderPath.toString());
+
+            // Check the activity for non-deterministic choices.
+            CheckNonDeterministicChoices.check(activity, umlToCifTranslator, warnings, cifBddSpec);
+
+            return;
+        }
 
         // Perform synthesis.
         CifDataSynthesisResult cifSynthesisResult = CIFDataSynthesisHelper.synthesize(cifBddSpec, settings);

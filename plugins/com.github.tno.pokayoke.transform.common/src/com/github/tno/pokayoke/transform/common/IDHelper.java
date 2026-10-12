@@ -43,7 +43,9 @@ public class IDHelper {
         while (iterator.hasNext()) {
             EObject eObject = iterator.next();
             if (eObject instanceof NamedElement namedElement) {
-                addTracingComment(namedElement, getID(namedElement));
+                if (namedElement.getOwnedComments().isEmpty()) {
+                    addTracingComment(namedElement, getID(namedElement));
+                }
             }
         }
     }

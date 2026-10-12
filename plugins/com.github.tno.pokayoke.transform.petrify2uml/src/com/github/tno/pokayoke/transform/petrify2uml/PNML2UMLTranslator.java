@@ -45,6 +45,7 @@ import org.eclipse.uml2.uml.UMLFactory;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.transform.track.SynthesisChainTracking;
+import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 
@@ -85,9 +86,14 @@ public class PNML2UMLTranslator {
     }
 
     public PNML2UMLTranslator(Activity activity) {
-        Preconditions.checkArgument(activity.isAbstract(), "Expected an abstract activity.");
-        Preconditions.checkArgument(activity.getNodes().isEmpty(), "Expected abstract activities to not have nodes.");
-        Preconditions.checkArgument(activity.getEdges().isEmpty(), "Expected abstract activities to not have edges.");
+        Preconditions.checkArgument(activity.isAbstract() || PokaYokeUmlProfileUtil.isInterface(activity),
+                "Expected an abstract or interface activity.");
+        if (activity.isAbstract()) {
+            Preconditions.checkArgument(activity.getNodes().isEmpty(),
+                    "Expected abstract activities to not have nodes.");
+            Preconditions.checkArgument(activity.getEdges().isEmpty(),
+                    "Expected abstract activities to not have edges.");
+        }
 
         this.activity = activity;
     }

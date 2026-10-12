@@ -25,12 +25,13 @@ import org.eclipse.uml2.uml.Interval;
 import org.eclipse.uml2.uml.IntervalConstraint;
 
 import com.github.tno.synthml.uml.profile.cif.CifContext;
+import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 
 /**
- * A dependency orderer for abstract activities, which determines the order in which abstract activities should be
+ * A dependency orderer for abstract and interface activities, which determines the order in which activities should be
  * synthesized.
  */
-public class AbstractActivityDependencyOrderer {
+public class ActivitySynthesisDependencyOrderer {
     /** All abstract and concrete activities in the input model to consider. */
     private final Set<Activity> activities;
 
@@ -42,7 +43,7 @@ public class AbstractActivityDependencyOrderer {
      *
      * @param activities All abstract and concrete activities in the input model to consider.
      */
-    public AbstractActivityDependencyOrderer(Collection<Activity> activities) {
+    public ActivitySynthesisDependencyOrderer(Collection<Activity> activities) {
         this.activities = new LinkedHashSet<>(activities);
         this.orderer = new ActivityOrderer();
 
@@ -50,16 +51,16 @@ public class AbstractActivityDependencyOrderer {
     }
 
     /**
-     * Computes the order in which the abstract activities must be synthesized.
+     * Computes the order in which the abstract and interface activities must be synthesized.
      *
-     * @return The list of abstract activities in the order they should be synthesized, or {@code null} if a cycle in
-     *     the dependencies is detected.
+     * @return The list of abstract and interface activities in the order they should be synthesized, or {@code null} if
+     *     a cycle in the dependencies is detected.
      */
     public List<Activity> computeOrder() {
         List<Activity> result = orderer.computeOrder();
 
         if (result != null) {
-            result = result.stream().filter(Activity::isAbstract).toList();
+            result = result.stream().filter(a -> a.isAbstract() || PokaYokeUmlProfileUtil.isInterface(a)).toList();
         }
 
         return result;
