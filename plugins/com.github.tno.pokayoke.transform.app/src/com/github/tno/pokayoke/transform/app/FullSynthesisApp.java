@@ -43,7 +43,7 @@ import org.eclipse.escet.common.java.PathPair;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Model;
 
-import com.github.tno.pokayoke.transform.activitysynthesis.AbstractActivityDependencyOrderer;
+import com.github.tno.pokayoke.transform.activitysynthesis.ActivitySynthesisDependencyOrderer;
 import com.github.tno.pokayoke.transform.activitysynthesis.CIFDataSynthesisHelper;
 import com.github.tno.pokayoke.transform.activitysynthesis.CheckNonDeterministicChoices;
 import com.github.tno.pokayoke.transform.activitysynthesis.CifSourceSinkLocationTransformer;
@@ -98,7 +98,7 @@ public class FullSynthesisApp {
 
         // Synthesize all abstract activities in the loaded UML specification in the proper order.
         CifContext context = ctxManager.getGlobalContext();
-        AbstractActivityDependencyOrderer orderer = new AbstractActivityDependencyOrderer(context.getAllActivities());
+        ActivitySynthesisDependencyOrderer orderer = new ActivitySynthesisDependencyOrderer(context.getAllActivities());
         List<Activity> activities = orderer.computeOrder();
 
         if (activities == null) {

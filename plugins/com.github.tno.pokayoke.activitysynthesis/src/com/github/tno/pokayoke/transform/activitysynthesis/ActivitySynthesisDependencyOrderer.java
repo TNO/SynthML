@@ -31,7 +31,7 @@ import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
  * A dependency orderer for abstract and interface activities, which determines the order in which activities should be
  * synthesized.
  */
-public class AbstractActivityDependencyOrderer {
+public class ActivitySynthesisDependencyOrderer {
     /** All abstract and concrete activities in the input model to consider. */
     private final Set<Activity> activities;
 
@@ -43,7 +43,7 @@ public class AbstractActivityDependencyOrderer {
      *
      * @param activities All abstract and concrete activities in the input model to consider.
      */
-    public AbstractActivityDependencyOrderer(Collection<Activity> activities) {
+    public ActivitySynthesisDependencyOrderer(Collection<Activity> activities) {
         this.activities = new LinkedHashSet<>(activities);
         this.orderer = new ActivityOrderer();
 
