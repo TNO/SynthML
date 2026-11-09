@@ -281,10 +281,10 @@ public class SynthesisChainTracking {
         Map<List<Event>, List<Event>> synthesisPatterns = getNonAtomicStartEndEventMap(
                 UmlToCifTranslationPurpose.SYNTHESIS);
 
-        return getFinalizedStartEndEventFromMap(synthesisPatterns, purpose);
+        return getFinalizedStartEndEventFromPatterns(synthesisPatterns, purpose);
     }
 
-    private Map<List<Event>, List<Event>> getFinalizedStartEndEventFromMap(
+    private Map<List<Event>, List<Event>> getFinalizedStartEndEventFromPatterns(
             Map<List<Event>, List<Event>> synthesisPatterns, UmlToCifTranslationPurpose purpose)
     {
         Map<List<Event>, List<Event>> result = new LinkedHashMap<>();
@@ -368,7 +368,7 @@ public class SynthesisChainTracking {
         Map<List<Event>, List<Event>> synthesisPatterns = getNonDeterministicStartEndEventMap(
                 UmlToCifTranslationPurpose.SYNTHESIS);
 
-        return getFinalizedStartEndEventFromMap(synthesisPatterns, purpose);
+        return getFinalizedStartEndEventFromPatterns(synthesisPatterns, purpose);
     }
 
     private boolean isDeterministicAction(RedefinableElement umlElement) {
