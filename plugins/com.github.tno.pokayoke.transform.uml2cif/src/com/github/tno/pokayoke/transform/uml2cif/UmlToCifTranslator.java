@@ -201,16 +201,17 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
      *
      * @return A mapping from all atomic non-deterministic start events to their corresponding end events.
      */
-    public Map<Event, List<Event>> getAtomicNonDeterministicEvents() {
-        Map<Event, List<Event>> result = new LinkedHashMap<>();
-        Map<Event, List<Event>> nonAtomicEventMap = synthesisTracker.getNonAtomicStartEndEventMap(translationPurpose);
+    public Map<List<Event>, List<Event>> getAtomicNonDeterministicEvents() {
+        Map<List<Event>, List<Event>> result = new LinkedHashMap<>();
+        Map<List<Event>, List<Event>> nonAtomicEventMap = synthesisTracker
+                .getNonAtomicStartEndEventMap(translationPurpose);
 
         for (var entry: synthesisTracker.getNonDeterministicStartEndEventMap(translationPurpose).entrySet()) {
-            Event startEvent = entry.getKey();
+            List<Event> startEvents = entry.getKey();
             List<Event> endEvents = entry.getValue();
 
-            if (!nonAtomicEventMap.containsKey(startEvent)) {
-                result.put(startEvent, endEvents);
+            if (!nonAtomicEventMap.containsKey(startEvents)) {
+                result.put(startEvents, endEvents);
             }
         }
 
@@ -1031,13 +1032,13 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         DiscVariable cifAtomicityVar = null;
 
         // Find all the start and end events of atomic non-deterministic actions.
-        Map<Event, List<Event>> atomicNonDeterministicEvents = getAtomicNonDeterministicEvents();
+        Map<List<Event>, List<Event>> atomicNonDeterministicEvents = getAtomicNonDeterministicEvents();
 
         Set<Event> atomicNonDeterministicStartEvents = new LinkedHashSet<>();
         Set<Event> atomicNonDeterministicEndEvents = new LinkedHashSet<>();
 
-        for (Entry<Event, List<Event>> entry: atomicNonDeterministicEvents.entrySet()) {
-            atomicNonDeterministicStartEvents.add(entry.getKey());
+        for (Entry<List<Event>, List<Event>> entry: atomicNonDeterministicEvents.entrySet()) {
+            atomicNonDeterministicStartEvents.addAll(entry.getKey());
             atomicNonDeterministicEndEvents.addAll(entry.getValue());
         }
 
