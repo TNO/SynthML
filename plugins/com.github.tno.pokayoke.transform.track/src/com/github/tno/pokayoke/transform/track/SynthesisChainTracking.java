@@ -1684,8 +1684,7 @@ public class SynthesisChainTracking {
      *
      * @param cifEvent The CIF event.
      * @param purpose The translation purpose.
-     * @return {@code true} if the CIF event corresponds to the start of a end-only transition; {@code false}
-     *     otherwise.
+     * @return {@code true} if the CIF event corresponds to the start of a end-only transition; {@code false} otherwise.
      */
     public boolean isRelatedToEndOnlyTransition(Event cifEvent, UmlToCifTranslationPurpose purpose) {
         // Precondition check.
@@ -1734,7 +1733,7 @@ public class SynthesisChainTracking {
 
         return filteredEvents;
     }
-    
+
     /**
      * Gives the list of CIF end events created for any finalized UML element during the guard computation or language
      * equivalence check phase, that corresponds to the given original UML element.
