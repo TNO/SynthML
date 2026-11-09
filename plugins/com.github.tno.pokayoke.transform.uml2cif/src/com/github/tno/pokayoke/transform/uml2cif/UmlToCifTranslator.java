@@ -1252,6 +1252,59 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         return cifNonAtomicVars;
     }
 
+    private DiscVariable getNonAtomicNonMergedPatternCifVariable(List<DiscVariable> cifNonAtomicVars,
+            Set<UnaryExpression> guardsStartEvents, String label)
+    {
+        String nonMergedStartVarName = NONATOMIC_PREFIX + "__" + label;
+        Optional<DiscVariable> nonMergedPatternStartVar = cifNonAtomicVars.stream()
+                .filter(v -> v.getName().equals(nonMergedStartVarName)).findFirst();
+
+        if (nonMergedPatternStartVar.isPresent()) {
+            // Return the already created variable.
+            return nonMergedPatternStartVar.get();
+        } else {
+            // Create a new CIF variable, as if it was a merged pattern.
+            return getNonAtomicCifVariable(cifNonAtomicVars, guardsStartEvents, label);
+        }
+    }
+
+    private DiscVariable getNonAtomicCifVariable(List<DiscVariable> cifNonAtomicVars,
+            Set<UnaryExpression> guardsStartEvents, String label)
+    {
+        // Declare a Boolean variable that indicates whether the non-atomic action is currently active.
+        // Value 'false' indicates inactive, and 'true' indicates active.
+        DiscVariable cifNonAtomicVar = CifConstructors.newDiscVariable();
+        cifNonAtomicVars.add(cifNonAtomicVar);
+        cifNonAtomicVar.setName(NONATOMIC_PREFIX + "__" + label);
+        cifNonAtomicVar.setType(CifConstructors.newBoolType());
+
+        UnaryExpression cifStartGuard = CifConstructors.newUnaryExpression();
+        cifStartGuard.setChild(CifConstructors.newDiscVariableExpression(null,
+                EcoreUtil.copy(cifNonAtomicVar.getType()), cifNonAtomicVar));
+        cifStartGuard.setOperator(UnaryOperator.INVERSE);
+        cifStartGuard.setType(CifConstructors.newBoolType());
+
+        // Add the start guard to the set to later construct the conjunction.
+        guardsStartEvents.add(cifStartGuard);
+
+        return cifNonAtomicVar;
+    }
+
+    private void addGuardAndUpdateToEndEvent(Event cifEndEvent, DiscVariable cifNonAtomicVar) {
+        // Add guard '__nonAtomicActive__<eventName>' for every end event of this non-atomic action.
+        DiscVariableExpression cifEndGuard = CifConstructors.newDiscVariableExpression(null,
+                EcoreUtil.copy(cifNonAtomicVar.getType()), cifNonAtomicVar);
+        eventEdgeMap.get(cifEndEvent).getGuards().add(cifEndGuard);
+
+        // Add update '__nonAtomicActive__<eventName> := false' for every end event of this non-atomic
+        // action.
+        Assignment cifEndUpdate = CifConstructors.newAssignment();
+        cifEndUpdate.setAddressable(CifConstructors.newDiscVariableExpression(null,
+                EcoreUtil.copy(cifNonAtomicVar.getType()), cifNonAtomicVar));
+        cifEndUpdate.setValue(CifValueUtils.makeFalse());
+        eventEdgeMap.get(cifEndEvent).getUpdates().add(cifEndUpdate);
+    }
+
     /**
      * Translates all occurrence constraints of the input UML activity, to CIF requirement automata.
      *
