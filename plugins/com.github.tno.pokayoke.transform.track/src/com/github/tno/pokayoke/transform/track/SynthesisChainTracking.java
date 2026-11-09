@@ -331,13 +331,33 @@ public class SynthesisChainTracking {
      * @param purpose The translation purpose.
      * @return The map from CIF start events to their corresponding CIF end events.
      */
-    public Map<Event, List<Event>> getNonDeterministicStartEndEventMap(UmlToCifTranslationPurpose purpose) {
+    public Map<List<Event>, List<Event>> getNonDeterministicStartEndEventMap(UmlToCifTranslationPurpose purpose) {
         // Get the map from start events to the corresponding end events.
         Map<Event, List<Event>> startEndEventMap = getStartEndEventMap(purpose);
 
-        return startEndEventMap.entrySet().stream()
-                .filter(e -> !isDeterministicAction(getEventTraceInfo(e.getKey()).getUmlElement()))
-                .collect(LinkedHashMap::new, (m, e) -> m.put(e.getKey(), e.getValue()), LinkedHashMap::putAll);
+        switch (purpose) {
+            case SYNTHESIS:
+                return startEndEventMap.entrySet().stream()
+                        .filter(e -> !isDeterministicAction(getEventTraceInfo(e.getKey()).getUmlElement()))
+                        .collect(LinkedHashMap::new, (m, e) -> m.put(List.of(e.getKey()), e.getValue()),
+                                LinkedHashMap::putAll);
+            case GUARD_COMPUTATION:
+            case LANGUAGE_EQUIVALENCE:
+                return getFinalizedNonDeterministicStartEndEventMap(purpose);
+            default:
+                throw new IllegalArgumentException("Unexpected value: " + purpose);
+        }
+    }
+
+    private Map<List<Event>, List<Event>>
+            getFinalizedNonDeterministicStartEndEventMap(UmlToCifTranslationPurpose purpose)
+    {
+        // Get the non-deterministic start/end event map for the synthesis purpose, to then link each synthesis-event
+        // with its corresponding guard computation or language equivalence counterparts.
+        Map<List<Event>, List<Event>> synthesisPatterns = getNonDeterministicStartEndEventMap(
+                UmlToCifTranslationPurpose.SYNTHESIS);
+
+        return getFinalizedStartEndEventFromMap(synthesisPatterns, purpose);
     }
 
     private boolean isDeterministicAction(RedefinableElement umlElement) {
