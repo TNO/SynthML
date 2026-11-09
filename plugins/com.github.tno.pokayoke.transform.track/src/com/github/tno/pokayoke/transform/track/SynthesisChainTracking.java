@@ -233,7 +233,7 @@ public class SynthesisChainTracking {
                         "Expected action '" + startEvent.getName() + "' to have a single start event.");
             }
 
-            result.put(startEvent, getEndEventsOf(umlElement, purpose));
+            result.put(startEvent, getEndOnlyEventsOf(umlElement, purpose));
         }
 
         return result;
@@ -301,10 +301,10 @@ public class SynthesisChainTracking {
         return result;
     }
 
-    private List<Event> getEndEventsOf(RedefinableElement umlElement, UmlToCifTranslationPurpose purpose) {
+    private List<Event> getEndOnlyEventsOf(RedefinableElement umlElement, UmlToCifTranslationPurpose purpose) {
         return cifEventTraceInfo.entrySet().stream().filter(e -> e.getValue().getTranslationPurpose().equals(purpose))
                 .filter(e -> e.getValue().getUmlElement() != null && e.getValue().getUmlElement().equals(umlElement))
-                .filter(e -> e.getValue().isEndEvent()).map(e -> e.getKey()).toList();
+                .filter(e -> e.getValue().isEndOnlyEvent()).map(e -> e.getKey()).toList();
     }
 
     private boolean isAtomicAction(RedefinableElement umlElement) {
