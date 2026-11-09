@@ -1646,6 +1646,50 @@ public class SynthesisChainTracking {
     }
 
     /**
+     * Returns {@code true} if the given CIF event has been created for a finalized UML element during the guard
+     * computation or language equivalence check phase, which corresponds to a start-only Petri net transition.
+     *
+     * @param cifEvent The CIF event.
+     * @param purpose The translation purpose.
+     * @return {@code true} if the CIF event corresponds to the start of a start-only transition; {@code false}
+     *     otherwise.
+     */
+    public boolean isRelatedToStartOnlyTransition(Event cifEvent, UmlToCifTranslationPurpose purpose) {
+        // Precondition check.
+        Verify.verify(purpose != UmlToCifTranslationPurpose.SYNTHESIS,
+                "Reference to original UML element is undefined for synthesis translation.");
+
+        // Check if the event is related to the start-only transition.
+        EventTraceInfo finalizedEventInfo = cifEventTraceInfo.get(cifEvent);
+        Verify.verifyNotNull(finalizedEventInfo, String.format(
+                "Event '%s' does not have any tracing info referring to the finalized UML model.", cifEvent.getName()));
+        RedefinableElement finalizedUmlElement = finalizedEventInfo.getUmlElement();
+        return isStartOnlyAction(getActivityNode(finalizedUmlElement));
+    }
+
+    /**
+     * Returns {@code true} if the given CIF event has been created for a finalized UML element during the guard
+     * computation or language equivalence check phase, which corresponds to an end-only Petri net transition.
+     *
+     * @param cifEvent The CIF event.
+     * @param purpose The translation purpose.
+     * @return {@code true} if the CIF event corresponds to the start of a end-only transition; {@code false}
+     *     otherwise.
+     */
+    public boolean isRelatedToEndOnlyTransition(Event cifEvent, UmlToCifTranslationPurpose purpose) {
+        // Precondition check.
+        Verify.verify(purpose != UmlToCifTranslationPurpose.SYNTHESIS,
+                "Reference to original UML element is undefined for synthesis translation.");
+
+        // Check if the event is related to the start-only transition.
+        EventTraceInfo finalizedEventInfo = cifEventTraceInfo.get(cifEvent);
+        Verify.verifyNotNull(finalizedEventInfo, String.format(
+                "Event '%s' does not have any tracing info referring to the finalized UML model.", cifEvent.getName()));
+        RedefinableElement finalizedUmlElement = finalizedEventInfo.getUmlElement();
+        return isEndOnlyAction(getActivityNode(finalizedUmlElement));
+    }
+
+    /**
      * Gives the list of CIF start events created for any finalized UML element during the guard computation or language
      * equivalence check phase, that corresponds to the given original UML element.
      *
