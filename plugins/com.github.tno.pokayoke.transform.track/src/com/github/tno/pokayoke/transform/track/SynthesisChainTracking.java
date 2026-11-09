@@ -160,6 +160,17 @@ public class SynthesisChainTracking {
     }
 
     /**
+     * Returns the UML element related to the CIF event, or {@code null} if no such element exists.
+     *
+     * @param cifEvent The CIF event.
+     * @return The related UML element, or {@code null}.
+     */
+    public RedefinableElement getUmlElement(Event cifEvent) {
+        EventTraceInfo eventInfo = getEventTraceInfo(cifEvent);
+        return (eventInfo == null) ? null : eventInfo.getUmlElement();
+    }
+
+    /**
      * Returns the current CIF events of the given translation purpose, corresponding to the given set of UML elements
      * as considered by the first UML-to-CIF conversion for the synthesis purpose.
      *
