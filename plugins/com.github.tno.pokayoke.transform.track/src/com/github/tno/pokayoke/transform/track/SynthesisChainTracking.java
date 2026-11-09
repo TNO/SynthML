@@ -217,7 +217,7 @@ public class SynthesisChainTracking {
      * @param purpose The translation purpose.
      * @return The map from CIF start events to their corresponding CIF end events.
      */
-    private Map<Event, List<Event>> getStartEndEventMap(UmlToCifTranslationPurpose purpose) {
+    public Map<Event, List<Event>> getStartEndEventMap(UmlToCifTranslationPurpose purpose) {
         Map<Event, List<Event>> result = new LinkedHashMap<>();
 
         // Get the map of all start events.
@@ -1487,7 +1487,7 @@ public class SynthesisChainTracking {
      * @return The related original UML element, or {@code null} if no such UML element exists or if the given UML
      *     element is not a finalized element.
      */
-    private RedefinableElement getOriginalUmlElementForFinalizedElement(RedefinableElement umlElement) {
+    public RedefinableElement getOriginalUmlElementForFinalizedElement(RedefinableElement umlElement) {
         // Precondition check.
         Verify.verify(belongsToSynthesizedActivity(umlElement),
                 String.format("UML element '%s' does not belong to the synthesized activity.", umlElement.getName()));
