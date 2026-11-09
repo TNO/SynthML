@@ -12,11 +12,13 @@ package com.github.tno.pokayoke.transform.uml2cif;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -1128,53 +1130,125 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
      */
     private List<DiscVariable> encodeNonAtomicActionConstraints() {
         // Get tracker's non-atomic events map.
-        Map<Event, List<Event>> nonAtomicEventMap = synthesisTracker.getNonAtomicStartEndEventMap(translationPurpose);
+        Map<List<Event>, List<Event>> nonAtomicEventMap = synthesisTracker
+                .getNonAtomicStartEndEventMap(translationPurpose);
 
         // Add guards and updates to the edges of non-atomic actions to keep track of which such actions are active, and
         // to constrain their start and end events accordingly.
-        List<DiscVariable> cifNonAtomicVars = new ArrayList<>(nonAtomicEventMap.size());
+        List<DiscVariable> cifNonAtomicVars = new ArrayList<>();
 
-        for (Entry<Event, List<Event>> entry: nonAtomicEventMap.entrySet()) {
-            Event cifStartEvent = entry.getKey();
-            List<Event> cifEndEvents = entry.getValue();
+        Map<Event, List<Event>> startEndEventMap = synthesisTracker.getStartEndEventMap(translationPurpose);
 
-            // Declare a Boolean variable that indicates whether the non-atomic action is currently active.
-            // Value 'false' indicates inactive, and 'true' indicates active.
-            DiscVariable cifNonAtomicVar = CifConstructors.newDiscVariable();
-            cifNonAtomicVars.add(cifNonAtomicVar);
-            cifNonAtomicVar.setName(NONATOMIC_PREFIX + "__" + cifStartEvent.getName());
-            cifNonAtomicVar.setType(CifConstructors.newBoolType());
+        for (Entry<List<Event>, List<Event>> nonAtomicEvent: nonAtomicEventMap.entrySet()) {
+            // Non-atomic patterns (one start event and one or more end events) are treated differently according to the
+            // translation purpose. For synthesis, all patterns are treated as if they were "merged patterns", namely
+            // they are start and end events without an actual token place between the start and end events. Thus, every
+            // pattern receives its own '__nonAtomicActive__{startEvent}' variable that acts as a token place. For guard
+            // computation and language equivalence, merged and non-merged patterns are distinguished: non-merged
+            // patterns already have proper token information embedded within the activity execution. First, start
+            // events are split according to whether they belong to a merged or non-merged pattern. Non-merged patterns
+            // share a single guard variable, '__nonAtomicActive__nonMergedPattern__<UML element name>'. This guard
+            // captures whether any non-merged pattern is currently active, to avoid multiple execution of the same UML
+            // element. Merged patterns each receive a dedicated guard variable, '__nonAtomicActive__{startEvent}'. This
+            // guard acts as an extra token between the pattern's start and end events, ensuring that execution cannot
+            // leave the pattern and later re-enter it at a different location. Finally, every pattern start event
+            // receives a global guard of the form: 'not __nonAtomicActive__{startEvent_1} and not
+            // __nonAtomicActive__{startEvent_2} and ... and not __nonAtomicActive__nonMergedPattern' so that multiple
+            // executions of the same underlying UML element at the same time are prevented. Each start event updates
+            // only the relevant non-active variable (namely they set the relevant '__nonAtomicActive' to 'true'). The
+            // end events receive a guard based on their corresponding start event's merged or non-merged pattern
+            // (namely they require the relevant '__nonAtomicActive' to be 'true'), and update the corresponding
+            // non-active variable 'nonAtomicActive' to 'false'.
+            List<Event> cifStartEvents = nonAtomicEvent.getKey();
+            List<Event> cifEndEvents = nonAtomicEvent.getValue();
+            Set<Event> mergedPatternEndEvents = new LinkedHashSet<>();
+            Set<UnaryExpression> guardsStartEvents = new LinkedHashSet<>();
+            DiscVariable cifNonMergedPatternVar = null;
 
-            // Add guard 'not __nonAtomicActive__{startEvent}' for the start event of this non-atomic action.
-            UnaryExpression cifStartGuard = CifConstructors.newUnaryExpression();
-            cifStartGuard.setChild(CifConstructors.newDiscVariableExpression(null,
-                    EcoreUtil.copy(cifNonAtomicVar.getType()), cifNonAtomicVar));
-            cifStartGuard.setOperator(UnaryOperator.INVERSE);
-            cifStartGuard.setType(CifConstructors.newBoolType());
-            eventEdgeMap.get(cifStartEvent).getGuards().add(cifStartGuard);
+            for (Event cifStartEvent: cifStartEvents) {
+                // If the start event is part of a non-merged pattern (namely it is related to a start-only Petri net
+                // transition), create a '__nonAtomicActive__nonMergedPattern__<UML element name>' variable that will be
+                // shared among all starts of non-merged patterns. Otherwise, create a dedicated
+                // '__nonAtomicActive__{startEvent_i}' variable.
+                DiscVariable cifNonAtomicVar;
+                if (
+                // For synthesis, there is no Petri net (yet), hence we need to check for the right translation purpose.
+                translationPurpose != UmlToCifTranslationPurpose.SYNTHESIS
+                        // A CIF start event for guard computation or language equivalence is part of a non-merged
+                        // pattern if it originates from a start-only (i.e., non-merged as well) Petri net transition.
+                        && synthesisTracker.isRelatedToStartOnlyTransition(cifStartEvent, translationPurpose))
+                {
+                    // Get the original UML element name.
+                    RedefinableElement umlElement = synthesisTracker.getUmlElement(cifStartEvents.get(0));
+                    RedefinableElement originalElement = synthesisTracker
+                            .getOriginalUmlElementForFinalizedElement(umlElement);
+                    String originalElementName = originalElement.getName();
 
-            // Add update '__nonAtomicActive__{startEvent} := true' for the start event of this non-atomic action.
-            Assignment cifStartUpdate = CifConstructors.newAssignment();
-            cifStartUpdate.setAddressable(CifConstructors.newDiscVariableExpression(null,
-                    EcoreUtil.copy(cifNonAtomicVar.getType()), cifNonAtomicVar));
-            cifStartUpdate.setValue(CifValueUtils.makeTrue());
-            eventEdgeMap.get(cifStartEvent).getUpdates().add(cifStartUpdate);
+                    // Get the Boolean variable for the non-merged patterns.
+                    cifNonAtomicVar = getNonAtomicNonMergedPatternCifVariable(cifNonAtomicVars, guardsStartEvents,
+                            "nonMergedPattern__" + originalElementName);
+                    cifNonMergedPatternVar = cifNonAtomicVar;
+                } else {
+                    // Get the Boolean variable for the merged patterns.
+                    cifNonAtomicVar = getNonAtomicCifVariable(cifNonAtomicVars, guardsStartEvents,
+                            cifStartEvent.getName());
+                }
 
-            for (Event cifEndEvent: cifEndEvents) {
-                // Add guard '__nonAtomicActive__{startEvent}' for every end event of this non-atomic action.
-                DiscVariableExpression cifEndGuard = CifConstructors.newDiscVariableExpression(null,
-                        EcoreUtil.copy(cifNonAtomicVar.getType()), cifNonAtomicVar);
-                eventEdgeMap.get(cifEndEvent).getGuards().add(cifEndGuard);
-
-                // Add update '__nonAtomicActive__{startEvent} := false' for every end event of this non-atomic action.
-                Assignment cifEndUpdate = CifConstructors.newAssignment();
-                cifEndUpdate.setAddressable(CifConstructors.newDiscVariableExpression(null,
+                // Add update '__nonAtomicActive__<eventName> := true' for the this start event for both merged and
+                // non-merged patterns.
+                Assignment cifStartUpdate = CifConstructors.newAssignment();
+                cifStartUpdate.setAddressable(CifConstructors.newDiscVariableExpression(null,
                         EcoreUtil.copy(cifNonAtomicVar.getType()), cifNonAtomicVar));
-                cifEndUpdate.setValue(CifValueUtils.makeFalse());
-                eventEdgeMap.get(cifEndEvent).getUpdates().add(cifEndUpdate);
+                cifStartUpdate.setValue(CifValueUtils.makeTrue());
+                eventEdgeMap.get(cifStartEvent).getUpdates().add(cifStartUpdate);
+
+                // Add guard and updates to the end events of a merged pattern, which have a dedicated CIF variable. If
+                // the start event belongs to a non-merged pattern, the end events set will be empty. Store the end
+                // events that have been updated for later use.
+                List<Event> endEventsOfThisMergedPattern = startEndEventMap.get(cifStartEvent);
+                mergedPatternEndEvents.addAll(endEventsOfThisMergedPattern);
+                for (Event cifEndEvent: endEventsOfThisMergedPattern) {
+                    addGuardAndUpdateToEndEvent(cifEndEvent, cifNonAtomicVar);
+                }
+            }
+
+            if (!cifStartEvents.isEmpty()) {
+                // Construct the conjunction guard 'not __nonAtomicActive__{startMergedEvent_1} and not
+                // __nonAtomicActive__{startEvent_2} and ... and not __nonAtomicActive__nonMergedPattern' and assign it
+                // to all start events.
+                Iterator<UnaryExpression> it = guardsStartEvents.iterator();
+                Expression conjunctionGuard = it.next();
+                while (it.hasNext()) {
+                    BinaryExpression andExpr = CifConstructors.newBinaryExpression();
+                    andExpr.setLeft(conjunctionGuard);
+                    andExpr.setOperator(BinaryOperator.CONJUNCTION);
+                    andExpr.setRight(it.next());
+                    andExpr.setType(CifConstructors.newBoolType());
+                    conjunctionGuard = andExpr;
+                }
+
+                // Assign the conjunction guard to all start events.
+                for (Event cifStartEvent: cifStartEvents) {
+                    eventEdgeMap.get(cifStartEvent).getGuards().add(EcoreUtil.copy(conjunctionGuard));
+                }
+            }
+
+            // Get the end events of non-merged patterns as the difference from all end events minus the end events from
+            // merged patterns.
+            Set<Event> nonMergedPatternEndEvents = new LinkedHashSet<>(cifEndEvents);
+            nonMergedPatternEndEvents.removeAll(mergedPatternEndEvents);
+
+            // Sanity check: the CIF variable for the start events of the non-merged patterns is null if and only if the
+            // list of CIF end events of non-merged patterns is now empty.
+            Verify.verify(nonMergedPatternEndEvents.isEmpty() == (cifNonMergedPatternVar == null),
+                    "The CIF variable for non-merged patterns and the non-merged end events are conflicting.");
+
+            // Add the guard and updates to the end events of the non-merged patterns which all share the non-merged
+            // pattern CIF variable.
+            for (Event cifEndEvent: nonMergedPatternEndEvents) {
+                addGuardAndUpdateToEndEvent(cifEndEvent, cifNonMergedPatternVar);
             }
         }
-
         return cifNonAtomicVars;
     }
 
