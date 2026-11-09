@@ -1734,6 +1734,38 @@ public class SynthesisChainTracking {
 
         return filteredEvents;
     }
+    
+    /**
+     * Gives the list of CIF end events created for any finalized UML element during the guard computation or language
+     * equivalence check phase, that corresponds to the given original UML element.
+     *
+     * @param originalElement The non-{@code null} original UML element.
+     * @param purpose The translation purpose.
+     * @return The list of CIF end events of finalized UML elements corresponding to the given original UML element.
+     */
+    private List<Event> getFinalizedElementEndEventsForOriginalElement(RedefinableElement originalElement,
+            UmlToCifTranslationPurpose purpose)
+    {
+        // Precondition check.
+        Verify.verify(purpose != UmlToCifTranslationPurpose.SYNTHESIS,
+                "Reference to original UML element is undefined for synthesis translation.");
+        Verify.verify(isOriginalUmlElement(originalElement), "The given UML element is not an original UML element.");
+
+        // Get the list of CIF events whose translation purpose is the given one, whose original UML element is equal to
+        // the given one, and is related to the end-only of an original element.
+        return cifEventTraceInfo.entrySet().stream()
+                // Filter to only events with given translation purpose.
+                .filter(e -> e.getValue().getTranslationPurpose().equals(purpose))
+                // Filter to only redefinable elements (avoid 'null' for control nodes).
+                .filter(e -> e.getValue().getUmlElement() != null)
+                // Filter to only UML elements that are equal to the original UML element.
+                .filter(e -> originalElement
+                        .equals(getOriginalUmlElementForFinalizedElement(e.getValue().getUmlElement())))
+                // Filter to only CIF events related to the end-only of an original element.
+                .filter(e -> isRelatedToEndOnlyOfOriginalElement(e.getValue()))
+                // Collect the CIF events.
+                .map(Entry::getKey).toList();
+    }
 
     /**
      * Return {@code true} if the given activity node can be traced to a control node contained in (another, not the
