@@ -553,7 +553,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                 .flatMap(Set::stream).collect(Collectors.toSet());
 
         if (!members.equals(allowedMembers)) {
-            error("Activity should contain only precondition, postcondition, constraints and interval constraint members.",
+            error("Activity should contain only precondition, postcondition, requirement and interval constraints as members.",
                     UMLPackage.Literals.NAMESPACE__MEMBER);
         }
 
@@ -1019,7 +1019,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             } else if (PokaYokeUmlProfileUtil.isContainedAsActivityOccurrenceConstraint(constraint)) {
                 checkValidOccurrenceConstraint((IntervalConstraint)constraint);
             } else if (PokaYokeUmlProfileUtil.isRequirementConstraint(constraint)) {
-                // Check the class and activity requirements.
+                // Check the class or activity requirement.
                 checkValidRequirementConstraint(constraint);
             } else {
                 error("Unsupported constraint", UMLPackage.Literals.CONSTRAINT__CONTEXT);
