@@ -38,6 +38,7 @@ import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.Package;
+import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Profile;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.RedefinableElement;
@@ -86,7 +87,7 @@ public class PokaYokeUmlProfileUtil {
 
     private static final String ST_FORMAL_CONSTRAINT = SynthMLPackage.Literals.FORMAL_CONSTRAINT.getName();
 
-    public static final String ST_CLASS_REQUIREMENT = SynthMLPackage.Literals.REQUIREMENT.getName();
+    public static final String ST_REQUIREMENT = SynthMLPackage.Literals.REQUIREMENT.getName();
 
     public static final String ST_SYNTHESIS_PRECONDITION = SynthMLPackage.Literals.SYNTHESIS_PRECONDITION.getName();
 
@@ -121,8 +122,7 @@ public class PokaYokeUmlProfileUtil {
             + ST_FORMAL_CONSTRAINT;
 
     /** Qualified name for the {@link Requirement} stereotype. */
-    public static final String REQUIREMENT_STEREOTYPE = POKA_YOKE_PROFILE + NamedElement.SEPARATOR
-            + ST_CLASS_REQUIREMENT;
+    public static final String REQUIREMENT_STEREOTYPE = POKA_YOKE_PROFILE + NamedElement.SEPARATOR + ST_REQUIREMENT;
 
     /** Qualified name for the {@link SynthesisPrecondition} stereotype. */
     public static final String SYNTHESIS_PRECONDITION_STEREOTYPE = POKA_YOKE_PROFILE + NamedElement.SEPARATOR
@@ -559,13 +559,13 @@ public class PokaYokeUmlProfileUtil {
      * @return A list of supported stereotypes for the given constraint.
      */
     public static List<Stereotype> getSupportedConstraintStereotypes(Constraint constraint) {
-        if (isPreconditionConstraint(constraint)) {
+        if (isContainedAsActivityPrecondition(constraint)) {
             return List.of(getStereotype(constraint, ST_SYNTHESIS_PRECONDITION),
                     getStereotype(constraint, ST_USAGE_PRECONDITION));
-        } else if (isPostconditionConstraint(constraint)) {
+        } else if (isContainedAsActivityPostcondition(constraint)) {
             return List.of(getStereotype(constraint, ST_POSTCONDITION));
-        } else if (isClassRequirement(constraint)) {
-            return List.of(getStereotype(constraint, ST_CLASS_REQUIREMENT));
+        } else if (isContainedAsClassOrActivityOwnedRule(constraint)) {
+            return List.of(getStereotype(constraint, ST_REQUIREMENT));
         } else {
             return List.of();
         }
@@ -575,12 +575,30 @@ public class PokaYokeUmlProfileUtil {
         return getPokaYokeProfile(constraint).getOwnedStereotype(stereotypeName);
     }
 
-    private static boolean isPreconditionConstraint(Constraint constraint) {
+    public static boolean isContainedAsActivityPrecondition(Constraint constraint) {
         return (constraint.eContainer() instanceof Activity activity)
                 && activity.getPreconditions().contains(constraint);
     }
 
-    public static boolean isSynthesisPrecondition(Constraint constraint) {
+    public static boolean isContainedAsActivityPostcondition(Constraint constraint) {
+        return (constraint.eContainer() instanceof Activity activity)
+                && activity.getPostconditions().contains(constraint);
+    }
+
+    public static boolean isContainedAsClassOrActivityOwnedRule(Constraint constraint) {
+        // Activity is a sub-type of Classifier.
+        return constraint.eContainer() instanceof Classifier clazz && clazz.getOwnedRules().contains(constraint);
+    }
+
+    public static boolean isContainedAsActivityOccurrenceConstraint(Constraint constraint) {
+        return constraint.getContext() instanceof Activity && constraint instanceof IntervalConstraint;
+    }
+
+    public static boolean isPrimitiveTypeConstraint(Constraint constraint) {
+        return constraint.getContext() instanceof PrimitiveType;
+    }
+
+    public static boolean isSynthesisPreconditionConstraint(Constraint constraint) {
         List<Stereotype> appliedStereotypes = constraint.getAppliedStereotypes();
 
         if (appliedStereotypes.isEmpty()) {
@@ -590,7 +608,7 @@ public class PokaYokeUmlProfileUtil {
         return appliedStereotypes.get(0).getName().equals(ST_SYNTHESIS_PRECONDITION);
     }
 
-    public static boolean isUsagePrecondition(Constraint constraint) {
+    public static boolean isUsagePreconditionConstraint(Constraint constraint) {
         List<Stereotype> appliedStereotypes = constraint.getAppliedStereotypes();
 
         if (appliedStereotypes.isEmpty()) {
@@ -600,13 +618,14 @@ public class PokaYokeUmlProfileUtil {
         return appliedStereotypes.get(0).getName().equals(ST_USAGE_PRECONDITION);
     }
 
-    private static boolean isPostconditionConstraint(Constraint constraint) {
-        return (constraint.eContainer() instanceof Activity activity)
-                && activity.getPostconditions().contains(constraint);
-    }
+    public static boolean isRequirementConstraint(Constraint constraint) {
+        List<Stereotype> appliedStereotypes = constraint.getAppliedStereotypes();
 
-    private static boolean isClassRequirement(Constraint constraint) {
-        return (constraint.eContainer() instanceof Classifier clazz) && clazz.getOwnedRules().contains(constraint);
+        if (appliedStereotypes.isEmpty()) {
+            return false;
+        }
+
+        return appliedStereotypes.get(0).getName().equals(ST_REQUIREMENT);
     }
 
     /**
@@ -628,7 +647,7 @@ public class PokaYokeUmlProfileUtil {
     }
 
     private static String getQualifiedStereotypeName(String stereotypeName) {
-        if (ST_CLASS_REQUIREMENT.equals(stereotypeName)) {
+        if (ST_REQUIREMENT.equals(stereotypeName)) {
             return REQUIREMENT_STEREOTYPE;
         } else if (ST_SYNTHESIS_PRECONDITION.equals(stereotypeName)) {
             return SYNTHESIS_PRECONDITION_STEREOTYPE;
@@ -652,7 +671,7 @@ public class PokaYokeUmlProfileUtil {
 
     public static String getStereotypeName(Stereotype st) {
         // Returns a slightly better formatted name for the preconditions.
-        if (st.getName().equals(ST_CLASS_REQUIREMENT)) {
+        if (st.getName().equals(ST_REQUIREMENT)) {
             return "Requirement";
         } else if (st.getName().equals(ST_SYNTHESIS_PRECONDITION)) {
             return "Synthesis precondition";

@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.escet.cif.parser.ast.AInvariant;
 import org.eclipse.escet.cif.parser.ast.automata.AAssignmentUpdate;
@@ -228,8 +229,8 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                 .getReferenceableElementsInclDuplicates();
         for (Map.Entry<String, List<NamedElement>> entry: referenceableElementsInclDuplicates.entrySet()) {
             // Skip primitive type constraints, that always have the same fixed name.
-            if (entry.getValue().stream()
-                    .allMatch(t -> t instanceof Constraint constr && CifContext.isPrimitiveTypeConstraint(constr)))
+            if (entry.getValue().stream().allMatch(
+                    t -> t instanceof Constraint constr && PokaYokeUmlProfileUtil.isPrimitiveTypeConstraint(constr)))
             {
                 continue;
             }
@@ -549,8 +550,15 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                 .filter(IntervalConstraint.class::isInstance).map(IntervalConstraint.class::cast)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
 
-        if (!members.equals(Sets.union(preAndPostconditions, intervalConstraints))) {
-            error("Activity should contain only precondition, postcondition, and interval constraint members.",
+        Set<Constraint> activityRequirements = activity.getOwnedRules().stream()
+                .filter(r -> PokaYokeUmlProfileUtil.isRequirementConstraint(r)).map(Constraint.class::cast)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+
+        Set<Constraint> allowedMembers = Stream.of(preAndPostconditions, intervalConstraints, activityRequirements)
+                .flatMap(Set::stream).collect(Collectors.toSet());
+
+        if (!members.equals(allowedMembers)) {
+            error("Activity should contain only precondition, postcondition, requirement and interval constraints as members.",
                     UMLPackage.Literals.NAMESPACE__MEMBER);
         }
 
@@ -1063,14 +1071,21 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     private void checkValidConstraint(Constraint constraint) {
         checkNamingConventions(constraint, NamingConvention.IDENTIFIER);
 
-        if (CifContext.isActivityPrePostconditionConstraint(constraint)) {
+        if (PokaYokeUmlProfileUtil.isContainedAsActivityPrecondition(constraint)
+                || PokaYokeUmlProfileUtil.isContainedAsActivityPostcondition(constraint))
+        {
             checkValidActivityPrePostconditionConstraint(constraint);
-        } else if (CifContext.isClassConstraint(constraint)) {
-            checkValidClassConstraint(constraint);
-        } else if (CifContext.isOccurrenceConstraint(constraint)) {
-            checkValidOccurrenceConstraint((IntervalConstraint)constraint);
-        } else if (CifContext.isPrimitiveTypeConstraint(constraint)) {
-            // The constraints for primitive types are validated in #checkValidPrimitiveType(PrimitiveType)
+        } else if (PokaYokeUmlProfileUtil.isContainedAsClassOrActivityOwnedRule(constraint)) {
+            if (PokaYokeUmlProfileUtil.isPrimitiveTypeConstraint(constraint)) {
+                // The constraints for primitive types are validated in #checkValidPrimitiveType(PrimitiveType).
+            } else if (PokaYokeUmlProfileUtil.isContainedAsActivityOccurrenceConstraint(constraint)) {
+                checkValidOccurrenceConstraint((IntervalConstraint)constraint);
+            } else if (PokaYokeUmlProfileUtil.isRequirementConstraint(constraint)) {
+                // Check the class or activity requirement.
+                checkValidRequirementConstraint(constraint);
+            } else {
+                error("Unsupported constraint", UMLPackage.Literals.CONSTRAINT__CONTEXT);
+            }
         } else {
             error("Unsupported constraint", UMLPackage.Literals.CONSTRAINT__CONTEXT);
         }
@@ -1085,14 +1100,14 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             return;
         }
 
-        if (CifContext.isActivityPreconditionConstraint(constraint)
+        if (PokaYokeUmlProfileUtil.isContainedAsActivityPrecondition(constraint)
                 && !(stereotypes.get(0).getName().equals(PokaYokeUmlProfileUtil.ST_SYNTHESIS_PRECONDITION)
                         || stereotypes.get(0).getName().equals(PokaYokeUmlProfileUtil.ST_USAGE_PRECONDITION)))
         {
             error(String.format("Constraint '%s' must have a precondition stereotype applied.", constraint.getName()),
                     UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
             return;
-        } else if (CifContext.isActivityPostconditionConstraint(constraint)
+        } else if (PokaYokeUmlProfileUtil.isContainedAsActivityPostcondition(constraint)
                 && !(stereotypes.get(0).getName().equals(PokaYokeUmlProfileUtil.ST_POSTCONDITION)))
         {
             error(String.format("Constraint '%s' must have a postcondition stereotype applied.", constraint.getName()),
@@ -1120,7 +1135,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
     }
 
-    private void checkValidClassConstraint(Constraint constraint) {
+    private void checkValidRequirementConstraint(Constraint constraint) {
         // Check that the constraint has the right stereotype applied.
         List<Stereotype> stereotypes = constraint.getAppliedStereotypes();
 
@@ -1130,7 +1145,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             return;
         }
 
-        if (!stereotypes.get(0).getName().equals(PokaYokeUmlProfileUtil.ST_CLASS_REQUIREMENT)) {
+        if (!stereotypes.get(0).getName().equals(PokaYokeUmlProfileUtil.ST_REQUIREMENT)) {
             error(String.format("Constraint '%s' must have a requirement stereotype applied.", constraint.getName()),
                     UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
             return;
@@ -1142,7 +1157,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
 
         try {
-            new CifTypeChecker(getGlobalContext(constraint)).checkInvariant(CifParserHelper.parseInvariant(constraint));
+            new CifTypeChecker(getScopedContext(constraint)).checkInvariant(CifParserHelper.parseInvariant(constraint));
         } catch (RuntimeException e) {
             error("Invalid invariant: " + e.getLocalizedMessage(), UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
         }

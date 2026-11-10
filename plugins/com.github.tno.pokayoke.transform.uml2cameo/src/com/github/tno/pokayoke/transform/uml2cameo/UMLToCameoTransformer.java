@@ -134,7 +134,8 @@ public class UMLToCameoTransformer {
 
         CifContext cifContext = ctxManager.getGlobalContext();
 
-        Preconditions.checkArgument(!cifContext.hasConstraints(c -> !CifContext.isPrimitiveTypeConstraint(c)),
+        Preconditions.checkArgument(
+                !cifContext.hasConstraints(c -> !PokaYokeUmlProfileUtil.isPrimitiveTypeConstraint(c)),
                 "Only type constraints are supported.");
         Preconditions.checkArgument(!cifContext.hasAbstractActivities(), "Abstract activities are unsupported.");
 

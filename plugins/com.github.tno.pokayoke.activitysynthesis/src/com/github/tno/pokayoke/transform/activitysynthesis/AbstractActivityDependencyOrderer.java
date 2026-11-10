@@ -24,7 +24,7 @@ import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.Interval;
 import org.eclipse.uml2.uml.IntervalConstraint;
 
-import com.github.tno.synthml.uml.profile.cif.CifContext;
+import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 
 /**
  * A dependency orderer for abstract activities, which determines the order in which abstract activities should be
@@ -113,7 +113,7 @@ public class AbstractActivityDependencyOrderer {
          *     otherwise.
          */
         private boolean isBlockingOccurrenceConstraint(Constraint constraint) {
-            if (CifContext.isOccurrenceConstraint(constraint)) {
+            if (PokaYokeUmlProfileUtil.isContainedAsActivityOccurrenceConstraint(constraint)) {
                 IntervalConstraint intervalConstraint = (IntervalConstraint)constraint;
                 Interval interval = (Interval)intervalConstraint.getSpecification();
                 return interval.getMax().integerValue() <= 0;
