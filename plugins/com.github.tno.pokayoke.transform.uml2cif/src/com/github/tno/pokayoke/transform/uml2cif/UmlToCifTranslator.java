@@ -1298,13 +1298,12 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     }
 
     private void addGuardAndUpdateToNonAtomicEndEvent(Event cifEndEvent, DiscVariable cifNonAtomicVar) {
-        // Add guard '__nonAtomicActive__<eventName>' for every end event of this non-atomic action.
+        // Add guard '__nonAtomicActive__<eventName>' to the given end event.
         DiscVariableExpression cifEndGuard = CifConstructors.newDiscVariableExpression(null,
                 EcoreUtil.copy(cifNonAtomicVar.getType()), cifNonAtomicVar);
         eventEdgeMap.get(cifEndEvent).getGuards().add(cifEndGuard);
 
-        // Add update '__nonAtomicActive__<eventName> := false' for every end event of this non-atomic
-        // action.
+        // Add update '__nonAtomicActive__<eventName> := false' to the given end event.
         Assignment cifEndUpdate = CifConstructors.newAssignment();
         cifEndUpdate.setAddressable(CifConstructors.newDiscVariableExpression(null,
                 EcoreUtil.copy(cifNonAtomicVar.getType()), cifNonAtomicVar));
