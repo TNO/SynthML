@@ -284,7 +284,7 @@ public class SynthesisChainTracking {
         return getFinalizedStartEndEventFromPatterns(synthesisPatterns, purpose);
     }
 
-    private Map<List<Event>, List<Event>> getFinalizedStartEndEventFromPatterns(
+    private Map<List<Event>, List<Event>> getFinalizedStartEndEventMapFromSynthesisPatterns(
             Map<List<Event>, List<Event>> synthesisPatterns, UmlToCifTranslationPurpose purpose)
     {
         Map<List<Event>, List<Event>> result = new LinkedHashMap<>();
