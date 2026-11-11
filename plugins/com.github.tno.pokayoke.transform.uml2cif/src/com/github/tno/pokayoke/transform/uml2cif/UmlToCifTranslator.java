@@ -1202,15 +1202,24 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                     String nonMergedPatternVarName = NONATOMIC_PREFIX + "__nonMergedPattern__" + originalElementName;
                     cifNonAtomicVar = cifNonAtomicVars.stream()
                             .filter(var -> var.getName().equals(nonMergedPatternVarName)).findFirst()
-                            .orElseGet(() -> createNonAtomicCifVariable(cifNonAtomicVars, guardsStartEvents,
-                                    nonMergedPatternVarName));
+                            .orElseGet(() -> createNonAtomicCifVariable(cifNonAtomicVars, nonMergedPatternVarName));
 
                     cifNonMergedPatternVar = cifNonAtomicVar;
                 } else {
                     // Create the Boolean variable for the merged patterns.
-                    cifNonAtomicVar = createNonAtomicCifVariable(cifNonAtomicVars, guardsStartEvents,
+                    cifNonAtomicVar = createNonAtomicCifVariable(cifNonAtomicVars,
                             NONATOMIC_PREFIX + "__" + cifStartEvent.getName());
                 }
+
+                // Create the guard for the start event.
+                UnaryExpression cifStartGuard = CifConstructors.newUnaryExpression();
+                cifStartGuard.setChild(CifConstructors.newDiscVariableExpression(null,
+                        EcoreUtil.copy(cifNonAtomicVar.getType()), cifNonAtomicVar));
+                cifStartGuard.setOperator(UnaryOperator.INVERSE);
+                cifStartGuard.setType(CifConstructors.newBoolType());
+
+                // Add the start guard to the set to later construct the conjunction.
+                guardsStartEvents.add(cifStartGuard);
 
                 // Add update '__nonAtomicActive__* := true' for the this start event for both merged and non-merged
                 // patterns.
@@ -1270,24 +1279,20 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         return cifNonAtomicVars;
     }
 
-    private DiscVariable createNonAtomicCifVariable(List<DiscVariable> cifNonAtomicVars,
-            Set<UnaryExpression> guardsStartEvents, String label)
-    {
+    /**
+     * Creates a Boolean CIF variable that tracks whether a non-atomic pattern is currently active.
+     *
+     * @param cifNonAtomicVars The collection to which the newly created variable is added.
+     * @param label The name to assign to the created CIF variable.
+     * @return The created Boolean CIF variable representing the active state of a non-atomic pattern.
+     */
+    private DiscVariable createNonAtomicCifVariable(List<DiscVariable> cifNonAtomicVars, String label) {
         // Declare a Boolean variable that indicates whether the non-atomic action is currently active.
         // Value 'false' indicates inactive, and 'true' indicates active.
         DiscVariable cifNonAtomicVar = CifConstructors.newDiscVariable();
         cifNonAtomicVars.add(cifNonAtomicVar);
         cifNonAtomicVar.setName(label);
         cifNonAtomicVar.setType(CifConstructors.newBoolType());
-
-        UnaryExpression cifStartGuard = CifConstructors.newUnaryExpression();
-        cifStartGuard.setChild(CifConstructors.newDiscVariableExpression(null,
-                EcoreUtil.copy(cifNonAtomicVar.getType()), cifNonAtomicVar));
-        cifStartGuard.setOperator(UnaryOperator.INVERSE);
-        cifStartGuard.setType(CifConstructors.newBoolType());
-
-        // Add the start guard to the set to later construct the conjunction.
-        guardsStartEvents.add(cifStartGuard);
 
         return cifNonAtomicVar;
     }
