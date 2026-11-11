@@ -1138,25 +1138,41 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         Map<Event, List<Event>> startEndEventMap = synthesisTracker.getStartEndOnlyEventMap(translationPurpose);
 
         for (Entry<List<Event>, List<Event>> nonAtomicEvent: nonAtomicEventMap.entrySet()) {
-            // Non-atomic patterns (one start event and one or more end events) are treated differently according to the
-            // translation purpose. For synthesis, all patterns are treated as if they were "merged patterns", namely
-            // they are start and end events without an actual token place between the start and end events. Thus, every
-            // pattern receives its own '__nonAtomicActive__{startEvent}' variable that acts as a token place. For guard
-            // computation and language equivalence, merged and non-merged patterns are distinguished: non-merged
-            // patterns already have proper token information embedded within the activity execution. First, start
-            // events are split according to whether they belong to a merged or non-merged pattern. Non-merged patterns
-            // share a single guard variable, '__nonAtomicActive__nonMergedPattern__<UML element name>'. This guard
-            // captures whether any non-merged pattern is currently active, to avoid multiple execution of the same UML
-            // element. Merged patterns each receive a dedicated guard variable, '__nonAtomicActive__{startEvent}'. This
-            // guard acts as an extra token between the pattern's start and end events, ensuring that execution cannot
-            // leave the pattern and later re-enter it at a different location. Finally, every pattern start event
-            // receives a global guard of the form: 'not __nonAtomicActive__{startEvent_1} and not
-            // __nonAtomicActive__{startEvent_2} and ... and not __nonAtomicActive__nonMergedPattern' so that multiple
-            // executions of the same underlying UML element at the same time are prevented. Each start event updates
-            // only the relevant non-active variable (namely they set the relevant '__nonAtomicActive' to 'true'). The
-            // end events receive a guard based on their corresponding start event's merged or non-merged pattern
-            // (namely they require the relevant '__nonAtomicActive' to be 'true'), and update the corresponding
-            // non-active variable 'nonAtomicActive' to 'false'.
+            // Non-atomic patterns (consisting of one start event and one or more end events) are handled differently
+            // depending on the translation purpose:
+            //
+            // - For synthesis, all patterns are treated as merged patterns. Since the events originate from UML
+            // elements, there is no token place between the start and end events. Therefore, each pattern receives its
+            // own '__nonAtomicActive__{startEvent}' variable, which acts as a virtual token place.
+            //
+            // - For guard computation and language equivalence, merged and non-merged patterns are distinguished:
+            // * Non-merged patterns already have token information embedded in the activity execution, so they just
+            // need guards to prevent concurrent execution;
+            // * Merged patterns require additional guards and token-like variables to preserve the correct execution
+            // semantics.
+            //
+            // The greatest difference regards start events:
+            //
+            // - For non-merged patterns, all start events belonging to the same UML element share a single
+            // '__nonAtomicActive__nonMergedPattern__<UML element name>' variable. This variable indicates whether
+            // that UML element is currently active and prevents concurrent executions of the same UML element.
+            //
+            // - For merged patterns, each start event receives its own '__nonAtomicActive__{startEvent}' variable.
+            // This variable acts as an additional token place between the pattern's start and end events,
+            // preventing execution from leaving the pattern and later re-entering it through a different path.
+            //
+            // - Every pattern start event receives a guard of the form:
+            // 'not __nonAtomicActive__{startEvent_1} and not __nonAtomicActive__{startEvent_2} and ... and not
+            // __nonAtomicActive__nonMergedPattern__<UML element name>'.
+            // This ensures that multiple multiple concurrent executions of the same non-atomic UML element cannot be
+            // active simultaneously.
+            //
+            // - Each start event sets its associated '__nonAtomicActive__*' variable to 'true' when executed, whether
+            // it is the non-merged pattern's one or the dedicated merged pattern's one.
+            //
+            // End events of merged or non-merged patterns are treated in the same way: each end event receives a guard
+            // requiring its associated '__nonAtomicActive__*' variable to be 'true', and resets that same
+            // '__nonAtomicActive__*' variable to 'false' when executed.
             List<Event> cifStartEvents = nonAtomicEvent.getKey();
             List<Event> cifEndEvents = nonAtomicEvent.getValue();
             Set<Event> mergedPatternEndEvents = new LinkedHashSet<>();
@@ -1194,8 +1210,8 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                             cifStartEvent.getName());
                 }
 
-                // Add update '__nonAtomicActive__<eventName> := true' for the this start event for both merged and
-                // non-merged patterns.
+                // Add update '__nonAtomicActive__* := true' for the this start event for both merged and non-merged
+                // patterns.
                 Assignment cifStartUpdate = CifConstructors.newAssignment();
                 cifStartUpdate.setAddressable(CifConstructors.newDiscVariableExpression(null,
                         EcoreUtil.copy(cifNonAtomicVar.getType()), cifNonAtomicVar));
