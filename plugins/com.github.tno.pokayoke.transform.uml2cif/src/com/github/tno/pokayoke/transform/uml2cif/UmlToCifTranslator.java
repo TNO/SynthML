@@ -1059,14 +1059,12 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             int index = 1;
             Map<Event, List<Event>> startEndEventMap = synthesisTracker.getStartEndOnlyEventMap(translationPurpose);
 
-            for (List<Event> cifStartEvents: atomicNonDeterministicEvents.keySet()) {
-                for (Event cifStartEvent: cifStartEvents) {
-                    eventIndex.put(cifStartEvent, index);
-                    for (Event cifEndEvent: startEndEventMap.get(cifStartEvent)) {
-                        eventIndex.put(cifEndEvent, index);
-                    }
-                    index++;
+            for (Event cifStartEvent: atomicNonDeterministicStartEvents) {
+                eventIndex.put(cifStartEvent, index);
+                for (Event cifEndEvent: startEndEventMap.get(cifStartEvent)) {
+                    eventIndex.put(cifEndEvent, index);
                 }
+                index++;
             }
 
             // Add guards and updates to every edge to ensure that atomic actions are indeed atomically executed.
