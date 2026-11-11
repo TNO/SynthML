@@ -1744,18 +1744,19 @@ public class SynthesisChainTracking {
      * Gives the list of CIF end-only events created for any finalized UML element during the guard computation or
      * language equivalence check phase, that corresponds to the given original UML element.
      *
-     * @param originalElement The non-{@code null} original UML element.
+     * @param originalUmlElement The non-{@code null} original UML element.
      * @param purpose The translation purpose.
      * @return The list of CIF end-only events of finalized UML elements corresponding to the given original UML
      *     element.
      */
-    private List<Event> getFinalizedElementEndOnlyEventsForOriginalElement(RedefinableElement originalElement,
+    private List<Event> getFinalizedElementEndOnlyEventsForOriginalElement(RedefinableElement originalUmlElement,
             UmlToCifTranslationPurpose purpose)
     {
         // Precondition check.
         Verify.verify(purpose != UmlToCifTranslationPurpose.SYNTHESIS,
                 "Reference to original UML element is undefined for synthesis translation.");
-        Verify.verify(isOriginalUmlElement(originalElement), "The given UML element is not an original UML element.");
+        Verify.verify(isOriginalUmlElement(originalUmlElement),
+                "The given UML element is not an original UML element.");
 
         // Return the list of CIF events whose translation purpose is the given one, whose original UML element is equal
         // to the given one, and is related to the end-only of an original element.
@@ -1766,7 +1767,7 @@ public class SynthesisChainTracking {
                 && getOriginalUmlElementForFinalizedElement(
                         e.getValue().getUmlElement()) instanceof RedefinableElement umlElement
                 // Filter to only UML elements that are equal to the original UML element.
-                && umlElement.equals(originalElement)
+                && umlElement.equals(originalUmlElement)
                 // Filter to only CIF events related to the end-only of an original element.
                 && isRelatedToEndOnlyOfOriginalElement(e.getValue()))
                 // Collect the CIF events.
