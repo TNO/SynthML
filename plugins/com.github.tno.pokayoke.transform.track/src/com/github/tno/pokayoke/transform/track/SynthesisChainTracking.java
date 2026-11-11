@@ -1672,7 +1672,12 @@ public class SynthesisChainTracking {
         EventTraceInfo finalizedEventInfo = cifEventTraceInfo.get(cifEvent);
         Verify.verifyNotNull(finalizedEventInfo, String.format(
                 "Event '%s' does not have any tracing info referring to the finalized UML model.", cifEvent.getName()));
+        Verify.verify(finalizedEventInfo.getTranslationPurpose() == purpose,
+                String.format("Event '%s' is created for '%s' purpose, not for '%s' purpose.", cifEvent.getName(),
+                        finalizedEventInfo.getTranslationPurpose(), purpose));
         RedefinableElement finalizedUmlElement = finalizedEventInfo.getUmlElement();
+        Verify.verify(finalizedUmlElement != null, String.format(
+                "CIF event '%s' does not have any finalized UML element associated with it.", cifEvent.getName()));
         return isStartOnlyAction(getActivityNode(finalizedUmlElement));
     }
 
@@ -1693,7 +1698,12 @@ public class SynthesisChainTracking {
         EventTraceInfo finalizedEventInfo = cifEventTraceInfo.get(cifEvent);
         Verify.verifyNotNull(finalizedEventInfo, String.format(
                 "Event '%s' does not have any tracing info referring to the finalized UML model.", cifEvent.getName()));
+        Verify.verify(finalizedEventInfo.getTranslationPurpose() == purpose,
+                String.format("Event '%s' is created for '%s' purpose, not for '%s' purpose.", cifEvent.getName(),
+                        finalizedEventInfo.getTranslationPurpose(), purpose));
         RedefinableElement finalizedUmlElement = finalizedEventInfo.getUmlElement();
+        Verify.verify(finalizedUmlElement != null, String.format(
+                "CIF event '%s' does not have any finalized UML element associated with it.", cifEvent.getName()));
         return isEndOnlyAction(getActivityNode(finalizedUmlElement));
     }
 
