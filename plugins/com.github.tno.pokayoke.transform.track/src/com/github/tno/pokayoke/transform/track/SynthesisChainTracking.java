@@ -275,19 +275,14 @@ public class SynthesisChainTracking {
                                 LinkedHashMap::putAll);
             case GUARD_COMPUTATION:
             case LANGUAGE_EQUIVALENCE:
-                return getFinalizedNonAtomicStartEndEventMap(purpose);
+                // Get the non-atomic start/end event map for the synthesis purpose, to then link each synthesis-event
+                // with its corresponding guard computation or language equivalence counterparts.
+                Map<List<Event>, List<Event>> synthesisPatterns = getNonAtomicStartEndEventMap(
+                        UmlToCifTranslationPurpose.SYNTHESIS);
+                return getFinalizedStartEndEventMapFromSynthesisPatterns(synthesisPatterns, purpose);
             default:
                 throw new IllegalArgumentException("Unexpected value: " + purpose);
         }
-    }
-
-    private Map<List<Event>, List<Event>> getFinalizedNonAtomicStartEndEventMap(UmlToCifTranslationPurpose purpose) {
-        // Get the non-atomic start/end event map for the synthesis purpose, to then link each synthesis-event with its
-        // corresponding guard computation or language equivalence counterparts.
-        Map<List<Event>, List<Event>> synthesisPatterns = getNonAtomicStartEndEventMap(
-                UmlToCifTranslationPurpose.SYNTHESIS);
-
-        return getFinalizedStartEndEventMapFromSynthesisPatterns(synthesisPatterns, purpose);
     }
 
     private Map<List<Event>, List<Event>> getFinalizedStartEndEventMapFromSynthesisPatterns(
@@ -364,21 +359,14 @@ public class SynthesisChainTracking {
                                 LinkedHashMap::putAll);
             case GUARD_COMPUTATION:
             case LANGUAGE_EQUIVALENCE:
-                return getFinalizedNonDeterministicStartEndEventMap(purpose);
+                // Get the non-deterministic start/end event map for the synthesis purpose, to then link each
+                // synthesis-event with its corresponding guard computation or language equivalence counterparts.
+                Map<List<Event>, List<Event>> synthesisPatterns = getNonDeterministicStartEndEventMap(
+                        UmlToCifTranslationPurpose.SYNTHESIS);
+                return getFinalizedStartEndEventMapFromSynthesisPatterns(synthesisPatterns, purpose);
             default:
                 throw new IllegalArgumentException("Unexpected value: " + purpose);
         }
-    }
-
-    private Map<List<Event>, List<Event>>
-            getFinalizedNonDeterministicStartEndEventMap(UmlToCifTranslationPurpose purpose)
-    {
-        // Get the non-deterministic start/end event map for the synthesis purpose, to then link each synthesis-event
-        // with its corresponding guard computation or language equivalence counterparts.
-        Map<List<Event>, List<Event>> synthesisPatterns = getNonDeterministicStartEndEventMap(
-                UmlToCifTranslationPurpose.SYNTHESIS);
-
-        return getFinalizedStartEndEventMapFromSynthesisPatterns(synthesisPatterns, purpose);
     }
 
     private boolean isDeterministicAction(RedefinableElement umlElement) {
