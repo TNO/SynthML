@@ -1057,7 +1057,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             // first such action get index 1, all events related to the second such action get index 2, etc.
             Map<Event, Integer> eventIndex = new LinkedHashMap<>();
             int index = 1;
-            Map<Event, List<Event>> startEndEventMap = synthesisTracker.getStartEndEventMap(translationPurpose);
+            Map<Event, List<Event>> startEndEventMap = synthesisTracker.getStartEndOnlyEventMap(translationPurpose);
 
             for (List<Event> cifStartEvents: atomicNonDeterministicEvents.keySet()) {
                 for (Event cifStartEvent: cifStartEvents) {
@@ -1137,7 +1137,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         // to constrain their start and end events accordingly.
         List<DiscVariable> cifNonAtomicVars = new ArrayList<>();
 
-        Map<Event, List<Event>> startEndEventMap = synthesisTracker.getStartEndEventMap(translationPurpose);
+        Map<Event, List<Event>> startEndEventMap = synthesisTracker.getStartEndOnlyEventMap(translationPurpose);
 
         for (Entry<List<Event>, List<Event>> nonAtomicEvent: nonAtomicEventMap.entrySet()) {
             // Non-atomic patterns (one start event and one or more end events) are treated differently according to the

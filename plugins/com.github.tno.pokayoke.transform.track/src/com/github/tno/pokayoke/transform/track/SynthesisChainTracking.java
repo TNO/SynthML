@@ -230,7 +230,7 @@ public class SynthesisChainTracking {
      * @param purpose The translation purpose.
      * @return The map from CIF start events to their corresponding CIF end-only events.
      */
-    public Map<Event, List<Event>> getStartEndEventMap(UmlToCifTranslationPurpose purpose) {
+    public Map<Event, List<Event>> getStartEndOnlyEventMap(UmlToCifTranslationPurpose purpose) {
         Map<Event, List<Event>> result = new LinkedHashMap<>();
 
         // Get the map of all start events.
@@ -261,7 +261,7 @@ public class SynthesisChainTracking {
      */
     public Map<List<Event>, List<Event>> getNonAtomicStartEndEventMap(UmlToCifTranslationPurpose purpose) {
         // Get the map from start events to the corresponding end events.
-        Map<Event, List<Event>> startEndEventMap = getStartEndEventMap(purpose);
+        Map<Event, List<Event>> startEndEventMap = getStartEndOnlyEventMap(purpose);
 
         switch (purpose) {
             case SYNTHESIS:
@@ -346,7 +346,7 @@ public class SynthesisChainTracking {
      */
     public Map<List<Event>, List<Event>> getNonDeterministicStartEndEventMap(UmlToCifTranslationPurpose purpose) {
         // Get the map from start events to the corresponding end events.
-        Map<Event, List<Event>> startEndEventMap = getStartEndEventMap(purpose);
+        Map<Event, List<Event>> startEndEventMap = getStartEndOnlyEventMap(purpose);
 
         switch (purpose) {
             case SYNTHESIS:
@@ -459,7 +459,7 @@ public class SynthesisChainTracking {
      */
     public void removeAndUpdateEvents(Set<String> cifEventNamesToRemove, UmlToCifTranslationPurpose purpose) {
         // Get the map from start events to the corresponding end events.
-        Map<Event, List<Event>> startEndEventsMap = getStartEndEventMap(purpose);
+        Map<Event, List<Event>> startEndEventsMap = getStartEndOnlyEventMap(purpose);
 
         // Create a map from event names to CIF events, for better handling CIF event names.
         Map<String, Event> namesToCifEvents = cifEventTraceInfo.keySet().stream()
