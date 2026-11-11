@@ -223,10 +223,12 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Gives the map from CIF start events to the corresponding CIF end events, for the specified translation purpose.
+     * Gives the map from CIF start events to the corresponding CIF end-only events, for the specified translation
+     * purpose. If a CIF event is complete, namely it is both a start and end event, the map entry contains the event
+     * only in the key while the corresponding value is an empty list.
      *
      * @param purpose The translation purpose.
-     * @return The map from CIF start events to their corresponding CIF end events.
+     * @return The map from CIF start events to their corresponding CIF end-only events.
      */
     public Map<Event, List<Event>> getStartEndEventMap(UmlToCifTranslationPurpose purpose) {
         Map<Event, List<Event>> result = new LinkedHashMap<>();
