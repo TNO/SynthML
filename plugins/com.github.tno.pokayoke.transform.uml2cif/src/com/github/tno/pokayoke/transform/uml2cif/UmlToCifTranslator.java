@@ -18,7 +18,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -1180,19 +1179,18 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             DiscVariable cifNonMergedPatternVar = null;
 
             for (Event cifStartEvent: cifStartEvents) {
-                // If the start event is part of a non-merged pattern (namely it is related to a start-only Petri net
-                // transition), create a '__nonAtomicActive__nonMergedPattern__<UML element name>' variable that will be
-                // shared among all starts of non-merged patterns. Otherwise, create a dedicated
+                // A CIF start event is part of a non-merged pattern if it generated after the synthesis phase and it
+                // originates from a start-only (i.e., non-merged as well) Petri net transition.
+                boolean isStartOfNonMergedPattern = translationPurpose != UmlToCifTranslationPurpose.SYNTHESIS
+                        && synthesisTracker.isRelatedToStartOnlyTransition(cifStartEvent, translationPurpose);
+
+                // If the start event is part of a non-merged pattern, create (or get, if already created) a
+                // '__nonAtomicActive__nonMergedPattern__<UML element name>' variable that will be shared among all
+                // starts of non-merged patterns. If the start event is part of a merged pattern, create a dedicated
                 // '__nonAtomicActive__{startEvent_i}' variable.
                 DiscVariable cifNonAtomicVar;
-                if (
-                // For synthesis, there is no Petri net (yet), hence we need to check for the right translation purpose.
-                translationPurpose != UmlToCifTranslationPurpose.SYNTHESIS
-                        // A CIF start event for guard computation or language equivalence is part of a non-merged
-                        // pattern if it originates from a start-only (i.e., non-merged as well) Petri net transition.
-                        && synthesisTracker.isRelatedToStartOnlyTransition(cifStartEvent, translationPurpose))
-                {
-                    // Get the original UML element name.
+                if (isStartOfNonMergedPattern) {
+                    // Get the original UML element name to search if the non-merged pattern variable already exists.
                     RedefinableElement umlElement = synthesisTracker.getUmlElement(cifStartEvents.get(0));
                     Verify.verify(umlElement != null, String.format(
                             "Expected a non-null UML element corresponding to CIF event '%s'.", cifStartEvents.get(0)));
@@ -1200,14 +1198,18 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                             .getOriginalUmlElementForFinalizedElement(umlElement);
                     String originalElementName = originalElement.getName();
 
-                    // Get the Boolean variable for the non-merged patterns.
-                    cifNonAtomicVar = getNonAtomicNonMergedPatternCifVariable(cifNonAtomicVars, guardsStartEvents,
-                            "nonMergedPattern__" + originalElementName);
+                    // Get or create the Boolean variable for the non-merged patterns.
+                    String nonMergedPatternVarName = NONATOMIC_PREFIX + "__nonMergedPattern__" + originalElementName;
+                    cifNonAtomicVar = cifNonAtomicVars.stream()
+                            .filter(var -> var.getName().equals(nonMergedPatternVarName)).findFirst()
+                            .orElseGet(() -> getNonAtomicCifVariable(cifNonAtomicVars, guardsStartEvents,
+                                    nonMergedPatternVarName));
+
                     cifNonMergedPatternVar = cifNonAtomicVar;
                 } else {
-                    // Get the Boolean variable for the merged patterns.
+                    // Create the Boolean variable for the merged patterns.
                     cifNonAtomicVar = getNonAtomicCifVariable(cifNonAtomicVars, guardsStartEvents,
-                            cifStartEvent.getName());
+                            NONATOMIC_PREFIX + "__" + cifStartEvent.getName());
                 }
 
                 // Add update '__nonAtomicActive__* := true' for the this start event for both merged and non-merged
@@ -1268,22 +1270,6 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         return cifNonAtomicVars;
     }
 
-    private DiscVariable getNonAtomicNonMergedPatternCifVariable(List<DiscVariable> cifNonAtomicVars,
-            Set<UnaryExpression> guardsStartEvents, String label)
-    {
-        String nonMergedStartVarName = NONATOMIC_PREFIX + "__" + label;
-        Optional<DiscVariable> nonMergedPatternStartVar = cifNonAtomicVars.stream()
-                .filter(v -> v.getName().equals(nonMergedStartVarName)).findFirst();
-
-        if (nonMergedPatternStartVar.isPresent()) {
-            // Return the already created variable.
-            return nonMergedPatternStartVar.get();
-        } else {
-            // Create a new CIF variable, as if it was a merged pattern.
-            return getNonAtomicCifVariable(cifNonAtomicVars, guardsStartEvents, label);
-        }
-    }
-
     private DiscVariable getNonAtomicCifVariable(List<DiscVariable> cifNonAtomicVars,
             Set<UnaryExpression> guardsStartEvents, String label)
     {
@@ -1291,7 +1277,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         // Value 'false' indicates inactive, and 'true' indicates active.
         DiscVariable cifNonAtomicVar = CifConstructors.newDiscVariable();
         cifNonAtomicVars.add(cifNonAtomicVar);
-        cifNonAtomicVar.setName(NONATOMIC_PREFIX + "__" + label);
+        cifNonAtomicVar.setName(label);
         cifNonAtomicVar.setType(CifConstructors.newBoolType());
 
         UnaryExpression cifStartGuard = CifConstructors.newUnaryExpression();
