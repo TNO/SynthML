@@ -304,7 +304,7 @@ public class SynthesisChainTracking {
             List<Event> finalizedStarts = getFinalizedElementStartEventsForOriginalElement(originalElement, purpose);
 
             // Get the finalized end events corresponding to the original UML element.
-            List<Event> finalizedEnds = getFinalizedElementEndEventsForOriginalElement(originalElement, purpose);
+            List<Event> finalizedEnds = getFinalizedElementEndOnlyEventsForOriginalElement(originalElement, purpose);
 
             // Populate the map.
             result.put(finalizedStarts, finalizedEnds);
@@ -1750,7 +1750,7 @@ public class SynthesisChainTracking {
      * @param purpose The translation purpose.
      * @return The list of CIF end events of finalized UML elements corresponding to the given original UML element.
      */
-    private List<Event> getFinalizedElementEndEventsForOriginalElement(RedefinableElement originalElement,
+    private List<Event> getFinalizedElementEndOnlyEventsForOriginalElement(RedefinableElement originalElement,
             UmlToCifTranslationPurpose purpose)
     {
         // Precondition check.
