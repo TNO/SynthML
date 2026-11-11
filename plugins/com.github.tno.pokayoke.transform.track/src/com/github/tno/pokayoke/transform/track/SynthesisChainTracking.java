@@ -1743,12 +1743,13 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Gives the list of CIF end events created for any finalized UML element during the guard computation or language
-     * equivalence check phase, that corresponds to the given original UML element.
+     * Gives the list of CIF end-only events created for any finalized UML element during the guard computation or
+     * language equivalence check phase, that corresponds to the given original UML element.
      *
      * @param originalElement The non-{@code null} original UML element.
      * @param purpose The translation purpose.
-     * @return The list of CIF end events of finalized UML elements corresponding to the given original UML element.
+     * @return The list of CIF end-only events of finalized UML elements corresponding to the given original UML
+     *     element.
      */
     private List<Event> getFinalizedElementEndOnlyEventsForOriginalElement(RedefinableElement originalElement,
             UmlToCifTranslationPurpose purpose)
