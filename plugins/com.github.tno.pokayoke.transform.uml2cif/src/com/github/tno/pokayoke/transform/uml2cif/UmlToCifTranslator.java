@@ -1180,6 +1180,8 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 {
                     // Get the original UML element name.
                     RedefinableElement umlElement = synthesisTracker.getUmlElement(cifStartEvents.get(0));
+                    Verify.verify(umlElement != null, String.format(
+                            "Expected a non-null UML element corresponding to CIF event '%s'.", cifStartEvents.get(0)));
                     RedefinableElement originalElement = synthesisTracker
                             .getOriginalUmlElementForFinalizedElement(umlElement);
                     String originalElementName = originalElement.getName();
