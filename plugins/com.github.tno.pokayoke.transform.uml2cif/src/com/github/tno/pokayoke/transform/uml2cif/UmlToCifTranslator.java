@@ -1202,13 +1202,13 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                     String nonMergedPatternVarName = NONATOMIC_PREFIX + "__nonMergedPattern__" + originalElementName;
                     cifNonAtomicVar = cifNonAtomicVars.stream()
                             .filter(var -> var.getName().equals(nonMergedPatternVarName)).findFirst()
-                            .orElseGet(() -> getNonAtomicCifVariable(cifNonAtomicVars, guardsStartEvents,
+                            .orElseGet(() -> createNonAtomicCifVariable(cifNonAtomicVars, guardsStartEvents,
                                     nonMergedPatternVarName));
 
                     cifNonMergedPatternVar = cifNonAtomicVar;
                 } else {
                     // Create the Boolean variable for the merged patterns.
-                    cifNonAtomicVar = getNonAtomicCifVariable(cifNonAtomicVars, guardsStartEvents,
+                    cifNonAtomicVar = createNonAtomicCifVariable(cifNonAtomicVars, guardsStartEvents,
                             NONATOMIC_PREFIX + "__" + cifStartEvent.getName());
                 }
 
@@ -1270,7 +1270,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         return cifNonAtomicVars;
     }
 
-    private DiscVariable getNonAtomicCifVariable(List<DiscVariable> cifNonAtomicVars,
+    private DiscVariable createNonAtomicCifVariable(List<DiscVariable> cifNonAtomicVars,
             Set<UnaryExpression> guardsStartEvents, String label)
     {
         // Declare a Boolean variable that indicates whether the non-atomic action is currently active.
