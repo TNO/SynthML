@@ -1605,7 +1605,7 @@ public class SynthesisChainTracking {
      * @return {@code true} if the finalized UML element is related to an end-only original CIF event, {@code false}
      *     otherwise.
      */
-    private boolean isRelatedToOriginalEndOnlyEvent(RedefinableElement finalizedUmlElement) {
+    public boolean isRelatedToOriginalEndOnlyEvent(RedefinableElement finalizedUmlElement) {
         Verify.verify(isFinalizedUmlElement(finalizedUmlElement),
                 String.format("Element '%s' is not a finalized element.", finalizedUmlElement.getName()));
         ActivityNode node = getActivityNode(finalizedUmlElement);

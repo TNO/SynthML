@@ -454,7 +454,13 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         // For guard computation, force all start events to be controllable, as the structure of the synthesized UML
         // activity is already fixed, and we just want to re-compute the guards as locally as possible.
         if (translationPurpose == UmlToCifTranslationPurpose.GUARD_COMPUTATION) {
-            controllableStartEvent = true;
+            // The end event of a non-merged pattern must be uncontrollable. The corresponding UML element is an opaque
+            // action and is related to an end-only event created during the synthesis phase.
+            if (umlElement instanceof OpaqueAction && synthesisTracker.isRelatedToOriginalEndOnlyEvent(umlElement)) {
+                controllableStartEvent = false;
+            } else {
+                controllableStartEvent = true;
+            }
         }
 
         // Initialize mapping of new events to their edges.
