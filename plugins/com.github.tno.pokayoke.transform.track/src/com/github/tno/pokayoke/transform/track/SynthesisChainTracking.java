@@ -279,7 +279,7 @@ public class SynthesisChainTracking {
                 // with its corresponding guard computation or language equivalence counterparts.
                 Map<List<Event>, List<Event>> synthesisPatterns = getNonAtomicStartEndEventMap(
                         UmlToCifTranslationPurpose.SYNTHESIS);
-                return getFinalizedStartEndEventMapFromSynthesisPatterns(synthesisPatterns, purpose);
+                return getFinalizedStartToEndOnlyEventMapFromSynthesisPatterns(synthesisPatterns, purpose);
             default:
                 throw new IllegalArgumentException("Unexpected value: " + purpose);
         }
@@ -363,7 +363,7 @@ public class SynthesisChainTracking {
                 // synthesis-event with its corresponding guard computation or language equivalence counterparts.
                 Map<List<Event>, List<Event>> synthesisPatterns = getNonDeterministicStartEndEventMap(
                         UmlToCifTranslationPurpose.SYNTHESIS);
-                return getFinalizedStartEndEventMapFromSynthesisPatterns(synthesisPatterns, purpose);
+                return getFinalizedStartToEndOnlyEventMapFromSynthesisPatterns(synthesisPatterns, purpose);
             default:
                 throw new IllegalArgumentException("Unexpected value: " + purpose);
         }
