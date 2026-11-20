@@ -198,9 +198,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
     /**
      * Gives all CIF events related to atomic non-deterministic actions, as a mapping from their CIF start events to
-     * their corresponding CIF end events.
+     * their corresponding CIF end-only events.
      *
-     * @return A mapping from all atomic non-deterministic start events to their corresponding end events.
+     * @return A mapping from all atomic non-deterministic start events to their corresponding end-only events.
      */
     public Map<List<Event>, List<Event>> getAtomicNonDeterministicEvents() {
         Map<List<Event>, List<Event>> result = new LinkedHashMap<>();
@@ -209,10 +209,10 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
         for (var entry: synthesisTracker.getNonDeterministicStartEndOnlyEventMap(translationPurpose).entrySet()) {
             List<Event> startEvents = entry.getKey();
-            List<Event> endEvents = entry.getValue();
+            List<Event> endOnlyEvents = entry.getValue();
 
             if (!nonAtomicEventMap.containsKey(startEvents)) {
-                result.put(startEvents, endEvents);
+                result.put(startEvents, endOnlyEvents);
             }
         }
 
