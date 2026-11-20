@@ -12,7 +12,6 @@ package com.github.tno.pokayoke.transform.uml2cif;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -1267,20 +1266,12 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 }
             }
 
+            // Create a conjunction of guards if there are (start event of) non-atomic actions in the UML model.
             if (!cifStartEvents.isEmpty()) {
                 // Construct the conjunction guard 'not __nonAtomicActive__{startMergedEvent_1} and not
-                // __nonAtomicActive__{startEvent_2} and ... and not __nonAtomicActive__nonMergedPattern' and assign it
-                // to all start events.
-                Iterator<UnaryExpression> it = guardsStartEvents.iterator();
-                Expression conjunctionGuard = it.next();
-                while (it.hasNext()) {
-                    BinaryExpression andExpr = CifConstructors.newBinaryExpression();
-                    andExpr.setLeft(conjunctionGuard);
-                    andExpr.setOperator(BinaryOperator.CONJUNCTION);
-                    andExpr.setRight(it.next());
-                    andExpr.setType(CifConstructors.newBoolType());
-                    conjunctionGuard = andExpr;
-                }
+                // __nonAtomicActive__{startEvent_2} and ... and not __nonAtomicActive__nonMergedPattern__<UML element
+                // name>'.
+                Expression conjunctionGuard = CifValueUtils.createConjunction(new ArrayList<>(guardsStartEvents));
 
                 // Assign the conjunction guard to all start events.
                 for (Event cifStartEvent: cifStartEvents) {
@@ -1294,7 +1285,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             nonMergedPatternEndEvents.removeAll(mergedPatternEndEvents);
 
             // Sanity check: the CIF variable for the start events of the non-merged patterns is 'null' if and only if
-            // the list of CIF end-only events of non-merged patterns is now empty.
+            // the list of CIF end-only events of non-merged patterns is empty.
             Verify.verify(nonMergedPatternEndEvents.isEmpty() == (cifNonMergedPatternVar == null),
                     "The CIF variable for non-merged patterns and the non-merged end events are conflicting.");
 
