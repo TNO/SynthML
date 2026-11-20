@@ -1136,7 +1136,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
      * every non-atomic action, an <i>active variable</i> is created in CIF that indicates whether the non-atomic action
      * is active, i.e., is being executed. Then the constraints are encoded as extra guards and updates to the edges of
      * non-atomic actions, ensuring that start events can only be performed when the non-atomic action is inactive, and
-     * the end events can only be performed when the action is active.
+     * the end events can only be performed when the action is active. The encoding supports both merged and non-merged
+     * non-atomic patterns, introducing dedicated or shared active variables as needed to preserve the intended
+     * execution semantics.
      *
      * @return The created active variables.
      */
@@ -1146,18 +1148,18 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 .getNonAtomicStartEndOnlyEventMap(translationPurpose);
 
         // Add guards and updates to the edges of non-atomic actions to keep track of which such actions are active, and
-        // to constrain their start and end events accordingly.
+        // to constrain their start and end-only events accordingly.
         List<DiscVariable> cifNonAtomicVars = new ArrayList<>();
 
         Map<Event, List<Event>> startEndOnlyEventMap = synthesisTracker.getStartEndOnlyEventMap(translationPurpose);
 
         for (Entry<List<Event>, List<Event>> nonAtomicEvent: nonAtomicEventMap.entrySet()) {
-            // Non-atomic patterns (consisting of one start event and one or more end events) are handled differently
-            // depending on the translation purpose:
+            // Non-atomic patterns (consisting of one start event and one or more end-only events) are handled
+            // differently depending on the translation purpose:
             //
             // - For synthesis, all patterns are treated as merged patterns. Since the events originate from UML
-            // elements, there is no token place between the start and end events. Therefore, each pattern receives its
-            // own '__nonAtomicActive__{startEvent}' variable, which acts as a virtual token place.
+            // elements, there is no token place between the start and end-only events. Therefore, each pattern receives
+            // its own '__nonAtomicActive__{startEvent}' variable, which acts as a virtual token place.
             //
             // - For guard computation and language equivalence, merged and non-merged patterns are distinguished:
             // * Non-merged patterns (with separate start/end action nodes in the synthesized activity) already have
@@ -1174,7 +1176,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             // that UML element is currently active and prevents concurrent executions of the same UML element.
             //
             // - For merged patterns, each start event receives its own '__nonAtomicActive__{startEvent}' variable.
-            // This variable acts as an additional token place between the pattern's start and end events,
+            // This variable acts as an additional token place between the pattern's start and end-only events,
             // preventing execution from leaving the pattern and later re-entering it through a different path.
             //
             // - Every pattern start event receives a guard of the form:
@@ -1186,8 +1188,8 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             // - Each start event sets its associated '__nonAtomicActive__*' variable to 'true' when executed, whether
             // it is the non-merged pattern's one or the dedicated merged pattern's one.
             //
-            // End events of merged or non-merged patterns are treated in the same way: each end event receives a guard
-            // requiring its associated '__nonAtomicActive__*' variable to be 'true', and resets that same
+            // End-only events of merged or non-merged patterns are treated in the same way: each end event receives a
+            // guard requiring its associated '__nonAtomicActive__*' variable to be 'true', and resets that same
             // '__nonAtomicActive__*' variable to 'false' when executed.
             List<Event> cifStartEvents = nonAtomicEvent.getKey();
             List<Event> cifEndOnlyEvents = nonAtomicEvent.getValue();
@@ -1246,9 +1248,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 cifStartUpdate.setValue(CifValueUtils.makeTrue());
                 eventEdgeMap.get(cifStartEvent).getUpdates().add(cifStartUpdate);
 
-                // Add guard and updates to the end events of a merged pattern, which have a dedicated CIF variable. If
-                // the start event belongs to a non-merged pattern, the end events set will be empty. Store the end
-                // events that have been updated for later use.
+                // Add guard and updates to the end-only events of a merged pattern, which have a dedicated CIF
+                // variable. If the start event belongs to a non-merged pattern, the end-only events set will be empty.
+                // Store the end-only events that have been updated for later use.
                 List<Event> endEventsOfThisMergedPattern = startEndOnlyEventMap.get(cifStartEvent);
                 mergedPatternEndEvents.addAll(endEventsOfThisMergedPattern);
                 for (Event cifEndEvent: endEventsOfThisMergedPattern) {
@@ -1277,18 +1279,18 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 }
             }
 
-            // Get the end events of non-merged patterns as the difference from all end events minus the end events from
-            // merged patterns.
+            // Get the end-only events of non-merged patterns as the difference from all end events minus the end events
+            // from merged patterns.
             Set<Event> nonMergedPatternEndEvents = new LinkedHashSet<>(cifEndOnlyEvents);
             nonMergedPatternEndEvents.removeAll(mergedPatternEndEvents);
 
             // Sanity check: the CIF variable for the start events of the non-merged patterns is 'null' if and only if
-            // the list of CIF end events of non-merged patterns is now empty.
+            // the list of CIF end-only events of non-merged patterns is now empty.
             Verify.verify(nonMergedPatternEndEvents.isEmpty() == (cifNonMergedPatternVar == null),
                     "The CIF variable for non-merged patterns and the non-merged end events are conflicting.");
 
-            // Add the guard and updates to the end events of the non-merged patterns which all share the non-merged
-            // pattern CIF variable.
+            // Add the guard and updates to the end-only events of the non-merged patterns which all share the
+            // non-merged pattern CIF variable.
             for (Event cifEndEvent: nonMergedPatternEndEvents) {
                 addGuardAndUpdateToNonAtomicEndEvent(cifEndEvent, cifNonMergedPatternVar);
             }
