@@ -1262,7 +1262,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 List<Event> endOnlyEventsOfThisMergedPattern = startEndOnlyEventMap.get(cifStartEvent);
                 mergedPatternEndEvents.addAll(endOnlyEventsOfThisMergedPattern);
                 for (Event cifEndOnlyEvent: endOnlyEventsOfThisMergedPattern) {
-                    addGuardAndUpdateToNonAtomicEndEvent(cifEndOnlyEvent, cifNonAtomicVar);
+                    addGuardAndUpdateToNonAtomicEndOnlyEvent(cifEndOnlyEvent, cifNonAtomicVar);
                 }
             }
 
@@ -1292,7 +1292,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             // Add the guard and updates to the end-only events of the non-merged patterns which all share the
             // non-merged pattern CIF variable.
             for (Event cifEndEvent: nonMergedPatternEndEvents) {
-                addGuardAndUpdateToNonAtomicEndEvent(cifEndEvent, cifNonMergedPatternVar);
+                addGuardAndUpdateToNonAtomicEndOnlyEvent(cifEndEvent, cifNonMergedPatternVar);
             }
         }
         return cifNonAtomicVars;
@@ -1316,7 +1316,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         return cifNonAtomicVar;
     }
 
-    private void addGuardAndUpdateToNonAtomicEndEvent(Event cifEndOnlyEvent, DiscVariable cifNonAtomicVar) {
+    private void addGuardAndUpdateToNonAtomicEndOnlyEvent(Event cifEndOnlyEvent, DiscVariable cifNonAtomicVar) {
         // Add guard '__nonAtomicActive__<eventName>' to the given end-only event.
         DiscVariableExpression cifEndOnlyGuard = CifConstructors.newDiscVariableExpression(null,
                 EcoreUtil.copy(cifNonAtomicVar.getType()), cifNonAtomicVar);
