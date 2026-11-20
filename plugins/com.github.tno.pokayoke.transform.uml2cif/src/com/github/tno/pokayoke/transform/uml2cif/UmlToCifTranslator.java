@@ -1220,21 +1220,20 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 // '__nonAtomicActive__{startEvent_i}' variable.
                 DiscVariable cifNonAtomicVar;
                 if (isStartOfNonMergedPattern) {
-                    // Get the original UML element name to search if the non-merged pattern variable already exists.
-                    RedefinableElement umlElement = synthesisTracker.getUmlElement(cifStartEvent);
-                    Verify.verify(umlElement != null, String
-                            .format("Expected a non-null UML element corresponding to CIF event '%s'.", cifStartEvent));
-                    RedefinableElement originalElement = synthesisTracker
-                            .getOriginalUmlElementForFinalizedElement(umlElement);
-                    String originalElementName = originalElement.getName();
+                    // Create the Boolean variable for the non-merged patterns if needed.
+                    if (cifNonMergedPatternVar == null) {
+                        // Get the original UML element name and create the variable for the non-merged pattern.
+                        RedefinableElement umlElement = synthesisTracker.getUmlElement(cifStartEvent);
+                        Verify.verify(umlElement != null, String.format(
+                                "Expected a non-null UML element corresponding to CIF event '%s'.", cifStartEvent));
+                        RedefinableElement originalElement = synthesisTracker
+                                .getOriginalUmlElementForFinalizedElement(umlElement);
+                        String originalElementName = originalElement.getName();
 
-                    // Get or create the Boolean variable for the non-merged patterns.
-                    String nonMergedPatternVarName = NONATOMIC_PREFIX + "__nonMergedPattern__" + originalElementName;
-                    cifNonAtomicVar = cifNonAtomicVars.stream()
-                            .filter(var -> var.getName().equals(nonMergedPatternVarName)).findFirst()
-                            .orElseGet(() -> createNonAtomicCifVariable(cifNonAtomicVars, nonMergedPatternVarName));
-
-                    cifNonMergedPatternVar = cifNonAtomicVar;
+                        cifNonMergedPatternVar = createNonAtomicCifVariable(cifNonAtomicVars,
+                                NONATOMIC_PREFIX + "__nonMergedPattern__" + originalElementName);
+                    }
+                    cifNonAtomicVar = cifNonMergedPatternVar;
                 } else {
                     // Create the Boolean variable for the merged patterns.
                     cifNonAtomicVar = createNonAtomicCifVariable(cifNonAtomicVars,
