@@ -216,6 +216,18 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             }
         }
 
+        // Sanity check: each event should occur in at most one key list. If an event appears in multiple keys, then two
+        // groups partially overlap, throw an exception.
+        Set<Event> seenEvents = new LinkedHashSet<>();
+        for (List<Event> startEvents: result.keySet()) {
+            for (Event event: startEvents) {
+                if (!seenEvents.add(event)) {
+                    throw new RuntimeException(
+                            "Event " + event.getName() + " appears in multiple non-deterministic event keys.");
+                }
+            }
+        }
+
         return result;
     }
 
