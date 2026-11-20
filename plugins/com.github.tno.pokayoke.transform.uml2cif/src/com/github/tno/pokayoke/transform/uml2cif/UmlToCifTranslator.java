@@ -205,7 +205,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     public Map<List<Event>, List<Event>> getAtomicNonDeterministicEvents() {
         Map<List<Event>, List<Event>> result = new LinkedHashMap<>();
         Map<List<Event>, List<Event>> nonAtomicEventMap = synthesisTracker
-                .getNonAtomicStartEndEventMap(translationPurpose);
+                .getNonAtomicStartEndOnlyEventMap(translationPurpose);
 
         for (var entry: synthesisTracker.getNonDeterministicStartEndEventMap(translationPurpose).entrySet()) {
             List<Event> startEvents = entry.getKey();
@@ -1131,7 +1131,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     private List<DiscVariable> encodeNonAtomicActionConstraints() {
         // Get tracker's non-atomic events map.
         Map<List<Event>, List<Event>> nonAtomicEventMap = synthesisTracker
-                .getNonAtomicStartEndEventMap(translationPurpose);
+                .getNonAtomicStartEndOnlyEventMap(translationPurpose);
 
         // Add guards and updates to the edges of non-atomic actions to keep track of which such actions are active, and
         // to constrain their start and end events accordingly.
