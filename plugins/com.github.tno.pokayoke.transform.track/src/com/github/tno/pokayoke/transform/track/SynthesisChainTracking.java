@@ -347,7 +347,7 @@ public class SynthesisChainTracking {
      * @param purpose The translation purpose.
      * @return The map from CIF start events to their corresponding CIF end events.
      */
-    public Map<List<Event>, List<Event>> getNonDeterministicStartEndEventMap(UmlToCifTranslationPurpose purpose) {
+    public Map<List<Event>, List<Event>> getNonDeterministicStartEndOnlyEventMap(UmlToCifTranslationPurpose purpose) {
         // Get the map from start events to the corresponding end events.
         Map<Event, List<Event>> startEndEventMap = getStartEndOnlyEventMap(purpose);
 
@@ -361,7 +361,7 @@ public class SynthesisChainTracking {
             case LANGUAGE_EQUIVALENCE:
                 // Get the non-deterministic start/end event map for the synthesis purpose, to then link each
                 // synthesis-event with its corresponding guard computation or language equivalence counterparts.
-                Map<List<Event>, List<Event>> synthesisPatterns = getNonDeterministicStartEndEventMap(
+                Map<List<Event>, List<Event>> synthesisPatterns = getNonDeterministicStartEndOnlyEventMap(
                         UmlToCifTranslationPurpose.SYNTHESIS);
                 return getFinalizedStartToEndOnlyEventMapFromSynthesisPatterns(synthesisPatterns, purpose);
             default:

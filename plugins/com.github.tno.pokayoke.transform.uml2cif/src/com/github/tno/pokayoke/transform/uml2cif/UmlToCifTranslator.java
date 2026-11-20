@@ -207,7 +207,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         Map<List<Event>, List<Event>> nonAtomicEventMap = synthesisTracker
                 .getNonAtomicStartEndOnlyEventMap(translationPurpose);
 
-        for (var entry: synthesisTracker.getNonDeterministicStartEndEventMap(translationPurpose).entrySet()) {
+        for (var entry: synthesisTracker.getNonDeterministicStartEndOnlyEventMap(translationPurpose).entrySet()) {
             List<Event> startEvents = entry.getKey();
             List<Event> endEvents = entry.getValue();
 
