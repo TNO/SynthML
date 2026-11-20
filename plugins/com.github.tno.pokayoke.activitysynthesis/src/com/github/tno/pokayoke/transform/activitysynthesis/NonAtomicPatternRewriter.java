@@ -33,13 +33,13 @@ import fr.lip6.move.pnml.ptnet.Transition;
 
 /** Rewriter for non-atomic patterns in Petri Nets. */
 public class NonAtomicPatternRewriter {
-    /** A mapping from names of non-atomic start events to the names of their corresponding end events. */
+    /** A mapping from names of non-atomic start events to the names of their corresponding end-only events. */
     private final Map<String, List<String>> nonAtomicEventMap;
 
     /**
      * Constructs a new non-atomic pattern rewriter.
      *
-     * @param nonAtomicEventMap The mapping from non-atomic start events to their corresponding end events.
+     * @param nonAtomicEventMap The mapping from non-atomic start events to their corresponding end-only events.
      */
     public NonAtomicPatternRewriter(Map<List<Event>, List<Event>> nonAtomicEventMap) {
         this.nonAtomicEventMap = convertToNameMapping(nonAtomicEventMap);
@@ -48,7 +48,7 @@ public class NonAtomicPatternRewriter {
     /**
      * Converts a given non-atomic event map to a mapping where the names of the events are used instead.
      *
-     * @param nonAtomicEventMap The mapping from non-atomic start events to their corresponding end events.
+     * @param nonAtomicEventMap The mapping from non-atomic start events to their corresponding end-only events.
      * @return The converted non-atomic event map.
      */
     private static Map<String, List<String>> convertToNameMapping(Map<List<Event>, List<Event>> nonAtomicEventMap) {
