@@ -1260,11 +1260,10 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
                 // Add guard and updates to the end-only events of a merged pattern, which have a dedicated CIF
                 // variable. If the start event belongs to a non-merged pattern, the end-only events set will be empty.
-                // Store the end-only events that have been updated for later use.
-                List<Event> endEventsOfThisMergedPattern = startEndOnlyEventMap.get(cifStartEvent);
-                mergedPatternEndEvents.addAll(endEventsOfThisMergedPattern);
-                for (Event cifEndEvent: endEventsOfThisMergedPattern) {
-                    addGuardAndUpdateToNonAtomicEndEvent(cifEndEvent, cifNonAtomicVar);
+                List<Event> endOnlyEventsOfThisMergedPattern = startEndOnlyEventMap.get(cifStartEvent);
+                mergedPatternEndEvents.addAll(endOnlyEventsOfThisMergedPattern);
+                for (Event cifEndOnlyEvent: endOnlyEventsOfThisMergedPattern) {
+                    addGuardAndUpdateToNonAtomicEndEvent(cifEndOnlyEvent, cifNonAtomicVar);
                 }
             }
 
