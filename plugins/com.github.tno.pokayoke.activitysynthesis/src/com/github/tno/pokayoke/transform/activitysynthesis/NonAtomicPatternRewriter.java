@@ -55,6 +55,7 @@ public class NonAtomicPatternRewriter {
         Map<String, List<String>> result = new LinkedHashMap<>();
 
         for (Entry<List<Event>, List<Event>> entry: nonAtomicEventMap.entrySet()) {
+            // At this point in the synthesis chain, we should have only one start event per UML element.
             Verify.verify(entry.getKey().size() == 1, String.format(
                     "The map should contain exactly one element, found %s", String.valueOf(entry.getKey().size())));
             result.put(entry.getKey().get(0).getName(), entry.getValue().stream().map(Event::getName).toList());

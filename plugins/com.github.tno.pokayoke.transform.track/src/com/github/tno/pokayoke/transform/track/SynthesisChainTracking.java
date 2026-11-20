@@ -236,7 +236,7 @@ public class SynthesisChainTracking {
         // Get the map of all start events.
         Map<Event, RedefinableElement> startEventMap = getStartEventMap(purpose);
 
-        // Get the end events for every start event.
+        // Get the end-only events for every start event.
         for (Entry<Event, RedefinableElement> entry: startEventMap.entrySet()) {
             Event startEvent = entry.getKey();
             RedefinableElement umlElement = entry.getValue();
@@ -285,7 +285,7 @@ public class SynthesisChainTracking {
         }
     }
 
-    private Map<List<Event>, List<Event>> getFinalizedStartEndEventMapFromSynthesisPatterns(
+    private Map<List<Event>, List<Event>> getFinalizedStartToEndOnlyEventMapFromSynthesisPatterns(
             Map<List<Event>, List<Event>> synthesisPatterns, UmlToCifTranslationPurpose purpose)
     {
         Map<List<Event>, List<Event>> result = new LinkedHashMap<>();
@@ -303,7 +303,7 @@ public class SynthesisChainTracking {
             // synthesis start event has been used multiple times.
             List<Event> finalizedStarts = getFinalizedElementStartEventsForOriginalElement(originalElement, purpose);
 
-            // Get the finalized end events corresponding to the original UML element.
+            // Get the finalized end-only events corresponding to the original UML element.
             List<Event> finalizedEnds = getFinalizedElementEndOnlyEventsForOriginalElement(originalElement, purpose);
 
             // Populate the map.
