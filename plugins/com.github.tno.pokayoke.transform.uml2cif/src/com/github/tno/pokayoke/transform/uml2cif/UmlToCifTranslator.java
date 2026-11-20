@@ -1221,9 +1221,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 DiscVariable cifNonAtomicVar;
                 if (isStartOfNonMergedPattern) {
                     // Get the original UML element name to search if the non-merged pattern variable already exists.
-                    RedefinableElement umlElement = synthesisTracker.getUmlElement(cifStartEvents.get(0));
-                    Verify.verify(umlElement != null, String.format(
-                            "Expected a non-null UML element corresponding to CIF event '%s'.", cifStartEvents.get(0)));
+                    RedefinableElement umlElement = synthesisTracker.getUmlElement(cifStartEvent);
+                    Verify.verify(umlElement != null, String
+                            .format("Expected a non-null UML element corresponding to CIF event '%s'.", cifStartEvent));
                     RedefinableElement originalElement = synthesisTracker
                             .getOriginalUmlElementForFinalizedElement(umlElement);
                     String originalElementName = originalElement.getName();
