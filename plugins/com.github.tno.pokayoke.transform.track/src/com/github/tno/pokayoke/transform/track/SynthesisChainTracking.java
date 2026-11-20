@@ -450,11 +450,11 @@ public class SynthesisChainTracking {
      * corresponding start events tracing info with {@code isStartEvent} and {@code isEndEvent} both set to
      * {@code true}.
      *
-     * @param cifEventNamesToRemove The set of names of CIF end events.
+     * @param cifEventNamesToRemove The set of names of CIF events to remove.
      * @param purpose The translation purpose.
      */
     public void removeAndUpdateEvents(Set<String> cifEventNamesToRemove, UmlToCifTranslationPurpose purpose) {
-        // Get the map from start events to the corresponding end events.
+        // Get the map from start events to the corresponding end-only events.
         Map<Event, List<Event>> startEndEventsMap = getStartEndOnlyEventMap(purpose);
 
         // Create a map from event names to CIF events, for better handling CIF event names.
@@ -473,12 +473,12 @@ public class SynthesisChainTracking {
             EventTraceInfo eventInfo = getEventTraceInfo(cifEvent);
             Verify.verifyNotNull(eventInfo, "CIF event '" + eventName + "' does not have any tracing info.");
             if (eventInfo.isStartEvent()) {
-                // Store the start event and corresponding end events to be removed.
+                // Store the start event and corresponding end-only events to be removed.
                 eventsToRemove.add(cifEvent);
                 eventsToRemove.addAll(startEndEventsMap.get(cifEvent));
 
-                // Store the original start/end events and their information, per start event they will get merged into,
-                // to keep them for later use.
+                // Store the original start/end-only events and their information, per start event they will get merged
+                // into, to keep them for later use.
                 atomicNonDeterministicEventTraceInfoMap.computeIfAbsent(cifEvent, k -> new LinkedHashMap<>())
                         .put(cifEvent, getEventTraceInfo(cifEvent));
                 startEndEventsMap.get(cifEvent).stream().forEach(
@@ -510,7 +510,7 @@ public class SynthesisChainTracking {
                 Verify.verify(getEventTraceInfo(startEvent).getExitGuard() == null,
                         String.format("Start event '%s' has non-'null' exit guard.", startEvent.getName()));
 
-                // Get the exit guard for all end events.
+                // Get the exit guard for all end-only events.
                 Set<String> exitGuards = startEndEventsMap.get(startEvent).stream()
                         .map(e -> getEventTraceInfo(e).getExitGuard()).collect(Collectors.toSet());
                 Verify.verify(exitGuards.size() == 1,
@@ -520,8 +520,8 @@ public class SynthesisChainTracking {
                                 .allMatch(g -> g == null),
                         String.format("The end events of '%s' have non-'null' entry guard.", startEvent.getName()));
 
-                // Create a new 'EventTraceInfo' with 'isEndEvent' set to 'true', the exit guard is derived from the end
-                // events, and overwrite the info in the map.
+                // Create a new 'EventTraceInfo' with 'isEndEvent' set to 'true', the exit guard is derived from the
+                // end-only events, and overwrite the info in the map.
                 EventTraceInfo oldEventTraceInfo = getEventTraceInfo(startEvent);
                 EventTraceInfo newEventTraceInfo = new EventTraceInfo(oldEventTraceInfo.getTranslationPurpose(),
                         oldEventTraceInfo.getUmlElement(), oldEventTraceInfo.getEffectIdx(), true, true,
