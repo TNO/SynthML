@@ -1157,27 +1157,35 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             // Non-atomic patterns (consisting of one start event and one or more end-only events) are handled
             // differently depending on the translation purpose:
             //
-            // - For synthesis, all patterns are treated as merged patterns. Since the events originate from UML
-            // elements, there is no token place between the start and end-only events. Therefore, each pattern receives
-            // its own '__nonAtomicActive__{startEvent}' variable, which acts as a virtual token place.
+            // - For synthesis, each non-atomic action corresponds to a single UML opaque behavior that generates a
+            // start event and one or more end-only events. Since there is no explicit token place between these events,
+            // each non-atomic action receives its own '__nonAtomicActive__{startEvent}' variable, which acts as a
+            // virtual token place and tracks whether that non-atomic action is currently active. In practice, each
+            // action is handled in the same way as a merged pattern during guard computation and language equivalence
+            // translation.
             //
             // - For guard computation and language equivalence, merged and non-merged patterns are distinguished:
             // * Non-merged patterns (with separate start/end action nodes in the synthesized activity) already have
             // token information embedded in the activity flow, so they just need guards to prevent concurrent
             // execution;
-            // * Merged patterns (with a single call behavior node in the synthesized activity) require additional
-            // guards and token-like variables to preserve the correct execution
-            // semantics.
+            // * Merged patterns (with a single call behavior node in the synthesized activity) have no explicit token
+            // place between the generated start and end-only events, hence each occurrence of such pattern receives its
+            // own '__nonAtomicActive__{startEvent}' variable, which acts as a virtual token place and tracks whether
+            // that specific instance of the non-atomic action is currently active.
             //
             // The greatest difference regards start events:
             //
-            // - For non-merged patterns, all start events belonging to the same UML element share a single
-            // '__nonAtomicActive__nonMergedPattern__<UML element name>' variable. This variable indicates whether
-            // that UML element is currently active and prevents concurrent executions of the same UML element.
+            // - For non-merged patterns, the activity flow already contains token information between the start and
+            // end-only events. The main concern is therefore to prevent multiple concurrent executions of the same
+            // non-atomic action. To achieve this, all start events belonging to the same original UML element share a
+            // single '__nonAtomicActive__nonMergedPattern__<UML element name>' variable, indicating whether that
+            // UML element is currently active.
             //
-            // - For merged patterns, each start event receives its own '__nonAtomicActive__{startEvent}' variable.
-            // This variable acts as an additional token place between the pattern's start and end-only events,
-            // preventing execution from leaving the pattern and later re-entering it through a different path.
+            // - For merged patterns, there is no token information between the start and end-only events. The main
+            // concern is therefore to preserve the token flow between these events and prevent execution from leaving
+            // the pattern and later re-entering it through a different pattern's end events. To achieve this, each
+            // start event receives its own '__nonAtomicActive__{startEvent}' variable, which acts as an additional
+            // virtual token place.
             //
             // - Every pattern start event receives a guard of the form:
             // 'not __nonAtomicActive__{startEvent_1} and not __nonAtomicActive__{startEvent_2} and ... and not
@@ -1190,7 +1198,10 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             //
             // End-only events of merged or non-merged patterns are treated in the same way: each end event receives a
             // guard requiring its associated '__nonAtomicActive__*' variable to be 'true', and resets that same
-            // '__nonAtomicActive__*' variable to 'false' when executed.
+            // '__nonAtomicActive__*' variable to 'false' when executed. For non-merged patterns, this marks the
+            // non-atomic action as no longer active and allows another execution to start. For merged patterns,
+            // this additionally releases the virtual token place between the start and end-only events, preserving the
+            // intended token flow semantics.
             List<Event> cifStartEvents = nonAtomicEvent.getKey();
             List<Event> cifEndOnlyEvents = nonAtomicEvent.getValue();
             Set<Event> mergedPatternEndEvents = new LinkedHashSet<>();
