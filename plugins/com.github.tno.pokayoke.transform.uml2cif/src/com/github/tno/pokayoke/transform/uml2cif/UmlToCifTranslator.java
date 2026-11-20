@@ -1316,18 +1316,18 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         return cifNonAtomicVar;
     }
 
-    private void addGuardAndUpdateToNonAtomicEndEvent(Event cifEndEvent, DiscVariable cifNonAtomicVar) {
-        // Add guard '__nonAtomicActive__<eventName>' to the given end event.
-        DiscVariableExpression cifEndGuard = CifConstructors.newDiscVariableExpression(null,
+    private void addGuardAndUpdateToNonAtomicEndEvent(Event cifEndOnlyEvent, DiscVariable cifNonAtomicVar) {
+        // Add guard '__nonAtomicActive__<eventName>' to the given end-only event.
+        DiscVariableExpression cifEndOnlyGuard = CifConstructors.newDiscVariableExpression(null,
                 EcoreUtil.copy(cifNonAtomicVar.getType()), cifNonAtomicVar);
-        eventEdgeMap.get(cifEndEvent).getGuards().add(cifEndGuard);
+        eventEdgeMap.get(cifEndOnlyEvent).getGuards().add(cifEndOnlyGuard);
 
-        // Add update '__nonAtomicActive__<eventName> := false' to the given end event.
-        Assignment cifEndUpdate = CifConstructors.newAssignment();
-        cifEndUpdate.setAddressable(CifConstructors.newDiscVariableExpression(null,
+        // Add update '__nonAtomicActive__<eventName> := false' to the given end-only event.
+        Assignment cifEndOnlyUpdate = CifConstructors.newAssignment();
+        cifEndOnlyUpdate.setAddressable(CifConstructors.newDiscVariableExpression(null,
                 EcoreUtil.copy(cifNonAtomicVar.getType()), cifNonAtomicVar));
-        cifEndUpdate.setValue(CifValueUtils.makeFalse());
-        eventEdgeMap.get(cifEndEvent).getUpdates().add(cifEndUpdate);
+        cifEndOnlyUpdate.setValue(CifValueUtils.makeFalse());
+        eventEdgeMap.get(cifEndOnlyEvent).getUpdates().add(cifEndOnlyUpdate);
     }
 
     /**
