@@ -1266,7 +1266,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 }
             }
 
-            // Create a conjunction of guards if there are (start event of) non-atomic actions in the UML model.
+            // Create a conjunction of guards if there are (start events of) non-atomic actions in the UML model.
             if (!cifStartEvents.isEmpty()) {
                 // Construct the conjunction guard 'not __nonAtomicActive__{startMergedEvent_1} and not
                 // __nonAtomicActive__{startEvent_2} and ... and not __nonAtomicActive__nonMergedPattern__<UML element

@@ -255,7 +255,7 @@ public class SynthesisChainTracking {
     /**
      * Gives the map from CIF start events of non-atomic actions to the corresponding CIF end-only events, for the
      * specified translation purpose. Each map entry is associated with a single UML element. For synthesis, the key is
-     * a list containing one CIF start event, and the value contains the corresponding CIF end events. For guard
+     * a list containing one CIF start event, and the value contains the corresponding CIF end-only events. For guard
      * computation and language equivalence, each map entry groups all start events originating from that element (e.g.,
      * when the UML element is invoked multiple times) while the value contains the corresponding end-only events for
      * that same UML element.
@@ -265,7 +265,7 @@ public class SynthesisChainTracking {
      */
     public Map<List<Event>, List<Event>> getNonAtomicStartEndOnlyEventMap(UmlToCifTranslationPurpose purpose) {
         // Get the map from start events to the corresponding end-only events.
-        Map<Event, List<Event>> startEndEventMap = getStartEndOnlyEventMap(purpose);
+        Map<Event, List<Event>> startEndOnlyEventMap = getStartEndOnlyEventMap(purpose);
 
         switch (purpose) {
             case SYNTHESIS:
@@ -339,7 +339,7 @@ public class SynthesisChainTracking {
     /**
      * Gives the map from CIF start events of non-deterministic actions to the corresponding CIF end-only events, for
      * the specified translation purpose. Each map entry is associated with a single UML element. For synthesis, the key
-     * is a list containing one CIF start event, and the value contains the corresponding CIF end events. For guard
+     * is a list containing one CIF start event, and the value contains the corresponding CIF end-only events. For guard
      * computation and language equivalence, each map entry groups all start events originating from that element (e.g.,
      * when the UML element is invoked multiple times) while the value contains the corresponding end-only events for
      * that same UML element.
@@ -349,7 +349,7 @@ public class SynthesisChainTracking {
      */
     public Map<List<Event>, List<Event>> getNonDeterministicStartEndOnlyEventMap(UmlToCifTranslationPurpose purpose) {
         // Get the map from start events to the corresponding end-only events.
-        Map<Event, List<Event>> startEndEventMap = getStartEndOnlyEventMap(purpose);
+        Map<Event, List<Event>> startEndOnlyEventMap = getStartEndOnlyEventMap(purpose);
 
         switch (purpose) {
             case SYNTHESIS:
