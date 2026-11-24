@@ -1272,18 +1272,15 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 }
             }
 
-            // Create a conjunction of guards if there are (start events of) non-atomic actions in the UML model.
-            if (!cifStartEvents.isEmpty()) {
-                // Construct the conjunction guard 'not __nonAtomicActive__{startMergedEvent_1} and not
-                // __nonAtomicActive__{startEvent_2} and ... and not __nonAtomicActive__nonMergedPattern__<UML element
-                // name>'.
-                Expression conjunctionGuard = CifValueUtils
-                        .createConjunction(guardsStartEvents.stream().map(g -> g.expr).toList());
+            // Construct the conjunction guard 'not __nonAtomicActive__{startMergedEvent_1} and not
+            // __nonAtomicActive__{startEvent_2} and ... and not __nonAtomicActive__nonMergedPattern__<UML element
+            // name>'.
+            Expression conjunctionGuard = CifValueUtils
+                    .createConjunction(guardsStartEvents.stream().map(g -> g.expr).toList());
 
-                // Assign the conjunction guard to all start events.
-                for (Event cifStartEvent: cifStartEvents) {
-                    eventEdgeMap.get(cifStartEvent).getGuards().add(EcoreUtil.copy(conjunctionGuard));
-                }
+            // Assign the conjunction guard to all start events.
+            for (Event cifStartEvent: cifStartEvents) {
+                eventEdgeMap.get(cifStartEvent).getGuards().add(EcoreUtil.copy(conjunctionGuard));
             }
 
             // Get the end-only events of non-merged patterns as the difference from all end events minus the end events
