@@ -25,6 +25,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.escet.cif.common.CifTextUtils;
 import org.eclipse.escet.cif.common.CifValueUtils;
+import org.eclipse.escet.cif.common.ExprStructuralEqHashWrap;
 import org.eclipse.escet.cif.metamodel.cif.InvKind;
 import org.eclipse.escet.cif.metamodel.cif.Invariant;
 import org.eclipse.escet.cif.metamodel.cif.Specification;
@@ -1209,7 +1210,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             List<Event> cifStartEvents = nonAtomicEvent.getKey();
             List<Event> cifEndOnlyEvents = nonAtomicEvent.getValue();
             Set<Event> mergedPatternEndEvents = new LinkedHashSet<>();
-            Set<UnaryExpression> guardsStartEvents = new LinkedHashSet<>();
+            Set<ExprStructuralEqHashWrap> guardsStartEvents = new LinkedHashSet<>();
             DiscVariable cifNonMergedPatternVar = null;
 
             for (Event cifStartEvent: cifStartEvents) {
@@ -1252,7 +1253,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 cifStartGuard.setType(CifConstructors.newBoolType());
 
                 // Add the start guard to the set to later construct the conjunction.
-                guardsStartEvents.add(cifStartGuard);
+                guardsStartEvents.add(new ExprStructuralEqHashWrap(cifStartGuard));
 
                 // Add update '__nonAtomicActive__* := true' for this start event, regardless of whether this is a
                 // merged or non-merged pattern.
@@ -1276,7 +1277,8 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 // Construct the conjunction guard 'not __nonAtomicActive__{startMergedEvent_1} and not
                 // __nonAtomicActive__{startEvent_2} and ... and not __nonAtomicActive__nonMergedPattern__<UML element
                 // name>'.
-                Expression conjunctionGuard = CifValueUtils.createConjunction(new ArrayList<>(guardsStartEvents));
+                Expression conjunctionGuard = CifValueUtils
+                        .createConjunction(guardsStartEvents.stream().map(g -> g.expr).toList());
 
                 // Assign the conjunction guard to all start events.
                 for (Event cifStartEvent: cifStartEvents) {
