@@ -197,7 +197,12 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
     /**
      * Gives all CIF events related to atomic non-deterministic actions, as a mapping from their CIF start events to
-     * their corresponding CIF end-only events.
+     * their corresponding CIF end-only events. Each map entry is associated with a single UML element. If this method
+     * is invoked during the synthesis phase, the key is a list containing one CIF start event, and the value contains
+     * the corresponding CIF end-only events. If this method is invoked during the guard computation or language
+     * equivalence phase, each map entry groups all start events originating from that element (e.g., when the UML
+     * element is invoked multiple times) while the value contains the corresponding end-only events for that same UML
+     * element.
      *
      * @return A mapping from all atomic non-deterministic start events to their corresponding end-only events.
      */
