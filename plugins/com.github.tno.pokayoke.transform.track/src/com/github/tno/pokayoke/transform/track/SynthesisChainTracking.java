@@ -264,12 +264,11 @@ public class SynthesisChainTracking {
      * @return The map from CIF start events to their corresponding CIF end-only events.
      */
     public Map<List<Event>, List<Event>> getNonAtomicStartEndOnlyEventMap(UmlToCifTranslationPurpose purpose) {
-        // Get the map from start events to the corresponding end-only events.
-        Map<Event, List<Event>> startEndOnlyEventMap = getStartEndOnlyEventMap(purpose);
-
         switch (purpose) {
             case SYNTHESIS:
-                return startEndEventMap.entrySet().stream()
+                // Get the map from start events to the corresponding end-only events.
+                Map<Event, List<Event>> startEndOnlyEventMap = getStartEndOnlyEventMap(purpose);
+                return startEndOnlyEventMap.entrySet().stream()
                         .filter(e -> !isAtomicAction(getEventTraceInfo(e.getKey()).getUmlElement()))
                         .collect(LinkedHashMap::new, (m, e) -> m.put(List.of(e.getKey()), e.getValue()),
                                 LinkedHashMap::putAll);
@@ -348,12 +347,11 @@ public class SynthesisChainTracking {
      * @return The map from CIF start events to their corresponding CIF end-only events.
      */
     public Map<List<Event>, List<Event>> getNonDeterministicStartEndOnlyEventMap(UmlToCifTranslationPurpose purpose) {
-        // Get the map from start events to the corresponding end-only events.
-        Map<Event, List<Event>> startEndOnlyEventMap = getStartEndOnlyEventMap(purpose);
-
         switch (purpose) {
             case SYNTHESIS:
-                return startEndEventMap.entrySet().stream()
+                // Get the map from start events to the corresponding end-only events.
+                Map<Event, List<Event>> startEndOnlyEventMap = getStartEndOnlyEventMap(purpose);
+                return startEndOnlyEventMap.entrySet().stream()
                         .filter(e -> !isDeterministicAction(getEventTraceInfo(e.getKey()).getUmlElement()))
                         .collect(LinkedHashMap::new, (m, e) -> m.put(List.of(e.getKey()), e.getValue()),
                                 LinkedHashMap::putAll);
