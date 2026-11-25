@@ -1,0 +1,16 @@
+.model minimal
+.dummy  __start do_b do_a __end __loop
+.graph
+__end p4
+__loop p4
+__start p2
+do_a p2
+do_a/1 p2
+do_b p3
+do_b/1 p3
+p1 __start
+p2 do_a do_b/1
+p3 __end do_a/1 do_b
+p4 __loop
+.marking { p1 }
+.end

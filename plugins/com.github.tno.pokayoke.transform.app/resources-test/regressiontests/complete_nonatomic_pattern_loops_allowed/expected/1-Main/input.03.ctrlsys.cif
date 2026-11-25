@@ -1,0 +1,43 @@
+controllable do_a;
+uncontrollable do_a__result_1;
+uncontrollable do_a__result_2;
+controllable do_b;
+uncontrollable do_b__result_1;
+uncontrollable do_b__result_2;
+plant automaton Context:
+  disc bool done_a = false;
+  disc bool done_b = false;
+  disc int[0..2] __activeAction;
+  alg bool Pre = not done_a and not done_b;
+  alg bool __precondition = Pre;
+  alg bool Post = done_b;
+  alg bool __postcondition_without_structure__activeAction = __activeAction = 0;
+  alg bool __postcondition_without_structure = Post and __postcondition_without_structure__activeAction;
+  alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure;
+  initial __precondition;
+  marked __postcondition_with_structure;
+  location:
+    initial;
+    marked;
+    edge do_a when not done_a and not done_b, __activeAction = 0 do __activeAction := 1;
+    edge do_a__result_1 when __activeAction = 1 do done_a := true, __activeAction := 0;
+    edge do_a__result_2 when __activeAction = 1 do done_a := false, __activeAction := 0;
+    edge do_b when not done_b, __activeAction = 0 do __activeAction := 2;
+    edge do_b__result_1 when __activeAction = 2 do done_b := true, __activeAction := 0;
+    edge do_b__result_2 when __activeAction = 2 do done_b := false, __activeAction := 0;
+end
+supervisor automaton sup:
+  alphabet do_a, do_b;
+  location:
+    initial;
+    marked;
+    edge do_a when true;
+    edge do_b when true;
+end
+supervisor invariant Context.__postcondition_without_structure disables do_a;
+supervisor invariant Context.__postcondition_without_structure disables do_a__result_1;
+supervisor invariant Context.__postcondition_without_structure disables do_a__result_2;
+supervisor invariant Context.__postcondition_without_structure disables do_b;
+supervisor invariant Context.__postcondition_without_structure disables do_b__result_1;
+supervisor invariant Context.__postcondition_without_structure disables do_b__result_2;

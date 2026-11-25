@@ -1,0 +1,25 @@
+controllable do_a;
+controllable do_b;
+controllable __start;
+controllable __end;
+automaton minimal:
+  alphabet do_a, do_b, __start, __end;
+  @state(projected: "s1")
+  location s1:
+    initial;
+    edge __start goto s2;
+  @state(projected: "s2")
+  @state(projected: "s4")
+  location s2:
+    edge do_b goto s4;
+    edge do_a;
+  @state(projected: "s6")
+  location s3:
+    marked;
+  @state(projected: "s3")
+  @state(projected: "s5")
+  location s4:
+    edge __end goto s3;
+    edge do_b;
+    edge do_a goto s2;
+end
