@@ -24,6 +24,7 @@ plant automaton Context:
   disc bool __controlflow__52;
   disc bool __controlflow__53 = true;
   disc bool __controlflow__55;
+  disc bool __nonAtomicActive__nonMergedPattern__do_b;
   alg bool Pre = not done_a and not done_b;
   alg bool __token_on_first_controlflow = __controlflow__53;
   alg bool __precondition = Pre and __token_on_first_controlflow;
@@ -34,9 +35,9 @@ plant automaton Context:
   location:
     initial;
     marked;
-    edge __node__OpaqueAction__56 when not done_b, __controlflow__44, true, not __controlflow__51 do __controlflow__44 := false, __controlflow__51 := true;
-    edge __node__OpaqueAction__57 when not done_b, __controlflow__42, true, not __controlflow__49 do __controlflow__42 := false, __controlflow__49 := true;
-    edge __node__OpaqueAction__58 when true, __controlflow__55, true, not __controlflow__52 do done_b := true, __controlflow__55 := false, __controlflow__52 := true;
+    edge __node__OpaqueAction__56 when not done_b, __controlflow__44, true, not __controlflow__51, not __nonAtomicActive__nonMergedPattern__do_b do __controlflow__44 := false, __controlflow__51 := true, __nonAtomicActive__nonMergedPattern__do_b := true;
+    edge __node__OpaqueAction__57 when not done_b, __controlflow__42, true, not __controlflow__49, not __nonAtomicActive__nonMergedPattern__do_b do __controlflow__42 := false, __controlflow__49 := true, __nonAtomicActive__nonMergedPattern__do_b := true;
+    edge __node__OpaqueAction__58 when true, __controlflow__55, true, not __controlflow__52, __nonAtomicActive__nonMergedPattern__do_b do done_b := true, __controlflow__55 := false, __controlflow__52 := true, __nonAtomicActive__nonMergedPattern__do_b := false;
     edge __node__DecisionNode__60__0 when true, __controlflow__53, not __controlflow__40 do __controlflow__53 := false, __controlflow__40 := true;
     edge __node__DecisionNode__60__1 when true, __controlflow__53, not __controlflow__42 do __controlflow__53 := false, __controlflow__42 := true;
     edge __node__DecisionNode__61__0 when true, __controlflow__49, not __controlflow__45 do __controlflow__49 := false, __controlflow__45 := true;

@@ -1,5 +1,5 @@
 controllable __node__OpaqueAction__61;
-controllable __node__OpaqueAction__62;
+uncontrollable __node__OpaqueAction__62;
 controllable __node__DecisionNode__64__0;
 controllable __node__DecisionNode__64__1;
 controllable __node__MergeNode__65__0;
@@ -31,14 +31,16 @@ plant automaton Context:
   disc bool __controlflow__58;
   disc bool __controlflow__59;
   disc bool __controlflow__60 = true;
+  disc bool __nonAtomicActive__nonMergedPattern__do_b;
   alg bool Pre = not done_a and not done_b and not done_c;
   alg bool __token_on_first_controlflow = __controlflow__60;
   alg bool __precondition = Pre and __token_on_first_controlflow;
   alg bool Post = done_c;
+  alg bool __postcondition_without_structure__nonAtomicActive__nonMergedPattern__do_b = not __nonAtomicActive__nonMergedPattern__do_b;
   alg bool __postcondition_without_structure__occurrences__42__do_a__28 = occurrences__42__do_a__28.__occurrences >= 0;
   alg bool __postcondition_without_structure__occurrences__42__do_b__30 = occurrences__42__do_b__30.__occurrences >= 0;
   alg bool __postcondition_without_structure__occurrences__42__do_c__74 = occurrences__42__do_c__74.__occurrences >= 0;
-  alg bool __postcondition_without_structure = Post and __postcondition_without_structure__occurrences__42__do_a__28 and (__postcondition_without_structure__occurrences__42__do_b__30 and __postcondition_without_structure__occurrences__42__do_c__74);
+  alg bool __postcondition_without_structure = Post and __postcondition_without_structure__nonAtomicActive__nonMergedPattern__do_b and (__postcondition_without_structure__occurrences__42__do_a__28 and (__postcondition_without_structure__occurrences__42__do_b__30 and __postcondition_without_structure__occurrences__42__do_c__74));
   alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
   alg bool __postcondition_with_structure__controlflow__46 = not __controlflow__46;
   alg bool __postcondition_with_structure__controlflow__47 = not __controlflow__47;
@@ -61,8 +63,8 @@ plant automaton Context:
   location:
     initial;
     marked;
-    edge __node__OpaqueAction__61 when not done_a and not done_b, __controlflow__47, not __controlflow__58 do __controlflow__47 := false, __controlflow__58 := true;
-    edge __node__OpaqueAction__62 when true, __controlflow__55, not __controlflow__49 do done_b := true, __controlflow__55 := false, __controlflow__49 := true;
+    edge __node__OpaqueAction__61 when not done_a and not done_b, __controlflow__47, not __controlflow__58, not __nonAtomicActive__nonMergedPattern__do_b do __controlflow__47 := false, __controlflow__58 := true, __nonAtomicActive__nonMergedPattern__do_b := true;
+    edge __node__OpaqueAction__62 when true, __controlflow__55, not __controlflow__49, __nonAtomicActive__nonMergedPattern__do_b do done_b := true, __controlflow__55 := false, __controlflow__49 := true, __nonAtomicActive__nonMergedPattern__do_b := false;
     edge __node__DecisionNode__64__0 when true, __controlflow__60, not __controlflow__46 do __controlflow__60 := false, __controlflow__46 := true;
     edge __node__DecisionNode__64__1 when true, __controlflow__60, not __controlflow__47 do __controlflow__60 := false, __controlflow__47 := true;
     edge __node__MergeNode__65__0 when true, __controlflow__48, not __controlflow__50 do __controlflow__48 := false, __controlflow__50 := true;

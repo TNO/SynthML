@@ -1,5 +1,5 @@
 controllable __node__OpaqueAction__47;
-controllable __node__OpaqueAction__48;
+uncontrollable __node__OpaqueAction__48;
 controllable __node__DecisionNode__50__0;
 controllable __node__DecisionNode__50__1;
 controllable __node__CallBehaviorAction__52;
@@ -15,13 +15,15 @@ plant automaton Context:
   disc bool __controlflow__44;
   disc bool __controlflow__45 = true;
   disc bool __controlflow__46;
+  disc bool __nonAtomicActive__nonMergedPattern__do_b;
   alg bool Pre = not done_a and not done_b;
   alg bool __token_on_first_controlflow = __controlflow__45;
   alg bool __precondition = Pre and __token_on_first_controlflow;
   alg bool Post = done_b;
+  alg bool __postcondition_without_structure__nonAtomicActive__nonMergedPattern__do_b = not __nonAtomicActive__nonMergedPattern__do_b;
   alg bool __postcondition_without_structure__occurrences__36__do_a__22 = occurrences__36__do_a__22.__occurrences >= 0;
   alg bool __postcondition_without_structure__occurrences__36__do_b__24 = occurrences__36__do_b__24.__occurrences >= 0;
-  alg bool __postcondition_without_structure = Post and (__postcondition_without_structure__occurrences__36__do_a__22 and __postcondition_without_structure__occurrences__36__do_b__24);
+  alg bool __postcondition_without_structure = Post and __postcondition_without_structure__nonAtomicActive__nonMergedPattern__do_b and (__postcondition_without_structure__occurrences__36__do_a__22 and __postcondition_without_structure__occurrences__36__do_b__24);
   alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
   alg bool __postcondition_with_structure__controlflow__40 = not __controlflow__40;
   alg bool __postcondition_with_structure__controlflow__41 = not __controlflow__41;
@@ -36,8 +38,8 @@ plant automaton Context:
   location:
     initial;
     marked;
-    edge __node__OpaqueAction__47 when not done_a and not done_b, __controlflow__45, not __controlflow__42 do __controlflow__45 := false, __controlflow__42 := true;
-    edge __node__OpaqueAction__48 when true, __controlflow__46, not __controlflow__44 do done_b := true, __controlflow__46 := false, __controlflow__44 := true;
+    edge __node__OpaqueAction__47 when not done_a and not done_b, __controlflow__45, not __controlflow__42, not __nonAtomicActive__nonMergedPattern__do_b do __controlflow__45 := false, __controlflow__42 := true, __nonAtomicActive__nonMergedPattern__do_b := true;
+    edge __node__OpaqueAction__48 when true, __controlflow__46, not __controlflow__44, __nonAtomicActive__nonMergedPattern__do_b do done_b := true, __controlflow__46 := false, __controlflow__44 := true, __nonAtomicActive__nonMergedPattern__do_b := false;
     edge __node__DecisionNode__50__0 when true, __controlflow__42, not __controlflow__40 do __controlflow__42 := false, __controlflow__40 := true;
     edge __node__DecisionNode__50__1 when true, __controlflow__42, not __controlflow__41 do __controlflow__42 := false, __controlflow__41 := true;
     edge __node__CallBehaviorAction__52 when not done_a and not done_b, __controlflow__40, not __controlflow__43 do done_a := true, __controlflow__40 := false, __controlflow__43 := true;
