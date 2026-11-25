@@ -42,8 +42,8 @@ plant automaton Class1:
   disc bool __controlflow__468;
   disc bool __controlflow__470;
   disc bool __controlflow__472 = true;
-  disc bool __nonAtomicActive____node__CallBehaviorAction__488;
   disc bool __nonAtomicActive____node__CallBehaviorAction__491;
+  disc bool __nonAtomicActive____node__CallBehaviorAction__488;
   alg bool precondition4 = not v4 and not v3 and not v2 and not v1;
   alg bool __token_on_first_controlflow = __controlflow__472;
   alg bool __precondition = precondition4 and __token_on_first_controlflow;

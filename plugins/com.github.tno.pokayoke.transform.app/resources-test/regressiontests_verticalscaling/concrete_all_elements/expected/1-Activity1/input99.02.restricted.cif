@@ -50,10 +50,10 @@ plant automaton Class1:
   disc bool __controlflow__82;
   disc bool __controlflow__83;
   disc bool __controlflow__84 = true;
-  disc bool __nonAtomicActive____node__OpaqueAction__87;
-  disc bool __nonAtomicActive____node__OpaqueAction__95;
-  disc bool __nonAtomicActive____node__OpaqueAction__96;
   disc bool __nonAtomicActive____node__CallBehaviorAction__103;
+  disc bool __nonAtomicActive____node__OpaqueAction__95;
+  disc bool __nonAtomicActive____node__OpaqueAction__87;
+  disc bool __nonAtomicActive____node__OpaqueAction__96;
   alg bool precondition = not property0;
   alg bool __token_on_first_controlflow = __controlflow__84;
   alg bool __initial_node_condition = not property2;

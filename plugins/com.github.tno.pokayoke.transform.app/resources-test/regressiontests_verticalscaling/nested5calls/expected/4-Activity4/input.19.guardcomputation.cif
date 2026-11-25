@@ -42,15 +42,15 @@ plant automaton Class1:
   disc bool __controlflow__468;
   disc bool __controlflow__470;
   disc bool __controlflow__471 = true;
-  disc bool __nonAtomicActive____node__CallBehaviorAction__486;
   disc bool __nonAtomicActive____node__CallBehaviorAction__489;
+  disc bool __nonAtomicActive____node__CallBehaviorAction__486;
   alg bool precondition4 = not v4 and not v3 and not v2 and not v1;
   alg bool __token_on_first_controlflow = __controlflow__471;
   alg bool __precondition = precondition4 and __token_on_first_controlflow;
   alg bool postcondition4 = v4 and v3 and v2 and v1;
-  alg bool __postcondition_without_structure__nonAtomicActive____node__CallBehaviorAction__486 = not __nonAtomicActive____node__CallBehaviorAction__486;
   alg bool __postcondition_without_structure__nonAtomicActive____node__CallBehaviorAction__489 = not __nonAtomicActive____node__CallBehaviorAction__489;
-  alg bool __postcondition_without_structure = postcondition4 and (__postcondition_without_structure__nonAtomicActive____node__CallBehaviorAction__486 and __postcondition_without_structure__nonAtomicActive____node__CallBehaviorAction__489);
+  alg bool __postcondition_without_structure__nonAtomicActive____node__CallBehaviorAction__486 = not __nonAtomicActive____node__CallBehaviorAction__486;
+  alg bool __postcondition_without_structure = postcondition4 and (__postcondition_without_structure__nonAtomicActive____node__CallBehaviorAction__489 and __postcondition_without_structure__nonAtomicActive____node__CallBehaviorAction__486);
   alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
   alg bool __postcondition_with_structure__controlflow__440 = not __controlflow__440;
   alg bool __postcondition_with_structure__controlflow__442 = not __controlflow__442;
