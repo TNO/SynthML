@@ -22,6 +22,8 @@ import java.util.stream.Stream;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 
+import com.google.common.base.Verify;
+
 import fr.lip6.move.pnml.ptnet.Arc;
 import fr.lip6.move.pnml.ptnet.Page;
 import fr.lip6.move.pnml.ptnet.PetriNet;
@@ -31,29 +33,32 @@ import fr.lip6.move.pnml.ptnet.Transition;
 
 /** Rewriter for non-atomic patterns in Petri Nets. */
 public class NonAtomicPatternRewriter {
-    /** A mapping from names of non-atomic start events to the names of their corresponding end events. */
+    /** A mapping from names of non-atomic start events to the names of their corresponding end-only events. */
     private final Map<String, List<String>> nonAtomicEventMap;
 
     /**
      * Constructs a new non-atomic pattern rewriter.
      *
-     * @param nonAtomicEventMap The mapping from non-atomic start events to their corresponding end events.
+     * @param nonAtomicEventMap The mapping from non-atomic start events to their corresponding end-only events.
      */
-    public NonAtomicPatternRewriter(Map<Event, List<Event>> nonAtomicEventMap) {
+    public NonAtomicPatternRewriter(Map<List<Event>, List<Event>> nonAtomicEventMap) {
         this.nonAtomicEventMap = convertToNameMapping(nonAtomicEventMap);
     }
 
     /**
      * Converts a given non-atomic event map to a mapping where the names of the events are used instead.
      *
-     * @param nonAtomicEventMap The mapping from non-atomic start events to their corresponding end events.
+     * @param nonAtomicEventMap The mapping from non-atomic start events to their corresponding end-only events.
      * @return The converted non-atomic event map.
      */
-    private static Map<String, List<String>> convertToNameMapping(Map<Event, List<Event>> nonAtomicEventMap) {
+    private static Map<String, List<String>> convertToNameMapping(Map<List<Event>, List<Event>> nonAtomicEventMap) {
         Map<String, List<String>> result = new LinkedHashMap<>();
 
-        for (Entry<Event, List<Event>> entry: nonAtomicEventMap.entrySet()) {
-            result.put(entry.getKey().getName(), entry.getValue().stream().map(Event::getName).toList());
+        for (Entry<List<Event>, List<Event>> entry: nonAtomicEventMap.entrySet()) {
+            // At this point in the synthesis chain, we should have only one start event per UML element.
+            Verify.verify(entry.getKey().size() == 1, String.format(
+                    "The map should contain exactly one element, found %s", String.valueOf(entry.getKey().size())));
+            result.put(entry.getKey().get(0).getName(), entry.getValue().stream().map(Event::getName).toList());
         }
 
         return result;

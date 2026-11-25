@@ -160,6 +160,17 @@ public class SynthesisChainTracking {
     }
 
     /**
+     * Returns the UML element related to the CIF event, or {@code null} if no such element exists.
+     *
+     * @param cifEvent The CIF event.
+     * @return The related UML element, or {@code null}.
+     */
+    public RedefinableElement getUmlElement(Event cifEvent) {
+        EventTraceInfo eventInfo = getEventTraceInfo(cifEvent);
+        return (eventInfo == null) ? null : eventInfo.getUmlElement();
+    }
+
+    /**
      * Returns the current CIF events of the given translation purpose, corresponding to the given set of UML elements
      * as considered by the first UML-to-CIF conversion for the synthesis purpose.
      *
@@ -212,18 +223,20 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Gives the map from CIF start events to the corresponding CIF end events, for the specified translation purpose.
+     * Gives the map from CIF start events to the corresponding CIF end-only events, for the specified translation
+     * purpose. If a CIF event is complete, namely it is both a start and end event, the map entry contains the event
+     * only in the key while the corresponding value is an empty list.
      *
      * @param purpose The translation purpose.
-     * @return The map from CIF start events to their corresponding CIF end events.
+     * @return The map from CIF start events to their corresponding CIF end-only events.
      */
-    private Map<Event, List<Event>> getStartEndEventMap(UmlToCifTranslationPurpose purpose) {
+    public Map<Event, List<Event>> getStartEndOnlyEventMap(UmlToCifTranslationPurpose purpose) {
         Map<Event, List<Event>> result = new LinkedHashMap<>();
 
         // Get the map of all start events.
         Map<Event, RedefinableElement> startEventMap = getStartEventMap(purpose);
 
-        // Get the end events for every start event.
+        // Get the end-only events for every start event.
         for (Entry<Event, RedefinableElement> entry: startEventMap.entrySet()) {
             Event startEvent = entry.getKey();
             RedefinableElement umlElement = entry.getValue();
@@ -233,32 +246,76 @@ public class SynthesisChainTracking {
                         "Expected action '" + startEvent.getName() + "' to have a single start event.");
             }
 
-            result.put(startEvent, getEndEventsOf(umlElement, purpose));
+            result.put(startEvent, getEndOnlyEventsOf(umlElement, purpose));
         }
 
         return result;
     }
 
     /**
-     * Gives the map from CIF start events of non-atomic actions to the corresponding CIF end events, for the specified
-     * translation purpose.
+     * Gives the map from CIF start events of non-atomic actions to the corresponding CIF end-only events, for the
+     * specified translation purpose. Each map entry is associated with a single UML element. For synthesis, the key is
+     * a list containing one CIF start event, and the value contains the corresponding CIF end-only events. For guard
+     * computation and language equivalence, each map entry groups all start events originating from that element (e.g.,
+     * when the UML element is invoked multiple times) while the value contains the corresponding end-only events for
+     * that same UML element.
      *
      * @param purpose The translation purpose.
-     * @return The map from CIF start events to their corresponding CIF end events.
+     * @return The map from CIF start events to their corresponding CIF end-only events.
      */
-    public Map<Event, List<Event>> getNonAtomicStartEndEventMap(UmlToCifTranslationPurpose purpose) {
-        // Get the map from start events to the corresponding end events.
-        Map<Event, List<Event>> startEndEventMap = getStartEndEventMap(purpose);
-
-        return startEndEventMap.entrySet().stream()
-                .filter(e -> !isAtomicAction(getEventTraceInfo(e.getKey()).getUmlElement()))
-                .collect(LinkedHashMap::new, (m, e) -> m.put(e.getKey(), e.getValue()), LinkedHashMap::putAll);
+    public Map<List<Event>, List<Event>> getNonAtomicStartEndOnlyEventMap(UmlToCifTranslationPurpose purpose) {
+        switch (purpose) {
+            case SYNTHESIS:
+                // Get the map from start events to the corresponding end-only events.
+                Map<Event, List<Event>> startEndOnlyEventMap = getStartEndOnlyEventMap(purpose);
+                return startEndOnlyEventMap.entrySet().stream()
+                        .filter(e -> !isAtomicAction(getEventTraceInfo(e.getKey()).getUmlElement()))
+                        .collect(LinkedHashMap::new, (m, e) -> m.put(List.of(e.getKey()), e.getValue()),
+                                LinkedHashMap::putAll);
+            case GUARD_COMPUTATION:
+            case LANGUAGE_EQUIVALENCE:
+                // Get the non-atomic start/end-only event map for the synthesis purpose, to then link each
+                // synthesis-event with its corresponding guard computation or language equivalence counterparts.
+                Map<List<Event>, List<Event>> synthesisPatterns = getNonAtomicStartEndOnlyEventMap(
+                        UmlToCifTranslationPurpose.SYNTHESIS);
+                return getFinalizedStartToEndOnlyEventMapFromSynthesisPatterns(synthesisPatterns, purpose);
+            default:
+                throw new IllegalArgumentException("Unexpected value: " + purpose);
+        }
     }
 
-    private List<Event> getEndEventsOf(RedefinableElement umlElement, UmlToCifTranslationPurpose purpose) {
+    private Map<List<Event>, List<Event>> getFinalizedStartToEndOnlyEventMapFromSynthesisPatterns(
+            Map<List<Event>, List<Event>> synthesisPatterns, UmlToCifTranslationPurpose purpose)
+    {
+        Map<List<Event>, List<Event>> result = new LinkedHashMap<>();
+
+        for (List<Event> synthesisStartEvents: synthesisPatterns.keySet()) {
+            // Sanity check: the synthesis start event list must contain exactly one event, since for synthesis purpose
+            // there is a single start event for each UML non-atomic behavior.
+            Verify.verify(synthesisStartEvents.size() == 1,
+                    String.format("Synthesis non-atomic pattern does not contain exactly one start event, found %s.",
+                            String.valueOf(synthesisStartEvents.size())));
+
+            RedefinableElement originalElement = getEventTraceInfo(synthesisStartEvents.get(0)).getUmlElement();
+
+            // Get the finalized start event corresponding to the original UML element. These can be multiple, if the
+            // synthesis start event has been used multiple times.
+            List<Event> finalizedStarts = getFinalizedElementStartEventsForOriginalElement(originalElement, purpose);
+
+            // Get the finalized end-only events corresponding to the original UML element.
+            List<Event> finalizedEnds = getFinalizedElementEndOnlyEventsForOriginalElement(originalElement, purpose);
+
+            // Populate the map.
+            result.put(finalizedStarts, finalizedEnds);
+        }
+
+        return result;
+    }
+
+    private List<Event> getEndOnlyEventsOf(RedefinableElement umlElement, UmlToCifTranslationPurpose purpose) {
         return cifEventTraceInfo.entrySet().stream().filter(e -> e.getValue().getTranslationPurpose().equals(purpose))
                 .filter(e -> e.getValue().getUmlElement() != null && e.getValue().getUmlElement().equals(umlElement))
-                .filter(e -> e.getValue().isEndEvent()).map(e -> e.getKey()).toList();
+                .filter(e -> e.getValue().isEndOnlyEvent()).map(e -> e.getKey()).toList();
     }
 
     private boolean isAtomicAction(RedefinableElement umlElement) {
@@ -279,19 +336,35 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Gives the map from CIF start events of non-deterministic actions to the corresponding CIF end events, for the
-     * specified translation purpose.
+     * Gives the map from CIF start events of non-deterministic actions to the corresponding CIF end-only events, for
+     * the specified translation purpose. Each map entry is associated with a single UML element. For synthesis, the key
+     * is a list containing one CIF start event, and the value contains the corresponding CIF end-only events. For guard
+     * computation and language equivalence, each map entry groups all start events originating from that element (e.g.,
+     * when the UML element is invoked multiple times) while the value contains the corresponding end-only events for
+     * that same UML element.
      *
      * @param purpose The translation purpose.
-     * @return The map from CIF start events to their corresponding CIF end events.
+     * @return The map from CIF start events to their corresponding CIF end-only events.
      */
-    public Map<Event, List<Event>> getNonDeterministicStartEndEventMap(UmlToCifTranslationPurpose purpose) {
-        // Get the map from start events to the corresponding end events.
-        Map<Event, List<Event>> startEndEventMap = getStartEndEventMap(purpose);
-
-        return startEndEventMap.entrySet().stream()
-                .filter(e -> !isDeterministicAction(getEventTraceInfo(e.getKey()).getUmlElement()))
-                .collect(LinkedHashMap::new, (m, e) -> m.put(e.getKey(), e.getValue()), LinkedHashMap::putAll);
+    public Map<List<Event>, List<Event>> getNonDeterministicStartEndOnlyEventMap(UmlToCifTranslationPurpose purpose) {
+        switch (purpose) {
+            case SYNTHESIS:
+                // Get the map from start events to the corresponding end-only events.
+                Map<Event, List<Event>> startEndOnlyEventMap = getStartEndOnlyEventMap(purpose);
+                return startEndOnlyEventMap.entrySet().stream()
+                        .filter(e -> !isDeterministicAction(getEventTraceInfo(e.getKey()).getUmlElement()))
+                        .collect(LinkedHashMap::new, (m, e) -> m.put(List.of(e.getKey()), e.getValue()),
+                                LinkedHashMap::putAll);
+            case GUARD_COMPUTATION:
+            case LANGUAGE_EQUIVALENCE:
+                // Get the non-deterministic start/end-only event map for the synthesis purpose, to then link each
+                // synthesis-event with its corresponding guard computation or language equivalence counterparts.
+                Map<List<Event>, List<Event>> synthesisPatterns = getNonDeterministicStartEndOnlyEventMap(
+                        UmlToCifTranslationPurpose.SYNTHESIS);
+                return getFinalizedStartToEndOnlyEventMapFromSynthesisPatterns(synthesisPatterns, purpose);
+            default:
+                throw new IllegalArgumentException("Unexpected value: " + purpose);
+        }
     }
 
     private boolean isDeterministicAction(RedefinableElement umlElement) {
@@ -375,12 +448,12 @@ public class SynthesisChainTracking {
      * corresponding start events tracing info with {@code isStartEvent} and {@code isEndEvent} both set to
      * {@code true}.
      *
-     * @param cifEventNamesToRemove The set of names of CIF end events.
+     * @param cifEventNamesToRemove The set of names of CIF events to remove.
      * @param purpose The translation purpose.
      */
     public void removeAndUpdateEvents(Set<String> cifEventNamesToRemove, UmlToCifTranslationPurpose purpose) {
-        // Get the map from start events to the corresponding end events.
-        Map<Event, List<Event>> startEndEventsMap = getStartEndEventMap(purpose);
+        // Get the map from start events to the corresponding end-only events.
+        Map<Event, List<Event>> startEndOnlyEventsMap = getStartEndOnlyEventMap(purpose);
 
         // Create a map from event names to CIF events, for better handling CIF event names.
         Map<String, Event> namesToCifEvents = cifEventTraceInfo.keySet().stream()
@@ -398,20 +471,20 @@ public class SynthesisChainTracking {
             EventTraceInfo eventInfo = getEventTraceInfo(cifEvent);
             Verify.verifyNotNull(eventInfo, "CIF event '" + eventName + "' does not have any tracing info.");
             if (eventInfo.isStartEvent()) {
-                // Store the start event and corresponding end events to be removed.
+                // Store the start event and corresponding end-only events to be removed.
                 eventsToRemove.add(cifEvent);
-                eventsToRemove.addAll(startEndEventsMap.get(cifEvent));
+                eventsToRemove.addAll(startEndOnlyEventsMap.get(cifEvent));
 
-                // Store the original start/end events and their information, per start event they will get merged into,
-                // to keep them for later use.
+                // Store the original start/end-only events and their information, per start event they will get merged
+                // into, to keep them for later use.
                 atomicNonDeterministicEventTraceInfoMap.computeIfAbsent(cifEvent, k -> new LinkedHashMap<>())
                         .put(cifEvent, getEventTraceInfo(cifEvent));
-                startEndEventsMap.get(cifEvent).stream().forEach(
+                startEndOnlyEventsMap.get(cifEvent).stream().forEach(
                         e -> atomicNonDeterministicEventTraceInfoMap.get(cifEvent).put(e, getEventTraceInfo(e)));
             } else if (eventInfo.isEndEvent()) {
                 // Store the event to be removed, find the corresponding start event for later handling.
                 eventsToRemove.add(cifEvent);
-                List<Event> startToUpdate = startEndEventsMap.entrySet().stream()
+                List<Event> startToUpdate = startEndOnlyEventsMap.entrySet().stream()
                         .filter(e -> e.getValue().contains(cifEvent)).map(e -> e.getKey()).toList();
                 Verify.verify(startToUpdate.size() == 1,
                         String.format("Found %d start events for end event '%s'.", startToUpdate.size(), eventName));
@@ -430,23 +503,23 @@ public class SynthesisChainTracking {
         // event trace info to also make it an end event.
         for (Event startEvent: startEventsToUpdate) {
             // If all end events have been removed, update the CIF event trace info.
-            if (startEndEventsMap.get(startEvent).stream().allMatch(e -> eventsToRemove.contains(e))) {
+            if (startEndOnlyEventsMap.get(startEvent).stream().allMatch(e -> eventsToRemove.contains(e))) {
                 // Sanity check: start event should have a 'null' exit guard.
                 Verify.verify(getEventTraceInfo(startEvent).getExitGuard() == null,
                         String.format("Start event '%s' has non-'null' exit guard.", startEvent.getName()));
 
-                // Get the exit guard for all end events.
-                Set<String> exitGuards = startEndEventsMap.get(startEvent).stream()
+                // Get the exit guard for all end-only events.
+                Set<String> exitGuards = startEndOnlyEventsMap.get(startEvent).stream()
                         .map(e -> getEventTraceInfo(e).getExitGuard()).collect(Collectors.toSet());
                 Verify.verify(exitGuards.size() == 1,
                         String.format("Found more than one exit guard for start event '%s'.", startEvent.getName()));
                 Verify.verify(
-                        startEndEventsMap.get(startEvent).stream().map(e -> getEventTraceInfo(e).getEntryGuard())
+                        startEndOnlyEventsMap.get(startEvent).stream().map(e -> getEventTraceInfo(e).getEntryGuard())
                                 .allMatch(g -> g == null),
                         String.format("The end events of '%s' have non-'null' entry guard.", startEvent.getName()));
 
-                // Create a new 'EventTraceInfo' with 'isEndEvent' set to 'true', the exit guard is derived from the end
-                // events, and overwrite the info in the map.
+                // Create a new 'EventTraceInfo' with 'isEndEvent' set to 'true', the exit guard is derived from the
+                // end-only events, and overwrite the info in the map.
                 EventTraceInfo oldEventTraceInfo = getEventTraceInfo(startEvent);
                 EventTraceInfo newEventTraceInfo = new EventTraceInfo(oldEventTraceInfo.getTranslationPurpose(),
                         oldEventTraceInfo.getUmlElement(), oldEventTraceInfo.getEffectIdx(), true, true,
@@ -1421,7 +1494,7 @@ public class SynthesisChainTracking {
      * @return The related original UML element, or {@code null} if no such UML element exists or if the given UML
      *     element is not a finalized element.
      */
-    private RedefinableElement getOriginalUmlElementForFinalizedElement(RedefinableElement umlElement) {
+    public RedefinableElement getOriginalUmlElementForFinalizedElement(RedefinableElement umlElement) {
         // Precondition check.
         Verify.verify(belongsToSynthesizedActivity(umlElement),
                 String.format("UML element '%s' does not belong to the synthesized activity.", umlElement.getName()));
@@ -1530,7 +1603,7 @@ public class SynthesisChainTracking {
      * @return {@code true} if the finalized UML element is related to an end-only original CIF event, {@code false}
      *     otherwise.
      */
-    private boolean isRelatedToOriginalEndOnlyEvent(RedefinableElement finalizedUmlElement) {
+    public boolean isRelatedToOriginalEndOnlyEvent(RedefinableElement finalizedUmlElement) {
         Verify.verify(isFinalizedUmlElement(finalizedUmlElement),
                 String.format("Element '%s' is not a finalized element.", finalizedUmlElement.getName()));
         ActivityNode node = getActivityNode(finalizedUmlElement);
@@ -1580,6 +1653,59 @@ public class SynthesisChainTracking {
     }
 
     /**
+     * Returns {@code true} if the given CIF event has been created for a finalized UML element during the guard
+     * computation or language equivalence check phase, which corresponds to a start-only Petri net transition.
+     *
+     * @param cifEvent The CIF event.
+     * @param purpose The translation purpose.
+     * @return {@code true} if the CIF event corresponds to the start of a start-only transition; {@code false}
+     *     otherwise.
+     */
+    public boolean isRelatedToStartOnlyTransition(Event cifEvent, UmlToCifTranslationPurpose purpose) {
+        // Precondition check.
+        Verify.verify(purpose != UmlToCifTranslationPurpose.SYNTHESIS,
+                "Reference to original UML element is undefined for synthesis translation.");
+
+        // Check if the event is related to the start-only transition.
+        EventTraceInfo finalizedEventInfo = cifEventTraceInfo.get(cifEvent);
+        Verify.verifyNotNull(finalizedEventInfo, String.format(
+                "Event '%s' does not have any tracing info referring to the finalized UML model.", cifEvent.getName()));
+        Verify.verify(finalizedEventInfo.getTranslationPurpose() == purpose,
+                String.format("Event '%s' is created for '%s' purpose, not for '%s' purpose.", cifEvent.getName(),
+                        finalizedEventInfo.getTranslationPurpose(), purpose));
+        RedefinableElement finalizedUmlElement = finalizedEventInfo.getUmlElement();
+        Verify.verify(finalizedUmlElement != null, String.format(
+                "CIF event '%s' does not have any finalized UML element associated with it.", cifEvent.getName()));
+        return isStartOnlyAction(getActivityNode(finalizedUmlElement));
+    }
+
+    /**
+     * Returns {@code true} if the given CIF event has been created for a finalized UML element during the guard
+     * computation or language equivalence check phase, which corresponds to an end-only Petri net transition.
+     *
+     * @param cifEvent The CIF event.
+     * @param purpose The translation purpose.
+     * @return {@code true} if the CIF event corresponds to the start of a end-only transition; {@code false} otherwise.
+     */
+    public boolean isRelatedToEndOnlyTransition(Event cifEvent, UmlToCifTranslationPurpose purpose) {
+        // Precondition check.
+        Verify.verify(purpose != UmlToCifTranslationPurpose.SYNTHESIS,
+                "Reference to original UML element is undefined for synthesis translation.");
+
+        // Check if the event is related to the end-only transition.
+        EventTraceInfo finalizedEventInfo = cifEventTraceInfo.get(cifEvent);
+        Verify.verifyNotNull(finalizedEventInfo, String.format(
+                "Event '%s' does not have any tracing info referring to the finalized UML model.", cifEvent.getName()));
+        Verify.verify(finalizedEventInfo.getTranslationPurpose() == purpose,
+                String.format("Event '%s' is created for '%s' purpose, not for '%s' purpose.", cifEvent.getName(),
+                        finalizedEventInfo.getTranslationPurpose(), purpose));
+        RedefinableElement finalizedUmlElement = finalizedEventInfo.getUmlElement();
+        Verify.verify(finalizedUmlElement != null, String.format(
+                "CIF event '%s' does not have any finalized UML element associated with it.", cifEvent.getName()));
+        return isEndOnlyAction(getActivityNode(finalizedUmlElement));
+    }
+
+    /**
      * Gives the list of CIF start events created for any finalized UML element during the guard computation or language
      * equivalence check phase, that corresponds to the given original UML element.
      *
@@ -1596,9 +1722,9 @@ public class SynthesisChainTracking {
         Verify.verify(isOriginalUmlElement(originalUmlElement),
                 "The given UML element is not an original UML element.");
 
-        // Get the list of CIF events whose translation purpose is the given one, whose original UML element is equal to
-        // the given one, and is related to the start of an original element.
-        List<Event> filteredEvents = cifEventTraceInfo.entrySet().stream().filter(e ->
+        // Return the list of CIF events whose translation purpose is the given one, whose original UML element is equal
+        // to the given one, and is related to the start of an original element.
+        return cifEventTraceInfo.entrySet().stream().filter(e ->
         // Filter to only events with given translation purpose.
         e.getValue().getTranslationPurpose().equals(purpose)
                 // Filter to only redefinable elements (avoid 'null' for control nodes).
@@ -1610,8 +1736,40 @@ public class SynthesisChainTracking {
                 && isRelatedToStartOfOriginalElement(e.getValue()))
                 // Collect the CIF events.
                 .map(Map.Entry::getKey).toList();
+    }
 
-        return filteredEvents;
+    /**
+     * Gives the list of CIF end-only events created for any finalized UML element during the guard computation or
+     * language equivalence check phase, that corresponds to the given original UML element.
+     *
+     * @param originalUmlElement The non-{@code null} original UML element.
+     * @param purpose The translation purpose.
+     * @return The list of CIF end-only events of finalized UML elements corresponding to the given original UML
+     *     element.
+     */
+    private List<Event> getFinalizedElementEndOnlyEventsForOriginalElement(RedefinableElement originalUmlElement,
+            UmlToCifTranslationPurpose purpose)
+    {
+        // Precondition check.
+        Verify.verify(purpose != UmlToCifTranslationPurpose.SYNTHESIS,
+                "Reference to original UML element is undefined for synthesis translation.");
+        Verify.verify(isOriginalUmlElement(originalUmlElement),
+                "The given UML element is not an original UML element.");
+
+        // Return the list of CIF events whose translation purpose is the given one, whose original UML element is equal
+        // to the given one, and is related to the end-only of an original element.
+        return cifEventTraceInfo.entrySet().stream().filter(e ->
+        // Filter to only events with given translation purpose.
+        e.getValue().getTranslationPurpose().equals(purpose)
+                // Filter to only redefinable elements (avoid 'null' for control nodes).
+                && getOriginalUmlElementForFinalizedElement(
+                        e.getValue().getUmlElement()) instanceof RedefinableElement umlElement
+                // Filter to only UML elements that are equal to the original UML element.
+                && umlElement.equals(originalUmlElement)
+                // Filter to only CIF events related to the end-only of an original element.
+                && isRelatedToEndOnlyOfOriginalElement(e.getValue()))
+                // Collect the CIF events.
+                .map(Map.Entry::getKey).toList();
     }
 
     /**

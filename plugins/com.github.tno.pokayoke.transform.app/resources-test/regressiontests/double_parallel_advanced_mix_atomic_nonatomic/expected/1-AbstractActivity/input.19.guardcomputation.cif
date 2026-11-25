@@ -1,6 +1,6 @@
 controllable __node__OpaqueAction__78;
-controllable __node__OpaqueAction__79;
-controllable __node__OpaqueAction__80;
+uncontrollable __node__OpaqueAction__79;
+uncontrollable __node__OpaqueAction__80;
 controllable __node__DecisionNode__83__0;
 controllable __node__DecisionNode__83__1;
 controllable __node__MergeNode__84__0;
@@ -44,18 +44,20 @@ plant automaton Machine:
   disc bool __controlflow__76;
   disc bool __controlflow__77 = true;
   disc int[0..2] __activeAction;
+  disc bool __nonAtomicActive__nonMergedPattern__NonAtomicA;
   disc bool __nonAtomicActive____node__CallBehaviorAction__92;
   alg bool Precondition = not a_executed and not b_executed and not c_executed and not d_executed;
   alg bool __token_on_first_controlflow = __controlflow__77;
   alg bool __precondition = Precondition and __token_on_first_controlflow;
   alg bool Postcondition = a_executed = true and b_executed = true and c_executed = true and d_executed = true;
+  alg bool __postcondition_without_structure__nonAtomicActive__nonMergedPattern__NonAtomicA = not __nonAtomicActive__nonMergedPattern__NonAtomicA;
   alg bool __postcondition_without_structure__nonAtomicActive____node__CallBehaviorAction__92 = not __nonAtomicActive____node__CallBehaviorAction__92;
   alg bool __postcondition_without_structure__activeAction = __activeAction = 0;
   alg bool __postcondition_without_structure__IntervalConstraintA__44__NonAtomicA__93 = IntervalConstraintA__44__NonAtomicA__93.__occurrences >= 0;
   alg bool __postcondition_without_structure__IntervalConstraintB__48__AtomicB__95 = IntervalConstraintB__48__AtomicB__95.__occurrences >= 0;
   alg bool __postcondition_without_structure__IntervalConstraintC__52__NonAtomicC__97 = IntervalConstraintC__52__NonAtomicC__97.__occurrences >= 0;
   alg bool __postcondition_without_structure__IntervalConstraintD__56__AtomicD__99 = IntervalConstraintD__56__AtomicD__99.__occurrences >= 0;
-  alg bool __postcondition_without_structure = Postcondition and (__postcondition_without_structure__nonAtomicActive____node__CallBehaviorAction__92 and __postcondition_without_structure__activeAction) and (__postcondition_without_structure__IntervalConstraintA__44__NonAtomicA__93 and __postcondition_without_structure__IntervalConstraintB__48__AtomicB__95 and (__postcondition_without_structure__IntervalConstraintC__52__NonAtomicC__97 and __postcondition_without_structure__IntervalConstraintD__56__AtomicD__99));
+  alg bool __postcondition_without_structure = Postcondition and __postcondition_without_structure__nonAtomicActive__nonMergedPattern__NonAtomicA and (__postcondition_without_structure__nonAtomicActive____node__CallBehaviorAction__92 and __postcondition_without_structure__activeAction) and (__postcondition_without_structure__IntervalConstraintA__44__NonAtomicA__93 and __postcondition_without_structure__IntervalConstraintB__48__AtomicB__95 and (__postcondition_without_structure__IntervalConstraintC__52__NonAtomicC__97 and __postcondition_without_structure__IntervalConstraintD__56__AtomicD__99));
   alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
   alg bool __postcondition_with_structure__controlflow__60 = not __controlflow__60;
   alg bool __postcondition_with_structure__controlflow__61 = not __controlflow__61;
@@ -81,9 +83,9 @@ plant automaton Machine:
   location:
     initial;
     marked;
-    edge __node__OpaqueAction__78 when true, __controlflow__61, not __controlflow__65, __activeAction = 0 do __controlflow__61 := false, __controlflow__65 := true;
-    edge __node__OpaqueAction__79 when true, __controlflow__63, not __controlflow__74, __activeAction = 0 do a_executed := true, __controlflow__63 := false, __controlflow__74 := true;
-    edge __node__OpaqueAction__80 when true, __controlflow__64, not __controlflow__75, __activeAction = 0 do a_executed := true, __controlflow__64 := false, __controlflow__75 := true;
+    edge __node__OpaqueAction__78 when true, __controlflow__61, not __controlflow__65, __activeAction = 0, not __nonAtomicActive__nonMergedPattern__NonAtomicA do __controlflow__61 := false, __controlflow__65 := true, __nonAtomicActive__nonMergedPattern__NonAtomicA := true;
+    edge __node__OpaqueAction__79 when true, __controlflow__63, not __controlflow__74, __activeAction = 0, __nonAtomicActive__nonMergedPattern__NonAtomicA do a_executed := true, __controlflow__63 := false, __controlflow__74 := true, __nonAtomicActive__nonMergedPattern__NonAtomicA := false;
+    edge __node__OpaqueAction__80 when true, __controlflow__64, not __controlflow__75, __activeAction = 0, __nonAtomicActive__nonMergedPattern__NonAtomicA do a_executed := true, __controlflow__64 := false, __controlflow__75 := true, __nonAtomicActive__nonMergedPattern__NonAtomicA := false;
     edge __node__DecisionNode__83__0 when true, __controlflow__65, not __controlflow__63, __activeAction = 0 do __controlflow__65 := false, __controlflow__63 := true;
     edge __node__DecisionNode__83__1 when true, __controlflow__65, not __controlflow__64, __activeAction = 0 do __controlflow__65 := false, __controlflow__64 := true;
     edge __node__MergeNode__84__0 when true, __controlflow__67, not __controlflow__69, __activeAction = 0 do __controlflow__67 := false, __controlflow__69 := true;

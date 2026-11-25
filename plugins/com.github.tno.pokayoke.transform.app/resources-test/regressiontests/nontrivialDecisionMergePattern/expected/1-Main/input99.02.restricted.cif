@@ -44,6 +44,7 @@ plant automaton Context:
   disc bool __controlflow__76;
   disc bool __controlflow__77;
   disc bool __controlflow__78 = true;
+  disc bool __nonAtomicActive__nonMergedPattern__flip;
   disc bool __nonAtomicActive____node__CallBehaviorAction__90;
   alg bool __token_on_first_controlflow = __controlflow__78;
   alg bool __precondition = __token_on_first_controlflow;
@@ -54,9 +55,9 @@ plant automaton Context:
   location:
     initial;
     marked;
-    edge __node__OpaqueAction__80 when true, __controlflow__67, true, not __controlflow__72 do __controlflow__67 := false, __controlflow__72 := true;
-    edge __node__OpaqueAction__81 when true, __controlflow__68, true, not __controlflow__73 do field1 := not field1, flipped := true, __controlflow__68 := false, __controlflow__73 := true;
-    edge __node__OpaqueAction__82 when true, __controlflow__70, true, not __controlflow__74 do field1 := not field1, flipped := true, __controlflow__70 := false, __controlflow__74 := true;
+    edge __node__OpaqueAction__80 when true, __controlflow__67, true, not __controlflow__72, not __nonAtomicActive__nonMergedPattern__flip and not __nonAtomicActive____node__CallBehaviorAction__90 do __controlflow__67 := false, __controlflow__72 := true, __nonAtomicActive__nonMergedPattern__flip := true;
+    edge __node__OpaqueAction__81 when true, __controlflow__68, true, not __controlflow__73, __nonAtomicActive__nonMergedPattern__flip do field1 := not field1, flipped := true, __controlflow__68 := false, __controlflow__73 := true, __nonAtomicActive__nonMergedPattern__flip := false;
+    edge __node__OpaqueAction__82 when true, __controlflow__70, true, not __controlflow__74, __nonAtomicActive__nonMergedPattern__flip do field1 := not field1, flipped := true, __controlflow__70 := false, __controlflow__74 := true, __nonAtomicActive__nonMergedPattern__flip := false;
     edge __node__DecisionNode__84__0 when true, __controlflow__78, not __controlflow__54, (field1 or mode) and (not field1 or not mode) do __controlflow__78 := false, __controlflow__54 := true;
     edge __node__DecisionNode__84__1 when true, __controlflow__78, not __controlflow__56, not field1 and not mode do __controlflow__78 := false, __controlflow__56 := true;
     edge __node__DecisionNode__84__2 when true, __controlflow__78, not __controlflow__58, field1 and mode do __controlflow__78 := false, __controlflow__58 := true;
@@ -70,7 +71,7 @@ plant automaton Context:
     edge __node__MergeNode__88__1 when true, __controlflow__74, true, not __controlflow__77 do __controlflow__74 := false, __controlflow__77 := true;
     edge __node__MergeNode__88__2 when true, __controlflow__75, true, not __controlflow__77 do __controlflow__75 := false, __controlflow__77 := true;
     edge __node__MergeNode__88__3 when true, __controlflow__76, true, not __controlflow__77 do __controlflow__76 := false, __controlflow__77 := true;
-    edge __node__CallBehaviorAction__90 when true, __controlflow__54, true, not __controlflow__64, not __nonAtomicActive____node__CallBehaviorAction__90 do __controlflow__54 := false, __nonAtomicActive____node__CallBehaviorAction__90 := true;
+    edge __node__CallBehaviorAction__90 when true, __controlflow__54, true, not __controlflow__64, not __nonAtomicActive__nonMergedPattern__flip and not __nonAtomicActive____node__CallBehaviorAction__90 do __controlflow__54 := false, __nonAtomicActive____node__CallBehaviorAction__90 := true;
     edge __node__CallBehaviorAction__90__na_result_1 when not __controlflow__64, __nonAtomicActive____node__CallBehaviorAction__90 do field1 := not field1, flipped := true, __controlflow__64 := true, __nonAtomicActive____node__CallBehaviorAction__90 := false;
     edge __node__CallBehaviorAction__90__na_result_2 when not __controlflow__64, __nonAtomicActive____node__CallBehaviorAction__90 do field1 := not field1, flipped := true, __controlflow__64 := true, __nonAtomicActive____node__CallBehaviorAction__90 := false;
     edge __node__CallBehaviorAction__91 when not field1 and not mode, __controlflow__60, true, not __controlflow__75 do field2 := true, __controlflow__60 := false, __controlflow__75 := true;

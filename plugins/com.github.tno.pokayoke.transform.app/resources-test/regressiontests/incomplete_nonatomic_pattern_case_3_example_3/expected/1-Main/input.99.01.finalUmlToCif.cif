@@ -42,6 +42,7 @@ plant automaton Context:
   disc bool __controlflow__68;
   disc bool __controlflow__69;
   disc bool __controlflow__70 = true;
+  disc bool __nonAtomicActive__nonMergedPattern__do_b;
   alg bool Pre = not done_a and not done_b and not flag;
   alg bool __token_on_first_controlflow = __controlflow__70;
   alg bool __precondition = Pre and __token_on_first_controlflow;
@@ -52,11 +53,11 @@ plant automaton Context:
   location:
     initial;
     marked;
-    edge __node__OpaqueAction__72 when not flag and not done_b, __controlflow__56, true, not __controlflow__63 do __controlflow__56 := false, __controlflow__63 := true;
-    edge __node__OpaqueAction__73 when not flag and not done_b, __controlflow__48, true, not __controlflow__55 do __controlflow__48 := false, __controlflow__55 := true;
-    edge __node__OpaqueAction__74 when true, __controlflow__65, true, not __controlflow__68 do done_b := true, __controlflow__65 := false, __controlflow__68 := true;
-    edge __node__OpaqueAction__75 when true, __controlflow__57, true, not __controlflow__67 do done_b := true, __controlflow__57 := false, __controlflow__67 := true;
-    edge __node__OpaqueAction__76 when true, __controlflow__53, true, not __controlflow__62 do done_b := true, __controlflow__53 := false, __controlflow__62 := true;
+    edge __node__OpaqueAction__72 when not flag and not done_b, __controlflow__56, true, not __controlflow__63, not __nonAtomicActive__nonMergedPattern__do_b do __controlflow__56 := false, __controlflow__63 := true, __nonAtomicActive__nonMergedPattern__do_b := true;
+    edge __node__OpaqueAction__73 when not flag and not done_b, __controlflow__48, true, not __controlflow__55, not __nonAtomicActive__nonMergedPattern__do_b do __controlflow__48 := false, __controlflow__55 := true, __nonAtomicActive__nonMergedPattern__do_b := true;
+    edge __node__OpaqueAction__74 when true, __controlflow__65, true, not __controlflow__68, __nonAtomicActive__nonMergedPattern__do_b do done_b := true, __controlflow__65 := false, __controlflow__68 := true, __nonAtomicActive__nonMergedPattern__do_b := false;
+    edge __node__OpaqueAction__75 when true, __controlflow__57, true, not __controlflow__67, __nonAtomicActive__nonMergedPattern__do_b do done_b := true, __controlflow__57 := false, __controlflow__67 := true, __nonAtomicActive__nonMergedPattern__do_b := false;
+    edge __node__OpaqueAction__76 when true, __controlflow__53, true, not __controlflow__62, __nonAtomicActive__nonMergedPattern__do_b do done_b := true, __controlflow__53 := false, __controlflow__62 := true, __nonAtomicActive__nonMergedPattern__do_b := false;
     edge __node__DecisionNode__79__0 when true, __controlflow__70, not __controlflow__46 do __controlflow__70 := false, __controlflow__46 := true;
     edge __node__DecisionNode__79__1 when true, __controlflow__70, not __controlflow__48 do __controlflow__70 := false, __controlflow__48 := true;
     edge __node__DecisionNode__80__0 when true, __controlflow__55, not __controlflow__51 do __controlflow__55 := false, __controlflow__51 := true;

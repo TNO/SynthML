@@ -31,6 +31,7 @@ plant automaton Context:
   disc bool __controlflow__60;
   disc bool __controlflow__61;
   disc bool __controlflow__63 = true;
+  disc bool __nonAtomicActive__nonMergedPattern__do_b;
   alg bool Pre = not done_a and not done_b and not done_c;
   alg bool __token_on_first_controlflow = __controlflow__63;
   alg bool __precondition = Pre and __token_on_first_controlflow;
@@ -41,8 +42,8 @@ plant automaton Context:
   location:
     initial;
     marked;
-    edge __node__OpaqueAction__65 when not done_a and not done_b, __controlflow__48, true, not __controlflow__60 do __controlflow__48 := false, __controlflow__60 := true;
-    edge __node__OpaqueAction__66 when true, __controlflow__57, true, not __controlflow__51 do done_b := true, __controlflow__57 := false, __controlflow__51 := true;
+    edge __node__OpaqueAction__65 when not done_a and not done_b, __controlflow__48, true, not __controlflow__60, not __nonAtomicActive__nonMergedPattern__do_b do __controlflow__48 := false, __controlflow__60 := true, __nonAtomicActive__nonMergedPattern__do_b := true;
+    edge __node__OpaqueAction__66 when true, __controlflow__57, true, not __controlflow__51, __nonAtomicActive__nonMergedPattern__do_b do done_b := true, __controlflow__57 := false, __controlflow__51 := true, __nonAtomicActive__nonMergedPattern__do_b := false;
     edge __node__DecisionNode__68__0 when true, __controlflow__63, not __controlflow__46 do __controlflow__63 := false, __controlflow__46 := true;
     edge __node__DecisionNode__68__1 when true, __controlflow__63, not __controlflow__48 do __controlflow__63 := false, __controlflow__48 := true;
     edge __node__MergeNode__69__0 when true, __controlflow__50, true, not __controlflow__52 do __controlflow__50 := false, __controlflow__52 := true;

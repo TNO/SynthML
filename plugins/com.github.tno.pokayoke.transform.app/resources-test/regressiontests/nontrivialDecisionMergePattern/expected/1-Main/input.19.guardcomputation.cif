@@ -1,6 +1,6 @@
 controllable __node__OpaqueAction__72;
-controllable __node__OpaqueAction__73;
-controllable __node__OpaqueAction__74;
+uncontrollable __node__OpaqueAction__73;
+uncontrollable __node__OpaqueAction__74;
 controllable __node__DecisionNode__76__0;
 controllable __node__DecisionNode__76__1;
 controllable __node__DecisionNode__76__2;
@@ -44,15 +44,17 @@ plant automaton Context:
   disc bool __controlflow__69;
   disc bool __controlflow__70;
   disc bool __controlflow__71 = true;
+  disc bool __nonAtomicActive__nonMergedPattern__flip;
   disc bool __nonAtomicActive____node__CallBehaviorAction__82;
   alg bool __token_on_first_controlflow = __controlflow__71;
   alg bool __precondition = __token_on_first_controlflow;
   alg bool postcondition = field2 and flipped;
+  alg bool __postcondition_without_structure__nonAtomicActive__nonMergedPattern__flip = not __nonAtomicActive__nonMergedPattern__flip;
   alg bool __postcondition_without_structure__nonAtomicActive____node__CallBehaviorAction__82 = not __nonAtomicActive____node__CallBehaviorAction__82;
   alg bool __postcondition_without_structure__occurrences__50__left__38 = occurrences__50__left__38.__occurrences >= 0;
   alg bool __postcondition_without_structure__occurrences__50__right__40 = occurrences__50__right__40.__occurrences >= 0;
   alg bool __postcondition_without_structure__occurrences__50__flip__42 = occurrences__50__flip__42.__occurrences >= 0;
-  alg bool __postcondition_without_structure = postcondition and __postcondition_without_structure__nonAtomicActive____node__CallBehaviorAction__82 and (__postcondition_without_structure__occurrences__50__left__38 and (__postcondition_without_structure__occurrences__50__right__40 and __postcondition_without_structure__occurrences__50__flip__42));
+  alg bool __postcondition_without_structure = postcondition and (__postcondition_without_structure__nonAtomicActive__nonMergedPattern__flip and __postcondition_without_structure__nonAtomicActive____node__CallBehaviorAction__82) and (__postcondition_without_structure__occurrences__50__left__38 and (__postcondition_without_structure__occurrences__50__right__40 and __postcondition_without_structure__occurrences__50__flip__42));
   alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
   alg bool __postcondition_with_structure__controlflow__54 = not __controlflow__54;
   alg bool __postcondition_with_structure__controlflow__55 = not __controlflow__55;
@@ -78,9 +80,9 @@ plant automaton Context:
   location:
     initial;
     marked;
-    edge __node__OpaqueAction__72 when true, __controlflow__62, not __controlflow__65 do __controlflow__62 := false, __controlflow__65 := true;
-    edge __node__OpaqueAction__73 when true, __controlflow__63, not __controlflow__66 do field1 := not field1, flipped := true, __controlflow__63 := false, __controlflow__66 := true;
-    edge __node__OpaqueAction__74 when true, __controlflow__64, not __controlflow__67 do field1 := not field1, flipped := true, __controlflow__64 := false, __controlflow__67 := true;
+    edge __node__OpaqueAction__72 when true, __controlflow__62, not __controlflow__65, not __nonAtomicActive__nonMergedPattern__flip and not __nonAtomicActive____node__CallBehaviorAction__82 do __controlflow__62 := false, __controlflow__65 := true, __nonAtomicActive__nonMergedPattern__flip := true;
+    edge __node__OpaqueAction__73 when true, __controlflow__63, not __controlflow__66, __nonAtomicActive__nonMergedPattern__flip do field1 := not field1, flipped := true, __controlflow__63 := false, __controlflow__66 := true, __nonAtomicActive__nonMergedPattern__flip := false;
+    edge __node__OpaqueAction__74 when true, __controlflow__64, not __controlflow__67, __nonAtomicActive__nonMergedPattern__flip do field1 := not field1, flipped := true, __controlflow__64 := false, __controlflow__67 := true, __nonAtomicActive__nonMergedPattern__flip := false;
     edge __node__DecisionNode__76__0 when true, __controlflow__71, not __controlflow__54 do __controlflow__71 := false, __controlflow__54 := true;
     edge __node__DecisionNode__76__1 when true, __controlflow__71, not __controlflow__55 do __controlflow__71 := false, __controlflow__55 := true;
     edge __node__DecisionNode__76__2 when true, __controlflow__71, not __controlflow__56 do __controlflow__71 := false, __controlflow__56 := true;
@@ -94,7 +96,7 @@ plant automaton Context:
     edge __node__MergeNode__80__1 when true, __controlflow__67, not __controlflow__70 do __controlflow__67 := false, __controlflow__70 := true;
     edge __node__MergeNode__80__2 when true, __controlflow__68, not __controlflow__70 do __controlflow__68 := false, __controlflow__70 := true;
     edge __node__MergeNode__80__3 when true, __controlflow__69, not __controlflow__70 do __controlflow__69 := false, __controlflow__70 := true;
-    edge __node__CallBehaviorAction__82 when true, __controlflow__54, not __controlflow__59, not __nonAtomicActive____node__CallBehaviorAction__82 do __controlflow__54 := false, __nonAtomicActive____node__CallBehaviorAction__82 := true;
+    edge __node__CallBehaviorAction__82 when true, __controlflow__54, not __controlflow__59, not __nonAtomicActive__nonMergedPattern__flip and not __nonAtomicActive____node__CallBehaviorAction__82 do __controlflow__54 := false, __nonAtomicActive____node__CallBehaviorAction__82 := true;
     edge __node__CallBehaviorAction__82__na_result_1 when not __controlflow__59, __nonAtomicActive____node__CallBehaviorAction__82 do field1 := not field1, flipped := true, __controlflow__59 := true, __nonAtomicActive____node__CallBehaviorAction__82 := false;
     edge __node__CallBehaviorAction__82__na_result_2 when not __controlflow__59, __nonAtomicActive____node__CallBehaviorAction__82 do field1 := not field1, flipped := true, __controlflow__59 := true, __nonAtomicActive____node__CallBehaviorAction__82 := false;
     edge __node__CallBehaviorAction__83 when not field1 and not mode, __controlflow__57, not __controlflow__68 do field2 := true, __controlflow__57 := false, __controlflow__68 := true;
