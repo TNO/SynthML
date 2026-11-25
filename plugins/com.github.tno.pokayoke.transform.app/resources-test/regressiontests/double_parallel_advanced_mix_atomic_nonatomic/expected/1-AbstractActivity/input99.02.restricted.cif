@@ -44,6 +44,7 @@ plant automaton Machine:
   disc bool __controlflow__78;
   disc bool __controlflow__80 = true;
   disc int[0..2] __activeAction;
+  disc bool __nonAtomicActive__nonMergedPattern__NonAtomicA;
   disc bool __nonAtomicActive____node__CallBehaviorAction__96;
   alg bool Precondition = not a_executed and not b_executed and not c_executed and not d_executed;
   alg bool __token_on_first_controlflow = __controlflow__80;
@@ -55,9 +56,9 @@ plant automaton Machine:
   location:
     initial;
     marked;
-    edge __node__OpaqueAction__82 when true, __controlflow__61, true, not __controlflow__67, __activeAction = 0 do __controlflow__61 := false, __controlflow__67 := true;
-    edge __node__OpaqueAction__83 when true, __controlflow__63, true, not __controlflow__76, __activeAction = 0 do a_executed := true, __controlflow__63 := false, __controlflow__76 := true;
-    edge __node__OpaqueAction__84 when true, __controlflow__65, true, not __controlflow__77, __activeAction = 0 do a_executed := true, __controlflow__65 := false, __controlflow__77 := true;
+    edge __node__OpaqueAction__82 when true, __controlflow__61, true, not __controlflow__67, __activeAction = 0, not __nonAtomicActive__nonMergedPattern__NonAtomicA do __controlflow__61 := false, __controlflow__67 := true, __nonAtomicActive__nonMergedPattern__NonAtomicA := true;
+    edge __node__OpaqueAction__83 when true, __controlflow__63, true, not __controlflow__76, __activeAction = 0, __nonAtomicActive__nonMergedPattern__NonAtomicA do a_executed := true, __controlflow__63 := false, __controlflow__76 := true, __nonAtomicActive__nonMergedPattern__NonAtomicA := false;
+    edge __node__OpaqueAction__84 when true, __controlflow__65, true, not __controlflow__77, __activeAction = 0, __nonAtomicActive__nonMergedPattern__NonAtomicA do a_executed := true, __controlflow__65 := false, __controlflow__77 := true, __nonAtomicActive__nonMergedPattern__NonAtomicA := false;
     edge __node__DecisionNode__87__0 when true, __controlflow__67, not __controlflow__63, __activeAction = 0 do __controlflow__67 := false, __controlflow__63 := true;
     edge __node__DecisionNode__87__1 when true, __controlflow__67, not __controlflow__65, __activeAction = 0 do __controlflow__67 := false, __controlflow__65 := true;
     edge __node__MergeNode__88__0 when true, __controlflow__69, true, not __controlflow__71, __activeAction = 0 do __controlflow__69 := false, __controlflow__71 := true;
